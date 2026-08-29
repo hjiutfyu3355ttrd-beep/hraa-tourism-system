@@ -26,6 +26,24 @@
         .sidebar::-webkit-scrollbar { width: 4px; }
         .sidebar::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 8px; }
 
+        .sidebar.collapsed {
+            transform: translateX(calc(100% - 60px));
+        }
+        .sidebar.collapsed .logo-area h1 { font-size: 16px; }
+        .sidebar.collapsed .logo-area span { display: none; }
+        .sidebar.collapsed .nav-link span { display: none; }
+        .sidebar.collapsed .nav-link .badge { display: none; }
+        .sidebar.collapsed .nav-link i { font-size: 20px; width: 30px; }
+        .sidebar.collapsed .nav-link { justify-content: center; padding: 12px 8px; }
+        .sidebar.collapsed .nav-section-title { display: none; }
+        .sidebar.collapsed .logout-btn span { display: none; }
+        .sidebar.collapsed .logout-btn { justify-content: center; }
+        .sidebar.collapsed .sidebar-footer { padding: 12px 8px; }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
         .sidebar .logo-area {
             padding: 24px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -75,14 +93,71 @@
             color: rgba(255,255,255,0.6);
         }
 
-        /* ===== المحتوى الرئيسي ===== */
+        .sidebar .nav-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.2);
+            padding: 16px 16px 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar .sidebar-footer {
+            padding: 12px 16px 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.3);
+            transition: all 0.25s ease;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .logout-btn:hover { background: rgba(184, 74, 62, 0.15); color: #e8a09a; }
+        .logout-btn i { font-size: 16px; width: 22px; text-align: center; }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 45;
+            backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { display: block; }
+
         .main-content {
             margin-right: 260px;
             padding: 24px 32px;
             min-height: 100vh;
+            transition: margin-right 0.3s ease;
+        }
+        .main-content.expanded { margin-right: 60px; }
+
+        .hamburger-btn {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #1e293b;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            width: 44px;
+            height: 44px;
+        }
+        .hamburger-btn:hover {
+            background: rgba(0,0,0,0.05);
         }
 
-        /* ===== البطاقات ===== */
         .stat-card {
             background: #fff;
             border-radius: 16px;
@@ -118,7 +193,6 @@
             font-weight: 500;
         }
 
-        /* ===== الجداول ===== */
         .table-card {
             background: #fff;
             border-radius: 16px;
@@ -186,27 +260,6 @@
             color: #0f172a;
         }
 
-        /* ===== زر الهامبورجر - يظهر على جميع الشاشات ===== */
-        .hamburger-btn {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #1e293b;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
-            width: 44px;
-            height: 44px;
-        }
-        .hamburger-btn:hover {
-            background: rgba(0,0,0,0.05);
-        }
-
-        /* ===== المودال ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -292,7 +345,6 @@
             justify-content: flex-end;
         }
 
-        /* ===== التوست ===== */
         .toast-notification {
             position: fixed;
             bottom: 24px;
@@ -327,17 +379,14 @@
             to { opacity: 0; transform: translateY(-15px); }
         }
 
-        /* ===== التوافق مع الشاشات الصغيرة ===== */
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(100%);
                 width: 280px;
             }
             .sidebar.open { transform: translateX(0); }
-            .main-content { 
-                margin-right: 0; 
-                padding: 16px; 
-            }
+            .main-content { margin-right: 0; padding: 16px; }
+            .main-content.expanded { margin-right: 0; }
         }
 
         @media (max-width: 768px) {
@@ -368,7 +417,8 @@
 </head>
 <body>
 
-    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <aside class="sidebar" id="sidebar">
         <div class="logo-area">
             <h1>🕋 حراء للسياحة</h1>
@@ -377,67 +427,68 @@
         
         <nav style="padding: 12px 0;">
             <a href="index.html" class="nav-link">
-                <i class="fas fa-home"></i> الرئيسية
+                <i class="fas fa-home"></i> <span>الرئيسية</span>
             </a>
             <a href="trips.html" class="nav-link">
-                <i class="fas fa-plane"></i> الرحلات
+                <i class="fas fa-plane"></i> <span>الرحلات</span>
                 <span class="badge" id="badge-trips">0</span>
             </a>
             <a href="bookings.html" class="nav-link active">
-                <i class="fas fa-ticket"></i> الحجوزات
+                <i class="fas fa-ticket"></i> <span>الحجوزات</span>
                 <span class="badge" id="badge-bookings">0</span>
             </a>
             <a href="clients.html" class="nav-link">
-                <i class="fas fa-users"></i> العملاء
+                <i class="fas fa-users"></i> <span>العملاء</span>
                 <span class="badge" id="badge-clients">0</span>
             </a>
             <a href="representatives.html" class="nav-link">
-                <i class="fas fa-user-tie"></i> المناديب
+                <i class="fas fa-user-tie"></i> <span>المناديب</span>
                 <span class="badge" id="badge-reps">0</span>
             </a>
             <a href="hotels.html" class="nav-link">
-                <i class="fas fa-hotel"></i> الفنادق
+                <i class="fas fa-hotel"></i> <span>الفنادق</span>
                 <span class="badge" id="badge-hotels">0</span>
             </a>
             <a href="agents.html" class="nav-link">
-                <i class="fas fa-handshake"></i> الوكلاء
+                <i class="fas fa-handshake"></i> <span>الوكلاء</span>
                 <span class="badge" id="badge-agents">0</span>
             </a>
             <a href="treasury.html" class="nav-link">
-                <i class="fas fa-coins"></i> الخزينة
+                <i class="fas fa-coins"></i> <span>الخزينة</span>
                 <span class="badge" id="badge-treasury">0</span>
             </a>
             <a href="banks.html" class="nav-link">
-                <i class="fas fa-university"></i> البنوك
+                <i class="fas fa-university"></i> <span>البنوك</span>
                 <span class="badge" id="badge-banks">0</span>
             </a>
             <a href="reports.html" class="nav-link">
-                <i class="fas fa-chart-bar"></i> التقارير
+                <i class="fas fa-chart-bar"></i> <span>التقارير</span>
             </a>
             <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
             <a href="users.html" class="nav-link">
-                <i class="fas fa-user-shield"></i> المستخدمون
+                <i class="fas fa-user-shield"></i> <span>المستخدمون</span>
             </a>
             <a href="settings.html" class="nav-link">
-                <i class="fas fa-cog"></i> الإعدادات
+                <i class="fas fa-cog"></i> <span>الإعدادات</span>
             </a>
             <a href="profile.html" class="nav-link">
-                <i class="fas fa-id-badge"></i> الملف الشخصي
+                <i class="fas fa-id-badge"></i> <span>الملف الشخصي</span>
             </a>
             <a href="support.html" class="nav-link">
-                <i class="fas fa-headset"></i> الدعم
+                <i class="fas fa-headset"></i> <span>الدعم</span>
             </a>
             <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
-            <a href="#" class="nav-link" onclick="logout(); return false;">
-                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-            </a>
+            <div class="sidebar-footer">
+                <a href="#" class="logout-btn" onclick="logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>تسجيل الخروج</span>
+                </a>
+            </div>
         </nav>
     </aside>
 
-    <!-- ===== MAIN CONTENT ===== -->
     <main class="main-content" id="mainContent">
 
-        <!-- ===== الهيدر مع زر الهامبورجر ===== -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
                 <button class="hamburger-btn" onclick="toggleSidebar()" id="hamburgerBtn" title="فتح/إغلاق القائمة">
@@ -454,12 +505,10 @@
             </div>
         </div>
 
-        <!-- ===== الإحصائيات ===== -->
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8" id="stats-container">
             <!-- سيتم تعبئتها بواسطة JavaScript -->
         </div>
 
-        <!-- ===== شريط الأدوات ===== -->
         <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div class="flex flex-wrap items-center gap-3">
                 <span class="text-sm font-semibold text-gray-600">قائمة الحجوزات</span>
@@ -474,7 +523,6 @@
             </div>
         </div>
 
-        <!-- ===== جدول الحجوزات ===== -->
         <div class="table-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="section-title"><i class="fas fa-ticket text-emerald-600 ml-2"></i>قائمة الحجوزات</h3>
@@ -505,13 +553,11 @@
             </div>
         </div>
 
-        <!-- ===== تذييل ===== -->
         <div class="text-center text-gray-400 text-sm mt-8 border-t pt-6" id="footerText">
             © 2026 حراء للسياحة — جميع الحقوق محفوظة
         </div>
     </main>
 
-    <!-- ===== MODAL - إضافة حجز ===== -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box">
             <h3><i class="fas fa-plus-circle"></i> إضافة حجز جديد</h3>
@@ -554,7 +600,6 @@
         </div>
     </div>
 
-    <!-- ===== JAVASCRIPT ===== -->
     <script src="supabase.js"></script>
     <script>
 
@@ -563,15 +608,19 @@
         // ============================================================
         function toggleSidebar() {
             var sidebar = document.getElementById('sidebar');
+            var mainContent = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
             var isMobile = window.innerWidth <= 1024;
             
             if (isMobile) {
+                // على الموبايل: فتح/إغلاق منزلق
                 sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
                 document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
             } else {
-                // على سطح المكتب: تصغير/تكبير القائمة
+                // على سطح المكتب: طي/فرد
                 sidebar.classList.toggle('collapsed');
-                document.getElementById('mainContent').classList.toggle('expanded');
+                mainContent.classList.toggle('expanded');
             }
         }
 
@@ -579,11 +628,13 @@
         document.addEventListener('click', function(event) {
             var sidebar = document.getElementById('sidebar');
             var hamburger = document.getElementById('hamburgerBtn');
+            var overlay = document.getElementById('sidebarOverlay');
             var isMobile = window.innerWidth <= 1024;
             
             if (isMobile && sidebar.classList.contains('open')) {
                 if (!sidebar.contains(event.target) && !hamburger.contains(event.target)) {
                     sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
                     document.body.style.overflow = '';
                 }
             }
@@ -938,6 +989,7 @@
                 closeModal();
                 if (window.innerWidth <= 1024) {
                     document.getElementById('sidebar').classList.remove('open');
+                    document.getElementById('sidebarOverlay').classList.remove('active');
                     document.body.style.overflow = '';
                 }
             }
