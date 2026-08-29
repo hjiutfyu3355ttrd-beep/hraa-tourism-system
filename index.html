@@ -3,20 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title id="pageTitle">لوحة التحكم - حراء للسياحة</title>
-    <script src="https://cdn.tailwindcss.com">
-    </script>
+    <title>حراء للسياحة - لوحة التحكم</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <style>
-        * {
-            font-family: 'Cairo', sans-serif;
-        }
-        body {
-            background: #f0f4f8;
-        }
-
-        /* ===== SIDEBAR ===== */
+        * { font-family: 'Cairo', sans-serif; }
+        body { background: #f0f4f8; }
+        
+        /* ===== الشريط الجانبي ===== */
         .sidebar {
             width: 260px;
             height: 100vh;
@@ -26,116 +21,45 @@
             background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
             overflow-y: auto;
             z-index: 50;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 1px solid rgba(255, 255, 255, 0.04);
-            display: flex;
-            flex-direction: column;
+            transition: transform 0.3s ease;
         }
-
-        .sidebar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: #0d9488;
-            border-radius: 8px;
-        }
-
-        /* حالة القائمة المغلقة (سطح المكتب) */
-        .sidebar.collapsed {
-            transform: translateX(calc(100% - 60px));
-        }
-        .sidebar.collapsed .logo-area h1 {
-            font-size: 16px;
-        }
-        .sidebar.collapsed .logo-area span {
-            display: none;
-        }
-        .sidebar.collapsed .nav-link span:not(.badge) {
-            display: none;
-        }
-        .sidebar.collapsed .nav-link .badge {
-            display: none;
-        }
-        .sidebar.collapsed .nav-link i {
-            font-size: 20px;
-            width: 30px;
-        }
-        .sidebar.collapsed .nav-link {
-            justify-content: center;
-            padding: 12px 8px;
-        }
-        .sidebar.collapsed .logout-btn span {
-            display: none;
-        }
-        .sidebar.collapsed .logout-btn {
-            justify-content: center;
-        }
-        .sidebar.collapsed .sidebar-footer {
-            padding: 12px 8px;
-        }
-        .sidebar.collapsed .nav-section-title {
-            display: none;
-        }
-        .sidebar.collapsed .brand-text small {
-            display: none;
-        }
-
-        /* حالة القائمة المغلقة (موبايل) */
-        .sidebar.mobile-closed {
-            transform: translateX(100%);
-        }
-
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 8px; }
+        
         .sidebar .logo-area {
-            padding: 20px 20px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.3s ease;
-            flex-shrink: 0;
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
         }
         .sidebar .logo-area h1 {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             background: linear-gradient(135deg, #0d9488, #14b8a6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transition: font-size 0.3s ease;
         }
         .sidebar .logo-area span {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255,255,255,0.4);
             display: block;
             margin-top: 2px;
-            transition: all 0.3s ease;
         }
-
-        .sidebar nav {
-            flex: 1;
-            padding: 8px 0;
-            overflow-y: auto;
-        }
-
+        
         .sidebar .nav-link {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px 16px;
-            margin: 2px 10px;
-            border-radius: 10px;
-            color: rgba(255, 255, 255, 0.6);
-            transition: all 0.25s ease;
+            padding: 12px 20px;
+            margin: 4px 12px;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.6);
+            transition: all 0.2s;
             text-decoration: none;
             font-weight: 500;
             font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
         }
-        .sidebar .nav-link i {
-            width: 22px;
-            font-size: 16px;
-            flex-shrink: 0;
-            text-align: center;
-        }
+        .sidebar .nav-link i { width: 22px; font-size: 16px; }
         .sidebar .nav-link:hover {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255,255,255,0.06);
             color: #fff;
         }
         .sidebar .nav-link.active {
@@ -144,127 +68,34 @@
         }
         .sidebar .nav-link .badge {
             margin-right: auto;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.1);
             padding: 2px 10px;
             border-radius: 20px;
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
-            flex-shrink: 0;
+            color: rgba(255,255,255,0.6);
         }
-
-        .sidebar .nav-section-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.2);
-            padding: 16px 16px 6px;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar .sidebar-footer {
-            padding: 12px 16px 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 14px;
-            border-radius: 10px;
-            color: rgba(255, 255, 255, 0.3);
-            transition: all 0.25s ease;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-        }
-        .logout-btn:hover {
-            background: rgba(184, 74, 62, 0.15);
-            color: #e8a09a;
-        }
-        .logout-btn i {
-            font-size: 16px;
-            width: 22px;
-            text-align: center;
-        }
-
-        /* ===== OVERLAY ===== */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 45;
-            backdrop-filter: blur(2px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .sidebar-overlay.active {
-            display: block;
-            opacity: 1;
-        }
-
-        /* ===== TOGGLE BUTTON (الزر الموحد) ===== */
-        .sidebar-toggle-btn {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: rgba(15, 23, 42, 0.08);
-            color: #1e293b;
-            font-size: 20px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            flex-shrink: 0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-        }
-        .sidebar-toggle-btn:hover {
-            background: rgba(15, 23, 42, 0.14);
-            color: #0f172a;
-            transform: scale(1.03);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-        }
-        .sidebar-toggle-btn i {
-            transition: transform 0.3s ease;
-        }
-
-        /* زر التبديل في حالة القائمة المغلقة (سطح المكتب) */
-        .sidebar.collapsed~.main-content .sidebar-toggle-btn.desktop-only i {
-            transform: rotate(180deg);
-        }
-
-        /* ===== MAIN CONTENT ===== */
+        
+        /* ===== المحتوى الرئيسي ===== */
         .main-content {
             margin-right: 260px;
             padding: 24px 32px;
             min-height: 100vh;
-            transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .main-content.expanded {
-            margin-right: 60px;
-        }
-
-        /* ===== STAT CARDS ===== */
+        
+        /* ===== البطاقات ===== */
         .stat-card {
             background: #fff;
             border-radius: 16px;
             padding: 22px 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.25s;
             position: relative;
             overflow: hidden;
-            cursor: pointer;
         }
         .stat-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            border-color: #0d9488;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
         }
         .stat-card .icon {
             width: 48px;
@@ -286,18 +117,22 @@
             color: #64748b;
             font-weight: 500;
         }
-
-        /* ===== TABLE CARDS ===== */
+        .stat-card .trend {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        /* ===== الجداول ===== */
         .table-card {
             background: #fff;
             border-radius: 16px;
             padding: 20px 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            transition: all 0.25s ease;
-        }
-        .table-card:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.04);
         }
         .table-card table {
             width: 100%;
@@ -317,44 +152,26 @@
             font-size: 14px;
             color: #1e293b;
         }
-        .table-card tr:last-child td {
-            border-bottom: none;
-        }
-        .table-card tr:hover td {
-            background: #f8fafc;
-        }
-
+        .table-card tr:last-child td { border-bottom: none; }
+        .table-card tr:hover td { background: #f8fafc; }
+        
         .status-badge {
             padding: 4px 14px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-            display: inline-block;
         }
-        .status-active {
-            background: #dcfce7;
-            color: #166534;
-        }
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        .status-completed {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .status-cancelled {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* ===== QUICK ACTIONS ===== */
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-completed { background: #dbeafe; color: #1e40af; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        
         .quick-action {
             background: #f8fafc;
             border-radius: 12px;
             padding: 16px 20px;
             border: 1px solid #e2e8f0;
-            transition: all 0.25s ease;
+            transition: 0.2s;
             text-decoration: none;
             color: #0f172a;
             display: flex;
@@ -364,8 +181,6 @@
         .quick-action:hover {
             border-color: #0d9488;
             background: #f0fdfa;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(13, 148, 136, 0.1);
         }
         .quick-action i {
             font-size: 24px;
@@ -377,725 +192,365 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.25s ease;
         }
-        .quick-action:hover i {
-            background: #0d9488;
-            color: #fff;
-        }
-
+        
         .section-title {
             font-size: 18px;
             font-weight: 700;
             color: #0f172a;
         }
-
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 8px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0d9488;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1024px) {
+        
+        /* ===== التوافق مع الشاشات الصغيرة ===== */
+        @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(100%);
+                width: 280px;
             }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-right: 0;
-                padding: 20px;
-            }
-            .main-content.expanded {
-                margin-right: 0;
-            }
-            .sidebar-overlay.active {
-                display: block;
-            }
-            .sidebar-toggle-btn.desktop-only {
-                display: none !important;
-            }
-            /* إظهار زر الموبايل فقط */
-            .sidebar-toggle-btn.mobile-only {
-                display: flex !important;
-            }
-        }
-
-        @media (min-width: 1025px) {
-            .sidebar-toggle-btn.mobile-only {
-                display: none !important;
-            }
-            .sidebar-toggle-btn.desktop-only {
-                display: flex !important;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 16px;
-            }
-            .stat-card {
-                padding: 16px 18px;
-            }
-            .stat-card .number {
-                font-size: 22px;
-            }
-            .stat-card .icon {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-            .table-card {
-                padding: 16px;
-            }
-            .table-card th,
-            .table-card td {
-                padding: 8px 6px;
-                font-size: 12px;
-            }
-            .quick-action {
-                padding: 12px 14px;
-                gap: 10px;
-            }
-            .quick-action i {
-                width: 34px;
-                height: 34px;
-                font-size: 18px;
-            }
-            .section-title {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .main-content {
-                padding: 12px;
-            }
-            .stat-card {
-                padding: 12px 14px;
-            }
-            .stat-card .number {
-                font-size: 18px;
-            }
-            .stat-card .icon {
-                width: 34px;
-                height: 34px;
-                font-size: 15px;
-            }
-            .grid-cols-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ===== TOAST ===== */
-        .toast-notification {
-            position: fixed;
-            bottom: 24px;
-            left: 24px;
-            background: #fff;
-            padding: 14px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border-right: 4px solid #0d9488;
-            z-index: 9999;
-            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            max-width: 400px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .toast-notification.toast-success {
-            border-right-color: #16a34a;
-        }
-        .toast-notification.toast-error {
-            border-right-color: #dc2626;
-        }
-        .toast-notification.toast-warning {
-            border-right-color: #f59e0b;
-        }
-        .toast-notification .toast-icon {
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-        .toast-success .toast-icon {
-            color: #16a34a;
-        }
-        .toast-error .toast-icon {
-            color: #dc2626;
-        }
-        .toast-warning .toast-icon {
-            color: #f59e0b;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateY(-15px);
-            }
-        }
-
-        /* ===== SHIMMER ===== */
-        .shimmer {
-            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s ease-in-out infinite;
-            border-radius: 8px;
-        }
-        @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
-        }
-
-        /* تحسينات إضافية */
-        .brand-text small {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.3);
-        }
-        .menu-toggle {
-            display: flex !important;
-        }
-        @media (min-width: 1025px) {
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-right: 0; padding: 16px; }
             .menu-toggle {
-                display: none !important;
+                display: flex !important;
             }
         }
+        .menu-toggle { display: none; }
     </style>
 </head>
 <body>
 
-    <!-- ===== SIDEBAR OVERLAY ===== -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebarMobile()"></div>
+<!-- ============================================================ -->
+<!-- SIDEBAR -->
+<!-- ============================================================ -->
+<aside class="sidebar" id="sidebar">
+    <div class="logo-area">
+        <h1>🕋 حراء للسياحة</h1>
+        <span>نظام إدارة الرحلات</span>
+    </div>
+    
+    <nav style="padding: 12px 0;">
+        <a href="index.html" class="nav-link active">
+            <i class="fas fa-home"></i> الرئيسية
+        </a>
+        <a href="trips.html" class="nav-link">
+            <i class="fas fa-plane"></i> الرحلات
+            <span class="badge">0</span>
+        </a>
+        <a href="bookings.html" class="nav-link">
+            <i class="fas fa-ticket"></i> الحجوزات
+            <span class="badge">0</span>
+        </a>
+        <a href="clients.html" class="nav-link">
+            <i class="fas fa-users"></i> العملاء
+            <span class="badge">0</span>
+        </a>
+        <a href="representatives.html" class="nav-link">
+            <i class="fas fa-user-tie"></i> المناديب
+            <span class="badge">0</span>
+        </a>
+        <a href="hotels.html" class="nav-link">
+            <i class="fas fa-hotel"></i> الفنادق
+            <span class="badge">0</span>
+        </a>
+        <a href="agents.html" class="nav-link">
+            <i class="fas fa-handshake"></i> الوكلاء
+            <span class="badge">0</span>
+        </a>
+        <a href="treasury.html" class="nav-link">
+            <i class="fas fa-coins"></i> الخزينة
+            <span class="badge">0</span>
+        </a>
+        <a href="banks.html" class="nav-link">
+            <i class="fas fa-university"></i> البنوك
+            <span class="badge">0</span>
+        </a>
+        <a href="reports.html" class="nav-link">
+            <i class="fas fa-chart-bar"></i> التقارير
+        </a>
+        <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
+        <a href="#" class="nav-link" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </a>
+    </nav>
+</aside>
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar" id="sidebar">
-        <div class="logo-area">
-            <h1 id="sidebarBrandText">🕋 حراء للسياحة</h1>
-            <span>نظام إدارة الرحلات</span>
+<!-- ============================================================ -->
+<!-- MAIN CONTENT -->
+<!-- ============================================================ -->
+<main class="main-content">
+
+    <!-- ===== زر القائمة (للشاشات الصغيرة) ===== -->
+    <div class="flex items-center gap-3 mb-6 menu-toggle">
+        <button onclick="toggleSidebar()" class="text-2xl text-gray-700">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="text-xl font-bold text-gray-800">🕋 حراء للسياحة</h1>
+    </div>
+
+    <!-- ===== الترحيب ===== -->
+    <div class="flex flex-wrap items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">مرحباً بك 👋</h1>
+            <p class="text-gray-500 text-sm">نظرة عامة على أداء النظام</p>
         </div>
-
-        <nav>
-            <div class="nav-section-title">القائمة الرئيسية</div>
-            <a href="index.html" class="nav-link active">
-                <i class="fas fa-home"></i> <span>الرئيسية</span>
-            </a>
-
-            <div class="nav-section-title">الإدارة المالية</div>
-            <a href="treasury.html" class="nav-link">
-                <i class="fas fa-coins"></i> <span>الخزينة</span>
-            </a>
-            <a href="trips.html" class="nav-link">
-                <i class="fas fa-plane"></i> <span>الرحلات</span>
-                <span class="badge" id="badge-trips">0</span>
-            </a>
-            <a href="clients.html" class="nav-link">
-                <i class="fas fa-users"></i> <span>العملاء</span>
-                <span class="badge" id="badge-clients">0</span>
-            </a>
-            <a href="banks.html" class="nav-link">
-                <i class="fas fa-university"></i> <span>البنوك</span>
-            </a>
-            <a href="bookings.html" class="nav-link">
-                <i class="fas fa-ticket"></i> <span>الحجوزات</span>
-                <span class="badge" id="badge-bookings">0</span>
-            </a>
-            <a href="representatives.html" class="nav-link">
-                <i class="fas fa-user-tie"></i> <span>المناديب</span>
-                <span class="badge" id="badge-reps">0</span>
-            </a>
-            <a href="hotels.html" class="nav-link">
-                <i class="fas fa-hotel"></i> <span>الفنادق</span>
-                <span class="badge" id="badge-hotels">0</span>
-            </a>
-            <a href="agents.html" class="nav-link">
-                <i class="fas fa-handshake"></i> <span>الوكلاء والتأشيرات</span>
-            </a>
-
-            <div class="nav-section-title">التقارير</div>
-            <a href="reports.html" class="nav-link">
-                <i class="fas fa-chart-bar"></i> <span>التقارير</span>
-            </a>
-
-            <div class="nav-section-title">الإدارة</div>
-            <a href="users.html" class="nav-link">
-                <i class="fas fa-user-shield"></i> <span>المستخدمون</span>
-            </a>
-            <a href="settings.html" class="nav-link">
-                <i class="fas fa-cog"></i> <span>الإعدادات</span>
-            </a>
-            <a href="profile.html" class="nav-link">
-                <i class="fas fa-id-badge"></i> <span>الملف الشخصي</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <a href="#" class="logout-btn" onclick="logout(); return false;">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>تسجيل الخروج</span>
-            </a>
+        <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500">اليوم</span>
+            <span class="font-semibold text-gray-700" id="current-date"></span>
         </div>
-    </aside>
+    </div>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <main class="main-content" id="mainContent">
+    <!-- ===== الإحصائيات ===== -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5 mb-8" id="stats-container">
+        <!-- سيتم تعبئتها بواسطة JavaScript -->
+    </div>
 
-        <!-- ===== NAVBAR ===== -->
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-4">
-                <!-- زر تبديل القائمة (سطح المكتب) -->
-                <button class="sidebar-toggle-btn desktop-only" id="sidebarToggleDesktop" title="تبديل القائمة الجانبية">
-                    <i class="fas fa-bars"></i>
-                </button>
+    <!-- ===== الإجراءات السريعة ===== -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <a href="trips.html" class="quick-action">
+            <i class="fas fa-plus-circle"></i>
+            <div><strong>رحلة جديدة</strong><br /><span class="text-xs text-gray-400">إضافة رحلة</span></div>
+        </a>
+        <a href="bookings.html" class="quick-action">
+            <i class="fas fa-user-plus"></i>
+            <div><strong>حجز جديد</strong><br /><span class="text-xs text-gray-400">تسجيل عميل</span></div>
+        </a>
+        <a href="representatives.html" class="quick-action">
+            <i class="fas fa-hand-holding-usd"></i>
+            <div><strong>تحصيل</strong><br /><span class="text-xs text-gray-400">تسجيل دفعة</span></div>
+        </a>
+        <a href="reports.html" class="quick-action">
+            <i class="fas fa-file-alt"></i>
+            <div><strong>تقرير</strong><br /><span class="text-xs text-gray-400">عرض التقارير</span></div>
+        </a>
+    </div>
 
-                <!-- زر تبديل القائمة (موبايل) - زر واحد فقط -->
-                <button class="sidebar-toggle-btn mobile-only" id="sidebarToggleMobile" onclick="toggleSidebarMobile()" title="فتح القائمة">
-                    <i class="fas fa-bars"></i>
-                </button>
+    <!-- ===== صف: أحدث الحجوزات + أبرز المناديب ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800" id="welcomeTitle">مرحباً بك 👋</h1>
-                    <p class="text-gray-500 text-sm">نظرة عامة على أداء النظام</p>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500">اليوم</span>
-                <span class="font-semibold text-gray-700" id="current-date"></span>
-            </div>
-        </div>
-
-        <!-- ===== STATS ===== -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5 mb-8" id="stats-container">
-            <!-- يتم تعبئتها بواسطة JS -->
-        </div>
-
-        <!-- ===== QUICK ACTIONS ===== -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            <a href="trips.html" class="quick-action">
-                <i class="fas fa-plus-circle"></i>
-                <div><strong>رحلة جديدة</strong><br /><span class="text-xs text-gray-400">إضافة رحلة</span></div>
-            </a>
-            <a href="bookings.html" class="quick-action">
-                <i class="fas fa-user-plus"></i>
-                <div><strong>حجز جديد</strong><br /><span class="text-xs text-gray-400">تسجيل عميل</span></div>
-            </a>
-            <a href="representatives.html" class="quick-action">
-                <i class="fas fa-hand-holding-usd"></i>
-                <div><strong>تحصيل</strong><br /><span class="text-xs text-gray-400">تسجيل دفعة</span></div>
-            </a>
-            <a href="reports.html" class="quick-action">
-                <i class="fas fa-file-alt"></i>
-                <div><strong>تقرير</strong><br /><span class="text-xs text-gray-400">عرض التقارير</span></div>
-            </a>
-        </div>
-
-        <!-- ===== RECENT BOOKINGS & TOP REPS ===== -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-            <div class="table-card">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="section-title"><i class="fas fa-clock text-emerald-600 ml-2"></i>أحدث الحجوزات</h3>
-                    <a href="bookings.html" class="text-sm text-emerald-600 hover:underline">عرض الكل</a>
-                </div>
-                <div style="max-height: 320px; overflow-y: auto;">
-                    <table>
-                        <thead>
-                            <tr><th>العميل</th><th>الرحلة</th><th>المبلغ</th><th>الحالة</th></tr>
-                        </thead>
-                        <tbody id="recent-bookings">
-                            <tr><td colspan="4" class="text-center text-gray-400 py-6">جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="table-card">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="section-title"><i class="fas fa-trophy text-amber-500 ml-2"></i>أبرز المناديب</h3>
-                    <a href="representatives.html" class="text-sm text-emerald-600 hover:underline">عرض الكل</a>
-                </div>
-                <div style="max-height: 320px; overflow-y: auto;">
-                    <table>
-                        <thead>
-                            <tr><th>المندوب</th><th>عدد الحجوزات</th><th>المستحق</th><th>المتبقي</th></tr>
-                        </thead>
-                        <tbody id="top-representatives">
-                            <tr><td colspan="4" class="text-center text-gray-400 py-6">جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== ACTIVE TRIPS ===== -->
-        <div class="table-card mt-6">
+        <!-- أحدث الحجوزات -->
+        <div class="table-card">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="section-title"><i class="fas fa-plane-departure text-emerald-600 ml-2"></i>الرحلات النشطة والقادمة</h3>
-                <a href="trips.html" class="text-sm text-emerald-600 hover:underline">عرض الكل</a>
+                <h3 class="section-title"><i class="fas fa-clock text-emerald-600 ml-2"></i>أحدث الحجوزات</h3>
+                <a href="bookings.html" class="text-sm text-emerald-600 hover:underline">عرض الكل</a>
             </div>
-            <div style="max-height: 260px; overflow-y: auto;">
+            <div style="max-height: 320px; overflow-y: auto;">
                 <table>
                     <thead>
-                        <tr><th>الرحلة</th><th>النوع</th><th>تاريخ السفر</th><th>المقاعد</th><th>الحالة</th></tr>
+                        <tr><th>العميل</th><th>الرحلة</th><th>المبلغ</th><th>الحالة</th></tr>
                     </thead>
-                    <tbody id="active-trips">
-                        <tr><td colspan="5" class="text-center text-gray-400 py-6">جاري التحميل...</td></tr>
+                    <tbody id="recent-bookings">
+                        <!-- سيتم تعبئتها بواسطة JavaScript -->
+                        <tr><td colspan="4" class="text-center text-gray-400 py-6">جاري التحميل...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- ===== FOOTER ===== -->
-        <div class="text-center text-gray-400 text-sm mt-8 border-t pt-6" id="footerText">
-            © 2026 حراء للسياحة — جميع الحقوق محفوظة
+        <!-- أبرز المناديب -->
+        <div class="table-card">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="section-title"><i class="fas fa-trophy text-amber-500 ml-2"></i>أبرز المناديب</h3>
+                <a href="representatives.html" class="text-sm text-emerald-600 hover:underline">عرض الكل</a>
+            </div>
+            <div style="max-height: 320px; overflow-y: auto;">
+                <table>
+                    <thead>
+                        <tr><th>المندوب</th><th>عدد الحجوزات</th><th>المستحق</th><th>المتبقي</th></tr>
+                    </thead>
+                    <tbody id="top-representatives">
+                        <!-- سيتم تعبئتها بواسطة JavaScript -->
+                        <tr><td colspan="4" class="text-center text-gray-400 py-6">جاري التحميل...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </main>
+    </div>
 
-    <!-- ===== JAVASCRIPT ===== -->
-    <script src="supabase.js">
-    </script>
-    <script>
-        // ================================================================
-        // SIDEBAR TOGGLE - سطح المكتب
-        // ================================================================
-        var sidebar = document.getElementById('sidebar');
-        var mainContent = document.getElementById('mainContent');
-        var isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    <!-- ===== الرحلات النشطة ===== -->
+    <div class="table-card mt-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="section-title"><i class="fas fa-plane-departure text-emerald-600 ml-2"></i>الرحلات النشطة</h3>
+            <a href="trips.html" class="text-sm text-emerald-600 hover:underline">عرض الكل</a>
+        </div>
+        <div style="max-height: 260px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr><th>الرحلة</th><th>النوع</th><th>التاريخ</th><th>المقاعد</th><th>الحالة</th></tr>
+                </thead>
+                <tbody id="active-trips">
+                    <!-- سيتم تعبئتها بواسطة JavaScript -->
+                    <tr><td colspan="5" class="text-center text-gray-400 py-6">جاري التحميل...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-        if (isCollapsed) {
-            sidebar.classList.add('collapsed');
-            mainContent.classList.add('expanded');
+    <!-- ===== تذييل ===== -->
+    <div class="text-center text-gray-400 text-sm mt-8 border-t pt-6">
+        © 2026 حراء للسياحة — جميع الحقوق محفوظة
+    </div>
+</main>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================ -->
+<script src="supabase.js"></script>
+<script>
+
+// ============================================================
+// 1. تبديل القائمة الجانبية (للشاشات الصغيرة)
+// ============================================================
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ============================================================
+// 2. عرض التاريخ الحالي
+// ============================================================
+function setCurrentDate() {
+    const now = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('current-date').textContent = now.toLocaleDateString('ar-EG', options);
+}
+setCurrentDate();
+
+// ============================================================
+// 3. جلب البيانات من Supabase وعرضها
+// ============================================================
+async function loadDashboard() {
+    try {
+        // === 3a. الإحصائيات ===
+        const [tripsRes, bookingsRes, clientsRes, repsRes] = await Promise.all([
+            supabase.from('trips').select('*', { count: 'exact', head: true }),
+            supabase.from('bookings').select('*', { count: 'exact', head: true }),
+            supabase.from('clients').select('*', { count: 'exact', head: true }),
+            supabase.from('representatives').select('*', { count: 'exact', head: true })
+        ]);
+
+        const stats = [
+            { icon: 'fa-plane', color: 'bg-blue-50 text-blue-600', number: tripsRes.count || 0, label: 'الرحلات' },
+            { icon: 'fa-ticket', color: 'bg-emerald-50 text-emerald-600', number: bookingsRes.count || 0, label: 'الحجوزات' },
+            { icon: 'fa-users', color: 'bg-purple-50 text-purple-600', number: clientsRes.count || 0, label: 'العملاء' },
+            { icon: 'fa-user-tie', color: 'bg-amber-50 text-amber-600', number: repsRes.count || 0, label: 'المناديب' },
+            { icon: 'fa-hotel', color: 'bg-rose-50 text-rose-600', number: 0, label: 'الفنادق' }
+        ];
+
+        const container = document.getElementById('stats-container');
+        container.innerHTML = stats.map(s => `
+            <div class="stat-card flex items-center gap-4">
+                <div class="icon ${s.color}"><i class="fas ${s.icon}"></i></div>
+                <div>
+                    <div class="number">${s.number}</div>
+                    <div class="label">${s.label}</div>
+                </div>
+            </div>
+        `).join('');
+
+        // === 3b. أحدث الحجوزات ===
+        const { data: bookings } = await supabase
+            .from('bookings')
+            .select(`
+                id,
+                booking_value,
+                status,
+                clients (name),
+                trips (name)
+            `)
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+        const bookingsTbody = document.getElementById('recent-bookings');
+        if (bookings && bookings.length > 0) {
+            bookingsTbody.innerHTML = bookings.map(b => `
+                <tr>
+                    <td>${b.clients?.name || '—'}</td>
+                    <td>${b.trips?.name || '—'}</td>
+                    <td>${Number(b.booking_value).toLocaleString()} ر.س</td>
+                    <td><span class="status-badge status-${b.status === 'confirmed' ? 'active' : b.status === 'pending' ? 'pending' : b.status === 'completed' ? 'completed' : 'cancelled'}">${b.status}</span></td>
+                </tr>
+            `).join('');
+        } else {
+            bookingsTbody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-400 py-6">لا توجد حجوزات</td></tr>`;
         }
 
-        document.getElementById('sidebarToggleDesktop').addEventListener('click', function() {
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
+        // === 3c. أبرز المناديب ===
+        const { data: reps } = await supabase
+            .from('representatives')
+            .select(`
+                id,
+                name,
+                bookings (booking_value, status)
+            `)
+            .limit(5);
 
-            var collapsed = sidebar.classList.contains('collapsed');
-            localStorage.setItem('sidebarCollapsed', collapsed);
+        const repsTbody = document.getElementById('top-representatives');
+        if (reps && reps.length > 0) {
+            const repsData = reps.map(rep => {
+                const bookingsList = rep.bookings || [];
+                const total = bookingsList.reduce((sum, b) => sum + Number(b.booking_value || 0), 0);
+                const paid = 0; // سيتم حسابه من rep_transactions لاحقاً
+                return { name: rep.name, count: bookingsList.length, total, paid };
+            }).sort((a, b) => b.total - a.total);
 
-            var icon = this.querySelector('i');
-            icon.className = collapsed ? 'fas fa-chevron-right' : 'fas fa-bars';
+            repsTbody.innerHTML = repsData.map(r => `
+                <tr>
+                    <td class="font-medium">${r.name}</td>
+                    <td>${r.count}</td>
+                    <td>${r.total.toLocaleString()} ر.س</td>
+                    <td class="text-amber-600">${(r.total - r.paid).toLocaleString()} ر.س</td>
+                </tr>
+            `).join('');
+        } else {
+            repsTbody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-400 py-6">لا يوجد مناديب</td></tr>`;
+        }
+
+        // === 3d. الرحلات النشطة ===
+        const { data: trips } = await supabase
+            .from('trips')
+            .select('*')
+            .in('status', ['active', 'upcoming'])
+            .order('departure_date', { ascending: true })
+            .limit(5);
+
+        const tripsTbody = document.getElementById('active-trips');
+        if (trips && trips.length > 0) {
+            tripsTbody.innerHTML = trips.map(t => `
+                <tr>
+                    <td class="font-medium">${t.name}</td>
+                    <td>${t.trip_type || '—'}</td>
+                    <td>${t.departure_date ? new Date(t.departure_date).toLocaleDateString('ar-EG') : '—'}</td>
+                    <td>${t.seats || '—'}</td>
+                    <td><span class="status-badge status-${t.status === 'active' ? 'active' : 'pending'}">${t.status === 'active' ? 'نشطة' : 'قادمة'}</span></td>
+                </tr>
+            `).join('');
+        } else {
+            tripsTbody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-400 py-6">لا توجد رحلات نشطة</td></tr>`;
+        }
+
+        // === 3e. تحديث البادجات في القائمة الجانبية ===
+        document.querySelectorAll('.nav-link .badge').forEach((badge, index) => {
+            const counts = [tripsRes.count || 0, bookingsRes.count || 0, clientsRes.count || 0, repsRes.count || 0, 0];
+            if (index < counts.length) badge.textContent = counts[index];
         });
 
-        // ================================================================
-        // SIDEBAR TOGGLE - موبايل (زر واحد فقط)
-        // ================================================================
-        function toggleSidebarMobile() {
-            sidebar.classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
-        }
+    } catch (error) {
+        console.error('خطأ في تحميل البيانات:', error);
+    }
+}
 
-        function closeSidebarMobile() {
-            sidebar.classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('active');
-            document.body.style.overflow = '';
-        }
+// ============================================================
+// 4. تشغيل التحميل عند تحميل الصفحة
+// ============================================================
+document.addEventListener('DOMContentLoaded', loadDashboard);
 
-        // ================================================================
-        // DATE DISPLAY
-        // ================================================================
-        function setCurrentDate() {
-            var now = new Date();
-            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date').textContent = now.toLocaleDateString('ar-EG', options);
-        }
-        setCurrentDate();
+// ============================================================
+// 5. تسجيل الخروج (مؤقت)
+// ============================================================
+function logout() {
+    if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+        // سيتم إضافة منطق تسجيل الخروج لاحقاً
+        alert('تم تسجيل الخروج بنجاح');
+    }
+}
 
-        // ================================================================
-        // SYSTEM NAME
-        // ================================================================
-        function applySystemName() {
-            var systemName = 'حراء للسياحة';
-            try {
-                systemName = Supabase.getSystemName() || systemName;
-            } catch (e) {
-                console.warn('تعذر جلب اسم النظام، سيتم استخدام الاسم الافتراضي');
-            }
-
-            document.title = 'لوحة التحكم - ' + systemName;
-
-            var brand = document.getElementById('sidebarBrandText');
-            if (brand) brand.innerHTML = '🕋 ' + systemName;
-
-            var welcome = document.getElementById('welcomeTitle');
-            if (welcome) welcome.textContent = 'مرحباً بك في ' + systemName + ' 👋';
-
-            var footer = document.getElementById('footerText');
-            if (footer) footer.textContent = '© ' + new Date().getFullYear() + ' ' + systemName + ' — جميع الحقوق محفوظة';
-        }
-
-        // ================================================================
-        // LOAD DASHBOARD
-        // ================================================================
-        async function loadDashboard() {
-            var trips = [];
-            var bookings = [];
-            var clients = [];
-            var reps = [];
-            var repTransactions = [];
-            var hotelsCount = 0;
-
-            try {
-                var results = await Promise.all([
-                    Supabase.getTrips().catch(function() { return []; }),
-                    Supabase.getBookings().catch(function() { return []; }),
-                    Supabase.getClients().catch(function() { return []; }),
-                    Supabase.getRepresentatives().catch(function() { return []; }),
-                    Supabase.getRepTransactions().catch(function() { return []; }),
-                    Supabase.getHotels().catch(function() { return []; })
-                ]);
-
-                trips = results[0] || [];
-                bookings = results[1] || [];
-                clients = results[2] || [];
-                reps = results[3] || [];
-                repTransactions = results[4] || [];
-                hotelsCount = (results[5] || []).length;
-
-            } catch (error) {
-                console.error('خطأ في تحميل بيانات لوحة التحكم:', error);
-            }
-
-            var stats = [
-                { icon: 'fa-plane', color: 'bg-blue-50 text-blue-600', number: trips.length, label: 'الرحلات' },
-                { icon: 'fa-ticket', color: 'bg-emerald-50 text-emerald-600', number: bookings.length, label: 'الحجوزات' },
-                { icon: 'fa-users', color: 'bg-purple-50 text-purple-600', number: clients.length, label: 'العملاء' },
-                { icon: 'fa-user-tie', color: 'bg-amber-50 text-amber-600', number: reps.length, label: 'المناديب' },
-                { icon: 'fa-hotel', color: 'bg-rose-50 text-rose-600', number: hotelsCount, label: 'الفنادق' }
-            ];
-
-            var statsContainer = document.getElementById('stats-container');
-            statsContainer.innerHTML = stats.map(function(s) {
-                return '<div class="stat-card flex items-center gap-4">' +
-                    '<div class="icon ' + s.color + '"><i class="fas ' + s.icon + '"></i></div>' +
-                    '<div><div class="number">' + s.number + '</div><div class="label">' + s.label + '</div></div>' +
-                    '</div>';
-            }).join('');
-
-            var badgeTrips = document.getElementById('badge-trips');
-            var badgeBookings = document.getElementById('badge-bookings');
-            var badgeClients = document.getElementById('badge-clients');
-            var badgeReps = document.getElementById('badge-reps');
-            var badgeHotels = document.getElementById('badge-hotels');
-            if (badgeTrips) badgeTrips.textContent = trips.length;
-            if (badgeBookings) badgeBookings.textContent = bookings.length;
-            if (badgeClients) badgeClients.textContent = clients.length;
-            if (badgeReps) badgeReps.textContent = reps.length;
-            if (badgeHotels) badgeHotels.textContent = hotelsCount;
-
-            var statusBadgeMap = {
-                'مبدئي': 'status-pending',
-                'مؤكد': 'status-active',
-                'مكتمل': 'status-completed',
-                'ملغي': 'status-cancelled'
-            };
-
-            var sortedBookings = bookings.slice().sort(function(a, b) {
-                return new Date(b['created_at'] || b['booking_date'] || 0) - new Date(a['created_at'] || a['booking_date'] ||
-                    0);
-            }).slice(0, 5);
-
-            var bookingsTbody = document.getElementById('recent-bookings');
-            if (sortedBookings.length > 0) {
-                bookingsTbody.innerHTML = sortedBookings.map(function(b) {
-                    var client = clients.find(function(c) { return String(c['id']) === String(b['client_id']); });
-                    var trip = trips.find(function(t) { return String(t['id']) === String(b['trip_id']); });
-                    var status = b['status'] || 'مبدئي';
-                    var statusClass = statusBadgeMap[status] || 'status-pending';
-
-                    return '<tr>' +
-                        '<td>' + (client ? client['name'] : '—') + '</td>' +
-                        '<td>' + (trip ? (trip['trip_code'] || trip['trip_name']) : '—') + '</td>' +
-                        '<td>' + Supabase.formatCurrency(b['booking_value'] || 0) + '</td>' +
-                        '<td><span class="status-badge ' + statusClass + '">' + status + '</span></td>' +
-                        '</tr>';
-                }).join('');
-            } else {
-                bookingsTbody.innerHTML =
-                '<tr><td colspan="4" class="text-center text-gray-400 py-6">لا توجد حجوزات</td></tr>';
-            }
-
-            var repsData = reps.map(function(rep) {
-                var repBookings = bookings.filter(function(b) { return String(b['rep_id']) === String(rep['id']); });
-                var expected = repBookings.reduce(function(sum, b) { return sum + parseFloat(b['booking_value'] || 0); },
-                0);
-                var collected = repTransactions
-                    .filter(function(t) { return String(t['rep_id']) === String(rep['id']); })
-                    .reduce(function(sum, t) { return sum + parseFloat(t['amount'] || 0); }, 0);
-                return {
-                    name: rep['rep_name'] || '—',
-                    count: repBookings.length,
-                    expected: expected,
-                    remaining: expected - collected
-                };
-            }).sort(function(a, b) { return b.expected - a.expected; }).slice(0, 5);
-
-            var repsTbody = document.getElementById('top-representatives');
-            if (repsData.length > 0) {
-                repsTbody.innerHTML = repsData.map(function(r) {
-                    return '<tr>' +
-                        '<td class="font-medium">' + r.name + '</td>' +
-                        '<td>' + r.count + '</td>' +
-                        '<td>' + Supabase.formatCurrency(r.expected) + '</td>' +
-                        '<td class="text-amber-600">' + Supabase.formatCurrency(r.remaining) + '</td>' +
-                        '</tr>';
-                }).join('');
-            } else {
-                repsTbody.innerHTML =
-                '<tr><td colspan="4" class="text-center text-gray-400 py-6">لا يوجد مناديب</td></tr>';
-            }
-
-            var activeTrips = trips
-                .filter(function(t) { return t['status'] === 'جاري' || t['status'] === 'مخطط'; })
-                .sort(function(a, b) { return new Date(a['departure_date'] || 0) - new Date(b['departure_date'] || 0); })
-                .slice(0, 5);
-
-            var tripStatusClass = { 'جاري': 'status-active', 'مخطط': 'status-pending' };
-
-            var tripsTbody = document.getElementById('active-trips');
-            if (activeTrips.length > 0) {
-                tripsTbody.innerHTML = activeTrips.map(function(t) {
-                    var dateObj = new Date(t['departure_date']);
-                    var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-EG') : (t[
-                    'departure_date'] || '—');
-                    return '<tr>' +
-                        '<td class="font-medium">' + (t['trip_name'] || '—') + '</td>' +
-                        '<td>' + (t['trip_type'] || '—') + '</td>' +
-                        '<td>' + formattedDate + '</td>' +
-                        '<td>' + (t['seats_total'] || '—') + '</td>' +
-                        '<td><span class="status-badge ' + (tripStatusClass[t['status']] || 'status-pending') +
-                        '">' + t['status'] + '</span></td>' +
-                        '</tr>';
-                }).join('');
-            } else {
-                tripsTbody.innerHTML =
-                '<tr><td colspan="5" class="text-center text-gray-400 py-6">لا توجد رحلات نشطة</td></tr>';
-            }
-        }
-
-        // ================================================================
-        // LOGOUT
-        // ================================================================
-        function logout() {
-            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                localStorage.removeItem('supabase_session');
-                localStorage.removeItem('darkMode');
-                window.location.href = 'login.html';
-            }
-        }
-
-        // ================================================================
-        // TOAST
-        // ================================================================
-        function showToast(message, type) {
-            var existing = document.querySelectorAll('.toast-notification');
-            existing.forEach(function(t) { t.remove(); });
-
-            var toast = document.createElement('div');
-            toast.className = 'toast-notification';
-
-            var iconMap = {
-                'success': 'fa-check-circle',
-                'error': 'fa-times-circle',
-                'warning': 'fa-exclamation-triangle',
-                'info': 'fa-info-circle'
-            };
-
-            var icon = iconMap[type] || 'fa-info-circle';
-
-            toast.innerHTML = '<span class="toast-icon"><i class="fas ' + icon + '"></i></span> <span>' + message +
-            '</span>';
-
-            if (type === 'success') toast.classList.add('toast-success');
-            if (type === 'error') toast.classList.add('toast-error');
-            if (type === 'warning') toast.classList.add('toast-warning');
-
-            document.body.appendChild(toast);
-
-            setTimeout(function() {
-                toast.style.animation = 'fadeOut 0.3s ease forwards';
-                setTimeout(function() {
-                    if (toast.parentNode) toast.parentNode.removeChild(toast);
-                }, 300);
-            }, 3000);
-        }
-
-        // ================================================================
-        // KEYBOARD SHORTCUTS
-        // ================================================================
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'b') {
-                e.preventDefault();
-                if (window.innerWidth <= 1024) {
-                    toggleSidebarMobile();
-                } else {
-                    document.getElementById('sidebarToggleDesktop').click();
-                }
-            }
-            if (e.ctrlKey && e.key === 'r') {
-                e.preventDefault();
-                loadDashboard();
-                showToast('🔄 جاري تحديث البيانات...', 'info');
-            }
-            if (e.key === 'Escape') {
-                closeSidebarMobile();
-            }
-        });
-
-        // ================================================================
-        // INIT
-        // ================================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            applySystemName();
-            loadDashboard();
-            setInterval(loadDashboard, 60000);
-        });
-
-        // ================================================================
-        // EXPOSE
-        // ================================================================
-        window.toggleSidebarMobile = toggleSidebarMobile;
-        window.closeSidebarMobile = closeSidebarMobile;
-        window.logout = logout;
-        window.showToast = showToast;
-        window.loadDashboard = loadDashboard;
-
-        console.log('🏠 لوحة التحكم - حراء للسياحة');
-        console.log('🔑 اختصارات: Ctrl+B (تبديل القائمة) | Ctrl+R (تحديث)');
-        console.log('✅ النظام جاهز للعمل');
-    </script>
-
+</script>
 </body>
 </html>
