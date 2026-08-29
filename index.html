@@ -35,10 +35,10 @@
     </nav>
 </aside>
 
-<main class="main-content">
+<main class="main-content" id="mainContent">
 
     <div class="flex items-center gap-3 mb-6 menu-toggle">
-        <button data-sidebar-toggle class="text-2xl text-gray-700"><i class="fas fa-bars"></i></button>
+        <button id="sidebarToggle" class="text-2xl text-gray-700"><i class="fas fa-bars"></i></button>
         <h1 class="text-xl font-bold text-gray-800" id="mobileBrandText">🕋 حراء للسياحة</h1>
     </div>
 
@@ -291,7 +291,6 @@ async function loadDashboard(isManual) {
     isRefreshing = false;
 }
 
-// تحديث ذكي: يتوقف لما التاب يبقى مخفي عشان يوفر الأداء والطلبات، ويرجع يحمل فورًا لما المستخدم يرجع
 function startSmartRefresh() {
     if (refreshTimer) clearInterval(refreshTimer);
     refreshTimer = setInterval(function() {
@@ -309,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var systemName = Layout.applySystemName();
     applyGreeting(systemName);
     Layout.setCurrentDate('current-date');
-    Layout.initMobileSidebar();
+    Layout.initSidebar();
 
     var refreshBtn = document.getElementById('manualRefreshBtn');
     if (refreshBtn) refreshBtn.addEventListener('click', function() { loadDashboard(true); });
