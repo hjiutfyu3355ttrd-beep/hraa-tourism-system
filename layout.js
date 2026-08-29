@@ -4,22 +4,71 @@
    ================================================================ */
 var Layout = (function () {
 
-    function toggleSidebar() {
+    // ================================================================
+    // SIDEBAR - نظام موحد للهامبورجر في جميع الصفحات
+    // ================================================================
+    function initSidebar() {
         var sidebar = document.getElementById('sidebar');
-        if (sidebar) sidebar.classList.toggle('open');
-    }
+        var toggleBtn = document.getElementById('sidebarToggle');
+        var overlay = document.getElementById('sidebarOverlay');
+        var mainContent = document.getElementById('mainContent');
 
-    function initMobileSidebar() {
-        var sidebar = document.getElementById('sidebar');
-        var toggleBtn = document.querySelector('[data-sidebar-toggle]');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', toggleSidebar);
+        if (!sidebar || !toggleBtn) return;
+
+        var MOBILE_BREAKPOINT = 1200;
+
+        function toggleSidebar() {
+            if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                var isOpen = sidebar.classList.toggle('open');
+                if (overlay) overlay.classList.toggle('active');
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+            } else {
+                sidebar.classList.toggle('collapsed');
+                if (mainContent) mainContent.classList.toggle('expanded');
+            }
         }
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && sidebar) sidebar.classList.remove('open');
+
+        toggleBtn.addEventListener('click', toggleSidebar);
+
+        if (overlay) {
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        }
+
+        // إغلاق القائمة بالـ Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                sidebar.classList.remove('open');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
         });
+
+        // ضبط الحالة عند تغيير حجم الشاشة
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > MOBILE_BREAKPOINT) {
+                sidebar.classList.remove('open');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            } else {
+                sidebar.classList.remove('collapsed');
+                if (mainContent) mainContent.classList.remove('expanded');
+            }
+        });
+
+        // دعم التوافق مع data-sidebar-toggle (للصفحات القديمة)
+        var oldToggle = document.querySelector('[data-sidebar-toggle]');
+        if (oldToggle) {
+            oldToggle.addEventListener('click', toggleSidebar);
+        }
     }
 
+    // ================================================================
+    // CURRENT DATE
+    // ================================================================
     function setCurrentDate(elementId) {
         var el = document.getElementById(elementId || 'current-date');
         if (!el) return;
@@ -28,7 +77,9 @@ var Layout = (function () {
         el.textContent = now.toLocaleDateString('ar-EG', options);
     }
 
-    // pageLabel: عنوان الصفحة اللي هيتحط قبل اسم النظام في <title>، مثال: "الرحلات"
+    // ================================================================
+    // SYSTEM NAME
+    // ================================================================
     function applySystemName(pageLabel) {
         var systemName = 'حراء للسياحة';
         try {
@@ -40,7 +91,14 @@ var Layout = (function () {
         document.title = (pageLabel ? pageLabel + ' - ' : '') + systemName;
 
         var brand = document.getElementById('sidebarBrandText');
-        if (brand) brand.innerHTML = '🕋 ' + systemName;
+        if (brand) {
+            var isLegacy = brand.innerHTML.includes('🕋');
+            if (isLegacy) {
+                brand.innerHTML = '🕋 ' + systemName + ' <small>النظام المحاسبي المتكامل</small>';
+            } else {
+                brand.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+            }
+        }
 
         var mobileBrand = document.getElementById('mobileBrandText');
         if (mobileBrand) mobileBrand.innerHTML = '🕋 ' + systemName;
@@ -54,6 +112,9 @@ var Layout = (function () {
         return systemName;
     }
 
+    // ================================================================
+    // TOAST
+    // ================================================================
     function showToast(message, type) {
         var existing = document.querySelectorAll('.toast-notification');
         for (var i = 0; i < existing.length; i++) existing[i].remove();
@@ -79,6 +140,9 @@ var Layout = (function () {
         }, 3000);
     }
 
+    // ================================================================
+    // LOGOUT
+    // ================================================================
     function logout() {
         if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
         localStorage.removeItem('supabase_session');
@@ -86,7 +150,9 @@ var Layout = (function () {
         window.location.href = 'login.html';
     }
 
-    // خريطة عامة لتحويل حالات النظام (رحلات/حجوزات) لكلاس الشارة المناسب
+    // ================================================================
+    // STATUS BADGE MAP
+    // ================================================================
     var STATUS_BADGE_MAP = {
         'مخطط': 'status-pending',
         'مبدئي': 'status-pending',
@@ -101,9 +167,11 @@ var Layout = (function () {
         return STATUS_BADGE_MAP[status] || 'status-pending';
     }
 
+    // ================================================================
+    // EXPOSE
+    // ================================================================
     return {
-        toggleSidebar: toggleSidebar,
-        initMobileSidebar: initMobileSidebar,
+        initSidebar: initSidebar,
         setCurrentDate: setCurrentDate,
         applySystemName: applySystemName,
         showToast: showToast,
