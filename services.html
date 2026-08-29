@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title id="pageTitle">الإعدادات - حراء للسياحة</title>
+    <title id="pageTitle">الخدمات - حراء للسياحة</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,7 +58,7 @@
             --radius-full: 9999px;
             --t-base: 0.2s ease;
             --sidebar-width: 260px;
-            --header-height: 52px;
+            --header-height: 60px;
             --font-display: 'Inter', 'Cairo', sans-serif;
             --font-body: 'Cairo', 'Inter', sans-serif;
         }
@@ -516,12 +516,112 @@
            DASHBOARD CONTENT
            ================================================================ */
         .dashboard-content {
-            padding: 12px 20px 12px;
+            padding: 20px 24px 30px;
             flex: 1;
         }
 
         /* ================================================================
-           BUTTONS - نظام الأزرار (لم يكن مُعرّفاً في هذه الصفحة)
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           STAT CARDS
+           ================================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            transition: var(--t-base);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+
+        .stat-card .stat-number {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .stat-card .stat-icon {
+            float: left;
+            font-size: 18px;
+            color: var(--accent-light);
+            opacity: 0.5;
+        }
+
+        .stat-blue .stat-number {
+            color: var(--info);
+        }
+        .stat-green .stat-number {
+            color: var(--success);
+        }
+        .stat-gold .stat-number {
+            color: var(--accent);
+        }
+        .stat-purple .stat-number {
+            color: #6b5b8f;
+        }
+
+        /* ================================================================
+           BUTTONS
            ================================================================ */
         .btn-action {
             display: inline-flex;
@@ -534,11 +634,6 @@
             transition: var(--t-base);
             border: 1px solid transparent;
             font-family: var(--font-display);
-            cursor: pointer;
-        }
-
-        .btn-action:active {
-            transform: translateY(1px);
         }
 
         .btn-primary {
@@ -578,7 +673,7 @@
         }
 
         .btn-outline {
-            background: var(--surface);
+            background: transparent;
             border-color: var(--border);
             color: var(--text-secondary);
         }
@@ -589,503 +684,250 @@
             background: var(--accent-tint);
         }
 
+        .btn-sm {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            font-size: 12px;
+            transition: var(--t-base);
+        }
+
+        .btn-icon-delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: var(--border);
+        }
+
+        .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
         /* ================================================================
-           PAGE HEADER - تصميم مُطوّر
+           PANEL
            ================================================================ */
-        .page-header {
-            position: relative;
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
             flex-wrap: wrap;
-            padding: 10px 20px;
-            margin-bottom: 10px;
-            border-radius: var(--radius-lg);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
+            gap: 6px;
         }
 
-        .page-header::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image:
-                radial-gradient(circle at 12% 15%, rgba(255,255,255,0.07) 0, transparent 45%),
-                radial-gradient(circle at 88% 85%, rgba(201,168,106,0.28) 0, transparent 55%);
-            pointer-events: none;
-        }
-
-        .page-header .ph-left {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .page-header .ph-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-md);
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.14);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: var(--accent-light);
-            flex-shrink: 0;
-        }
-
-        .page-header .ph-left h2 {
+        .panel-title {
             font-family: var(--font-display);
-            font-size: 15.5px;
-            font-weight: 800;
-            color: var(--text-inverse);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
             margin: 0;
         }
 
-        .page-header .ph-left p {
-            font-size: 11px;
-            color: rgba(245,243,236,0.55);
-            margin: 2px 0 0;
-        }
-
-        .page-header .ph-right {
-            position: relative;
-            z-index: 1;
-            font-size: 10.5px;
-            color: rgba(245,243,236,0.55);
-            text-align: left;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.12);
-            padding: 5px 14px;
-            border-radius: var(--radius-md);
-        }
-
-        .page-header .ph-right strong {
-            display: block;
-            font-weight: 700;
-            color: var(--text-inverse);
+        .panel-title i {
+            color: var(--accent);
             font-size: 13px;
-            margin-bottom: 1px;
         }
 
-        /* ================================================================
-           SETTINGS GRID
-           ================================================================ */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 10px;
-            align-items: start;
-        }
-
-        .settings-grid .span-2 {
-            grid-column: span 2;
-        }
-
-        .settings-card {
-            position: relative;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 14px 16px;
-            box-shadow: var(--shadow-sm);
-            transition: var(--t-base);
-            overflow: hidden;
-        }
-
-        .settings-card::before {
-            content: '';
-            position: absolute;
-            top: 0; right: 0; left: 0;
-            height: 3px;
-            background: var(--cat-color, var(--accent));
-            opacity: 0.85;
-        }
-
-        .settings-card:hover {
-            border-color: var(--cat-color, var(--accent));
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-
-        .settings-card.cat-general    { --cat-color: var(--info);    --cat-bg: var(--info-bg); }
-        .settings-card.cat-appearance { --cat-color: var(--accent);  --cat-bg: var(--accent-tint); }
-        .settings-card.cat-logo       { --cat-color: #6d5aa8;        --cat-bg: rgba(109,90,168,0.08); }
-        .settings-card.cat-advanced   { --cat-color: var(--danger);  --cat-bg: var(--danger-bg); }
-        .settings-card.cat-info       { --cat-color: var(--success); --cat-bg: var(--success-bg); }
-
-        .settings-card .card-title {
-            font-family: var(--font-display);
-            font-size: 13.5px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .settings-card .card-icon-chip {
-            width: 30px;
-            height: 30px;
-            border-radius: var(--radius-md);
-            background: var(--cat-bg, var(--accent-tint));
-            color: var(--cat-color, var(--accent));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .settings-card .card-title .title-text small {
-            display: block;
-            font-size: 10.5px;
+        .record-count {
+            font-size: 11px;
+            color: var(--text-tertiary);
             font-weight: 500;
-            color: var(--text-tertiary);
-            margin-top: 1px;
         }
 
-        .settings-card .card-title .card-badge {
-            font-size: 9px;
-            padding: 3px 10px;
-            border-radius: var(--radius-full);
-            background: var(--cat-bg, var(--accent-tint));
-            color: var(--cat-color, var(--accent-dark));
-            font-family: var(--font-display);
-            font-weight: 700;
-            margin-right: auto;
-            letter-spacing: 0.3px;
+        /* ================================================================
+           TABLE
+           ================================================================ */
+        .table-wrap {
+            overflow-x: auto;
         }
 
-        .settings-card .form-group {
-            margin-bottom: 9px;
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
         }
 
-        .settings-card label {
-            display: block;
-            font-size: 11.5px;
+        .table-custom thead {
+            background: var(--bg);
+        }
+
+        .table-custom th {
+            padding: 8px 12px;
+            text-align: right;
             font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .settings-card label .required {
-            color: var(--danger);
-        }
-
-        .settings-card input,
-        .settings-card select {
-            width: 100%;
-            padding: 6px 11px;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
-            font-size: 12.5px;
-            transition: var(--t-base);
-            background: var(--surface-alt);
-            color: var(--text);
-        }
-
-        .settings-card input:hover,
-        .settings-card select:hover {
-            border-color: var(--text-tertiary);
-        }
-
-        .settings-card input:focus,
-        .settings-card select:focus {
-            outline: none;
-            border-color: var(--cat-color, var(--accent));
-            background: var(--surface);
-            box-shadow: 0 0 0 4px var(--cat-bg, var(--accent-tint));
-        }
-
-        .settings-card input[type="file"] {
-            padding: 8px 10px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .settings-card .form-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .settings-card .logo-preview {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-            padding: 9px 14px;
-            background: var(--surface-alt);
-            border-radius: var(--radius-md);
-            border: 1.5px dashed var(--border);
-            transition: var(--t-base);
-        }
-
-        .settings-card .logo-preview:hover {
-            border-color: var(--cat-color, var(--accent));
-            background: var(--cat-bg, var(--accent-tint));
-        }
-
-        .settings-card .logo-preview img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            background: white;
-            padding: 5px;
-            box-shadow: var(--shadow-sm);
-            flex-shrink: 0;
-        }
-
-        .settings-card .logo-preview .logo-placeholder {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-md);
-            background: var(--cat-bg, var(--accent-tint));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--cat-color, var(--accent));
-            border: 1px solid var(--border);
-            font-family: var(--font-display);
-            flex-shrink: 0;
-        }
-
-        .settings-card .logo-preview .logo-info {
-            font-size: 12px;
             color: var(--text-tertiary);
-            line-height: 1.6;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
         }
 
-        .settings-card .logo-preview .logo-info strong {
-            display: block;
+        .table-custom td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
             color: var(--text);
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 2px;
         }
 
-        /* ================================================================
-           THEME SELECTOR - معاينة مرئية
-           ================================================================ */
-        .theme-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 3px;
-        }
-
-        .theme-selector .theme-option {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            padding: 8px 8px 10px;
-            border-radius: var(--radius-md);
-            border: 2px solid var(--border);
-            cursor: pointer;
-            transition: var(--t-base);
-            background: var(--surface-alt);
-        }
-
-        .theme-selector .theme-option:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .theme-selector .theme-option.active {
-            border-color: var(--accent);
-            background: var(--accent-tint);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .theme-selector .theme-option .theme-preview {
-            width: 100%;
-            height: 30px;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .theme-selector .theme-option .theme-preview .tp-bar {
-            height: 12px;
-            background: #0e1c2e;
-            flex-shrink: 0;
-        }
-
-        .theme-selector .theme-option .theme-preview .tp-body {
-            flex: 1;
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            padding: 6px;
-        }
-
-        #lightThemeOption .theme-preview .tp-body { background: #f3f1eb; }
-        #darkThemeOption .theme-preview .tp-body { background: #1a2e46; }
-
-        .theme-selector .theme-option .theme-preview .tp-line {
-            flex: 1;
-            border-radius: 2px;
-            background: rgba(0,0,0,0.1);
-            height: 60%;
-        }
-
-        #darkThemeOption .theme-preview .tp-line { background: rgba(255,255,255,0.14); }
-
-        .theme-selector .theme-option .theme-label-row {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-weight: 700;
-            font-size: 12.5px;
-            color: var(--text-secondary);
-        }
-
-        .theme-selector .theme-option.active .theme-label-row {
-            color: var(--accent-dark);
-        }
-
-        .theme-selector .theme-option .theme-icon {
-            font-size: 15px;
-        }
-
-        .theme-selector .theme-option .theme-check {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            color: var(--success);
-            font-size: 16px;
-            background: var(--surface);
-            border-radius: 50%;
-        }
-
-        .theme-selector .theme-option.active .theme-check {
-            display: inline-flex;
-        }
-
-        /* ================================================================
-           DANGER / ACTION ZONES (إعدادات متقدمة)
-           ================================================================ */
-        .danger-zone,
-        .action-zone {
-            padding: 9px 12px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-        }
-
-        .danger-zone {
-            background: var(--danger-bg);
-            border-color: rgba(173,63,57,0.25);
-        }
-
-        .action-zone {
-            background: var(--info-bg);
-            border-color: rgba(45,96,136,0.2);
-            margin-top: 9px;
-        }
-
-        .danger-zone .zone-title,
-        .action-zone .zone-title {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 700;
-            font-size: 12px;
-            margin-bottom: 4px;
-        }
-
-        .danger-zone .zone-title { color: var(--danger); }
-        .action-zone .zone-title { color: var(--info); }
-
-        .danger-zone p,
-        .action-zone p {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            line-height: 1.5;
-        }
-
-        /* ================================================================
-           SYSTEM INFO LIST
-           ================================================================ */
-        .info-list {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .info-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px dashed var(--border-light);
-            font-size: 12px;
-        }
-
-        .info-row:last-of-type {
+        .table-custom tr:last-child td {
             border-bottom: none;
         }
 
-        .info-row .info-label {
-            display: flex;
+        .table-custom tr:hover td {
+            background: var(--surface-alt);
+        }
+
+        .amount-income {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .badge-custom {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+
+        .badge-active {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        /* ================================================================
+           MODAL
+           ================================================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1060;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            max-width: 520px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-box h3 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .modal-box h3 i {
+            color: var(--accent);
+            margin-left: 8px;
+        }
+
+        .modal-box label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .modal-box select,
+        .modal-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            margin-bottom: 12px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .modal-box select:focus,
+        .modal-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
+        }
+
+        .modal-box .total-display {
+            background: var(--surface-alt);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-box .total-display .label {
             color: var(--text-tertiary);
             font-weight: 600;
         }
 
-        .info-row .info-label i {
-            color: var(--cat-color, var(--success));
-            font-size: 13px;
-            width: 16px;
-            text-align: center;
+        .modal-box .total-display .value {
+            color: var(--accent);
         }
 
-        .info-row .info-value {
-            font-weight: 700;
-            color: var(--text);
-            font-family: var(--font-display);
-        }
-
-        .info-row .info-value.badge-pill {
-            background: var(--cat-bg, var(--success-bg));
-            color: var(--cat-color, var(--success));
-            padding: 2px 12px;
-            border-radius: var(--radius-full);
-            font-size: 11px;
-        }
-
-        .info-footer-note {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid var(--border);
-            font-size: 10.5px;
-            color: var(--text-tertiary);
+        .modal-actions {
             display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .info-footer-note strong {
-            color: var(--accent-dark);
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: flex-end;
         }
 
         /* ================================================================
@@ -1141,20 +983,34 @@
         }
 
         /* ================================================================
-           FOOTER - تذييل الصفحة (مع إصلاح المشكلة)
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
            ================================================================ */
         .footer-custom {
             background: var(--surface);
             border-top: 2px solid var(--border);
-            padding: 7px 24px;
+            padding: 12px 24px;
             flex-shrink: 0;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
             margin-top: auto;
-            margin-right: 0;
-            width: 100%;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 1;
         }
 
         .footer-custom .footer-content {
@@ -1165,7 +1021,6 @@
             gap: 8px;
             max-width: 1400px;
             margin: 0 auto;
-            padding-right: 0;
         }
 
         .footer-custom .footer-right {
@@ -1232,95 +1087,7 @@
         }
 
         /* ================================================================
-           DARK MODE - FOOTER
-           ================================================================ */
-        body.dark-mode .footer-custom {
-            background: var(--primary);
-            border-top-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .footer-custom .footer-brand {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .footer-custom .footer-copy {
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .footer-custom .footer-copy strong {
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .footer-custom .footer-version {
-            background: var(--primary-light);
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .footer-custom .footer-link {
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .footer-custom .footer-link:hover {
-            color: var(--accent-light);
-        }
-
-        /* ================================================================
-           RESPONSIVE - FOOTER
-           ================================================================ */
-        @media (max-width: 768px) {
-            .footer-custom {
-                padding: 8px 14px;
-            }
-            .footer-custom .footer-content {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                gap: 4px;
-            }
-            .footer-custom .footer-right {
-                flex-wrap: wrap;
-                justify-content: center;
-                font-size: 11px;
-            }
-            .footer-custom .footer-left {
-                font-size: 11px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .footer-custom .footer-divider {
-                display: none;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .footer-custom .footer-copy {
-                font-size: 10px;
-            }
-            .footer-custom .footer-version {
-                font-size: 10px;
-                padding: 1px 8px;
-            }
-        }
-
-        /* ================================================================
-           FIX: FOOTER POSITION WITH SIDEBAR
-           ================================================================ */
-        @media (min-width: 1201px) {
-            .main-content .footer-custom {
-                padding-right: 24px;
-                padding-left: 24px;
-            }
-        }
-
-        @media (max-width: 1200px) {
-            .footer-custom {
-                padding-right: 16px;
-                padding-left: 16px;
-            }
-        }
-
-        /* ================================================================
-           RESPONSIVE - باقي العناصر
+           RESPONSIVE
            ================================================================ */
         @media (max-width: 1200px) {
             .sidebar {
@@ -1353,8 +1120,8 @@
             .navbar-logo-text {
                 display: none;
             }
-            .settings-card {
-                padding: 16px 18px;
+            .footer-custom .footer-divider {
+                display: none;
             }
         }
 
@@ -1383,31 +1150,45 @@
             .page-header h2 {
                 font-size: 15px;
             }
-            .settings-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
             }
-            .settings-card {
-                padding: 14px 14px;
+            .stat-card .stat-number {
+                font-size: 16px;
             }
-            .form-actions {
-                flex-direction: column;
+            .table-custom {
+                font-size: 11px;
             }
-            .form-actions .btn-action {
-                width: 100%;
-                justify-content: center;
+            .table-custom th,
+            .table-custom td {
+                padding: 6px 8px;
+            }
+            .modal-box {
+                padding: 20px;
             }
             .navbar-logo-img {
                 height: 24px;
                 width: 24px;
             }
-            .settings-card .logo-preview {
-                flex-direction: column;
-                text-align: center;
+            .footer-custom {
+                padding: 8px 14px;
             }
-            .theme-selector .theme-option {
-                padding: 6px 12px;
+            .footer-custom .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .footer-custom .footer-right {
+                flex-wrap: wrap;
+                justify-content: center;
                 font-size: 11px;
+            }
+            .footer-custom .footer-left {
+                font-size: 11px;
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
 
@@ -1415,24 +1196,44 @@
             .dashboard-content {
                 padding: 10px 10px;
             }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 12px;
+            }
+            .stat-card .stat-number {
+                font-size: 14px;
+            }
+            .stat-card .stat-label {
+                font-size: 9px;
+            }
+            .stat-card .stat-icon {
+                font-size: 14px;
+            }
             .user-avatar {
                 width: 28px;
                 height: 28px;
                 font-size: 11px;
             }
-            .settings-card .card-title {
-                font-size: 13px;
+            .modal-box {
+                padding: 16px;
             }
-            .theme-selector {
-                flex-direction: column;
+            .modal-box h3 {
+                font-size: 15px;
             }
-            .theme-selector .theme-option {
-                justify-content: center;
+            .footer-custom .footer-copy {
+                font-size: 10px;
+            }
+            .footer-custom .footer-version {
+                font-size: 10px;
+                padding: 1px 8px;
             }
         }
 
         /* ================================================================
-           DARK MODE - باقي العناصر
+           DARK MODE - مطابق تماماً لـ index.html
            ================================================================ */
         body.dark-mode {
             background: var(--primary-dark);
@@ -1448,61 +1249,40 @@
             color: #e0dcd2;
         }
 
-        body.dark-mode .settings-card {
+        body.dark-mode .stat-card {
             background: var(--primary);
             border-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .settings-card .card-title {
+        body.dark-mode .stat-card .stat-number {
             color: #e0dcd2;
         }
 
-        body.dark-mode .settings-card .card-title .card-badge {
-            background: rgba(139, 122, 75, 0.15);
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .settings-card input,
-        body.dark-mode .settings-card select {
-            background: var(--primary-light);
-            color: #e0dcd2;
-            border-color: rgba(255,255,255,0.08);
-        }
-
-        body.dark-mode .settings-card input:focus,
-        body.dark-mode .settings-card select:focus {
-            border-color: var(--accent);
-        }
-
-        body.dark-mode .settings-card label {
-            color: rgba(232,228,220,0.6);
-        }
-
-        body.dark-mode .settings-card .logo-preview {
-            background: var(--primary-light);
+        body.dark-mode .panel {
+            background: var(--primary);
             border-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .settings-card .logo-preview .logo-placeholder {
-            background: rgba(139, 122, 75, 0.15);
-            border-color: rgba(255,255,255,0.08);
+        body.dark-mode .panel-header {
+            border-bottom-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .theme-selector .theme-option {
+        body.dark-mode .table-custom thead {
             background: var(--primary-light);
-            border-color: rgba(255,255,255,0.08);
-            color: rgba(232,228,220,0.6);
         }
 
-        body.dark-mode .theme-selector .theme-option:hover {
-            border-color: var(--accent);
-            background: rgba(139, 122, 75, 0.1);
+        body.dark-mode .table-custom th {
+            color: rgba(232,228,220,0.4);
+            border-bottom-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .theme-selector .theme-option.active {
-            border-color: var(--accent);
-            background: rgba(139, 122, 75, 0.15);
-            color: var(--accent-light);
+        body.dark-mode .table-custom td {
+            border-bottom-color: rgba(255,255,255,0.04);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .table-custom tr:hover td {
+            background: var(--primary-light);
         }
 
         body.dark-mode .page-header {
@@ -1597,20 +1377,76 @@
             border-right-color: var(--warning);
         }
 
-        body.dark-mode .user-avatar {
-            background: var(--accent-light);
-            color: var(--text);
+        body.dark-mode .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box h3 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box select,
+        body.dark-mode .modal-box input {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .modal-box select:focus,
+        body.dark-mode .modal-box input:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .btn-icon-delete {
+            background: rgba(184, 74, 62, 0.2);
+            color: #dba09a;
+        }
+
+        body.dark-mode .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
         }
 
         body.dark-mode .shimmer {
             background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
         }
     </style>
 </head>
 <body>
 
     <!-- ================================================================ -->
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR - مطابق تماماً لـ index.html -->
     <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
@@ -1636,8 +1472,7 @@
                 <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
                 <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
                 <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
-                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
-                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+                <li><a href="services.html" class="active"><i class="bi bi-tools"></i> الخدمات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
             <div class="nav-section-title">التقارير</div>
@@ -1650,7 +1485,7 @@
             <ul class="nav-list">
                 <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
                 <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
-                <li><a href="settings.html" class="active"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
             </ul>
 
             <div class="nav-section-title">الدعم</div>
@@ -1678,7 +1513,7 @@
     <main class="main-content" id="mainContent">
 
         <!-- ================================================================ -->
-        <!-- NAVBAR -->
+        <!-- NAVBAR - مطابق لـ index.html -->
         <!-- ================================================================ -->
         <nav class="navbar-custom">
             <div class="navbar-left">
@@ -1692,8 +1527,8 @@
                 </div>
 
                 <h4 class="page-title" id="pageTitleText">
-                    الإعدادات
-                    <small>إدارة إعدادات النظام والتخصيص</small>
+                    الخدمات
+                    <small>إدارة الخدمات المقدمة للعملاء</small>
                 </h4>
             </div>
 
@@ -1722,167 +1557,79 @@
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>إعدادات النظام</h2>
-                    <p>تخصيص إعدادات النظام والمظهر والبيانات</p>
+                    <h2>إدارة الخدمات</h2>
+                    <p>تسجيل ومتابعة الخدمات المقدمة للعملاء</p>
                 </div>
-                <div class="ph-right" id="dateDisplay">
+                <div class="ph-right">
                     <strong>اليوم</strong>
                     <span id="headerDate">جاري التحميل...</span>
                 </div>
             </div>
 
-            <!-- ===== SETTINGS GRID ===== -->
-            <div class="settings-grid">
-
-                <!-- ===== الإعدادات العامة ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-sliders2"></i> الإعدادات العامة
-                        <span class="card-badge">رئيسي</span>
-                    </div>
-                    <form id="generalSettingsForm" onsubmit="handleGeneralSettings(event)">
-                        <div class="form-group">
-                            <label>اسم النظام <span class="required">*</span></label>
-                            <input type="text" id="systemName" placeholder="اسم النظام" required />
-                        </div>
-                        <div class="form-group">
-                            <label>العملة الأساسية <span class="required">*</span></label>
-                            <select id="systemCurrency">
-                                <option value="SAR">ريال سعودي (SAR) ر.س</option>
-                                <option value="AED">درهم إماراتي (AED) د.إ</option>
-                                <option value="EGP">جنيه مصري (EGP) ج.م</option>
-                                <option value="USD">دولار أمريكي (USD) $</option>
-                                <option value="EUR">يورو (EUR) €</option>
-                                <option value="KWD">دينار كويتي (KWD) د.ك</option>
-                                <option value="BHD">دينار بحريني (BHD) د.ب</option>
-                                <option value="OMR">ريال عماني (OMR) ر.ع</option>
-                                <option value="QAR">ريال قطري (QAR) ر.ق</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>اللغة</label>
-                            <select id="systemLanguage">
-                                <option value="ar" selected>العربية</option>
-                                <option value="en">English</option>
-                            </select>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn-action btn-primary">
-                                <i class="bi bi-check-lg"></i> حفظ الإعدادات
-                            </button>
-                        </div>
-                    </form>
+            <!-- ===== STATS ===== -->
+            <div class="stats-grid">
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-list-check"></i></span>
+                    <div class="stat-number" id="totalServices">0</div>
+                    <div class="stat-label">إجمالي الخدمات</div>
                 </div>
-
-                <!-- ===== إعدادات المظهر ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-palette-fill"></i> إعدادات المظهر
-                        <span class="card-badge">ثيم</span>
-                    </div>
-                    <div class="form-group">
-                        <label>اختر الثيم المفضل</label>
-                        <div class="theme-selector">
-                            <div class="theme-option active" id="darkThemeOption" onclick="selectTheme('dark')">
-                                <span class="theme-icon">🌙</span>
-                                <span>مظلم</span>
-                                <span class="theme-check"><i class="bi bi-check-circle-fill"></i></span>
-                            </div>
-                            <div class="theme-option" id="lightThemeOption" onclick="selectTheme('light')">
-                                <span class="theme-icon">☀️</span>
-                                <span>فاتح</span>
-                                <span class="theme-check"><i class="bi bi-check-circle-fill"></i></span>
-                            </div>
-                        </div>
-                        <p style="font-size:10.5px;color:var(--text-tertiary);margin-top:4px;">
-                            <i class="bi bi-info-circle"></i> سيتم تطبيق الثيم على جميع صفحات النظام فوراً
-                        </p>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn-action btn-success" onclick="saveThemeSettings()">
-                            <i class="bi bi-check-lg"></i> حفظ إعدادات المظهر
-                        </button>
-                    </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-coin"></i></span>
+                    <div class="stat-number" id="totalServicesAmount">0</div>
+                    <div class="stat-label">إجمالي المبالغ</div>
                 </div>
-
-                <!-- ===== شعار النظام ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-image"></i> شعار النظام
-                        <span class="card-badge">تخصيص</span>
-                    </div>
-                    <div class="logo-preview">
-                        <div id="logoPreviewContainer">
-                            <img id="logoPreview" src="" alt="شعار النظام" style="display:none;" />
-                            <div class="logo-placeholder" id="logoPlaceholder">ق</div>
-                        </div>
-                        <div class="logo-info">
-                            <span id="logoFileName">لم يتم اختيار شعار</span><br />
-                            <small style="color:var(--text-tertiary);">يُفضل استخدام صورة مربعة بحجم 64×64 بكسل</small>
-                        </div>
-                    </div>
-                    <form id="logoForm" onsubmit="handleLogoUpload(event)">
-                        <div class="form-group">
-                            <label>اختر صورة الشعار</label>
-                            <input type="file" id="logoFile" accept="image/*" />
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn-action btn-success">
-                                <i class="bi bi-upload"></i> رفع الشعار
-                            </button>
-                            <button type="button" class="btn-action btn-danger" onclick="removeLogo()">
-                                <i class="bi bi-trash"></i> حذف الشعار
-                            </button>
-                        </div>
-                    </form>
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
+                    <div class="stat-number" id="totalClientsServices">0</div>
+                    <div class="stat-label">عدد العملاء</div>
                 </div>
-
-                <!-- ===== إعدادات النظام المتقدمة ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-shield-check"></i> إعدادات متقدمة
-                        <span class="card-badge">مطور</span>
-                    </div>
-                    <div class="form-group">
-                        <label>إعادة تعيين النظام</label>
-                        <p style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;">
-                            سيتم حذف جميع البيانات وإعادة النظام إلى الإعدادات الافتراضية.
-                        </p>
-                        <button type="button" class="btn-action btn-danger" onclick="resetSystem()">
-                            <i class="bi bi-exclamation-triangle-fill"></i> إعادة تعيين النظام
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
-                        <label>تصدير البيانات</label>
-                        <p style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;">
-                            تصدير جميع بيانات النظام كملف JSON.
-                        </p>
-                        <button type="button" class="btn-action btn-primary" onclick="exportData()">
-                            <i class="bi bi-download"></i> تصدير البيانات
-                        </button>
-                    </div>
+                <div class="stat-card stat-purple">
+                    <span class="stat-icon"><i class="bi bi-calendar3"></i></span>
+                    <div class="stat-number" id="todayServices">0</div>
+                    <div class="stat-label">خدمات اليوم</div>
                 </div>
+            </div>
 
-                <!-- ===== معلومات النظام ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-info-circle"></i> معلومات النظام
-                        <span class="card-badge">حول</span>
-                    </div>
-                    <div style="font-size:12px;line-height:1.5;">
-                        <p><strong>اسم النظام:</strong> <span id="infoSystemName">حراء للسياحة</span></p>
-                        <p><strong>الإصدار:</strong> <span id="infoVersion">3.0.1</span></p>
-                        <p><strong>العملة:</strong> <span id="infoCurrency">ريال سعودي (SAR)</span></p>
-                        <p><strong>عدد المستخدمين:</strong> <span id="infoUsers">0</span></p>
-                        <p><strong>عدد المعاملات:</strong> <span id="infoTransactions">0</span></p>
-                        <p><strong>آخر تحديث:</strong> <span id="infoLastUpdate">—</span></p>
-                        <hr style="border-color:var(--border);margin:5px 0;" />
-                        <p style="font-size:10.5px;color:var(--text-tertiary);">
-                            <i class="bi bi-c-circle"></i> 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong>
-                        </p>
-                    </div>
+            <!-- ===== TOOLBAR ===== -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <button class="btn-action btn-success" onclick="openServiceModal()">
+                    <i class="bi bi-plus-circle-fill"></i> خدمة جديدة
+                </button>
+                <button class="btn-action btn-primary" onclick="loadData()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
+                </button>
+            </div>
+
+            <!-- ===== SERVICES TABLE ===== -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-list-check"></i> قائمة الخدمات</h5>
+                    <span id="recordCount" class="record-count">0 سجل</span>
                 </div>
-
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>التاريخ</th>
+                                <th>العميل</th>
+                                <th>اسم الخدمة</th>
+                                <th>السعر</th>
+                                <th>الكمية</th>
+                                <th>الإجمالي</th>
+                                <th style="text-align:center;">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="servicesBody">
+                            <tr>
+                                <td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                    <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
+                                    جاري تحميل الخدمات...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
@@ -1909,17 +1656,55 @@
     </main>
 
     <!-- ================================================================ -->
+    <!-- MODAL - إضافة خدمة -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="serviceModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-plus-circle-fill"></i> إضافة خدمة جديدة</h3>
+            <form id="serviceForm" onsubmit="handleServiceSubmit(event)">
+                <label for="serviceClient">اختر العميل</label>
+                <select id="serviceClient" required>
+                    <option value="">-- اختر عميل --</option>
+                </select>
+
+                <label for="serviceName">اسم الخدمة</label>
+                <input type="text" id="serviceName" placeholder="اسم الخدمة" required />
+
+                <label for="servicePrice">السعر</label>
+                <input type="number" id="servicePrice" placeholder="السعر" required step="0.01" min="0.01" oninput="calculateTotal()" />
+
+                <label for="serviceQuantity">الكمية</label>
+                <input type="number" id="serviceQuantity" placeholder="الكمية" value="1" required step="1" min="1" oninput="calculateTotal()" />
+
+                <div class="total-display">
+                    <span class="label">الإجمالي:</span>
+                    <span class="value" id="serviceTotalDisplay">0</span>
+                </div>
+
+                <label for="serviceDescription">ملاحظات (اختياري)</label>
+                <input type="text" id="serviceDescription" placeholder="ملاحظات إضافية" />
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-outline" onclick="closeServiceModal()">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveServiceBtn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
     <!-- JAVASCRIPT -->
     <!-- ================================================================ -->
     <script>
         // ================================================================
         // STATE
         // ================================================================
+        var services = [];
+        var clients = [];
+        var isLoading = false;
         var currentUser = null;
         var systemCurrency = 'SAR';
         var currencySymbol = 'ر.س';
-        var settings = {};
-        var selectedTheme = 'dark';
 
         // ================================================================
         // DOM READY
@@ -1927,25 +1712,15 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (!Supabase.initSystem()) return;
 
-            settings = Supabase.getSystemSettings();
+            var settings = Supabase.getSystemSettings();
             systemCurrency = settings.currency || 'SAR';
             currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
             currentUser = Supabase.getCurrentUser();
-            if (!currentUser) {
-                window.location.href = 'login.html';
-                return;
+            if (currentUser) {
+                updateUserUI();
             }
 
-            // التحقق من صلاحية المدير
-            var isAdmin = currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com';
-            if (!isAdmin) {
-                showToast('⛔ غير مصرح لك بالوصول إلى هذه الصفحة', 'error');
-                window.location.href = 'index.html';
-                return;
-            }
-
-            updateUserUI();
             applySystemName();
             Supabase.applySystemLogo();
 
@@ -1955,9 +1730,9 @@
             initNotifications();
             initKeyboardShortcuts();
             updateDate();
-            loadSettings();
-            loadInfo();
-            loadTheme();
+            loadData();
+            setInterval(loadData, 60000);
+            checkUserPermissions();
         });
 
         // ================================================================
@@ -1965,7 +1740,7 @@
         // ================================================================
         function applySystemName() {
             var systemName = Supabase.getSystemName();
-            document.title = 'الإعدادات - ' + systemName;
+            document.title = 'الخدمات - ' + systemName;
 
             var brandText = document.getElementById('sidebarBrandText');
             if (brandText) {
@@ -1981,8 +1756,6 @@
             if (userRole) {
                 userRole.textContent = systemName;
             }
-
-            document.getElementById('infoSystemName').textContent = systemName;
         }
 
         // ================================================================
@@ -1990,13 +1763,32 @@
         // ================================================================
         function updateUserUI() {
             if (!currentUser) return;
+            var userName = document.getElementById('userName');
+            var userRole = document.getElementById('userRole');
+            var userAvatar = document.getElementById('userAvatar');
 
-            var fullName = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
-            var initial = fullName.charAt(0).toUpperCase();
+            if (userName) {
+                userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
+            }
+            if (userRole) {
+                userRole.textContent = currentUser.user_metadata?.role || 'المالية';
+            }
+            if (userAvatar) {
+                var name = currentUser.user_metadata?.full_name || currentUser.email || 'م';
+                userAvatar.textContent = name.charAt(0).toUpperCase();
+            }
+        }
 
-            document.getElementById('userName').textContent = fullName;
-            document.getElementById('userAvatar').textContent = initial;
-            document.getElementById('userRole').textContent = Supabase.getSystemName();
+        // ================================================================
+        // CHECK USER PERMISSIONS
+        // ================================================================
+        function checkUserPermissions() {
+            var usersMenu = document.getElementById('usersMenu');
+            if (!usersMenu) return;
+            var isAdmin = currentUser && (currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com');
+            if (!isAdmin) {
+                usersMenu.style.display = 'none';
+            }
         }
 
         // ================================================================
@@ -2009,285 +1801,279 @@
             if (dateElement) {
                 dateElement.textContent = now.toLocaleDateString('ar-SA', options);
             }
-            document.getElementById('infoLastUpdate').textContent = now.toLocaleString('ar-SA');
         }
 
         // ================================================================
-        // LOAD SETTINGS
+        // CALCULATE TOTAL
         // ================================================================
-        function loadSettings() {
-            settings = Supabase.getSystemSettings();
+        function calculateTotal() {
+            var price = parseFloat(document.getElementById('servicePrice').value) || 0;
+            var quantity = parseInt(document.getElementById('serviceQuantity').value) || 1;
+            var total = price * quantity;
+            document.getElementById('serviceTotalDisplay').textContent = Supabase.formatCurrency(total);
+        }
 
-            document.getElementById('systemName').value = settings.systemName || 'حراء للسياحة';
-            document.getElementById('systemCurrency').value = settings.currency || 'SAR';
-            document.getElementById('systemLanguage').value = settings.language || 'ar';
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+        async function loadData() {
+            if (isLoading) return;
+            isLoading = true;
 
-            // عرض الشعار
-            var logoUrl = settings.logoUrl || '';
-            var logoPreview = document.getElementById('logoPreview');
-            var logoPlaceholder = document.getElementById('logoPlaceholder');
+            var tbody = document.getElementById('servicesBody');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align:center;padding:20px;color:var(--text-tertiary);">
+                            <div class="shimmer" style="height:28px;max-width:160px;margin:0 auto;"></div>
+                            <span style="display:block;margin-top:6px;font-size:12px;">جاري التحميل...</span>
+                        </td>
+                    </tr>
+                `;
+            }
 
-            if (logoUrl) {
-                logoPreview.src = logoUrl;
-                logoPreview.style.display = 'block';
-                logoPlaceholder.style.display = 'none';
-                document.getElementById('logoFileName').textContent = 'شعار مخصص';
-            } else {
-                logoPreview.style.display = 'none';
-                logoPlaceholder.style.display = 'flex';
-                document.getElementById('logoFileName').textContent = 'لم يتم اختيار شعار';
+            try {
+                console.log('📡 جاري جلب الخدمات والعملاء من Supabase...');
+
+                var servicesData = await Supabase.getServices();
+                services = servicesData || [];
+
+                var clientsData = await Supabase.getClients();
+                clients = clientsData || [];
+
+                renderTable();
+                renderStats();
+                populateClientSelect();
+
+            } catch (error) {
+                console.error('❌ خطأ في جلب البيانات:', error);
+                showToast('⚠️ فشل تحميل الخدمات', 'warning');
+                services = [];
+                renderTable();
+                renderStats();
+            }
+
+            isLoading = false;
+        }
+
+        // ================================================================
+        // POPULATE CLIENT SELECT
+        // ================================================================
+        function populateClientSelect() {
+            var select = document.getElementById('serviceClient');
+            if (!select) return;
+
+            select.innerHTML = '<option value="">-- اختر عميل --</option>';
+
+            for (var i = 0; i < clients.length; i++) {
+                var c = clients[i];
+                var option = document.createElement('option');
+                option.value = c['id'];
+                var debt = parseFloat(c['debt'] || 0);
+                option.textContent = c['name'] + ' (مديونية: ' + Supabase.formatCurrency(debt) + ')';
+                select.appendChild(option);
             }
         }
 
         // ================================================================
-        // LOAD THEME
+        // RENDER TABLE
         // ================================================================
-        function loadTheme() {
-            var isDark = Supabase.isDarkModeEnabled();
-            selectedTheme = isDark ? 'dark' : 'light';
-            updateThemeUI();
-        }
+        function renderTable() {
+            var tbody = document.getElementById('servicesBody');
+            var count = document.getElementById('recordCount');
 
-        function updateThemeUI() {
-            var darkOption = document.getElementById('darkThemeOption');
-            var lightOption = document.getElementById('lightThemeOption');
+            if (!tbody) return;
 
-            if (selectedTheme === 'dark') {
-                darkOption.classList.add('active');
-                lightOption.classList.remove('active');
-            } else {
-                lightOption.classList.add('active');
-                darkOption.classList.remove('active');
+            if (!services || services.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align:center;padding:20px;color:var(--text-tertiary);">
+                            <i class="bi bi-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
+                            لا توجد خدمات مسجلة
+                        </td>
+                    </tr>
+                `;
+                if (count) count.textContent = '0 سجل';
+                return;
             }
+
+            if (count) count.textContent = services.length + ' سجل';
+
+            var html = '';
+
+            for (var i = 0; i < services.length; i++) {
+                var s = services[i];
+                var id = s['id'] || '';
+                var date = s['date'] || '—';
+                var serviceName = s['service_name'] || '—';
+                var price = parseFloat(s['price'] || 0);
+                var quantity = parseInt(s['quantity'] || 1);
+                var total = parseFloat(s['total'] || 0);
+                var description = s['description'] || '';
+                var clientId = s['client_id'] || '';
+
+                var clientName = '—';
+                if (clientId) {
+                    var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
+                    if (client) {
+                        clientName = client['name'] || '—';
+                    }
+                }
+
+                var dateObj = new Date(date);
+                var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-SA') : date;
+
+                html += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${formattedDate}</td>
+                        <td><strong>${clientName}</strong></td>
+                        <td>${serviceName}</td>
+                        <td>${Supabase.formatCurrency(price)}</td>
+                        <td>${quantity}</td>
+                        <td class="amount-income">${Supabase.formatCurrency(total)}</td>
+                        <td style="text-align:center;white-space:nowrap;">
+                            <button class="btn-icon btn-icon-delete" onclick="deleteService('${id}')" title="حذف">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            tbody.innerHTML = html;
         }
 
-        function selectTheme(theme) {
-            selectedTheme = theme;
-            updateThemeUI();
+        // ================================================================
+        // RENDER STATS
+        // ================================================================
+        function renderStats() {
+            var totalServices = services.length;
+            var totalAmount = 0;
+            var uniqueClients = new Set();
 
-            // معاينة فورية
-            var isDark = theme === 'dark';
-            document.body.classList.toggle('dark-mode', isDark);
+            var today = new Date().toISOString().split('T')[0];
+            var todayCount = 0;
 
-            // تحديث أيقونة زر الوضع المظلم في الـ Navbar
-            var toggle = document.getElementById('darkModeToggle');
-            if (toggle) {
-                var icon = toggle.querySelector('i');
-                if (icon) {
-                    icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+            for (var i = 0; i < services.length; i++) {
+                var s = services[i];
+                totalAmount += parseFloat(s['total'] || 0);
+                if (s['client_id']) {
+                    uniqueClients.add(s['client_id']);
+                }
+                if (s['date'] === today) {
+                    todayCount++;
                 }
             }
 
-            showToast('🎨 تم تغيير الثيم إلى ' + (isDark ? 'مظلم' : 'فاتح') + ' (معاينة)', 'info');
-        }
-
-        async function saveThemeSettings() {
-            var isDark = selectedTheme === 'dark';
-
-            var btn = event ? event.target : document.querySelector('.settings-card .btn-success');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الحفظ...';
-            }
-
-            try {
-                await Supabase.toggleTheme(isDark);
-                showToast('✅ تم حفظ إعدادات المظهر بنجاح', 'success');
-
-                // تحديث localStorage
-                localStorage.setItem('darkMode', isDark ? 'true' : 'false');
-
-            } catch (error) {
-                console.error('❌ خطأ في حفظ إعدادات المظهر:', error);
-                showToast('❌ فشل حفظ إعدادات المظهر: ' + error.message, 'error');
-            }
-
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-check-lg"></i> حفظ إعدادات المظهر';
-            }
+            document.getElementById('totalServices').textContent = totalServices;
+            document.getElementById('totalServicesAmount').textContent = Supabase.formatCurrency(totalAmount);
+            document.getElementById('totalClientsServices').textContent = uniqueClients.size;
+            document.getElementById('todayServices').textContent = todayCount;
         }
 
         // ================================================================
-        // LOAD INFO
+        // ADD SERVICE
         // ================================================================
-        async function loadInfo() {
+        async function addServiceToSupabase(clientId, serviceName, price, quantity, total, description) {
             try {
-                var users = await Supabase.getUsers();
-                var transactions = await Supabase.getTransactions();
-
-                document.getElementById('infoUsers').textContent = users ? users.length : 0;
-                document.getElementById('infoTransactions').textContent = transactions ? transactions.length : 0;
-
-                var currencyNames = {
-                    'SAR': 'ريال سعودي (SAR)',
-                    'AED': 'درهم إماراتي (AED)',
-                    'EGP': 'جنيه مصري (EGP)',
-                    'USD': 'دولار أمريكي (USD)',
-                    'EUR': 'يورو (EUR)',
-                    'KWD': 'دينار كويتي (KWD)',
-                    'BHD': 'دينار بحريني (BHD)',
-                    'OMR': 'ريال عماني (OMR)',
-                    'QAR': 'ريال قطري (QAR)'
+                var data = {
+                    client_id: clientId,
+                    service_name: serviceName,
+                    price: price,
+                    quantity: quantity,
+                    total: total,
+                    description: description || '',
+                    date: new Date().toISOString().split('T')[0]
                 };
-                document.getElementById('infoCurrency').textContent = currencyNames[systemCurrency] || systemCurrency;
+
+                console.log('📤 جاري إرسال الخدمة:', data);
+                return await Supabase.addData('services', data);
 
             } catch (error) {
-                console.error('❌ خطأ في تحميل المعلومات:', error);
+                console.error('❌ خطأ في إضافة الخدمة:', error);
+                throw error;
             }
         }
 
         // ================================================================
-        // HANDLE GENERAL SETTINGS
+        // DELETE SERVICE
         // ================================================================
-        async function handleGeneralSettings(event) {
-            event.preventDefault();
+        function deleteService(id) {
+            if (!confirm('هل أنت متأكد من حذف هذه الخدمة؟')) return;
 
-            var systemName = document.getElementById('systemName').value.trim();
-            var currency = document.getElementById('systemCurrency').value;
-            var language = document.getElementById('systemLanguage').value;
+            showToast('⏳ جاري حذف الخدمة...', 'info');
 
-            if (!systemName) {
-                showToast('⚠️ الرجاء إدخال اسم النظام', 'warning');
-                return;
-            }
-
-            var btn = event.target.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الحفظ...';
-
-            try {
-                await Supabase.updateSystemSettings({
-                    systemName: systemName,
-                    currency: currency,
-                    language: language
-                });
-
-                // تحديث البيانات المحلية
-                settings = Supabase.getSystemSettings();
-                systemCurrency = currency;
-                currencySymbol = Supabase.getCurrencySymbol(currency);
-                applySystemName();
-                Supabase.applySystemLogo();
-
-                showToast('✅ تم حفظ الإعدادات بنجاح', 'success');
-                loadInfo();
-
-            } catch (error) {
-                console.error('❌ خطأ في حفظ الإعدادات:', error);
-                showToast('❌ ' + (error.message || 'فشل حفظ الإعدادات'), 'error');
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-check-lg"></i> حفظ الإعدادات';
-        }
-
-        // ================================================================
-        // HANDLE LOGO UPLOAD
-        // ================================================================
-        async function handleLogoUpload(event) {
-            event.preventDefault();
-
-            var fileInput = document.getElementById('logoFile');
-            var file = fileInput.files[0];
-
-            if (!file) {
-                showToast('⚠️ الرجاء اختيار صورة', 'warning');
-                return;
-            }
-
-            var btn = event.target.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الرفع...';
-
-            try {
-                var result = await Supabase.uploadLogo(file);
-
-                if (result && result.error) {
-                    throw new Error(result.error.message || 'فشل رفع الشعار');
-                }
-
-                loadSettings();
-                Supabase.applySystemLogo();
-                showToast('✅ تم رفع الشعار بنجاح', 'success');
-
-            } catch (error) {
-                console.error('❌ خطأ في رفع الشعار:', error);
-                showToast('❌ ' + (error.message || 'فشل رفع الشعار'), 'error');
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-upload"></i> رفع الشعار';
-            fileInput.value = '';
-        }
-
-        // ================================================================
-        // REMOVE LOGO
-        // ================================================================
-        async function removeLogo() {
-            if (!confirm('هل أنت متأكد من حذف شعار النظام؟')) return;
-
-            showToast('⏳ جاري حذف الشعار...', 'info');
-
-            try {
-                await Supabase.removeLogo();
-
-                loadSettings();
-                Supabase.applySystemLogo();
-                showToast('✅ تم حذف الشعار بنجاح', 'success');
-
-            } catch (error) {
-                console.error('❌ خطأ في حذف الشعار:', error);
-                showToast('❌ ' + (error.message || 'فشل حذف الشعار'), 'error');
-            }
-        }
-
-        // ================================================================
-        // RESET SYSTEM
-        // ================================================================
-        function resetSystem() {
-            if (!confirm('⚠️ تحذير: سيتم حذف جميع البيانات نهائياً. هل أنت متأكد؟')) return;
-            if (!confirm('تأكيد نهائي: هل أنت متأكد من إعادة تعيين النظام؟')) return;
-
-            showToast('⏳ جاري إعادة تعيين النظام...', 'info');
-
-            Supabase.resetSystem()
+            Supabase.deleteData('services', id)
                 .then(function() {
-                    showToast('✅ تم إعادة تعيين النظام بنجاح', 'success');
-                    loadSettings();
-                    loadInfo();
+                    showToast('✅ تم حذف الخدمة بنجاح', 'success');
+                    loadData();
                 })
                 .catch(function(error) {
-                    showToast('❌ فشل إعادة تعيين النظام: ' + error.message, 'error');
+                    showToast('❌ فشل حذف الخدمة: ' + error.message, 'error');
                 });
         }
 
         // ================================================================
-        // EXPORT DATA
+        // MODAL
         // ================================================================
-        async function exportData() {
-            showToast('⏳ جاري تصدير البيانات...', 'info');
+        function openServiceModal() {
+            document.getElementById('serviceModalOverlay').classList.add('active');
+            document.getElementById('serviceClient').value = '';
+            document.getElementById('serviceName').value = '';
+            document.getElementById('servicePrice').value = '';
+            document.getElementById('serviceQuantity').value = '1';
+            document.getElementById('serviceDescription').value = '';
+            document.getElementById('serviceTotalDisplay').textContent = Supabase.formatCurrency(0);
+            document.getElementById('saveServiceBtn').textContent = 'حفظ';
+            populateClientSelect();
+        }
+
+        function closeServiceModal() {
+            document.getElementById('serviceModalOverlay').classList.remove('active');
+        }
+
+        async function handleServiceSubmit(event) {
+            event.preventDefault();
+
+            var clientId = document.getElementById('serviceClient').value;
+            var serviceName = document.getElementById('serviceName').value.trim();
+            var price = parseFloat(document.getElementById('servicePrice').value);
+            var quantity = parseInt(document.getElementById('serviceQuantity').value) || 1;
+            var total = price * quantity;
+            var description = document.getElementById('serviceDescription').value.trim();
+
+            if (!clientId) {
+                showToast('⚠️ الرجاء اختيار العميل', 'warning');
+                return;
+            }
+
+            if (!serviceName) {
+                showToast('⚠️ الرجاء إدخال اسم الخدمة', 'warning');
+                return;
+            }
+
+            if (!price || price <= 0) {
+                showToast('⚠️ الرجاء إدخال سعر صحيح', 'warning');
+                return;
+            }
+
+            var saveBtn = document.getElementById('saveServiceBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'جاري الحفظ...';
 
             try {
-                var data = await Supabase.exportAllData();
-
-                var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                var url = URL.createObjectURL(blob);
-
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = 'system_backup_' + new Date().toISOString().split('T')[0] + '.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-
-                showToast('✅ تم تصدير البيانات بنجاح', 'success');
+                await addServiceToSupabase(clientId, serviceName, price, quantity, total, description);
+                showToast('✅ تمت إضافة الخدمة بنجاح', 'success');
+                closeServiceModal();
+                loadData();
 
             } catch (error) {
-                console.error('❌ خطأ في تصدير البيانات:', error);
-                showToast('❌ فشل تصدير البيانات: ' + error.message, 'error');
+                showToast('❌ فشل إضافة الخدمة: ' + error.message, 'error');
             }
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'حفظ';
         }
 
         // ================================================================
@@ -2320,6 +2106,7 @@
 
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
+                    closeServiceModal();
                     if (window.innerWidth <= MOBILE_BREAKPOINT) {
                         sidebar.classList.remove('open');
                         overlay.classList.remove('active');
@@ -2345,30 +2132,21 @@
         // ================================================================
         function initDarkMode() {
             var toggle = document.getElementById('darkModeToggle');
-            if (!toggle) return;
-
             var icon = toggle.querySelector('i');
+            var savedMode = localStorage.getItem('darkMode');
 
-            // تطبيق الثيم من الإعدادات المركزية
-            var isDark = Supabase.isDarkModeEnabled();
-            Supabase.applyTheme(isDark);
-
-            if (icon) {
-                icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+            if (savedMode === 'true') {
+                document.body.classList.add('dark-mode');
+                if (icon) icon.className = 'bi bi-sun-fill';
             }
 
             toggle.addEventListener('click', function() {
-                var currentState = document.body.classList.contains('dark-mode');
-                var newState = !currentState;
-
-                Supabase.toggleTheme(newState).then(function() {
-                    if (icon) {
-                        icon.className = newState ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-                    }
-                    // تحديث واجهة اختيار الثيم في الإعدادات
-                    selectedTheme = newState ? 'dark' : 'light';
-                    updateThemeUI();
-                });
+                document.body.classList.toggle('dark-mode');
+                var isDarkMode = document.body.classList.contains('dark-mode');
+                if (icon) {
+                    icon.className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                }
+                localStorage.setItem('darkMode', isDarkMode);
             });
         }
 
@@ -2377,9 +2155,7 @@
         // ================================================================
         function initRefresh() {
             document.getElementById('refreshBtn').addEventListener('click', function() {
-                loadSettings();
-                loadInfo();
-                loadTheme();
+                loadData();
                 Supabase.applySystemLogo();
                 showToast('🔄 جاري تحديث البيانات...', 'info');
             });
@@ -2393,12 +2169,11 @@
             if (notifBtn) {
                 notifBtn.addEventListener('click', function() {
                     var messages = [
-                        '⚙️ تم تحديث إعدادات النظام',
-                        '🔄 يمكنك إعادة تعيين النظام من هنا',
-                        '📤 تصدير البيانات متاح',
-                        '📸 قم بتخصيص شعار النظام',
-                        '🔑 تم حفظ الإعدادات بنجاح',
-                        '🎨 يمكنك تغيير الثيم بين المظلم والفاتح'
+                        '🛠️ تم إضافة خدمة جديدة',
+                        '💰 تم تسجيل خدمة بقيمة ' + Supabase.formatCurrency(1500),
+                        '📊 تقرير الخدمات الشهري جاهز',
+                        '✅ تم إكمال 5 خدمات جديدة اليوم',
+                        '📈 عدد الخدمات هذا الشهر: 23'
                     ];
                     var random = messages[Math.floor(Math.random() * messages.length)];
                     showToast(random, 'info');
@@ -2411,10 +2186,6 @@
         // ================================================================
         function initKeyboardShortcuts() {
             document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.key === 's') {
-                    e.preventDefault();
-                    document.getElementById('generalSettingsForm').dispatchEvent(new Event('submit'));
-                }
                 if (e.ctrlKey && e.key === 'b') {
                     e.preventDefault();
                     var toggle = document.getElementById('sidebarToggle');
@@ -2422,8 +2193,7 @@
                 }
                 if (e.ctrlKey && e.key === 'r') {
                     e.preventDefault();
-                    loadSettings();
-                    loadInfo();
+                    loadData();
                     showToast('🔄 جاري تحديث البيانات...', 'info');
                 }
                 if (e.ctrlKey && e.key === 'd') {
@@ -2500,21 +2270,16 @@
         // ================================================================
         // EXPOSE
         // ================================================================
+        window.openServiceModal = openServiceModal;
+        window.closeServiceModal = closeServiceModal;
+        window.deleteService = deleteService;
         window.logout = logout;
         window.showToast = showToast;
-        window.loadSettings = loadSettings;
-        window.loadInfo = loadInfo;
-        window.resetSystem = resetSystem;
-        window.exportData = exportData;
-        window.removeLogo = removeLogo;
-        window.selectTheme = selectTheme;
-        window.saveThemeSettings = saveThemeSettings;
+        window.loadData = loadData;
+        window.calculateTotal = calculateTotal;
 
-        console.log('⚙️ نظام الإعدادات - حراء للسياحة');
-        console.log('👤 المستخدم:', currentUser ? currentUser.email : 'غير مسجل');
-        console.log('💰 العملة:', systemCurrency, currencySymbol);
-        console.log('🎨 الثيم الحالي:', selectedTheme);
-        console.log('🔑 اختصارات: Ctrl+S (حفظ) | Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
+        console.log('🛠️ نظام الخدمات - حراء للسياحة');
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
         console.log('✅ النظام جاهز للعمل');
     </script>
 

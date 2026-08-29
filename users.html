@@ -4,328 +4,909 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="pageTitle">المستخدمين - حراء للسياحة</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
-    <style>
-        * { font-family: 'Cairo', sans-serif; }
-        body { background: #f0f4f8; }
 
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            position: fixed;
-            right: 0;
-            top: 0;
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-            overflow-y: auto;
-            z-index: 50;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 1px solid rgba(255,255,255,0.04);
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- ============================================================ -->
+    <!-- SUPABASE.JS - الملف المركزي -->
+    <!-- ============================================================ -->
+    <script src="supabase.js"></script>
+
+    <style>
+        /* ================================================================
+           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           ================================================================ */
+        :root {
+            --primary: #0e1c2e;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
+            --accent-tint: rgba(156, 122, 60, 0.08);
+            --success: #1c7a4e;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
+            --surface: #ffffff;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-full: 9999px;
+            --t-base: 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
         }
-        .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 8px; }
+
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ================================================================
+           SIDEBAR
+           ================================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary);
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+        }
 
         .sidebar.collapsed {
-            transform: translateX(calc(100% - 60px));
+            transform: translateX(calc(var(--sidebar-width) + 20px));
         }
-        .sidebar.collapsed .logo-area h1 { font-size: 16px; }
-        .sidebar.collapsed .logo-area span { display: none; }
-        .sidebar.collapsed .nav-link span:not(.badge) { display: none; }
-        .sidebar.collapsed .nav-link .badge { display: none; }
-        .sidebar.collapsed .nav-link i { font-size: 20px; width: 30px; }
-        .sidebar.collapsed .nav-link { justify-content: center; padding: 12px 8px; }
-        .sidebar.collapsed .logout-btn span { display: none; }
-        .sidebar.collapsed .logout-btn { justify-content: center; }
-        .sidebar.collapsed .sidebar-footer { padding: 12px 8px; }
-        .sidebar.collapsed .nav-section-title { display: none; }
 
-        .sidebar .logo-area {
+        .sidebar-brand {
             padding: 20px 20px 16px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
-            transition: all 0.3s ease;
-        }
-        .sidebar .logo-area h1 {
-            font-size: 20px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #0d9488, #14b8a6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: font-size 0.3s ease;
-        }
-        .sidebar .logo-area span {
-            font-size: 13px;
-            color: rgba(255,255,255,0.4);
-            display: block;
-            margin-top: 2px;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 16px;
-            margin: 2px 10px;
-            border-radius: 10px;
-            color: rgba(255,255,255,0.6);
-            transition: all 0.25s ease;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .sidebar .nav-link i { width: 22px; font-size: 16px; flex-shrink: 0; text-align: center; }
-        .sidebar .nav-link:hover { background: rgba(255,255,255,0.06); color: #fff; }
-        .sidebar .nav-link.active {
-            background: rgba(13, 148, 136, 0.2);
-            color: #14b8a6;
-        }
-        .sidebar .nav-link .badge {
-            margin-right: auto;
-            background: rgba(255,255,255,0.1);
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: rgba(255,255,255,0.6);
             flex-shrink: 0;
         }
 
-        .sidebar .nav-section-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.2);
-            padding: 16px 16px 6px;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .sidebar .sidebar-footer {
+        .brand-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            display: none;
+        }
+
+        .brand-logo-img.visible {
+            display: block;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-inverse);
+            flex-shrink: 0;
+        }
+
+        .brand-mark.hidden {
+            display: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-inverse);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            color: var(--accent-light);
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 10px 8px;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 12px 6px;
+            font-family: var(--font-display);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 0;
+        }
+
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.5);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: var(--t-base);
+            position: relative;
+        }
+
+        .nav-list a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-inverse);
+        }
+
+        .nav-list a.active {
+            background: rgba(139, 122, 75, 0.12);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        .nav-list a.active i {
+            color: var(--accent-light);
+        }
+
+        .nav-list a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .nav-list a i {
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-badge {
+            margin-right: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(139, 122, 75, 0.18);
+            color: var(--accent-light);
+            border: 1px solid rgba(139, 122, 75, 0.15);
+            font-family: var(--font-display);
+        }
+
+        .sidebar-footer {
             padding: 12px 16px 16px;
             border-top: 1px solid rgba(255,255,255,0.05);
             flex-shrink: 0;
-            transition: all 0.3s ease;
         }
 
         .logout-btn {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 8px 14px;
-            border-radius: 10px;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
             color: rgba(255,255,255,0.3);
-            transition: all 0.25s ease;
-            font-size: 14px;
+            transition: var(--t-base);
+            font-size: 12.5px;
             font-weight: 500;
-            text-decoration: none;
         }
-        .logout-btn:hover { background: rgba(184, 74, 62, 0.15); color: #e8a09a; }
-        .logout-btn i { font-size: 16px; width: 22px; text-align: center; }
+
+        .logout-btn:hover {
+            background: rgba(184, 74, 62, 0.12);
+            color: #e8a09a;
+        }
+
+        .logout-btn i {
+            font-size: 14px;
+        }
 
         .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 45;
-            backdrop-filter: blur(2px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            background: rgba(0,0,0,0.35);
+            z-index: 1045;
         }
-        .sidebar-overlay.active { display: block; opacity: 1; }
 
-        .sidebar-toggle-btn {
-            width: 38px;
-            height: 38px;
-            border: none;
-            background: rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.7);
-            font-size: 18px;
-            border-radius: 10px;
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
+        .main-content {
+            margin-right: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-right 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* ================================================================
+           NAVBAR
+           ================================================================ */
+        .navbar-custom {
+            background: var(--bg);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--surface);
+            border-color: var(--text-tertiary);
+        }
+
+        .navbar-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 4px;
+        }
+
+        .navbar-logo-img {
+            height: 28px;
+            width: 28px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+
+        .navbar-logo-img.visible {
+            display: block;
+        }
+
+        .navbar-logo-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--font-display);
+        }
+
+        .navbar-logo-text span {
+            color: var(--accent);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            margin-right: 6px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 4px 3px 12px;
+            border-radius: var(--radius-full);
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: var(--font-display);
             flex-shrink: 0;
         }
-        .sidebar-toggle-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
-        .sidebar-toggle-btn i { transition: transform 0.3s ease; }
 
-        .main-content {
-            margin-right: 260px;
-            padding: 24px 32px;
-            min-height: 100vh;
-            transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .main-content.expanded { margin-right: 60px; }
-
-        .stat-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 22px 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.04);
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            border-color: #0d9488;
-        }
-        .stat-card .icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-        .stat-card .number {
-            font-size: 28px;
-            font-weight: 800;
-            color: #0f172a;
+        .user-info {
             line-height: 1.2;
         }
-        .stat-card .label {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 500;
-        }
 
-        .table-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 20px 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.04);
-            transition: all 0.25s ease;
-        }
-        .table-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-        .table-card table { width: 100%; border-collapse: collapse; }
-        .table-card th {
-            text-align: right;
-            padding: 12px 8px;
-            font-weight: 600;
-            font-size: 13px;
-            color: #64748b;
-            border-bottom: 2px solid #f1f5f9;
-        }
-        .table-card td {
-            padding: 14px 8px;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 14px;
-            color: #1e293b;
-        }
-        .table-card tr:last-child td { border-bottom: none; }
-        .table-card tr:hover td { background: #f8fafc; }
-
-        .status-badge {
-            padding: 4px 14px;
-            border-radius: 20px;
+        .user-name {
             font-size: 12px;
             font-weight: 600;
-            display: inline-block;
+            color: var(--text);
         }
-        .badge-admin { background: #dbeafe; color: #1e40af; }
-        .badge-finance { background: #dcfce7; color: #166534; }
-        .badge-user { background: #fef3c7; color: #92400e; }
-        .badge-active { background: #dcfce7; color: #166534; }
-        .badge-inactive { background: #fee2e2; color: #991b1b; }
 
+        .user-role {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* ================================================================
+           DASHBOARD CONTENT
+           ================================================================ */
+        .dashboard-content {
+            padding: 20px 24px 30px;
+            flex: 1;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           STAT CARDS
+           ================================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            transition: var(--t-base);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+
+        .stat-card .stat-number {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .stat-card .stat-icon {
+            float: left;
+            font-size: 18px;
+            color: var(--accent-light);
+            opacity: 0.5;
+        }
+
+        .stat-blue .stat-number {
+            color: var(--info);
+        }
+        .stat-green .stat-number {
+            color: var(--success);
+        }
+        .stat-gold .stat-number {
+            color: var(--accent);
+        }
+        .stat-red .stat-number {
+            color: var(--danger);
+        }
+
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
         .btn-action {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 10px;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
             font-weight: 600;
-            font-size: 13px;
-            transition: all 0.25s ease;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
+            font-size: 12px;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+            font-family: var(--font-display);
         }
-        .btn-primary { background: #0d9488; color: #fff; }
-        .btn-primary:hover { background: #0f766e; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(13,148,136,0.3); }
-        .btn-success { background: #16a34a; color: #fff; }
-        .btn-success:hover { background: #15803d; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(22,163,74,0.3); }
-        .btn-danger { background: #dc2626; color: #fff; }
-        .btn-danger:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(220,38,38,0.3); }
-        .btn-outline { background: transparent; border: 1px solid #e2e8f0; color: #64748b; }
-        .btn-outline:hover { border-color: #0d9488; color: #0d9488; background: #f0fdfa; }
 
-        .section-title {
-            font-size: 18px;
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--text-inverse);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #166a4a;
+            border-color: #166a4a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a03d32;
+            border-color: #a03d32;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: var(--accent-tint);
+        }
+
+        .btn-sm {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            font-size: 12px;
+            transition: var(--t-base);
+        }
+
+        .btn-icon-edit {
+            background: var(--info-bg);
+            color: var(--info);
+            border-color: var(--border);
+        }
+
+        .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-icon-delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: var(--border);
+        }
+
+        .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ================================================================
+           PANEL
+           ================================================================ */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 12px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
         }
 
+        .panel-title i {
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .record-count {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* ================================================================
+           TABLE
+           ================================================================ */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+
+        .table-custom thead {
+            background: var(--bg);
+        }
+
+        .table-custom th {
+            padding: 8px 12px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        .table-custom td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom tr:hover td {
+            background: var(--surface-alt);
+        }
+
+        .badge-custom {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+
+        .badge-admin {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .badge-finance {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-user {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        /* ================================================================
+           MODAL
+           ================================================================ */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 100;
+            background: rgba(0,0,0,0.4);
+            z-index: 1060;
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(4px);
         }
-        .modal-overlay.active { display: flex; }
+
+        .modal-overlay.active {
+            display: flex;
+        }
 
         .modal-box {
-            background: #fff;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 480px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            max-width: 520px;
             width: 92%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-lg);
             animation: modalFadeIn 0.3s ease;
         }
+
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .modal-box h3 {
-            font-size: 20px;
+            font-family: var(--font-display);
+            font-size: 17px;
             font-weight: 800;
-            color: #0f172a;
+            color: var(--text);
             margin-bottom: 16px;
         }
-        .modal-box h3 i { color: #0d9488; margin-left: 8px; }
+
+        .modal-box h3 i {
+            color: var(--accent);
+            margin-left: 8px;
+        }
+
         .modal-box label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: #334155;
+            color: var(--text-secondary);
             margin-bottom: 4px;
         }
-        .modal-box input, .modal-box select {
+
+        .modal-box select,
+        .modal-box input {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 14px;
-            margin-bottom: 14px;
-            transition: all 0.25s ease;
-            background: #f8fafc;
-            color: #0f172a;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            margin-bottom: 12px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
         }
-        .modal-box input:focus, .modal-box select:focus {
+
+        .modal-box select:focus,
+        .modal-box input:focus {
             outline: none;
-            border-color: #0d9488;
-            box-shadow: 0 0 0 3px rgba(13,148,136,0.15);
-            background: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
         }
+
         .modal-actions {
             display: flex;
             gap: 10px;
@@ -333,311 +914,811 @@
             justify-content: flex-end;
         }
 
+        /* ================================================================
+           TOAST
+           ================================================================ */
         .toast-notification {
             position: fixed;
-            bottom: 24px;
-            left: 24px;
-            background: #fff;
-            padding: 14px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            border-right: 4px solid #0d9488;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
             z-index: 9999;
-            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            max-width: 400px;
-            font-size: 13px;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
+        }
+
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
+           ================================================================ */
+        .footer-custom {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 12px 24px;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            margin-top: auto;
+        }
+
+        .footer-custom .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-custom .footer-right {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        .toast-notification.toast-success { border-right-color: #16a34a; }
-        .toast-notification.toast-error { border-right-color: #dc2626; }
-        .toast-notification.toast-warning { border-right-color: #f59e0b; }
-        .toast-notification .toast-icon { font-size: 20px; flex-shrink: 0; }
-        .toast-success .toast-icon { color: #16a34a; }
-        .toast-error .toast-icon { color: #dc2626; }
-        .toast-warning .toast-icon { color: #f59e0b; }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-15px); }
+            font-size: 12px;
+            color: var(--text-tertiary);
         }
 
-        @media (max-width: 1024px) {
-            .sidebar { transform: translateX(100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-right: 0; padding: 20px; }
-            .main-content.expanded { margin-right: 0; }
-            .sidebar-overlay.active { display: block; }
-            .sidebar-toggle-btn.desktop-only { display: none !important; }
+        .footer-custom .footer-brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .footer-custom .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-custom .footer-copy {
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-copy strong {
+            color: var(--accent-dark);
+            font-weight: 700;
+        }
+
+        .footer-custom .footer-divider {
+            color: var(--border);
+            font-size: 14px;
+        }
+
+        .footer-custom .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-version {
+            font-family: var(--font-display);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .footer-custom .footer-link {
+            color: var(--text-tertiary);
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(calc(var(--sidebar-width) + 20px));
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-content {
+                padding: 16px 18px;
+            }
+            .navbar-custom {
+                padding: 0 16px;
+            }
+            .user-info {
+                display: none;
+            }
+            .page-header .ph-right {
+                display: none;
+            }
+            .navbar-logo-text {
+                display: none;
+            }
+            .footer-custom .footer-divider {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
-            .main-content { padding: 16px; }
-            .stat-card { padding: 16px 18px; }
-            .stat-card .number { font-size: 22px; }
-            .stat-card .icon { width: 40px; height: 40px; font-size: 18px; }
-            .table-card { padding: 16px; }
-            .table-card th, .table-card td { padding: 8px 6px; font-size: 12px; }
-            .section-title { font-size: 16px; }
-            .menu-toggle { display: flex !important; }
-            .modal-box { padding: 24px; }
+            .navbar-right .nav-btn:not(:first-child) {
+                display: none;
+            }
+            .navbar-custom {
+                height: 54px;
+                padding: 0 12px;
+            }
+            .page-title {
+                font-size: 14px;
+            }
+            .page-title small {
+                display: none;
+            }
+            .sidebar-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            .dashboard-content {
+                padding: 12px 12px;
+            }
+            .page-header h2 {
+                font-size: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card .stat-number {
+                font-size: 16px;
+            }
+            .table-custom {
+                font-size: 11px;
+            }
+            .table-custom th,
+            .table-custom td {
+                padding: 6px 8px;
+            }
+            .modal-box {
+                padding: 20px;
+            }
+            .navbar-logo-img {
+                height: 24px;
+                width: 24px;
+            }
+            .footer-custom {
+                padding: 8px 14px;
+            }
+            .footer-custom .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .footer-custom .footer-right {
+                flex-wrap: wrap;
+                justify-content: center;
+                font-size: 11px;
+            }
+            .footer-custom .footer-left {
+                font-size: 11px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 576px) {
-            .main-content { padding: 12px; }
-            .stat-card { padding: 12px 14px; }
-            .stat-card .number { font-size: 18px; }
-            .stat-card .icon { width: 34px; height: 34px; font-size: 15px; }
-            .btn-action { padding: 8px 14px; font-size: 12px; }
+            .dashboard-content {
+                padding: 10px 10px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 12px;
+            }
+            .stat-card .stat-number {
+                font-size: 14px;
+            }
+            .stat-card .stat-label {
+                font-size: 9px;
+            }
+            .stat-card .stat-icon {
+                font-size: 14px;
+            }
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            .modal-box {
+                padding: 16px;
+            }
+            .modal-box h3 {
+                font-size: 15px;
+            }
+            .footer-custom .footer-copy {
+                font-size: 10px;
+            }
+            .footer-custom .footer-version {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 8px; }
-        ::-webkit-scrollbar-thumb:hover { background: #0d9488; }
+        /* ================================================================
+           DARK MODE
+           ================================================================ */
+        body.dark-mode {
+            background: var(--primary-dark);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .navbar-custom {
+            background: var(--primary-dark);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .navbar-logo-text {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .stat-card .stat-number {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .panel {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .panel-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .table-custom thead {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .table-custom th {
+            color: rgba(232,228,220,0.4);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .table-custom td {
+            border-bottom-color: rgba(255,255,255,0.04);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .table-custom tr:hover td {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .page-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header .ph-left h2 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .page-header .ph-left p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .btn-outline {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: rgba(139, 122, 75, 0.1);
+        }
+
+        body.dark-mode .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-success {
+            background: #166a4a;
+            border-color: #166a4a;
+        }
+
+        body.dark-mode .btn-danger {
+            background: #a03d32;
+            border-color: #a03d32;
+        }
+
+        body.dark-mode .sidebar-toggle {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .sidebar-toggle:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.15);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .nav-btn {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .nav-btn:hover {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .user-profile:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .user-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .toast-notification {
+            background: var(--primary);
+            color: #e0dcd2;
+            border-right-color: var(--accent);
+        }
+
+        body.dark-mode .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        body.dark-mode .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        body.dark-mode .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box h3 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box select,
+        body.dark-mode .modal-box input {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .modal-box select:focus,
+        body.dark-mode .modal-box input:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .badge-admin {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .badge-finance {
+            background: rgba(30, 122, 85, 0.2);
+            color: #7bc4a0;
+        }
+
+        body.dark-mode .badge-user {
+            background: rgba(184, 148, 58, 0.2);
+            color: #d4b87a;
+        }
+
+        body.dark-mode .btn-icon-edit {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        body.dark-mode .btn-icon-delete {
+            background: rgba(184, 74, 62, 0.2);
+            color: #dba09a;
+        }
+
+        body.dark-mode .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        body.dark-mode .shimmer {
+            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebarMobile()"></div>
-
+    <!-- ================================================================ -->
+    <!-- SIDEBAR -->
+    <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
-        <div class="logo-area">
-            <h1 id="sidebarBrandText">🕋 حراء للسياحة</h1>
-            <span>نظام إدارة الرحلات</span>
+        <div class="sidebar-brand">
+            <div class="brand-row">
+                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
+                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
+                <div class="brand-text" id="sidebarBrandText">
+                    حراء <span>للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
+                </div>
+            </div>
         </div>
 
-        <nav style="padding: 8px 0;">
+        <nav class="sidebar-nav">
             <div class="nav-section-title">القائمة الرئيسية</div>
-            <a href="index.html" class="nav-link">
-                <i class="fas fa-home"></i> <span>الرئيسية</span>
-            </a>
+            <ul class="nav-list">
+                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
+            </ul>
 
             <div class="nav-section-title">الإدارة المالية</div>
-            <a href="treasury.html" class="nav-link">
-                <i class="fas fa-coins"></i> <span>الخزينة</span>
-            </a>
-            <a href="trips.html" class="nav-link">
-                <i class="fas fa-plane"></i> <span>الرحلات</span>
-                <span class="badge" id="badge-trips">0</span>
-            </a>
-            <a href="clients.html" class="nav-link">
-                <i class="fas fa-users"></i> <span>العملاء</span>
-                <span class="badge" id="badge-clients">0</span>
-            </a>
-            <a href="banks.html" class="nav-link">
-                <i class="fas fa-university"></i> <span>البنوك</span>
-            </a>
-            <a href="bookings.html" class="nav-link">
-                <i class="fas fa-ticket"></i> <span>الحجوزات</span>
-                <span class="badge" id="badge-bookings">0</span>
-            </a>
-            <a href="representatives.html" class="nav-link">
-                <i class="fas fa-user-tie"></i> <span>المناديب</span>
-                <span class="badge" id="badge-reps">0</span>
-            </a>
-            <a href="hotels.html" class="nav-link">
-                <i class="fas fa-hotel"></i> <span>الفنادق</span>
-                <span class="badge" id="badge-hotels">0</span>
-            </a>
-            <a href="agents.html" class="nav-link">
-                <i class="fas fa-handshake"></i> <span>الوكلاء والتأشيرات</span>
-            </a>
+            <ul class="nav-list">
+                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
+                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
+                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+            </ul>
 
             <div class="nav-section-title">التقارير</div>
-            <a href="reports.html" class="nav-link">
-                <i class="fas fa-chart-bar"></i> <span>التقارير</span>
-            </a>
+            <ul class="nav-list">
+                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+            </ul>
 
             <div class="nav-section-title">الإدارة</div>
-            <a href="users.html" class="nav-link active">
-                <i class="fas fa-user-shield"></i> <span>المستخدمون</span>
-            </a>
-            <a href="settings.html" class="nav-link">
-                <i class="fas fa-cog"></i> <span>الإعدادات</span>
-            </a>
-            <a href="profile.html" class="nav-link">
-                <i class="fas fa-id-badge"></i> <span>الملف الشخصي</span>
-            </a>
+            <ul class="nav-list">
+                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html" class="active"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+            </ul>
+
+            <div class="nav-section-title">الدعم</div>
+            <ul class="nav-list">
+                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+            </ul>
         </nav>
 
         <div class="sidebar-footer">
-            <a href="#" class="logout-btn" onclick="logout(); return false;">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>تسجيل الخروج</span>
+            <a href="#" class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i>
+                تسجيل الخروج
             </a>
         </div>
     </aside>
 
+    <!-- ================================================================ -->
+    <!-- SIDEBAR OVERLAY -->
+    <!-- ================================================================ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ================================================================ -->
     <main class="main-content" id="mainContent">
 
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-4">
-                <button class="sidebar-toggle-btn desktop-only" id="sidebarToggleDesktop" title="تبديل القائمة الجانبية">
-                    <i class="fas fa-bars"></i>
+        <!-- ================================================================ -->
+        <!-- NAVBAR -->
+        <!-- ================================================================ -->
+        <nav class="navbar-custom">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
                 </button>
-                <button class="sidebar-toggle-btn menu-toggle" id="sidebarToggleMobile" onclick="toggleSidebarMobile()" title="فتح القائمة">
-                    <i class="fas fa-bars"></i>
+
+                <div class="navbar-logo-container">
+                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
+                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
+                </div>
+
+                <h4 class="page-title" id="pageTitleText">
+                    المستخدمين
+                    <small>إدارة المستخدمين والصلاحيات</small>
+                </h4>
+            </div>
+
+            <div class="navbar-right">
+                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="notification-dot"></span>
                 </button>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">المستخدمين</h1>
-                    <p class="text-gray-500 text-sm">إدارة المستخدمين والصلاحيات</p>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-role" id="userRole">حراء للسياحة</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">م</div>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500">اليوم</span>
-                <span class="font-semibold text-gray-700" id="current-date"></span>
-            </div>
-        </div>
+        </nav>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8" id="stats-container">
-            <!-- سيتم تعبئتها بواسطة JavaScript -->
-        </div>
+        <!-- ================================================================ -->
+        <!-- DASHBOARD CONTENT -->
+        <!-- ================================================================ -->
+        <div class="dashboard-content">
 
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div class="flex flex-wrap items-center gap-3">
-                <span class="text-sm font-semibold text-gray-600">قائمة المستخدمين</span>
+            <!-- ===== PAGE HEADER ===== -->
+            <div class="page-header">
+                <div class="ph-left">
+                    <h2>إدارة المستخدمين</h2>
+                    <p>إضافة وتعديل وحذف المستخدمين وصلاحياتهم</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">جاري التحميل...</span>
+                </div>
             </div>
-            <div class="flex flex-wrap gap-3">
-                <button class="btn-action btn-outline" onclick="loadUsers()">
-                    <i class="fas fa-sync-alt"></i> تحديث
-                </button>
+
+            <!-- ===== STATS ===== -->
+            <div class="stats-grid">
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">إجمالي المستخدمين</div>
+                </div>
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-shield-fill"></i></span>
+                    <div class="stat-number" id="adminCount">0</div>
+                    <div class="stat-label">المدراء</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-person-check-fill"></i></span>
+                    <div class="stat-number" id="activeUsers">0</div>
+                    <div class="stat-label">نشط</div>
+                </div>
+                <div class="stat-card stat-red">
+                    <span class="stat-icon"><i class="bi bi-person-x-fill"></i></span>
+                    <div class="stat-number" id="inactiveUsers">0</div>
+                    <div class="stat-label">غير نشط</div>
+                </div>
+            </div>
+
+            <!-- ===== TOOLBAR ===== -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
                 <button class="btn-action btn-success" onclick="openUserModal()">
-                    <i class="fas fa-plus-circle"></i> مستخدم جديد
+                    <i class="bi bi-plus-circle-fill"></i> مستخدم جديد
+                </button>
+                <button class="btn-action btn-primary" onclick="loadUsers()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
                 </button>
             </div>
-        </div>
 
-        <div class="table-card">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="section-title"><i class="fas fa-users text-emerald-600 ml-2"></i>قائمة المستخدمين</h3>
-                <span class="text-sm text-gray-400" id="record-count">0 سجل</span>
+            <!-- ===== USERS TABLE ===== -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-people-fill"></i> قائمة المستخدمين</h5>
+                    <span id="recordCount" class="record-count">0 سجل</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>الدور</th>
+                                <th>الحالة</th>
+                                <th style="text-align:center;">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                    <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
+                                    جاري تحميل المستخدمين...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div style="max-height: 500px; overflow-y: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>الاسم</th>
-                            <th>البريد الإلكتروني</th>
-                            <th>الدور</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-body">
-                        <tr>
-                            <td colspan="6" class="text-center text-gray-400 py-8">جاري التحميل...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <div class="text-center text-gray-400 text-sm mt-8 border-t pt-6" id="footerText">
-            © 2026 حراء للسياحة — جميع الحقوق محفوظة
         </div>
     </main>
 
+    <!-- ================================================================ -->
     <!-- MODAL - إضافة / تعديل مستخدم -->
+    <!-- ================================================================ -->
     <div class="modal-overlay" id="userModalOverlay">
         <div class="modal-box">
-            <h3 id="userModalTitle"><i class="fas fa-user-plus"></i> إضافة مستخدم جديد</h3>
+            <h3 id="userModalTitle"><i class="bi bi-plus-circle-fill"></i> إضافة مستخدم جديد</h3>
             <form id="userForm" onsubmit="handleUserSubmit(event)">
                 <input type="hidden" id="editUserId" />
-                <label for="userFullName">الاسم الكامل</label>
+
+                <label for="userFullName">الاسم الكامل <span class="required">*</span></label>
                 <input type="text" id="userFullName" placeholder="الاسم الكامل" required />
-                <label for="userEmail">البريد الإلكتروني</label>
+
+                <label for="userEmail">البريد الإلكتروني <span class="required">*</span></label>
                 <input type="email" id="userEmail" placeholder="البريد الإلكتروني" required />
-                <label for="userPassword">كلمة المرور <span id="passwordLabel">*</span></label>
+
+                <label for="userPassword">كلمة المرور <span class="required" id="passwordRequired">*</span></label>
                 <input type="password" id="userPassword" placeholder="كلمة المرور" minlength="6" />
-                <label for="userRole">الدور</label>
+
+                <label for="userRole">الدور <span class="required">*</span></label>
                 <select id="userRole" required>
                     <option value="admin">مدير</option>
                     <option value="finance">المالية</option>
                     <option value="user">مستخدم</option>
                 </select>
+
                 <div class="modal-actions">
                     <button type="button" class="btn-action btn-outline" onclick="closeUserModal()">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="userSaveBtn">حفظ</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveUserBtn">حفظ</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script src="supabase.js"></script>
+    <!-- ================================================================ -->
+    <!-- FOOTER - حقوق النشر -->
+    <!-- ================================================================ -->
+    <footer class="footer-custom">
+        <div class="footer-content">
+            <div class="footer-right">
+                <span class="footer-brand">حراء <span>للسياحة</span></span>
+                <span class="footer-divider">|</span>
+                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+            </div>
+            <div class="footer-left">
+                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-divider">|</span>
+                <a href="support.html" class="footer-link">
+                    <i class="bi bi-headset"></i> الدعم الفني
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ================================================================ -->
     <script>
-
-        // ================================================================
-        // SIDEBAR TOGGLE
-        // ================================================================
-        var sidebar = document.getElementById('sidebar');
-        var mainContent = document.getElementById('mainContent');
-        var isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-
-        if (isCollapsed) {
-            sidebar.classList.add('collapsed');
-            mainContent.classList.add('expanded');
-        }
-
-        document.getElementById('sidebarToggleDesktop').addEventListener('click', function() {
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
-            var collapsed = sidebar.classList.contains('collapsed');
-            localStorage.setItem('sidebarCollapsed', collapsed);
-            var icon = this.querySelector('i');
-            icon.className = collapsed ? 'fas fa-chevron-right' : 'fas fa-bars';
-        });
-
-        function toggleSidebarMobile() {
-            sidebar.classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
-        }
-
-        function closeSidebarMobile() {
-            sidebar.classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        // ================================================================
-        // DATE & SYSTEM NAME
-        // ================================================================
-        function updateDate() {
-            var now = new Date();
-            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date').textContent = now.toLocaleDateString('ar-EG', options);
-        }
-        updateDate();
-
-        function applySystemName() {
-            var systemName = 'حراء للسياحة';
-            try { systemName = Supabase.getSystemName() || systemName; } catch (e) {}
-            document.title = 'المستخدمين - ' + systemName;
-            var brand = document.getElementById('sidebarBrandText');
-            if (brand) brand.innerHTML = '🕋 ' + systemName;
-            var footer = document.getElementById('footerText');
-            if (footer) footer.textContent = '© ' + new Date().getFullYear() + ' ' + systemName + ' — جميع الحقوق محفوظة';
-        }
-        applySystemName();
-
         // ================================================================
         // STATE
         // ================================================================
         var usersList = [];
         var currentUser = null;
+        var systemCurrency = 'SAR';
+        var currencySymbol = 'ر.س';
         var isLoading = false;
 
         // ================================================================
-        // INIT
+        // DOM READY
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
+            if (!Supabase.initSystem()) return;
+
+            var settings = Supabase.getSystemSettings();
+            systemCurrency = settings.currency || 'SAR';
+            currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+
             currentUser = Supabase.getCurrentUser();
             if (!currentUser) {
                 window.location.href = 'login.html';
@@ -652,9 +1733,68 @@
                 return;
             }
 
+            updateUserUI();
+            applySystemName();
+            Supabase.applySystemLogo();
+
+            initSidebar();
+            initDarkMode();
+            initRefresh();
+            initNotifications();
+            initKeyboardShortcuts();
+            updateDate();
             loadUsers();
             setInterval(loadUsers, 60000);
         });
+
+        // ================================================================
+        // APPLY SYSTEM NAME
+        // ================================================================
+        function applySystemName() {
+            var systemName = Supabase.getSystemName();
+            document.title = 'المستخدمين - ' + systemName;
+
+            var brandText = document.getElementById('sidebarBrandText');
+            if (brandText) {
+                brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+            }
+
+            var navbarText = document.getElementById('navbarBrandText');
+            if (navbarText) {
+                navbarText.innerHTML = systemName;
+            }
+
+            var userRole = document.getElementById('userRole');
+            if (userRole) {
+                userRole.textContent = systemName;
+            }
+        }
+
+        // ================================================================
+        // UPDATE USER UI
+        // ================================================================
+        function updateUserUI() {
+            if (!currentUser) return;
+
+            var fullName = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
+            var initial = fullName.charAt(0).toUpperCase();
+
+            document.getElementById('userName').textContent = fullName;
+            document.getElementById('userAvatar').textContent = initial;
+            document.getElementById('userRole').textContent = Supabase.getSystemName();
+        }
+
+        // ================================================================
+        // DATE DISPLAY
+        // ================================================================
+        function updateDate() {
+            var now = new Date();
+            var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            var dateElement = document.getElementById('headerDate');
+            if (dateElement) {
+                dateElement.textContent = now.toLocaleDateString('ar-SA', options);
+            }
+        }
 
         // ================================================================
         // LOAD USERS
@@ -663,13 +1803,26 @@
             if (isLoading) return;
             isLoading = true;
 
-            var tbody = document.getElementById('users-body');
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-8">جاري التحميل...</td></tr>';
+            var tbody = document.getElementById('usersBody');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:20px;color:var(--text-tertiary);">
+                            <div class="shimmer" style="height:28px;max-width:160px;margin:0 auto;"></div>
+                            <span style="display:block;margin-top:6px;font-size:12px;">جاري التحميل...</span>
+                        </td>
+                    </tr>
+                `;
+            }
 
             try {
                 var result = await Supabase.getUsers();
-                usersList = result || [];
 
+                if (result && result.error) {
+                    throw new Error(result.error.message || 'فشل جلب المستخدمين');
+                }
+
+                usersList = result || [];
                 renderTable();
                 renderStats();
 
@@ -688,22 +1841,25 @@
         // RENDER TABLE
         // ================================================================
         function renderTable() {
-            var tbody = document.getElementById('users-body');
-            var count = document.getElementById('record-count');
+            var tbody = document.getElementById('usersBody');
+            var count = document.getElementById('recordCount');
+
+            if (!tbody) return;
 
             if (!usersList || usersList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-400 py-8">لا يوجد مستخدمين</td></tr>';
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:20px;color:var(--text-tertiary);">
+                            <i class="bi bi-people" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
+                            لا يوجد مستخدمين
+                        </td>
+                    </tr>
+                `;
                 if (count) count.textContent = '0 سجل';
                 return;
             }
 
             if (count) count.textContent = usersList.length + ' سجل';
-
-            var roleLabels = {
-                'admin': { text: 'مدير', class: 'badge-admin' },
-                'finance': { text: 'المالية', class: 'badge-finance' },
-                'user': { text: 'مستخدم', class: 'badge-user' }
-            };
 
             var html = '';
 
@@ -715,23 +1871,36 @@
                 var role = u['role'] || 'user';
                 var isActive = u['is_active'] !== false;
 
+                var roleLabels = {
+                    'admin': { text: 'مدير', class: 'badge-admin' },
+                    'finance': { text: 'المالية', class: 'badge-finance' },
+                    'user': { text: 'مستخدم', class: 'badge-user' }
+                };
+
                 var roleInfo = roleLabels[role] || roleLabels['user'];
-                var statusClass = isActive ? 'badge-active' : 'badge-inactive';
+                var statusClass = isActive ? 'badge-admin' : 'badge-inactive';
                 var statusText = isActive ? 'نشط' : 'غير نشط';
 
                 var isCurrentUser = (currentUser && currentUser.id === id);
+                var deleteDisabled = isCurrentUser ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : '';
 
-                html += '<tr>' +
-                    '<td>' + (i + 1) + '</td>' +
-                    '<td><strong>' + fullName + '</strong></td>' +
-                    '<td>' + email + '</td>' +
-                    '<td><span class="status-badge ' + roleInfo.class + '">' + roleInfo.text + '</span></td>' +
-                    '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>' +
-                    '<td>' +
-                    '<button class="text-emerald-600 hover:text-emerald-800 mx-1" onclick="editUser(\'' + id + '\')" title="تعديل"><i class="fas fa-edit"></i></button>' +
-                    (isCurrentUser ? '' : '<button class="text-red-600 hover:text-red-800 mx-1" onclick="deleteUser(\'' + id + '\', \'' + fullName + '\')" title="حذف"><i class="fas fa-trash"></i></button>') +
-                    '</td>' +
-                    '</tr>';
+                html += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><strong>${fullName}</strong></td>
+                        <td>${email}</td>
+                        <td><span class="badge-custom ${roleInfo.class}">${roleInfo.text}</span></td>
+                        <td><span class="badge-custom ${statusClass}">${statusText}</span></td>
+                        <td style="text-align:center;white-space:nowrap;">
+                            <button class="btn-icon btn-icon-edit" onclick="editUser('${id}')" title="تعديل">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button class="btn-icon btn-icon-delete" onclick="deleteUser('${id}')" title="حذف" ${deleteDisabled}>
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
             }
 
             tbody.innerHTML = html;
@@ -753,56 +1922,51 @@
                 else inactiveCount++;
             }
 
-            var stats = [
-                { icon: 'fa-users', label: 'إجمالي المستخدمين', value: total, color: 'bg-blue-50 text-blue-600' },
-                { icon: 'fa-shield-alt', label: 'المدراء', value: adminCount, color: 'bg-purple-50 text-purple-600' },
-                { icon: 'fa-check-circle', label: 'نشط', value: activeCount, color: 'bg-emerald-50 text-emerald-600' },
-                { icon: 'fa-times-circle', label: 'غير نشط', value: inactiveCount, color: 'bg-red-50 text-red-600' }
-            ];
-
-            var container = document.getElementById('stats-container');
-            container.innerHTML = stats.map(function(s) {
-                return '<div class="stat-card flex items-center gap-4">' +
-                    '<div class="icon ' + s.color + '"><i class="fas ' + s.icon + '"></i></div>' +
-                    '<div><div class="number">' + s.value + '</div><div class="label">' + s.label + '</div></div>' +
-                    '</div>';
-            }).join('');
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('adminCount').textContent = adminCount;
+            document.getElementById('activeUsers').textContent = activeCount;
+            document.getElementById('inactiveUsers').textContent = inactiveCount;
         }
 
         // ================================================================
         // USER MODAL
         // ================================================================
         function openUserModal() {
-            document.getElementById('userModalOverlay').classList.add('active');
-            document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-user-plus"></i> إضافة مستخدم جديد';
+            document.getElementById('userModalTitle').innerHTML = '<i class="bi bi-plus-circle-fill"></i> إضافة مستخدم جديد';
             document.getElementById('editUserId').value = '';
             document.getElementById('userFullName').value = '';
             document.getElementById('userEmail').value = '';
             document.getElementById('userPassword').value = '';
             document.getElementById('userPassword').required = true;
-            document.getElementById('passwordLabel').textContent = '*';
+            document.getElementById('passwordRequired').textContent = '*';
             document.getElementById('userRole').value = 'user';
-            document.getElementById('userSaveBtn').textContent = 'حفظ';
+            document.getElementById('saveUserBtn').textContent = 'حفظ';
+
+            document.getElementById('userModalOverlay').classList.add('active');
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModalOverlay').classList.remove('active');
         }
 
         function editUser(id) {
             var user = usersList.find(function(u) { return String(u['id']) === String(id); });
-            if (!user) { showToast('⚠️ المستخدم غير موجود', 'warning'); return; }
+            if (!user) {
+                showToast('⚠️ المستخدم غير موجود', 'warning');
+                return;
+            }
 
-            document.getElementById('userModalOverlay').classList.add('active');
-            document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-edit"></i> تعديل المستخدم';
+            document.getElementById('userModalTitle').innerHTML = '<i class="bi bi-pencil-fill"></i> تعديل المستخدم';
             document.getElementById('editUserId').value = id;
             document.getElementById('userFullName').value = user['full_name'] || '';
             document.getElementById('userEmail').value = user['email'] || '';
             document.getElementById('userPassword').value = '';
             document.getElementById('userPassword').required = false;
-            document.getElementById('passwordLabel').textContent = '(اختياري)';
+            document.getElementById('passwordRequired').textContent = '(اختياري)';
             document.getElementById('userRole').value = user['role'] || 'user';
-            document.getElementById('userSaveBtn').textContent = 'تحديث';
-        }
+            document.getElementById('saveUserBtn').textContent = 'تحديث';
 
-        function closeUserModal() {
-            document.getElementById('userModalOverlay').classList.remove('active');
+            document.getElementById('userModalOverlay').classList.add('active');
         }
 
         // ================================================================
@@ -817,8 +1981,15 @@
             var password = document.getElementById('userPassword').value;
             var role = document.getElementById('userRole').value;
 
-            if (!fullName) { showToast('⚠️ الرجاء إدخال الاسم الكامل', 'warning'); return; }
-            if (!email) { showToast('⚠️ الرجاء إدخال البريد الإلكتروني', 'warning'); return; }
+            if (!fullName) {
+                showToast('⚠️ الرجاء إدخال الاسم الكامل', 'warning');
+                return;
+            }
+
+            if (!email) {
+                showToast('⚠️ الرجاء إدخال البريد الإلكتروني', 'warning');
+                return;
+            }
 
             var isEdit = id && id.length > 0;
 
@@ -832,59 +2003,37 @@
                 return;
             }
 
-            var saveBtn = document.getElementById('userSaveBtn');
+            var saveBtn = document.getElementById('saveUserBtn');
             saveBtn.disabled = true;
             saveBtn.textContent = 'جاري الحفظ...';
 
             try {
                 if (isEdit) {
-                    // تحديث المستخدم عبر Supabase Auth Admin API
+                    // تحديث المستخدم
                     var updateData = {
-                        data: {
-                            full_name: fullName,
-                            role: role
-                        }
+                        full_name: fullName,
+                        role: role,
+                        is_active: true
                     };
+
                     if (password) {
                         updateData.password = password;
                     }
 
-                    var response = await fetch(Supabase.CONFIG.URL + '/auth/v1/admin/users/' + id, {
-                        method: 'PUT',
-                        headers: {
-                            'apikey': Supabase.CONFIG.KEY,
-                            'Authorization': 'Bearer ' + Supabase.getToken(),
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(updateData)
-                    });
+                    var result = await Supabase.updateUser(id, updateData);
 
-                    if (!response.ok) {
-                        throw new Error('فشل تحديث المستخدم');
+                    if (result && result.error) {
+                        throw new Error(result.error.message || 'فشل تحديث المستخدم');
                     }
 
                     showToast('✅ تم تحديث المستخدم بنجاح', 'success');
-                } else {
-                    // إضافة مستخدم جديد عبر Supabase Auth
-                    var response = await fetch(Supabase.CONFIG.URL + '/auth/v1/signup', {
-                        method: 'POST',
-                        headers: {
-                            'apikey': Supabase.CONFIG.KEY,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            email: email,
-                            password: password,
-                            data: {
-                                full_name: fullName,
-                                role: role
-                            }
-                        })
-                    });
 
-                    if (!response.ok) {
-                        var errorData = await response.json();
-                        throw new Error(errorData.error_description || 'فشل إضافة المستخدم');
+                } else {
+                    // إضافة مستخدم جديد
+                    var result = await Supabase.addUser(email, password, fullName, role);
+
+                    if (result && result.error) {
+                        throw new Error(result.error.message || 'فشل إضافة المستخدم');
                     }
 
                     showToast('✅ تمت إضافة المستخدم بنجاح', 'success');
@@ -892,8 +2041,10 @@
 
                 closeUserModal();
                 loadUsers();
+
             } catch (error) {
-                showToast('❌ فشل العملية: ' + error.message, 'error');
+                console.error('❌ خطأ:', error);
+                showToast('❌ ' + (error.message || 'فشل العملية'), 'error');
             }
 
             saveBtn.disabled = false;
@@ -903,103 +2054,225 @@
         // ================================================================
         // DELETE USER
         // ================================================================
-        function deleteUser(id, name) {
-            if (!confirm('هل أنت متأكد من حذف المستخدم "' + name + '"؟')) return;
+        function deleteUser(id) {
+            var user = usersList.find(function(u) { return String(u['id']) === String(id); });
+            if (!user) return;
+
+            if (currentUser && currentUser.id === id) {
+                showToast('⚠️ لا يمكن حذف حسابك الحالي', 'warning');
+                return;
+            }
+
+            if (!confirm('هل أنت متأكد من حذف المستخدم "' + (user['full_name'] || user['email']) + '"؟')) return;
 
             showToast('⏳ جاري حذف المستخدم...', 'info');
 
-            fetch(Supabase.CONFIG.URL + '/auth/v1/admin/users/' + id, {
-                method: 'DELETE',
-                headers: {
-                    'apikey': Supabase.CONFIG.KEY,
-                    'Authorization': 'Bearer ' + Supabase.getToken()
+            Supabase.deleteUser(id)
+                .then(function(result) {
+                    if (result && result.error) {
+                        throw new Error(result.error.message || 'فشل حذف المستخدم');
+                    }
+                    showToast('✅ تم حذف المستخدم بنجاح', 'success');
+                    loadUsers();
+                })
+                .catch(function(error) {
+                    showToast('❌ فشل حذف المستخدم: ' + error.message, 'error');
+                });
+        }
+
+        // ================================================================
+        // SIDEBAR TOGGLE
+        // ================================================================
+        function initSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var toggle = document.getElementById('sidebarToggle');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
+
+            var MOBILE_BREAKPOINT = 1200;
+
+            toggle.addEventListener('click', function() {
+                if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                    var isOpen = sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = isOpen ? 'hidden' : '';
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
                 }
-            })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('فشل حذف المستخدم');
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeUserModal();
+                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
                 }
-                showToast('✅ تم حذف المستخدم بنجاح', 'success');
-                loadUsers();
-            })
-            .catch(function(error) {
-                showToast('❌ فشل حذف المستخدم: ' + error.message, 'error');
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > MOBILE_BREAKPOINT) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    main.classList.remove('expanded');
+                }
             });
         }
 
         // ================================================================
-        // TOAST
+        // DARK MODE
         // ================================================================
-        function showToast(message, type) {
-            var existing = document.querySelectorAll('.toast-notification');
-            existing.forEach(function(t) { t.remove(); });
+        function initDarkMode() {
+            var toggle = document.getElementById('darkModeToggle');
+            var icon = toggle.querySelector('i');
+            var savedMode = localStorage.getItem('darkMode');
 
-            var toast = document.createElement('div');
-            toast.className = 'toast-notification';
+            if (savedMode === 'true') {
+                document.body.classList.add('dark-mode');
+                if (icon) icon.className = 'bi bi-sun-fill';
+            }
 
-            var iconMap = {
-                'success': 'fa-check-circle',
-                'error': 'fa-times-circle',
-                'warning': 'fa-exclamation-triangle',
-                'info': 'fa-info-circle'
-            };
-
-            var icon = iconMap[type] || 'fa-info-circle';
-            toast.innerHTML = '<span class="toast-icon"><i class="fas ' + icon + '"></i></span> <span>' + message + '</span>';
-
-            if (type === 'success') toast.classList.add('toast-success');
-            if (type === 'error') toast.classList.add('toast-error');
-            if (type === 'warning') toast.classList.add('toast-warning');
-
-            document.body.appendChild(toast);
-
-            setTimeout(function() {
-                toast.style.animation = 'fadeOut 0.3s ease forwards';
-                setTimeout(function() {
-                    if (toast.parentNode) toast.parentNode.removeChild(toast);
-                }, 300);
-            }, 3000);
+            toggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                var isDarkMode = document.body.classList.contains('dark-mode');
+                if (icon) {
+                    icon.className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                }
+                localStorage.setItem('darkMode', isDarkMode);
+            });
         }
 
         // ================================================================
-        // LOGOUT
+        // REFRESH BUTTON
         // ================================================================
-        function logout() {
-            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                localStorage.removeItem('supabase_session');
-                localStorage.removeItem('darkMode');
-                window.location.href = 'login.html';
+        function initRefresh() {
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                loadUsers();
+                Supabase.applySystemLogo();
+                showToast('🔄 جاري تحديث البيانات...', 'info');
+            });
+        }
+
+        // ================================================================
+        // NOTIFICATIONS
+        // ================================================================
+        function initNotifications() {
+            var notifBtn = document.getElementById('notifBtn');
+            if (notifBtn) {
+                notifBtn.addEventListener('click', function() {
+                    var messages = [
+                        '👥 تم إضافة مستخدم جديد',
+                        '🔑 تم تغيير صلاحيات مستخدم',
+                        '📊 عدد المستخدمين النشطين: ' + document.getElementById('activeUsers').textContent,
+                        '✅ تم تحديث بيانات المستخدمين'
+                    ];
+                    var random = messages[Math.floor(Math.random() * messages.length)];
+                    showToast(random, 'info');
+                });
             }
         }
 
         // ================================================================
         // KEYBOARD SHORTCUTS
         // ================================================================
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'b') {
-                e.preventDefault();
-                if (window.innerWidth <= 1024) {
-                    toggleSidebarMobile();
-                } else {
-                    document.getElementById('sidebarToggleDesktop').click();
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'b') {
+                    e.preventDefault();
+                    var toggle = document.getElementById('sidebarToggle');
+                    if (toggle) toggle.click();
                 }
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    loadUsers();
+                    showToast('🔄 جاري تحديث البيانات...', 'info');
+                }
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    var toggle = document.getElementById('darkModeToggle');
+                    if (toggle) toggle.click();
+                }
+                if (e.ctrlKey && e.key === 'l') {
+                    e.preventDefault();
+                    logout();
+                }
+            });
+        }
+
+        // ================================================================
+        // LOGOUT
+        // ================================================================
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('darkMode');
+            window.location.href = 'login.html';
+        }
+
+        // ================================================================
+        // TOAST
+        // ================================================================
+        function showToast(message, type) {
+            var existingToasts = document.querySelectorAll('.toast-notification');
+            for (var i = 0; i < existingToasts.length; i++) {
+                existingToasts[i].remove();
             }
-            if (e.ctrlKey && e.key === 'r') {
-                e.preventDefault();
-                loadUsers();
-                showToast('🔄 جاري تحديث البيانات...', 'info');
+
+            var toast = document.createElement('div');
+            toast.className = 'toast-notification';
+
+            var iconClass = 'bi-info-circle-fill';
+            var toastClass = '';
+
+            if (type === 'success') {
+                iconClass = 'bi-check-circle-fill';
+                toastClass = 'toast-success';
+            } else if (type === 'error') {
+                iconClass = 'bi-x-circle-fill';
+                toastClass = 'toast-error';
+            } else if (type === 'warning') {
+                iconClass = 'bi-exclamation-triangle-fill';
+                toastClass = 'toast-warning';
             }
-            if (e.key === 'Escape') {
-                closeUserModal();
-                closeSidebarMobile();
+
+            toast.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
+                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
+                </div>
+            `;
+
+            if (toastClass) {
+                toast.classList.add(toastClass);
             }
-        });
+
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(function() {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
 
         // ================================================================
         // EXPOSE
         // ================================================================
-        window.toggleSidebarMobile = toggleSidebarMobile;
-        window.closeSidebarMobile = closeSidebarMobile;
         window.openUserModal = openUserModal;
         window.closeUserModal = closeUserModal;
         window.editUser = editUser;
@@ -1009,7 +2282,8 @@
         window.loadUsers = loadUsers;
 
         console.log('👥 نظام المستخدمين - حراء للسياحة');
-        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث)');
+        console.log('👤 المستخدم الحالي:', currentUser ? currentUser.email : 'غير مسجل');
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
         console.log('✅ النظام جاهز للعمل');
     </script>
 

@@ -3,400 +3,916 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>البنوك - حراء للسياحة</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
-    <style>
-        * { font-family: 'Cairo', sans-serif; }
-        body { background: #f0f4f8; }
+    <title id="pageTitle">البنوك - حراء للسياحة</title>
 
-        /* ===== الشريط الجانبي ===== */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            position: fixed;
-            right: 0;
-            top: 0;
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-            overflow-y: auto;
-            z-index: 50;
-            transition: transform 0.3s ease;
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- ============================================================ -->
+    <!-- SUPABASE.JS - الملف المركزي -->
+    <!-- ============================================================ -->
+    <script src="supabase.js"></script>
+
+    <style>
+        /* ================================================================
+           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           ================================================================ */
+        :root {
+            --primary: #0e1c2e;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
+            --accent-tint: rgba(156, 122, 60, 0.08);
+            --success: #1c7a4e;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
+            --surface: #ffffff;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-full: 9999px;
+            --t-base: 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
         }
-        .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 8px; }
+
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ================================================================
+           SIDEBAR
+           ================================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary);
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+        }
 
         .sidebar.collapsed {
-            transform: translateX(calc(100% - 60px));
-        }
-        .sidebar.collapsed .logo-area h1 { font-size: 16px; }
-        .sidebar.collapsed .logo-area span { display: none; }
-        .sidebar.collapsed .nav-link span { display: none; }
-        .sidebar.collapsed .nav-link .badge { display: none; }
-        .sidebar.collapsed .nav-link i { font-size: 20px; width: 30px; }
-        .sidebar.collapsed .nav-link { justify-content: center; padding: 12px 8px; }
-        .sidebar.collapsed .nav-section-title { display: none; }
-        .sidebar.collapsed .logout-btn span { display: none; }
-        .sidebar.collapsed .logout-btn { justify-content: center; }
-        .sidebar.collapsed .sidebar-footer { padding: 12px 8px; }
-
-        .sidebar.open {
-            transform: translateX(0);
+            transform: translateX(calc(var(--sidebar-width) + 20px));
         }
 
-        .sidebar .logo-area {
-            padding: 24px 20px;
+        .sidebar-brand {
+            padding: 20px 20px 16px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .sidebar .logo-area h1 {
-            font-size: 22px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #0d9488, #14b8a6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .sidebar .logo-area span {
-            font-size: 13px;
-            color: rgba(255,255,255,0.4);
-            display: block;
-            margin-top: 2px;
+            flex-shrink: 0;
         }
 
-        .sidebar .nav-link {
+        .brand-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            margin: 4px 12px;
-            border-radius: 12px;
-            color: rgba(255,255,255,0.6);
-            transition: all 0.2s;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        .sidebar .nav-link i { width: 22px; font-size: 16px; }
-        .sidebar .nav-link:hover {
-            background: rgba(255,255,255,0.06);
-            color: #fff;
-        }
-        .sidebar .nav-link.active {
-            background: rgba(13, 148, 136, 0.2);
-            color: #14b8a6;
-        }
-        .sidebar .nav-link .badge {
-            margin-right: auto;
-            background: rgba(255,255,255,0.1);
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: rgba(255,255,255,0.6);
+            gap: 10px;
         }
 
-        .sidebar .nav-section-title {
-            font-size: 11px;
+        .brand-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            display: none;
+        }
+
+        .brand-logo-img.visible {
+            display: block;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-inverse);
+            flex-shrink: 0;
+        }
+
+        .brand-mark.hidden {
+            display: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-inverse);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            color: var(--accent-light);
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 10px 8px;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 9px;
             font-weight: 700;
             color: rgba(255,255,255,0.2);
-            padding: 16px 16px 6px;
-            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 12px 6px;
+            font-family: var(--font-display);
         }
 
-        .sidebar .sidebar-footer {
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 0;
+        }
+
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.5);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: var(--t-base);
+            position: relative;
+        }
+
+        .nav-list a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-inverse);
+        }
+
+        .nav-list a.active {
+            background: rgba(139, 122, 75, 0.12);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        .nav-list a.active i {
+            color: var(--accent-light);
+        }
+
+        .nav-list a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .nav-list a i {
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-badge {
+            margin-right: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(139, 122, 75, 0.18);
+            color: var(--accent-light);
+            border: 1px solid rgba(139, 122, 75, 0.15);
+            font-family: var(--font-display);
+        }
+
+        .sidebar-footer {
             padding: 12px 16px 16px;
             border-top: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
         }
 
         .logout-btn {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 8px 14px;
-            border-radius: 10px;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
             color: rgba(255,255,255,0.3);
-            transition: all 0.25s ease;
-            font-size: 14px;
+            transition: var(--t-base);
+            font-size: 12.5px;
             font-weight: 500;
-            text-decoration: none;
         }
-        .logout-btn:hover { background: rgba(184, 74, 62, 0.15); color: #e8a09a; }
-        .logout-btn i { font-size: 16px; width: 22px; text-align: center; }
+
+        .logout-btn:hover {
+            background: rgba(184, 74, 62, 0.12);
+            color: #e8a09a;
+        }
+
+        .logout-btn i {
+            font-size: 14px;
+        }
 
         .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 45;
-            backdrop-filter: blur(2px);
+            background: rgba(0,0,0,0.35);
+            z-index: 1045;
         }
-        .sidebar-overlay.active { display: block; }
 
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
         .main-content {
-            margin-right: 260px;
-            padding: 24px 32px;
+            margin-right: var(--sidebar-width);
             min-height: 100vh;
             transition: margin-right 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
-        .main-content.expanded { margin-right: 60px; }
 
-        .hamburger-btn {
-            display: flex !important;
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* ================================================================
+           NAVBAR
+           ================================================================ */
+        .navbar-custom {
+            background: var(--bg);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
             align-items: center;
             justify-content: center;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #1e293b;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
-            width: 44px;
-            height: 44px;
         }
-        .hamburger-btn:hover {
-            background: rgba(0,0,0,0.05);
+
+        .sidebar-toggle:hover {
+            background: var(--surface);
+            border-color: var(--text-tertiary);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            margin-right: 6px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 4px 3px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: var(--font-display);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* ================================================================
+           DASHBOARD CONTENT
+           ================================================================ */
+        .dashboard-content {
+            padding: 20px 24px 30px;
+            flex: 1;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           STAT CARDS
+           ================================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
         }
 
         .stat-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 22px 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.04);
-            transition: all 0.25s;
-            position: relative;
-            overflow: hidden;
-        }
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-        }
-        .stat-card .icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-        .stat-card .number {
-            font-size: 28px;
-            font-weight: 800;
-            color: #0f172a;
-            line-height: 1.2;
-        }
-        .stat-card .label {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        .banks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .bank-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 20px 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.04);
-            transition: all 0.25s;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            transition: var(--t-base);
             cursor: pointer;
         }
-        .bank-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            border-color: #0d9488;
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
         }
-        .bank-card .bank-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: #f0fdfa;
-            color: #0d9488;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            margin-bottom: 10px;
+
+        .stat-card .stat-number {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.2;
         }
-        .bank-card .bank-name {
+
+        .stat-card .stat-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .stat-card .stat-icon {
+            float: left;
             font-size: 18px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-        .bank-card .bank-account {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 2px;
-        }
-        .bank-card .bank-branch {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 10px;
-        }
-        .bank-card .bank-balance {
-            font-size: 24px;
-            font-weight: 800;
-            color: #0d9488;
-            margin-bottom: 8px;
-        }
-        .bank-card .bank-stats {
-            display: flex;
-            gap: 16px;
-            padding-top: 10px;
-            border-top: 1px solid #f1f5f9;
-            font-size: 12px;
-            color: #64748b;
-        }
-        .bank-card .bank-stats .income { color: #16a34a; }
-        .bank-card .bank-stats .expense { color: #dc2626; }
-        .bank-card .bank-actions {
-            display: flex;
-            gap: 6px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-        .bank-card .click-hint {
-            font-size: 11px;
-            color: #94a3b8;
-            text-align: center;
-            margin-top: 10px;
+            color: var(--accent-light);
+            opacity: 0.5;
         }
 
-        .table-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 20px 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.04);
+        .stat-blue .stat-number {
+            color: var(--info);
         }
-        .table-card table {
-            width: 100%;
-            border-collapse: collapse;
+        .stat-green .stat-number {
+            color: var(--success);
         }
-        .table-card th {
-            text-align: right;
-            padding: 12px 8px;
-            font-weight: 600;
-            font-size: 13px;
-            color: #64748b;
-            border-bottom: 2px solid #f1f5f9;
+        .stat-gold .stat-number {
+            color: var(--accent);
         }
-        .table-card td {
-            padding: 14px 8px;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 14px;
-            color: #1e293b;
+        .stat-red .stat-number {
+            color: var(--danger);
         }
-        .table-card tr:last-child td { border-bottom: none; }
-        .table-card tr:hover td { background: #f8fafc; }
 
-        .status-badge {
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .status-active { background: #dcfce7; color: #166534; }
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-completed { background: #dbeafe; color: #1e40af; }
-        .status-cancelled { background: #fee2e2; color: #991b1b; }
-
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
         .btn-action {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 10px;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
             font-weight: 600;
-            font-size: 13px;
-            transition: all 0.25s;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
+            font-size: 12px;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+            font-family: var(--font-display);
         }
-        .btn-primary { background: #0d9488; color: #fff; }
-        .btn-primary:hover { background: #0f766e; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(13,148,136,0.3); }
-        .btn-success { background: #16a34a; color: #fff; }
-        .btn-success:hover { background: #15803d; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(22,163,74,0.3); }
-        .btn-danger { background: #dc2626; color: #fff; }
-        .btn-danger:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(220,38,38,0.3); }
-        .btn-outline { background: transparent; border: 1px solid #e2e8f0; color: #64748b; }
-        .btn-outline:hover { border-color: #0d9488; color: #0d9488; background: #f0fdfa; }
 
-        .section-title {
-            font-size: 18px;
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--text-inverse);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #166a4a;
+            border-color: #166a4a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a03d32;
+            border-color: #a03d32;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: var(--accent-tint);
+        }
+
+        .btn-sm {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            font-size: 12px;
+            transition: var(--t-base);
+        }
+
+        .btn-icon-edit {
+            background: var(--info-bg);
+            color: var(--info);
+            border-color: var(--border);
+        }
+
+        .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-icon-delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: var(--border);
+        }
+
+        .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ================================================================
+           PANEL
+           ================================================================ */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 12px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
         }
 
+        .panel-title i {
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .record-count {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* ================================================================
+           BANK CARDS
+           ================================================================ */
+        .banks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .bank-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
+            transition: var(--t-base);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .bank-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+        }
+
+        .bank-card .bank-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+            background: var(--accent-tint);
+            color: var(--accent);
+        }
+
+        .bank-card .bank-name {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .bank-card .bank-account {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 2px;
+        }
+
+        .bank-card .bank-branch {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 10px;
+        }
+
+        .bank-card .bank-balance {
+            font-size: 22px;
+            font-weight: 800;
+            font-family: var(--font-display);
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .bank-card .bank-stats {
+            display: flex;
+            gap: 14px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-light);
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .bank-card .bank-stats .income {
+            color: var(--success);
+        }
+
+        .bank-card .bank-stats .expense {
+            color: var(--danger);
+        }
+
+        .bank-card .bank-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .bank-card .click-hint {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-align: center;
+            margin-top: 8px;
+            opacity: 0.6;
+        }
+
+        .bank-card .click-hint i {
+            font-size: 12px;
+        }
+
+        /* ================================================================
+           MODAL - إضافة / تعديل بنك
+           ================================================================ */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 100;
+            background: rgba(0,0,0,0.4);
+            z-index: 1060;
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(4px);
         }
-        .modal-overlay.active { display: flex; }
+
+        .modal-overlay.active {
+            display: flex;
+        }
 
         .modal-box {
-            background: #fff;
-            border-radius: 16px;
-            padding: 32px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
             max-width: 520px;
             width: 92%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-lg);
             animation: modalFadeIn 0.3s ease;
         }
+
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .modal-box h3 {
-            font-size: 20px;
+            font-family: var(--font-display);
+            font-size: 17px;
             font-weight: 800;
-            color: #0f172a;
+            color: var(--text);
             margin-bottom: 16px;
         }
-        .modal-box h3 i { color: #0d9488; margin-left: 8px; }
+
+        .modal-box h3 i {
+            color: var(--accent);
+            margin-left: 8px;
+        }
+
         .modal-box label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: #334155;
+            color: var(--text-secondary);
             margin-bottom: 4px;
         }
-        .modal-box input, .modal-box select {
+
+        .modal-box select,
+        .modal-box input {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 14px;
-            margin-bottom: 14px;
-            transition: all 0.25s;
-            background: #f8fafc;
-            color: #0f172a;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            margin-bottom: 12px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
         }
-        .modal-box input:focus, .modal-box select:focus {
+
+        .modal-box select:focus,
+        .modal-box input:focus {
             outline: none;
-            border-color: #0d9488;
-            box-shadow: 0 0 0 3px rgba(13,148,136,0.15);
-            background: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
         }
+
         .modal-actions {
             display: flex;
             gap: 10px;
@@ -404,240 +920,1023 @@
             justify-content: flex-end;
         }
 
+        /* ================================================================
+           MODAL - تأكيد الحذف (مخصص) - مع Z-Index أعلى
+           ================================================================ */
+        #confirmModalOverlay {
+            z-index: 1070 !important;
+        }
+
+        #confirmModalOverlay .modal-box {
+            z-index: 1071;
+            position: relative;
+        }
+
+        #confirmModalOverlay .modal-box h3 i {
+            color: var(--danger);
+        }
+
+        #confirmModalOverlay .modal-box p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* ================================================================
+           MODAL - حركات البنك (نافذة كبيرة)
+           ================================================================ */
+        .modal-transactions {
+            max-width: 800px;
+            width: 95%;
+        }
+
+        .modal-transactions .bank-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .modal-transactions .bank-header .bank-icon-large {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            background: var(--accent-tint);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .modal-transactions .bank-header .bank-info h4 {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .modal-transactions .bank-header .bank-info p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .modal-transactions .bank-header .bank-balance-large {
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .modal-transactions .bank-header .bank-balance-large .label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+
+        .modal-transactions .bank-header .bank-balance-large .amount {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+            font-family: var(--font-display);
+        }
+
+        .modal-transactions .transactions-table-wrap {
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .modal-transactions .transactions-table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+
+        .modal-transactions .transactions-table-wrap table thead {
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .modal-transactions .transactions-table-wrap table th {
+            padding: 8px 12px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        .modal-transactions .transactions-table-wrap table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+        .modal-transactions .transactions-table-wrap table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .modal-transactions .transactions-table-wrap table tr:hover td {
+            background: var(--surface-alt);
+        }
+
+        .modal-transactions .empty-transactions {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-tertiary);
+        }
+
+        .modal-transactions .empty-transactions i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.3;
+        }
+
+        .modal-transactions .modal-actions-custom {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: flex-end;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+
+        /* ================================================================
+           BADGE
+           ================================================================ */
+        .badge-custom {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+
+        .badge-income {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-expense {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .amount-income {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .amount-expense {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        /* ================================================================
+           TOAST
+           ================================================================ */
         .toast-notification {
             position: fixed;
-            bottom: 24px;
-            left: 24px;
-            background: #fff;
-            padding: 14px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            border-right: 4px solid #0d9488;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
             z-index: 9999;
-            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            max-width: 400px;
-            font-size: 13px;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
+        }
+
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
+           ================================================================ */
+        .footer-custom {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 12px 24px;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            margin-top: auto;
+        }
+
+        .footer-custom .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-custom .footer-right {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        .toast-notification.toast-success { border-right-color: #16a34a; }
-        .toast-notification.toast-error { border-right-color: #dc2626; }
-        .toast-notification.toast-warning { border-right-color: #f59e0b; }
-        .toast-notification .toast-icon { font-size: 20px; flex-shrink: 0; }
-        .toast-success .toast-icon { color: #16a34a; }
-        .toast-error .toast-icon { color: #dc2626; }
-        .toast-warning .toast-icon { color: #f59e0b; }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-15px); }
+            font-size: 12px;
+            color: var(--text-tertiary);
         }
 
-        @media (max-width: 1024px) {
+        .footer-custom .footer-brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .footer-custom .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-custom .footer-copy {
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-copy strong {
+            color: var(--accent-dark);
+            font-weight: 700;
+        }
+
+        .footer-custom .footer-divider {
+            color: var(--border);
+            font-size: 14px;
+        }
+
+        .footer-custom .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-version {
+            font-family: var(--font-display);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .footer-custom .footer-link {
+            color: var(--text-tertiary);
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 1200px) {
             .sidebar {
-                transform: translateX(100%);
-                width: 280px;
+                transform: translateX(calc(var(--sidebar-width) + 20px));
             }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-right: 0; padding: 16px; }
-            .main-content.expanded { margin-right: 0; }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .banks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-content {
+                padding: 16px 18px;
+            }
+            .navbar-custom {
+                padding: 0 16px;
+            }
+            .user-info {
+                display: none;
+            }
+            .page-header .ph-right {
+                display: none;
+            }
+            .banks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            .modal-transactions {
+                max-width: 95%;
+            }
+            .footer-custom .footer-divider {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
-            .main-content { padding: 16px; }
-            .stat-card { padding: 16px 18px; }
-            .stat-card .number { font-size: 22px; }
-            .stat-card .icon { width: 40px; height: 40px; font-size: 18px; }
-            .banks-grid { grid-template-columns: 1fr; }
-            .bank-card { padding: 16px; }
-            .section-title { font-size: 16px; }
-            .modal-box { padding: 24px; }
+            .navbar-right .nav-btn:not(:first-child) {
+                display: none;
+            }
+            .navbar-custom {
+                height: 54px;
+                padding: 0 12px;
+            }
+            .page-title {
+                font-size: 14px;
+            }
+            .page-title small {
+                display: none;
+            }
+            .sidebar-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            .dashboard-content {
+                padding: 12px 12px;
+            }
+            .page-header h2 {
+                font-size: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card .stat-number {
+                font-size: 16px;
+            }
+            .banks-grid {
+                grid-template-columns: 1fr;
+            }
+            .bank-card {
+                padding: 12px 14px;
+            }
+            .bank-card .bank-balance {
+                font-size: 18px;
+            }
+            .bank-card .bank-name {
+                font-size: 14px;
+            }
+            .modal-box {
+                padding: 20px;
+            }
+            .modal-transactions .bank-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .modal-transactions .bank-header .bank-balance-large {
+                margin-right: 0;
+                text-align: center;
+            }
+            .footer-custom {
+                padding: 8px 14px;
+            }
+            .footer-custom .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .footer-custom .footer-right {
+                flex-wrap: wrap;
+                justify-content: center;
+                font-size: 11px;
+            }
+            .footer-custom .footer-left {
+                font-size: 11px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 576px) {
-            .main-content { padding: 12px; }
-            .stat-card { padding: 12px 14px; }
-            .stat-card .number { font-size: 18px; }
-            .stat-card .icon { width: 34px; height: 34px; font-size: 15px; }
-            .btn-action { padding: 8px 14px; font-size: 12px; }
-            .hamburger-btn { width: 38px; height: 38px; font-size: 20px; }
+            .dashboard-content {
+                padding: 10px 10px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 12px;
+            }
+            .stat-card .stat-number {
+                font-size: 14px;
+            }
+            .stat-card .stat-label {
+                font-size: 9px;
+            }
+            .stat-card .stat-icon {
+                font-size: 14px;
+            }
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            .modal-box {
+                padding: 16px;
+            }
+            .modal-box h3 {
+                font-size: 15px;
+            }
+            .bank-card .bank-actions {
+                flex-direction: column;
+            }
+            .bank-card .bank-actions .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+            .footer-custom .footer-copy {
+                font-size: 10px;
+            }
+            .footer-custom .footer-version {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 8px; }
-        ::-webkit-scrollbar-thumb:hover { background: #0d9488; }
+        /* ================================================================
+           DARK MODE
+           ================================================================ */
+        body.dark-mode {
+            background: var(--primary-dark);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .navbar-custom {
+            background: var(--primary-dark);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .stat-card .stat-number {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .bank-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .bank-card .bank-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .bank-card .bank-account {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .bank-card .bank-branch {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .bank-card .bank-balance {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .bank-card .bank-icon {
+            background: rgba(139, 122, 75, 0.15);
+        }
+
+        body.dark-mode .panel {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .panel-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header .ph-left h2 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .page-header .ph-left p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .btn-outline {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: rgba(139, 122, 75, 0.1);
+        }
+
+        body.dark-mode .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-success {
+            background: #166a4a;
+            border-color: #166a4a;
+        }
+
+        body.dark-mode .btn-danger {
+            background: #a03d32;
+            border-color: #a03d32;
+        }
+
+        body.dark-mode .sidebar-toggle {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .sidebar-toggle:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.15);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .nav-btn {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .nav-btn:hover {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .user-profile:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .user-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .toast-notification {
+            background: var(--primary);
+            color: #e0dcd2;
+            border-right-color: var(--accent);
+        }
+
+        body.dark-mode .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        body.dark-mode .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        body.dark-mode .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box h3 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box select,
+        body.dark-mode .modal-box input {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .modal-box select:focus,
+        body.dark-mode .modal-box input:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .bank-card .bank-stats {
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .btn-icon-edit {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        body.dark-mode .btn-icon-delete {
+            background: rgba(184, 74, 62, 0.2);
+            color: #dba09a;
+        }
+
+        body.dark-mode .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        body.dark-mode .modal-transactions .bank-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .modal-transactions .transactions-table-wrap table thead {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .modal-transactions .transactions-table-wrap table th {
+            color: rgba(232,228,220,0.4);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .modal-transactions .transactions-table-wrap table td {
+            border-bottom-color: rgba(255,255,255,0.04);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-transactions .transactions-table-wrap table tr:hover td {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .modal-transactions .modal-actions-custom {
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode #confirmModalOverlay .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode #confirmModalOverlay .modal-box p {
+            color: rgba(232,228,220,0.7);
+        }
+
+        body.dark-mode .shimmer {
+            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
+    <!-- ================================================================ -->
+    <!-- SIDEBAR -->
+    <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
-        <div class="logo-area">
-            <h1>🕋 حراء للسياحة</h1>
-            <span>نظام إدارة الرحلات</span>
-        </div>
-        
-        <nav style="padding: 12px 0;">
-            <a href="index.html" class="nav-link">
-                <i class="fas fa-home"></i> <span>الرئيسية</span>
-            </a>
-            <a href="trips.html" class="nav-link">
-                <i class="fas fa-plane"></i> <span>الرحلات</span>
-                <span class="badge" id="badge-trips">0</span>
-            </a>
-            <a href="bookings.html" class="nav-link">
-                <i class="fas fa-ticket"></i> <span>الحجوزات</span>
-                <span class="badge" id="badge-bookings">0</span>
-            </a>
-            <a href="clients.html" class="nav-link">
-                <i class="fas fa-users"></i> <span>العملاء</span>
-                <span class="badge" id="badge-clients">0</span>
-            </a>
-            <a href="representatives.html" class="nav-link">
-                <i class="fas fa-user-tie"></i> <span>المناديب</span>
-                <span class="badge" id="badge-reps">0</span>
-            </a>
-            <a href="hotels.html" class="nav-link">
-                <i class="fas fa-hotel"></i> <span>الفنادق</span>
-                <span class="badge" id="badge-hotels">0</span>
-            </a>
-            <a href="agents.html" class="nav-link">
-                <i class="fas fa-handshake"></i> <span>الوكلاء</span>
-                <span class="badge" id="badge-agents">0</span>
-            </a>
-            <a href="treasury.html" class="nav-link">
-                <i class="fas fa-coins"></i> <span>الخزينة</span>
-                <span class="badge" id="badge-treasury">0</span>
-            </a>
-            <a href="banks.html" class="nav-link active">
-                <i class="fas fa-university"></i> <span>البنوك</span>
-                <span class="badge" id="badge-banks">0</span>
-            </a>
-            <a href="reports.html" class="nav-link">
-                <i class="fas fa-chart-bar"></i> <span>التقارير</span>
-            </a>
-            <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
-            <a href="users.html" class="nav-link">
-                <i class="fas fa-user-shield"></i> <span>المستخدمون</span>
-            </a>
-            <a href="settings.html" class="nav-link">
-                <i class="fas fa-cog"></i> <span>الإعدادات</span>
-            </a>
-            <a href="profile.html" class="nav-link">
-                <i class="fas fa-id-badge"></i> <span>الملف الشخصي</span>
-            </a>
-            <a href="support.html" class="nav-link">
-                <i class="fas fa-headset"></i> <span>الدعم</span>
-            </a>
-            <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
-            <div class="sidebar-footer">
-                <a href="#" class="logout-btn" onclick="logout(); return false;">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>تسجيل الخروج</span>
-                </a>
-            </div>
-        </nav>
-    </aside>
-
-    <main class="main-content" id="mainContent">
-
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-                <button class="hamburger-btn" onclick="toggleSidebar()" id="hamburgerBtn" title="فتح/إغلاق القائمة">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">🏦 البنوك</h1>
-                    <p class="text-gray-500 text-sm">إدارة الحسابات البنكية والحركات</p>
+        <div class="sidebar-brand">
+            <div class="brand-row">
+                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
+                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
+                <div class="brand-text" id="sidebarBrandText">
+                    حراء <span>للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500">اليوم</span>
-                <span class="font-semibold text-gray-700" id="current-date"></span>
-            </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-8" id="stats-container">
-            <!-- سيتم تعبئتها بواسطة JavaScript -->
-        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">القائمة الرئيسية</div>
+            <ul class="nav-list">
+                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
+            </ul>
 
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div class="flex flex-wrap items-center gap-3">
-                <span class="text-sm font-semibold text-gray-600">الحسابات البنكية</span>
-            </div>
-            <div class="flex flex-wrap gap-3">
-                <button class="btn-action btn-outline" onclick="loadData()">
-                    <i class="fas fa-sync-alt"></i> تحديث
+            <div class="nav-section-title">الإدارة المالية</div>
+            <ul class="nav-list">
+                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
+                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="banks.html" class="active"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
+                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+            </ul>
+
+            <div class="nav-section-title">التقارير</div>
+            <ul class="nav-list">
+                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+            </ul>
+
+            <div class="nav-section-title">الإدارة</div>
+            <ul class="nav-list">
+                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+            </ul>
+
+            <div class="nav-section-title">الدعم</div>
+            <ul class="nav-list">
+                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i>
+                تسجيل الخروج
+            </a>
+        </div>
+    </aside>
+
+    <!-- ================================================================ -->
+    <!-- SIDEBAR OVERLAY -->
+    <!-- ================================================================ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ================================================================ -->
+    <main class="main-content" id="mainContent">
+
+        <!-- ================================================================ -->
+        <!-- NAVBAR -->
+        <!-- ================================================================ -->
+        <nav class="navbar-custom">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
                 </button>
+                <h4 class="page-title" id="pageTitleText">
+                    البنوك
+                    <small>إدارة الحسابات البنكية والحركات</small>
+                </h4>
+            </div>
+
+            <div class="navbar-right">
+                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-role" id="userRole">المالية</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ================================================================ -->
+        <!-- DASHBOARD CONTENT -->
+        <!-- ================================================================ -->
+        <div class="dashboard-content">
+
+            <!-- ===== PAGE HEADER ===== -->
+            <div class="page-header">
+                <div class="ph-left">
+                    <h2>إدارة الحسابات البنكية</h2>
+                    <p>تسجيل ومتابعة أرصدة البنوك والحركات المرتبطة بها</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">جاري التحميل...</span>
+                </div>
+            </div>
+
+            <!-- ===== STATS ===== -->
+            <div class="stats-grid">
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-bank"></i></span>
+                    <div class="stat-number" id="totalBanks">0</div>
+                    <div class="stat-label">إجمالي البنوك</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-wallet-fill"></i></span>
+                    <div class="stat-number" id="totalBalance">0</div>
+                    <div class="stat-label">إجمالي الأرصدة</div>
+                </div>
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-arrow-left-right"></i></span>
+                    <div class="stat-number" id="lastUpdate">—</div>
+                    <div class="stat-label">آخر تحديث</div>
+                </div>
+            </div>
+
+            <!-- ===== TOOLBAR ===== -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
                 <button class="btn-action btn-success" onclick="openBankModal()">
-                    <i class="fas fa-plus-circle"></i> إضافة بنك
+                    <i class="bi bi-plus-circle-fill"></i> إضافة بنك جديد
+                </button>
+                <button class="btn-action btn-primary" onclick="loadData()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
                 </button>
             </div>
+
+            <!-- ===== BANKS GRID ===== -->
+            <div class="banks-grid" id="banksContainer">
+                <div class="bank-card" style="text-align:center;padding:40px 20px;border-color:transparent;cursor:default;">
+                    <div class="shimmer" style="height:40px;max-width:160px;margin:0 auto 12px;"></div>
+                    <div class="shimmer" style="height:20px;max-width:120px;margin:0 auto;"></div>
+                    <span style="display:block;margin-top:8px;font-size:12px;color:var(--text-tertiary);">جاري تحميل البنوك...</span>
+                </div>
+            </div>
+
         </div>
 
-        <div class="banks-grid" id="banks-container">
-            <!-- سيتم تعبئتها بواسطة JavaScript -->
-        </div>
-
-        <div class="text-center text-gray-400 text-sm mt-8 border-t pt-6" id="footerText">
-            © 2026 حراء للسياحة — جميع الحقوق محفوظة
-        </div>
+        <!-- ================================================================ -->
+        <!-- FOOTER - حقوق النشر -->
+        <!-- ================================================================ -->
+        <footer class="footer-custom">
+            <div class="footer-content">
+                <div class="footer-right">
+                    <span class="footer-brand">حراء <span>للسياحة</span></span>
+                    <span class="footer-divider">|</span>
+                    <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+                </div>
+                <div class="footer-left">
+                    <span class="footer-version">الإصدار 3.0.1</span>
+                    <span class="footer-divider">|</span>
+                    <a href="support.html" class="footer-link">
+                        <i class="bi bi-headset"></i> الدعم الفني
+                    </a>
+                </div>
+            </div>
+        </footer>
     </main>
 
+    <!-- ================================================================ -->
+    <!-- MODAL - إضافة / تعديل بنك -->
+    <!-- ================================================================ -->
     <div class="modal-overlay" id="bankModalOverlay">
         <div class="modal-box">
-            <h3 id="bankModalTitle"><i class="fas fa-university"></i> إضافة بنك جديد</h3>
+            <h3 id="bankModalTitle"><i class="bi bi-plus-circle-fill"></i> إضافة بنك جديد</h3>
             <form id="bankForm" onsubmit="handleBankSubmit(event)">
                 <input type="hidden" id="editBankId" />
+
                 <label for="bankName">اسم البنك</label>
                 <input type="text" id="bankName" placeholder="اسم البنك" required />
+
                 <label for="bankAccount">رقم الحساب</label>
                 <input type="text" id="bankAccount" placeholder="رقم الحساب" />
+
                 <label for="bankBranch">الفرع</label>
                 <input type="text" id="bankBranch" placeholder="الفرع" />
+
                 <label for="bankBalance">الرصيد الافتتاحي</label>
                 <input type="number" id="bankBalance" placeholder="الرصيد" value="0" step="0.01" min="0" />
+
                 <div class="modal-actions">
                     <button type="button" class="btn-action btn-outline" onclick="closeBankModal()">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="bankSaveBtn">حفظ</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveBankBtn">حفظ</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- ================================================================ -->
+    <!-- MODAL - إيداع / سحب -->
+    <!-- ================================================================ -->
     <div class="modal-overlay" id="transactionModalOverlay">
         <div class="modal-box">
-            <h3 id="transactionModalTitle"><i class="fas fa-exchange-alt"></i> إيداع / سحب</h3>
+            <h3 id="transactionModalTitle"><i class="bi bi-plus-circle-fill"></i> إيداع في البنك</h3>
             <form id="transactionForm" onsubmit="handleTransactionSubmit(event)">
                 <input type="hidden" id="transactionBankId" />
                 <input type="hidden" id="transactionType" />
-                <div id="transactionBankInfo" style="background:#f8fafc;padding:12px 16px;border-radius:10px;margin-bottom:14px;">
+
+                <div id="transactionBankInfo" style="background:var(--surface-alt);padding:10px 14px;border-radius:var(--radius-sm);margin-bottom:12px;font-size:13px;">
                     <strong>البنك:</strong> <span id="transactionBankName">—</span><br />
-                    <strong>الرصيد الحالي:</strong> <span id="transactionCurrentBalance">0</span>
+                    <strong>الرصيد الحالي:</strong> <span id="transactionCurrentBalance">0</span><br />
+                    <strong style="color:var(--info);">تأثير على الخزينة:</strong> <span id="treasuryEffect">—</span>
                 </div>
+
                 <label for="transactionAmount">المبلغ</label>
                 <input type="number" id="transactionAmount" placeholder="المبلغ" required step="0.01" min="0.01" />
+
                 <label for="transactionDescription">البيان</label>
                 <input type="text" id="transactionDescription" placeholder="وصف الحركة" />
+
                 <div class="modal-actions">
                     <button type="button" class="btn-action btn-outline" onclick="closeTransactionModal()">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="transactionSaveBtn">تنفيذ</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveTransactionBtn">تنفيذ</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="modal-overlay" id="confirmModalOverlay">
+    <!-- ================================================================ -->
+    <!-- MODAL - تأكيد الحذف (مخصص) - مع Z-Index أعلى -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="confirmModalOverlay" style="z-index: 1070;">
         <div class="modal-box" style="max-width:420px;">
-            <h3 id="confirmModalTitle"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> تأكيد الحذف</h3>
-            <p id="confirmModalMessage" style="font-size:14px;color:#64748b;margin-bottom:16px;">هل أنت متأكد من حذف هذا العنصر؟</p>
+            <h3 id="confirmModalTitle"><i class="bi bi-exclamation-triangle-fill" style="color:var(--danger);"></i> تأكيد الحذف</h3>
+            <p id="confirmModalMessage" style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+                هل أنت متأكد من حذف هذا العنصر؟
+            </p>
             <div class="modal-actions">
                 <button type="button" class="btn-action btn-outline" onclick="closeConfirmModal()">إلغاء</button>
                 <button type="button" class="btn-action btn-danger" id="confirmModalBtn">تأكيد الحذف</button>
@@ -645,142 +1944,273 @@
         </div>
     </div>
 
-    <script src="supabase.js"></script>
+    <!-- ================================================================ -->
+    <!-- MODAL - حركات البنك (نافذة كبيرة) -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="bankTransactionsModalOverlay">
+        <div class="modal-box modal-transactions">
+            <div class="bank-header">
+                <div class="bank-icon-large">
+                    <i class="bi bi-bank"></i>
+                </div>
+                <div class="bank-info">
+                    <h4 id="bankTransactionsName">اسم البنك</h4>
+                    <p id="bankTransactionsAccount">رقم الحساب: —</p>
+                </div>
+                <div class="bank-balance-large">
+                    <div class="label">الرصيد الحالي</div>
+                    <div class="amount" id="bankTransactionsBalance">0</div>
+                </div>
+            </div>
+
+            <h5 style="font-family:var(--font-display);font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text-secondary);">
+                <i class="bi bi-clock-history" style="color:var(--accent);"></i> سجل حركات البنك
+            </h5>
+
+            <div class="transactions-table-wrap" id="bankTransactionsContainer">
+                <div style="text-align:center;padding:40px 20px;color:var(--text-tertiary);">
+                    <i class="bi bi-hourglass-split" style="font-size:1.5rem;display:block;margin-bottom:10px;opacity:0.35;"></i>
+                    جاري تحميل الحركات...
+                </div>
+            </div>
+
+            <div class="modal-actions-custom">
+                <button type="button" class="btn-action btn-outline" onclick="closeBankTransactionsModal()">إغلاق</button>
+                <button type="button" class="btn-action btn-success btn-sm" onclick="refreshBankTransactions()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ================================================================ -->
     <script>
-
-        // ============================================================
-        // 1. تبديل القائمة الجانبية - يعمل على جميع الشاشات
-        // ============================================================
-        function toggleSidebar() {
-            var sidebar = document.getElementById('sidebar');
-            var mainContent = document.getElementById('mainContent');
-            var overlay = document.getElementById('sidebarOverlay');
-            var isMobile = window.innerWidth <= 1024;
-            
-            if (isMobile) {
-                sidebar.classList.toggle('open');
-                overlay.classList.toggle('active');
-                document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
-            } else {
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('expanded');
-            }
-        }
-
-        document.addEventListener('click', function(event) {
-            var sidebar = document.getElementById('sidebar');
-            var hamburger = document.getElementById('hamburgerBtn');
-            var overlay = document.getElementById('sidebarOverlay');
-            var isMobile = window.innerWidth <= 1024;
-            
-            if (isMobile && sidebar.classList.contains('open')) {
-                if (!sidebar.contains(event.target) && !hamburger.contains(event.target)) {
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }
-        });
-
-        // ============================================================
-        // 2. عرض التاريخ الحالي
-        // ============================================================
-        function updateDate() {
-            var now = new Date();
-            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date').textContent = now.toLocaleDateString('ar-EG', options);
-        }
-        updateDate();
-
-        // ============================================================
-        // 3. تحديث اسم النظام
-        // ============================================================
-        function applySystemName() {
-            var systemName = 'حراء للسياحة';
-            try { systemName = Supabase.getSystemName() || systemName; } catch (e) {}
-            document.title = 'البنوك - ' + systemName;
-            var footer = document.getElementById('footerText');
-            if (footer) footer.textContent = '© ' + new Date().getFullYear() + ' ' + systemName + ' — جميع الحقوق محفوظة';
-        }
-        applySystemName();
-
-        // ============================================================
-        // 4. STATE
-        // ============================================================
+        // ================================================================
+        // STATE
+        // ================================================================
         var banks = [];
         var allTransactions = [];
         var isLoading = false;
-        var confirmCallback = null;
+        var currentUser = null;
+        var systemCurrency = 'SAR';
+        var currencySymbol = 'ر.س';
+        var currentBankTransactions = [];
+        var currentBankId = null;
 
-        // ============================================================
-        // 5. CONFIRM MODAL
-        // ============================================================
-        function openConfirmModal(title, message, callback) {
-            document.getElementById('confirmModalTitle').innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> ' + title;
+        // ================================================================
+        // CONFIRM MODAL - نافذة تأكيد مخصصة مع إغلاق النوافذ الأخرى
+        // ================================================================
+        var confirmCallback = null;
+        var confirmSource = null;
+
+        function openConfirmModal(title, message, confirmText, callback, sourceModalId) {
+            if (sourceModalId) {
+                confirmSource = sourceModalId;
+                var sourceModal = document.getElementById(sourceModalId);
+                if (sourceModal) {
+                    sourceModal.classList.remove('active');
+                }
+            }
+
+            document.getElementById('confirmModalTitle').innerHTML = '<i class="bi bi-exclamation-triangle-fill" style="color:var(--danger);"></i> ' + title;
             document.getElementById('confirmModalMessage').textContent = message;
-            document.getElementById('confirmModalBtn').textContent = 'تأكيد الحذف';
+            document.getElementById('confirmModalBtn').textContent = confirmText || 'تأكيد';
             confirmCallback = callback;
             document.getElementById('confirmModalOverlay').classList.add('active');
         }
 
         function closeConfirmModal() {
             document.getElementById('confirmModalOverlay').classList.remove('active');
+
+            if (confirmSource) {
+                var sourceModal = document.getElementById(confirmSource);
+                if (sourceModal) {
+                    sourceModal.classList.add('active');
+                }
+                confirmSource = null;
+            }
+
             confirmCallback = null;
         }
 
-        document.getElementById('confirmModalBtn').addEventListener('click', function() {
+        function confirmAction() {
             if (typeof confirmCallback === 'function') {
                 confirmCallback();
             }
             closeConfirmModal();
+        }
+
+        // ================================================================
+        // DOM READY
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!Supabase.initSystem()) return;
+
+            try {
+                var settings = await Supabase.getSystemSettings();
+                systemCurrency = settings.currency || 'SAR';
+                currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+                console.log('💰 العملة المستخدمة:', systemCurrency, currencySymbol);
+                console.log('📋 الإعدادات:', settings);
+            } catch (error) {
+                console.error('❌ خطأ في جلب الإعدادات:', error);
+                var savedCurrency = localStorage.getItem('systemCurrency');
+                if (savedCurrency) {
+                    systemCurrency = savedCurrency;
+                    currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+                }
+            }
+
+            localStorage.setItem('systemCurrency', systemCurrency);
+
+            currentUser = Supabase.getCurrentUser();
+            if (currentUser) {
+                updateUserUI();
+            }
+
+            await applySystemName();
+            Supabase.applySystemLogo();
+
+            var confirmBtn = document.getElementById('confirmModalBtn');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', confirmAction);
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeConfirmModal();
+                    closeBankModal();
+                    closeTransactionModal();
+                    closeBankTransactionsModal();
+                }
+            });
+
+            var overlay = document.getElementById('confirmModalOverlay');
+            if (overlay) {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeConfirmModal();
+                    }
+                });
+            }
+
+            initSidebar();
+            initDarkMode();
+            initRefresh();
+            initKeyboardShortcuts();
+            updateDate();
+            loadData();
+            setInterval(loadData, 60000);
         });
 
-        // ============================================================
-        // 6. LOAD DATA
-        // ============================================================
+        // ================================================================
+        // APPLY SYSTEM NAME
+        // ================================================================
+        async function applySystemName() {
+            try {
+                var systemName = await Supabase.getSystemName();
+                document.title = 'البنوك - ' + systemName;
+
+                var brandText = document.getElementById('sidebarBrandText');
+                if (brandText) {
+                    brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+                }
+            } catch (error) {
+                console.warn('⚠️ فشل تطبيق اسم النظام:', error);
+            }
+        }
+
+        // ================================================================
+        // UPDATE USER UI
+        // ================================================================
+        function updateUserUI() {
+            if (!currentUser) return;
+            var userName = document.getElementById('userName');
+            var userRole = document.getElementById('userRole');
+            var userAvatar = document.getElementById('userAvatar');
+
+            if (userName) {
+                userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
+            }
+            if (userRole) {
+                userRole.textContent = currentUser.user_metadata?.role || 'المالية';
+            }
+            if (userAvatar) {
+                var name = currentUser.user_metadata?.full_name || currentUser.email || 'م';
+                userAvatar.textContent = name.charAt(0).toUpperCase();
+            }
+        }
+
+        // ================================================================
+        // DATE DISPLAY
+        // ================================================================
+        function updateDate() {
+            var now = new Date();
+            var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            var dateElement = document.getElementById('headerDate');
+            if (dateElement) {
+                dateElement.textContent = now.toLocaleDateString('ar-SA', options);
+            }
+        }
+
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
         async function loadData() {
             if (isLoading) return;
             isLoading = true;
 
-            var container = document.getElementById('banks-container');
-            container.innerHTML = '<div class="text-center text-gray-400 py-8 col-span-full">جاري التحميل...</div>';
+            var container = document.getElementById('banksContainer');
+            if (container) {
+                container.innerHTML = `
+                    <div class="bank-card" style="text-align:center;padding:40px 20px;border-color:transparent;cursor:default;">
+                        <div class="shimmer" style="height:40px;max-width:160px;margin:0 auto 12px;"></div>
+                        <div class="shimmer" style="height:20px;max-width:120px;margin:0 auto;"></div>
+                        <span style="display:block;margin-top:8px;font-size:12px;color:var(--text-tertiary);;">جاري تحميل البنوك...</span>
+                    </div>
+                `;
+            }
 
             try {
-                var results = await Promise.all([
-                    Supabase.getBanks().catch(function() { return []; }),
-                    Supabase.getTransactions(200).catch(function() { return []; })
-                ]);
+                console.log('📡 جاري جلب البنوك من Supabase...');
 
-                banks = results[0] || [];
-                allTransactions = results[1] || [];
+                var banksData = await Supabase.getBanks();
+                banks = banksData || [];
+
+                var transactionsData = await Supabase.getTransactions();
+                allTransactions = transactionsData || [];
 
                 renderBanks();
                 renderStats();
 
-                var badge = document.getElementById('badge-banks');
-                if (badge) badge.textContent = banks.length;
-
             } catch (error) {
                 console.error('❌ خطأ في جلب البيانات:', error);
                 showToast('⚠️ فشل تحميل البيانات', 'warning');
+                banks = [];
+                renderBanks();
+                renderStats();
             }
 
             isLoading = false;
         }
 
-        // ============================================================
-        // 7. RENDER BANKS
-        // ============================================================
+        // ================================================================
+        // RENDER BANKS
+        // ================================================================
         function renderBanks() {
-            var container = document.getElementById('banks-container');
+            var container = document.getElementById('banksContainer');
+
+            if (!container) return;
 
             if (!banks || banks.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-12 col-span-full">
-                        <i class="fas fa-university text-5xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-400">لا توجد بنوك مسجلة</p>
-                        <button class="btn-action btn-success mt-4" onclick="openBankModal()">
-                            <i class="fas fa-plus-circle"></i> إضافة بنك جديد
+                    <div class="bank-card" style="text-align:center;padding:40px 20px;border-color:transparent;cursor:default;">
+                        <i class="bi bi-bank" style="font-size:2.5rem;display:block;margin-bottom:10px;opacity:0.3;color:var(--text-tertiary);"></i>
+                        <span style="display:block;font-size:14px;color:var(--text-tertiary);">لا توجد بنوك مسجلة</span>
+                        <button class="btn-action btn-success" style="margin-top:12px;" onclick="openBankModal()">
+                            <i class="bi bi-plus-circle-fill"></i> إضافة بنك جديد
                         </button>
                     </div>
                 `;
@@ -789,12 +2219,24 @@
 
             var html = '';
 
+            var bankColors = [
+                { border: '#8b7a4b', bg: 'rgba(139,122,75,0.08)' },
+                { border: '#3a6b8f', bg: 'rgba(58,107,143,0.08)' },
+                { border: '#1e7a55', bg: 'rgba(30,122,85,0.08)' },
+                { border: '#b84a3e', bg: 'rgba(184,74,62,0.08)' },
+                { border: '#b8943a', bg: 'rgba(184,148,58,0.08)' },
+                { border: '#6b5b8f', bg: 'rgba(107,91,143,0.08)' }
+            ];
+
             for (var i = 0; i < banks.length; i++) {
                 var b = banks[i];
-                var bankId = b['id'] || '';
+                var colorIndex = i % bankColors.length;
+                var color = bankColors[colorIndex];
+
                 var balance = parseFloat(b['balance'] || 0);
                 var accountNumber = b['account_number'] || '—';
                 var branch = b['branch'] || '—';
+                var bankId = b['id'] || '';
 
                 var bankTransactions = allTransactions.filter(function(t) {
                     return t['reference'] === b['name'] && t['category'] === 'بنك';
@@ -806,37 +2248,42 @@
                 for (var j = 0; j < bankTransactions.length; j++) {
                     var t = bankTransactions[j];
                     var amount = parseFloat(t['amount'] || 0);
-                    if (t['type'] === 'صادر') totalIncome += amount;
-                    else if (t['type'] === 'وارد') totalExpense += amount;
+                    if (t['type'] === 'صادر') {
+                        totalIncome += amount;
+                    } else if (t['type'] === 'وارد') {
+                        totalExpense += amount;
+                    }
                 }
 
                 html += `
-                    <div class="bank-card" onclick="openBankDetails('${bankId}')">
-                        <div class="bank-icon"><i class="fas fa-university"></i></div>
+                    <div class="bank-card" style="border-right-color: ${color.border};" onclick="openBankTransactionsModal('${bankId}')">
+                        <div class="bank-icon" style="background: ${color.bg}; color: ${color.border};">
+                            <i class="bi bi-bank"></i>
+                        </div>
                         <div class="bank-name">${b['name'] || '—'}</div>
                         <div class="bank-account">رقم الحساب: ${accountNumber}</div>
                         <div class="bank-branch">الفرع: ${branch}</div>
                         <div class="bank-balance">${Supabase.formatCurrency(balance)}</div>
                         <div class="bank-stats">
-                            <span class="income"><i class="fas fa-arrow-down"></i> ${Supabase.formatCurrency(totalIncome)}</span>
-                            <span class="expense"><i class="fas fa-arrow-up"></i> ${Supabase.formatCurrency(totalExpense)}</span>
+                            <span class="income"><i class="bi bi-arrow-down-circle-fill"></i> ${Supabase.formatCurrency(totalIncome)}</span>
+                            <span class="expense"><i class="bi bi-arrow-up-circle-fill"></i> ${Supabase.formatCurrency(totalExpense)}</span>
                         </div>
                         <div class="bank-actions" onclick="event.stopPropagation();">
-                            <button class="btn-action btn-success" onclick="openTransactionModal('${bankId}', 'deposit')">
-                                <i class="fas fa-plus-circle"></i> إيداع
+                            <button class="btn-action btn-success btn-sm" onclick="openTransactionModal('${bankId}', 'deposit')">
+                                <i class="bi bi-plus-circle-fill"></i> إيداع
                             </button>
-                            <button class="btn-action btn-danger" onclick="openTransactionModal('${bankId}', 'withdraw')">
-                                <i class="fas fa-minus-circle"></i> سحب
+                            <button class="btn-action btn-danger btn-sm" onclick="openTransactionModal('${bankId}', 'withdraw')">
+                                <i class="bi bi-dash-circle-fill"></i> سحب
                             </button>
-                            <button class="btn-action btn-outline" onclick="editBank('${bankId}')">
-                                <i class="fas fa-edit"></i>
+                            <button class="btn-action btn-outline btn-sm" onclick="editBank('${bankId}')">
+                                <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn-action btn-danger" onclick="deleteBank('${bankId}')">
-                                <i class="fas fa-trash"></i>
+                            <button class="btn-action btn-danger btn-sm" onclick="deleteBank('${bankId}')">
+                                <i class="bi bi-trash"></i>
                             </button>
                         </div>
                         <div class="click-hint">
-                            <i class="fas fa-eye"></i> اضغط لعرض الحركات
+                            <i class="bi bi-eye"></i> اضغط لعرض الحركات
                         </div>
                     </div>
                 `;
@@ -845,44 +2292,57 @@
             container.innerHTML = html;
         }
 
-        // ============================================================
-        // 8. RENDER STATS
-        // ============================================================
+        // ================================================================
+        // RENDER STATS
+        // ================================================================
         function renderStats() {
             var totalBalance = 0;
+
             for (var i = 0; i < banks.length; i++) {
                 totalBalance += parseFloat(banks[i]['balance'] || 0);
             }
 
-            var stats = [
-                { icon: 'fa-university', label: 'إجمالي البنوك', value: banks.length, color: 'bg-blue-50 text-blue-600' },
-                { icon: 'fa-wallet', label: 'إجمالي الأرصدة', value: Supabase.formatCurrency(totalBalance), color: 'bg-emerald-50 text-emerald-600' }
-            ];
+            document.getElementById('totalBanks').textContent = banks.length;
+            document.getElementById('totalBalance').textContent = Supabase.formatCurrency(totalBalance);
 
-            var container = document.getElementById('stats-container');
-            container.innerHTML = stats.map(function(s) {
-                return '<div class="stat-card flex items-center gap-4">' +
-                    '<div class="icon ' + s.color + '"><i class="fas ' + s.icon + '"></i></div>' +
-                    '<div><div class="number">' + s.value + '</div><div class="label">' + s.label + '</div></div>' +
-                    '</div>';
-            }).join('');
+            var now = new Date();
+            var options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('lastUpdate').textContent = now.toLocaleDateString('ar-SA', options);
         }
 
-        // ============================================================
-        // 9. BANK CRUD
-        // ============================================================
-        async function addBank(data) {
+        // ================================================================
+        // BANK CRUD
+        // ================================================================
+        async function addBank(name, accountNumber, branch, balance) {
             try {
+                var data = {
+                    name: name,
+                    account_number: accountNumber || '',
+                    branch: branch || '',
+                    balance: parseFloat(balance) || 0
+                };
+
+                console.log('📤 جاري إرسال البنك:', data);
                 return await Supabase.addData('banks', data);
+
             } catch (error) {
                 console.error('❌ خطأ في إضافة البنك:', error);
                 throw error;
             }
         }
 
-        async function updateBank(id, data) {
+        async function updateBank(id, name, accountNumber, branch, balance) {
             try {
+                var data = {
+                    name: name,
+                    account_number: accountNumber || '',
+                    branch: branch || '',
+                    balance: parseFloat(balance) || 0
+                };
+
+                console.log('📤 جاري تحديث البنك:', data);
                 return await Supabase.updateData('banks', id, data);
+
             } catch (error) {
                 console.error('❌ خطأ في تحديث البنك:', error);
                 throw error;
@@ -896,6 +2356,7 @@
             openConfirmModal(
                 'تأكيد حذف البنك',
                 'هل أنت متأكد من حذف البنك "' + bank['name'] + '"؟',
+                'حذف البنك',
                 function() {
                     showToast('⏳ جاري حذف البنك...', 'info');
                     Supabase.deleteData('banks', id)
@@ -906,36 +2367,39 @@
                         .catch(function(error) {
                             showToast('❌ فشل حذف البنك: ' + error.message, 'error');
                         });
-                }
+                },
+                null
             );
         }
 
-        // ============================================================
-        // 10. BANK MODAL
-        // ============================================================
+        // ================================================================
+        // BANK MODAL
+        // ================================================================
         function openBankModal() {
-            document.getElementById('bankModalOverlay').classList.add('active');
-            document.getElementById('bankModalTitle').innerHTML = '<i class="fas fa-university"></i> إضافة بنك جديد';
+            document.getElementById('bankModalTitle').innerHTML = '<i class="bi bi-plus-circle-fill"></i> إضافة بنك جديد';
             document.getElementById('editBankId').value = '';
             document.getElementById('bankName').value = '';
             document.getElementById('bankAccount').value = '';
             document.getElementById('bankBranch').value = '';
             document.getElementById('bankBalance').value = '0';
-            document.getElementById('bankSaveBtn').textContent = 'حفظ';
+            document.getElementById('saveBankBtn').textContent = 'حفظ';
+
+            document.getElementById('bankModalOverlay').classList.add('active');
         }
 
         function editBank(id) {
             var bank = banks.find(function(b) { return String(b['id']) === String(id); });
             if (!bank) return;
 
-            document.getElementById('bankModalOverlay').classList.add('active');
-            document.getElementById('bankModalTitle').innerHTML = '<i class="fas fa-edit"></i> تعديل البنك';
+            document.getElementById('bankModalTitle').innerHTML = '<i class="bi bi-pencil-fill"></i> تعديل البنك';
             document.getElementById('editBankId').value = id;
             document.getElementById('bankName').value = bank['name'] || '';
             document.getElementById('bankAccount').value = bank['account_number'] || '';
             document.getElementById('bankBranch').value = bank['branch'] || '';
             document.getElementById('bankBalance').value = bank['balance'] || 0;
-            document.getElementById('bankSaveBtn').textContent = 'تحديث';
+            document.getElementById('saveBankBtn').textContent = 'تحديث';
+
+            document.getElementById('bankModalOverlay').classList.add('active');
         }
 
         function closeBankModal() {
@@ -949,24 +2413,28 @@
             var name = document.getElementById('bankName').value.trim();
             var accountNumber = document.getElementById('bankAccount').value.trim();
             var branch = document.getElementById('bankBranch').value.trim();
-            var balance = parseFloat(document.getElementById('bankBalance').value) || 0;
+            var balance = document.getElementById('bankBalance').value;
 
-            if (!name) { showToast('⚠️ الرجاء إدخال اسم البنك', 'warning'); return; }
+            if (!name) {
+                showToast('⚠️ الرجاء إدخال اسم البنك', 'warning');
+                return;
+            }
 
-            var saveBtn = document.getElementById('bankSaveBtn');
+            var saveBtn = document.getElementById('saveBankBtn');
             saveBtn.disabled = true;
             saveBtn.textContent = 'جاري الحفظ...';
 
             try {
                 if (id) {
-                    await updateBank(id, { name: name, account_number: accountNumber, branch: branch, balance: balance });
+                    await updateBank(id, name, accountNumber, branch, balance);
                     showToast('✅ تم تحديث البنك بنجاح', 'success');
                 } else {
-                    await addBank({ name: name, account_number: accountNumber, branch: branch, balance: balance });
+                    await addBank(name, accountNumber, branch, balance);
                     showToast('✅ تمت إضافة البنك بنجاح', 'success');
                 }
                 closeBankModal();
                 loadData();
+
             } catch (error) {
                 showToast('❌ فشل الحفظ: ' + error.message, 'error');
             }
@@ -975,12 +2443,15 @@
             saveBtn.textContent = id ? 'تحديث' : 'حفظ';
         }
 
-        // ============================================================
-        // 11. TRANSACTION MODAL
-        // ============================================================
+        // ================================================================
+        // TRANSACTION MODAL (إيداع / سحب)
+        // ================================================================
         function openTransactionModal(bankId, type) {
             var bank = banks.find(function(b) { return String(b['id']) === String(bankId); });
-            if (!bank) { showToast('⚠️ البنك غير موجود', 'error'); return; }
+            if (!bank) {
+                showToast('⚠️ البنك غير موجود', 'error');
+                return;
+            }
 
             document.getElementById('transactionBankId').value = bankId;
             document.getElementById('transactionType').value = type;
@@ -990,17 +2461,27 @@
             document.getElementById('transactionDescription').value = '';
 
             var title = document.getElementById('transactionModalTitle');
-            var saveBtn = document.getElementById('transactionSaveBtn');
+            var saveBtn = document.getElementById('saveTransactionBtn');
 
+            var effectElement = document.getElementById('treasuryEffect');
             if (type === 'deposit') {
-                title.innerHTML = '<i class="fas fa-arrow-down"></i> إيداع في البنك';
+                title.innerHTML = '<i class="bi bi-plus-circle-fill"></i> إيداع في البنك';
                 saveBtn.textContent = 'إيداع';
                 saveBtn.className = 'btn-action btn-success';
+                effectElement.textContent = '🔴 نقص (صادر من الخزينة)';
+                effectElement.style.color = 'var(--danger)';
             } else {
-                title.innerHTML = '<i class="fas fa-arrow-up"></i> سحب من البنك';
+                title.innerHTML = '<i class="bi bi-dash-circle-fill"></i> سحب من البنك';
                 saveBtn.textContent = 'سحب';
                 saveBtn.className = 'btn-action btn-danger';
+                effectElement.textContent = '🟢 زيادة (وارد للخزينة)';
+                effectElement.style.color = 'var(--success)';
             }
+
+            delete document.getElementById('transactionModalOverlay').dataset.editId;
+            delete document.getElementById('transactionModalOverlay').dataset.oldAmount;
+            delete document.getElementById('transactionModalOverlay').dataset.oldType;
+            delete document.getElementById('transactionModalOverlay').dataset.oldDescription;
 
             document.getElementById('transactionModalOverlay').classList.add('active');
         }
@@ -1017,42 +2498,105 @@
             var amount = parseFloat(document.getElementById('transactionAmount').value);
             var description = document.getElementById('transactionDescription').value || (type === 'deposit' ? 'إيداع في البنك' : 'سحب من البنك');
 
-            if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
+            if (!amount || amount <= 0) {
+                showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning');
+                return;
+            }
 
             var bank = banks.find(function(b) { return String(b['id']) === String(bankId); });
-            if (!bank) { showToast('⚠️ البنك غير موجود', 'error'); return; }
+            if (!bank) {
+                showToast('⚠️ البنك غير موجود', 'error');
+                return;
+            }
 
             var currentBalance = parseFloat(bank['balance'] || 0);
-            if (type === 'withdraw' && amount > currentBalance) {
+
+            var editId = document.getElementById('transactionModalOverlay').dataset.editId;
+            var isEdit = editId && editId.length > 0;
+
+            if (type === 'withdraw' && amount > currentBalance && !isEdit) {
                 showToast('⚠️ الرصيد غير كافٍ. الرصيد الحالي: ' + Supabase.formatCurrency(currentBalance), 'warning');
                 return;
             }
 
-            var saveBtn = document.getElementById('transactionSaveBtn');
+            var saveBtn = document.getElementById('saveTransactionBtn');
             saveBtn.disabled = true;
             saveBtn.textContent = 'جاري التنفيذ...';
 
             try {
                 var today = new Date().toISOString().split('T')[0];
-                var newBalance = (type === 'deposit') ? currentBalance + amount : currentBalance - amount;
+
                 var treasuryType = (type === 'deposit') ? 'صادر' : 'وارد';
+                var treasuryDescription = (type === 'deposit') ? 
+                    'تحويل إلى البنك (' + bank['name'] + ')' : 
+                    'سحب من البنك (' + bank['name'] + ')';
 
-                await Supabase.updateData('banks', bankId, { balance: newBalance });
+                if (isEdit) {
+                    allTransactions = allTransactions.filter(function(t) {
+                        return String(t['id']) !== String(editId);
+                    });
 
-                await Supabase.addData('transactions', {
-                    date: today,
-                    type: treasuryType,
-                    category: 'بنك',
-                    amount: amount,
-                    description: description,
-                    reference: bank['name'],
-                    opening_balance: false
-                });
+                    await Supabase.deleteData('transactions', editId);
+
+                    var newTransactionData = {
+                        date: today,
+                        type: treasuryType,
+                        category: 'بنك',
+                        amount: amount,
+                        description: treasuryDescription,
+                        reference: bank['name'],
+                        opening_balance: false
+                    };
+
+                    await Supabase.addData('transactions', newTransactionData);
+
+                    var freshData = await Supabase.getTransactions();
+                    allTransactions = freshData || [];
+
+                    await recalculateBankBalance(bankId);
+
+                    showToast('✅ تم تعديل الحركة وتحديث الرصيد بنجاح', 'success');
+
+                } else {
+                    var newBalance = (type === 'deposit') ? currentBalance + amount : currentBalance - amount;
+
+                    await Supabase.updateData('banks', bankId, {
+                        balance: newBalance
+                    });
+
+                    await Supabase.addData('transactions', {
+                        date: today,
+                        type: treasuryType,
+                        category: 'بنك',
+                        amount: amount,
+                        description: treasuryDescription,
+                        reference: bank['name'],
+                        opening_balance: false
+                    });
+
+                    var freshDataAfterAdd = await Supabase.getTransactions();
+                    allTransactions = freshDataAfterAdd || [];
+
+                    var bankIndex = banks.findIndex(function(b) { return String(b['id']) === String(bankId); });
+                    if (bankIndex !== -1) {
+                        banks[bankIndex]['balance'] = newBalance;
+                    }
+
+                    document.getElementById('bankTransactionsBalance').textContent = Supabase.formatCurrency(newBalance);
+
+                    showToast('✅ تم ' + (type === 'deposit' ? 'الإيداع' : 'السحب') + ' بنجاح', 'success');
+                }
+
+                delete document.getElementById('transactionModalOverlay').dataset.editId;
+                delete document.getElementById('transactionModalOverlay').dataset.oldAmount;
+                delete document.getElementById('transactionModalOverlay').dataset.oldType;
+                delete document.getElementById('transactionModalOverlay').dataset.oldDescription;
 
                 closeTransactionModal();
-                showToast('✅ تم ' + (type === 'deposit' ? 'الإيداع' : 'السحب') + ' بنجاح', 'success');
                 loadData();
+
             } catch (error) {
+                console.error('❌ خطأ:', error);
                 showToast('❌ فشل العملية: ' + error.message, 'error');
             }
 
@@ -1060,136 +2604,512 @@
             saveBtn.textContent = (type === 'deposit') ? 'إيداع' : 'سحب';
         }
 
-        // ============================================================
-        // 12. BANK DETAILS
-        // ============================================================
-        function openBankDetails(bankId) {
+        // ================================================================
+        // BANK TRANSACTIONS MODAL - عرض حركات البنك
+        // ================================================================
+        function openBankTransactionsModal(bankId) {
+            var bank = banks.find(function(b) { return String(b['id']) === String(bankId); });
+            if (!bank) {
+                showToast('⚠️ البنك غير موجود', 'error');
+                return;
+            }
+
+            currentBankId = bankId;
+
+            document.getElementById('bankTransactionsName').textContent = bank['name'] || '—';
+            document.getElementById('bankTransactionsAccount').textContent = 'رقم الحساب: ' + (bank['account_number'] || '—');
+            document.getElementById('bankTransactionsBalance').textContent = Supabase.formatCurrency(bank['balance'] || 0);
+
+            document.getElementById('bankTransactionsModalOverlay').classList.add('active');
+
+            loadBankTransactions(bankId);
+        }
+
+        function closeBankTransactionsModal() {
+            document.getElementById('bankTransactionsModalOverlay').classList.remove('active');
+            currentBankId = null;
+            currentBankTransactions = [];
+        }
+
+        function refreshBankTransactions() {
+            if (currentBankId) {
+                loadBankTransactions(currentBankId);
+            }
+        }
+
+        async function loadBankTransactions(bankId) {
             var bank = banks.find(function(b) { return String(b['id']) === String(bankId); });
             if (!bank) return;
 
-            var bankTransactions = allTransactions.filter(function(t) {
-                return t['reference'] === bank['name'] && t['category'] === 'بنك';
-            });
+            var container = document.getElementById('bankTransactionsContainer');
+            container.innerHTML = `
+                <div style="text-align:center;padding:40px 20px;color:var(--text-tertiary);">
+                    <i class="bi bi-hourglass-split" style="font-size:1.5rem;display:block;margin-bottom:10px;opacity:0.35;"></i>
+                    جاري تحميل الحركات...
+                </div>
+            `;
 
-            var message = '🏦 ' + bank['name'] + '\n';
-            message += '📋 رقم الحساب: ' + (bank['account_number'] || '—') + '\n';
-            message += '💰 الرصيد: ' + Supabase.formatCurrency(bank['balance'] || 0) + '\n';
-            message += '━━━━━━━━━━━━━━━━━━━━\n';
+            try {
+                var bankTransactions = allTransactions.filter(function(t) {
+                    return t['reference'] === bank['name'] && t['category'] === 'بنك';
+                });
 
-            if (bankTransactions.length === 0) {
-                message += 'لا توجد حركات لهذا البنك';
-            } else {
-                bankTransactions.sort(function(a, b) { return new Date(b['date']) - new Date(a['date']); });
-                for (var i = 0; i < Math.min(bankTransactions.length, 10); i++) {
+                currentBankTransactions = bankTransactions;
+
+                if (!bankTransactions || bankTransactions.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-transactions">
+                            <i class="bi bi-inbox"></i>
+                            <span>لا توجد حركات لهذا البنك</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                bankTransactions.sort(function(a, b) {
+                    return new Date(b['date']) - new Date(a['date']);
+                });
+
+                var html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>التاريخ</th>
+                                <th>البيان</th>
+                                <th>النوع</th>
+                                <th>المبلغ</th>
+                                <th style="text-align:center;">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                for (var i = 0; i < bankTransactions.length; i++) {
                     var t = bankTransactions[i];
-                    var type = (t['type'] === 'صادر') ? 'وارد' : 'صادر';
-                    var sign = (t['type'] === 'صادر') ? '+' : '-';
-                    message += (i + 1) + '. ' + t['date'] + ' | ' + t['description'] + ' | ' + sign + Supabase.formatCurrency(t['amount']) + '\n';
-                }
-                if (bankTransactions.length > 10) {
-                    message += '... و ' + (bankTransactions.length - 10) + ' حركات أخرى';
-                }
-            }
+                    var id = t['id'] || '';
+                    var date = t['date'] || '—';
+                    var originalType = t['type'] || '—';
+                    var amount = parseFloat(t['amount'] || 0);
+                    var description = t['description'] || '—';
 
-            alert(message);
+                    var bankDisplayType = (originalType === 'صادر') ? 'وارد' : 'صادر';
+                    var isIncome = (bankDisplayType === 'وارد');
+                    var badgeClass = isIncome ? 'badge-income' : 'badge-expense';
+                    var amountClass = isIncome ? 'amount-income' : 'amount-expense';
+                    var sign = isIncome ? '+' : '-';
+
+                    var dateObj = new Date(date);
+                    var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-SA') : date;
+
+                    html += `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${formattedDate}</td>
+                            <td>${description}</td>
+                            <td><span class="badge-custom ${badgeClass}">${bankDisplayType}</span></td>
+                            <td class="${amountClass}">${sign} ${Supabase.formatCurrency(amount)}</td>
+                            <td style="text-align:center;white-space:nowrap;">
+                                <button class="btn-icon btn-icon-edit" onclick="editBankTransaction('${id}')" title="تعديل">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+                                <button class="btn-icon btn-icon-delete" onclick="deleteBankTransaction('${id}')" title="حذف">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                html += `
+                        </tbody>
+                    </table>
+                `;
+
+                container.innerHTML = html;
+
+            } catch (error) {
+                console.error('❌ خطأ في جلب حركات البنك:', error);
+                container.innerHTML = `
+                    <div class="empty-transactions">
+                        <i class="bi bi-exclamation-triangle-fill" style="color:var(--danger);"></i>
+                        <span style="color:var(--danger);">فشل تحميل الحركات</span>
+                    </div>
+                `;
+            }
         }
 
-        // ============================================================
-        // 13. TOAST
-        // ============================================================
+        // ================================================================
+        // RECALCULATE BANK BALANCE
+        // ================================================================
+        async function recalculateBankBalance(bankId) {
+            try {
+                var bank = banks.find(function(b) { return String(b['id']) === String(bankId); });
+                if (!bank) {
+                    throw new Error('البنك غير موجود');
+                }
+
+                var bankTransactions = allTransactions.filter(function(t) {
+                    return t['reference'] === bank['name'] && t['category'] === 'بنك';
+                });
+
+                var totalIncome = 0;
+                var totalExpense = 0;
+
+                for (var i = 0; i < bankTransactions.length; i++) {
+                    var t = bankTransactions[i];
+                    var amount = parseFloat(t['amount'] || 0);
+                    if (t['type'] === 'صادر') {
+                        totalIncome += amount;
+                    } else if (t['type'] === 'وارد') {
+                        totalExpense += amount;
+                    }
+                }
+
+                var newBalance = totalIncome - totalExpense;
+
+                await Supabase.updateData('banks', bankId, {
+                    balance: newBalance
+                });
+
+                var bankIndex = banks.findIndex(function(b) { return String(b['id']) === String(bankId); });
+                if (bankIndex !== -1) {
+                    banks[bankIndex]['balance'] = newBalance;
+                }
+
+                if (currentBankId && String(currentBankId) === String(bankId)) {
+                    document.getElementById('bankTransactionsBalance').textContent = Supabase.formatCurrency(newBalance);
+                }
+
+                console.log('✅ تم تحديث رصيد البنك: ' + Supabase.formatCurrency(newBalance));
+                return true;
+
+            } catch (error) {
+                console.error('❌ خطأ في إعادة حساب الرصيد:', error);
+                throw error;
+            }
+        }
+
+        // ================================================================
+        // EDIT / DELETE BANK TRANSACTION
+        // ================================================================
+        function editBankTransaction(transactionId) {
+            var transaction = currentBankTransactions.find(function(t) { return String(t['id']) === String(transactionId); });
+            if (!transaction) {
+                showToast('⚠️ الحركة غير موجودة', 'warning');
+                return;
+            }
+
+            var bank = banks.find(function(b) { return b['name'] === transaction['reference']; });
+            if (!bank) {
+                showToast('⚠️ البنك غير موجود', 'error');
+                return;
+            }
+
+            var type = (transaction['type'] === 'صادر') ? 'deposit' : 'withdraw';
+
+            document.getElementById('transactionBankId').value = bank['id'];
+            document.getElementById('transactionType').value = type;
+            document.getElementById('transactionBankName').textContent = bank['name'] || '—';
+            document.getElementById('transactionCurrentBalance').textContent = Supabase.formatCurrency(bank['balance'] || 0);
+            document.getElementById('transactionAmount').value = transaction['amount'] || '';
+            document.getElementById('transactionDescription').value = transaction['description'] || '';
+
+            var title = document.getElementById('transactionModalTitle');
+            var saveBtn = document.getElementById('saveTransactionBtn');
+
+            var effectElement = document.getElementById('treasuryEffect');
+            if (type === 'deposit') {
+                title.innerHTML = '<i class="bi bi-pencil-fill"></i> تعديل إيداع';
+                saveBtn.textContent = 'تحديث الإيداع';
+                saveBtn.className = 'btn-action btn-success';
+                effectElement.textContent = '🔴 نقص (صادر من الخزينة)';
+                effectElement.style.color = 'var(--danger)';
+            } else {
+                title.innerHTML = '<i class="bi bi-pencil-fill"></i> تعديل سحب';
+                saveBtn.textContent = 'تحديث السحب';
+                saveBtn.className = 'btn-action btn-danger';
+                effectElement.textContent = '🟢 زيادة (وارد للخزينة)';
+                effectElement.style.color = 'var(--success)';
+            }
+
+            document.getElementById('transactionModalOverlay').dataset.editId = transactionId;
+            document.getElementById('transactionModalOverlay').dataset.oldAmount = transaction['amount'];
+            document.getElementById('transactionModalOverlay').dataset.oldType = transaction['type'];
+            document.getElementById('transactionModalOverlay').dataset.oldDescription = transaction['description'];
+
+            document.getElementById('transactionModalOverlay').classList.add('active');
+            closeBankTransactionsModal();
+        }
+
+        function deleteBankTransaction(transactionId) {
+            var transaction = currentBankTransactions.find(function(t) { return String(t['id']) === String(transactionId); });
+            if (!transaction) {
+                showToast('⚠️ الحركة غير موجودة', 'warning');
+                return;
+            }
+
+            var bank = banks.find(function(b) { return b['name'] === transaction['reference']; });
+            if (!bank) {
+                showToast('⚠️ البنك غير موجود', 'error');
+                return;
+            }
+
+            openConfirmModal(
+                'تأكيد حذف الحركة',
+                'هل أنت متأكد من حذف هذه الحركة؟ سيتم تحديث رصيد البنك تلقائياً.',
+                'حذف الحركة',
+                function() {
+                    showToast('⏳ جاري حذف الحركة وتحديث الرصيد...', 'info');
+
+                    Supabase.deleteData('transactions', transactionId)
+                        .then(function() {
+                            return Supabase.getTransactions();
+                        })
+                        .then(function(freshData) {
+                            allTransactions = freshData || [];
+                            return recalculateBankBalance(bank['id']);
+                        })
+                        .then(function() {
+                            var updatedBank = banks.find(function(b) { return String(b['id']) === String(bank['id']); });
+                            if (updatedBank) {
+                                document.getElementById('bankTransactionsBalance').textContent = Supabase.formatCurrency(updatedBank['balance'] || 0);
+                            }
+                            showToast('✅ تم حذف الحركة وتحديث الرصيد بنجاح', 'success');
+                            currentBankTransactions = currentBankTransactions.filter(function(t) {
+                                return String(t['id']) !== String(transactionId);
+                            });
+                            loadData();
+                            if (currentBankId) {
+                                setTimeout(function() {
+                                    loadBankTransactions(currentBankId);
+                                }, 500);
+                            }
+                        })
+                        .catch(function(error) {
+                            showToast('❌ فشل حذف الحركة: ' + error.message, 'error');
+                        });
+                },
+                'bankTransactionsModalOverlay'
+            );
+        }
+
+        // ================================================================
+        // LOGOUT
+        // ================================================================
+        function logout() {
+            openConfirmModal(
+                'تأكيد تسجيل الخروج',
+                'هل أنت متأكد من تسجيل الخروج؟',
+                'تسجيل الخروج',
+                function() {
+                    localStorage.removeItem('supabase_session');
+                    localStorage.removeItem('darkMode');
+                    window.location.href = 'login.html';
+                },
+                null
+            );
+        }
+
+        // ================================================================
+        // SIDEBAR TOGGLE
+        // ================================================================
+        function initSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var toggle = document.getElementById('sidebarToggle');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
+
+            var MOBILE_BREAKPOINT = 1200;
+
+            toggle.addEventListener('click', function() {
+                if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                    var isOpen = sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = isOpen ? 'hidden' : '';
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
+                }
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeBankModal();
+                    closeTransactionModal();
+                    closeBankTransactionsModal();
+                    closeConfirmModal();
+                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > MOBILE_BREAKPOINT) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    main.classList.remove('expanded');
+                }
+            });
+        }
+
+        // ================================================================
+        // DARK MODE
+        // ================================================================
+        function initDarkMode() {
+            var toggle = document.getElementById('darkModeToggle');
+            if (!toggle) return;
+
+            var icon = toggle.querySelector('i');
+
+            // تطبيق الثيم من الإعدادات المركزية
+            var isDark = Supabase.isDarkModeEnabled();
+            Supabase.applyTheme(isDark);
+
+            if (icon) {
+                icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+            }
+
+            toggle.addEventListener('click', function() {
+                var currentState = document.body.classList.contains('dark-mode');
+                var newState = !currentState;
+
+                Supabase.toggleTheme(newState).then(function() {
+                    if (icon) {
+                        icon.className = newState ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                    }
+                });
+            });
+        }
+
+        // ================================================================
+        // REFRESH BUTTON
+        // ================================================================
+        function initRefresh() {
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                loadData();
+                showToast('🔄 جاري تحديث البيانات...', 'info');
+            });
+        }
+
+        // ================================================================
+        // KEYBOARD SHORTCUTS
+        // ================================================================
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'b') {
+                    e.preventDefault();
+                    document.getElementById('sidebarToggle').click();
+                }
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    loadData();
+                    showToast('🔄 جاري تحديث البيانات...', 'info');
+                }
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    document.getElementById('darkModeToggle').click();
+                }
+                if (e.ctrlKey && e.key === 'l') {
+                    e.preventDefault();
+                    logout();
+                }
+            });
+        }
+
+        // ================================================================
+        // TOAST
+        // ================================================================
         function showToast(message, type) {
-            var existing = document.querySelectorAll('.toast-notification');
-            existing.forEach(function(t) { t.remove(); });
+            var existingToasts = document.querySelectorAll('.toast-notification');
+            for (var i = 0; i < existingToasts.length; i++) {
+                existingToasts[i].remove();
+            }
 
             var toast = document.createElement('div');
             toast.className = 'toast-notification';
 
-            var iconMap = {
-                'success': 'fa-check-circle',
-                'error': 'fa-times-circle',
-                'warning': 'fa-exclamation-triangle',
-                'info': 'fa-info-circle'
-            };
+            var iconClass = 'bi-info-circle-fill';
+            var toastClass = '';
 
-            var icon = iconMap[type] || 'fa-info-circle';
-            toast.innerHTML = '<span class="toast-icon"><i class="fas ' + icon + '"></i></span> <span>' + message + '</span>';
+            if (type === 'success') {
+                iconClass = 'bi-check-circle-fill';
+                toastClass = 'toast-success';
+            } else if (type === 'error') {
+                iconClass = 'bi-x-circle-fill';
+                toastClass = 'toast-error';
+            } else if (type === 'warning') {
+                iconClass = 'bi-exclamation-triangle-fill';
+                toastClass = 'toast-warning';
+            }
 
-            if (type === 'success') toast.classList.add('toast-success');
-            if (type === 'error') toast.classList.add('toast-error');
-            if (type === 'warning') toast.classList.add('toast-warning');
+            toast.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
+                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
+                </div>
+            `;
+
+            if (toastClass) {
+                toast.classList.add(toastClass);
+            }
 
             document.body.appendChild(toast);
 
             setTimeout(function() {
                 toast.style.animation = 'fadeOut 0.3s ease forwards';
                 setTimeout(function() {
-                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
                 }, 300);
             }, 3000);
         }
 
-        // ============================================================
-        // 14. LOGOUT
-        // ============================================================
-        function logout() {
-            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                localStorage.removeItem('supabase_session');
-                localStorage.removeItem('darkMode');
-                window.location.href = 'login.html';
-            }
-        }
-
-        // ============================================================
-        // 15. KEYBOARD SHORTCUTS
-        // ============================================================
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'b') {
-                e.preventDefault();
-                toggleSidebar();
-            }
-            if (e.ctrlKey && e.key === 'r') {
-                e.preventDefault();
-                loadData();
-                showToast('🔄 جاري تحديث البيانات...', 'info');
-            }
-            if (e.key === 'Escape') {
-                closeBankModal();
-                closeTransactionModal();
-                closeConfirmModal();
-                if (window.innerWidth <= 1024) {
-                    document.getElementById('sidebar').classList.remove('open');
-                    document.getElementById('sidebarOverlay').classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }
-        });
-
-        // ============================================================
-        // 16. INIT
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-            setInterval(loadData, 60000);
-        });
-
-        // ============================================================
+        // ================================================================
         // EXPOSE
-        // ============================================================
-        window.toggleSidebar = toggleSidebar;
+        // ================================================================
         window.openBankModal = openBankModal;
         window.closeBankModal = closeBankModal;
         window.editBank = editBank;
         window.deleteBank = deleteBank;
         window.openTransactionModal = openTransactionModal;
         window.closeTransactionModal = closeTransactionModal;
-        window.openBankDetails = openBankDetails;
+        window.openBankTransactionsModal = openBankTransactionsModal;
+        window.closeBankTransactionsModal = closeBankTransactionsModal;
+        window.refreshBankTransactions = refreshBankTransactions;
         window.logout = logout;
-        window.loadData = loadData;
         window.showToast = showToast;
+        window.loadData = loadData;
+        window.editBankTransaction = editBankTransaction;
+        window.deleteBankTransaction = deleteBankTransaction;
+        window.openConfirmModal = openConfirmModal;
+        window.closeConfirmModal = closeConfirmModal;
 
         console.log('🏦 نظام البنوك - حراء للسياحة');
-        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث)');
+        console.log('📡 Supabase URL:', SUPABASE_CONFIG.URL);
+        console.log('💰 العملة:', systemCurrency, currencySymbol);
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
         console.log('✅ النظام جاهز للعمل');
+        console.log('📌 اضغط على أي بنك لعرض حركاته');
+        console.log('📌 الإيداع في البنك = صادر من الخزينة، السحب من البنك = وارد للخزينة');
+        console.log('📌 عند حذف أو تعديل حركة، يتم إعادة حساب رصيد البنك تلقائياً');
+        console.log('📌 حركات البنك تظهر معكوسة (صادر ← وارد، وارد ← صادر) لعكس العلاقة مع الخزينة');
+        console.log('📌 يتم تحديث الرصيد في نافذة الحركات فوراً بعد أي تعديل أو حذف');
+        console.log('📌 نافذة تأكيد مخصصة بدلاً من confirm()');
+        console.log('📌 العملة يتم جلبها من Supabase عند تحميل الصفحة');
     </script>
 
 </body>

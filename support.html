@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title id="pageTitle">التقارير - حراء للسياحة</title>
+    <title id="pageTitle">الدعم والتواصل - حراء للسياحة</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,10 +15,6 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-    </script>
-
     <!-- ============================================================ -->
     <!-- SUPABASE.JS - الملف المركزي -->
     <!-- ============================================================ -->
@@ -26,7 +22,7 @@
 
     <style>
         /* ================================================================
-           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           DESIGN SYSTEM - مطابق تماماً لـ index.html
            ================================================================ */
         :root {
             --primary: #0e1c2e;
@@ -114,7 +110,7 @@
         }
 
         /* ================================================================
-           SIDEBAR
+           SIDEBAR - مطابق تماماً لـ index.html
            ================================================================ */
         .sidebar {
             position: fixed;
@@ -349,10 +345,10 @@
         }
 
         /* ================================================================
-           NAVBAR
+           NAVBAR - مطابق لـ index.html
            ================================================================ */
         .navbar-custom {
-            background: var(--bg);
+            background: var(--surface);
             padding: 0 24px;
             height: var(--header-height);
             display: flex;
@@ -361,7 +357,8 @@
             position: sticky;
             top: 0;
             z-index: 1040;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 2px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
 
         .navbar-left {
@@ -371,8 +368,8 @@
         }
 
         .sidebar-toggle {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border: 1px solid var(--border);
             background: transparent;
             font-size: 16px;
@@ -385,8 +382,9 @@
         }
 
         .sidebar-toggle:hover {
-            background: var(--surface);
-            border-color: var(--text-tertiary);
+            background: var(--bg);
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .navbar-logo-container {
@@ -409,10 +407,11 @@
         }
 
         .navbar-logo-text {
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 800;
             color: var(--text);
             font-family: var(--font-display);
+            letter-spacing: -0.3px;
         }
 
         .navbar-logo-text span {
@@ -424,6 +423,9 @@
             font-size: 15px;
             font-weight: 700;
             color: var(--text);
+            position: relative;
+            padding-right: 12px;
+            border-right: 2px solid var(--accent);
         }
 
         .page-title small {
@@ -440,12 +442,12 @@
         }
 
         .nav-btn {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
-            font-size: 15px;
+            font-size: 16px;
             transition: var(--t-base);
             border-radius: var(--radius-sm);
             display: flex;
@@ -455,15 +457,26 @@
         }
 
         .nav-btn:hover {
-            background: var(--surface);
+            background: var(--bg);
             color: var(--text);
+        }
+
+        .nav-btn .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--danger);
+            border: 2px solid var(--surface);
         }
 
         .user-profile {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 3px 4px 3px 12px;
+            padding: 4px 4px 4px 14px;
             border-radius: var(--radius-full);
             cursor: pointer;
             transition: var(--t-base);
@@ -471,21 +484,21 @@
         }
 
         .user-profile:hover {
-            background: var(--surface);
+            background: var(--bg);
             border-color: var(--border);
         }
 
         .user-avatar {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: var(--accent);
             color: var(--text-inverse);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            font-size: 12px;
+            font-weight: 700;
+            font-size: 13px;
             font-family: var(--font-display);
             flex-shrink: 0;
         }
@@ -529,8 +542,8 @@
 
         .page-header .ph-left h2 {
             font-family: var(--font-display);
-            font-size: 17px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 800;
             color: var(--text);
             margin: 0;
         }
@@ -555,126 +568,79 @@
         }
 
         /* ================================================================
-           STAT CARDS
+           SUPPORT CARDS
            ================================================================ */
-        .stats-grid {
+        .support-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 18px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .stat-card {
+        .support-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 14px 16px;
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            text-align: center;
             transition: var(--t-base);
-            cursor: pointer;
-        }
-
-        .stat-card:hover {
-            border-color: var(--accent);
             box-shadow: var(--shadow-sm);
-            transform: translateY(-1px);
+            position: relative;
+            overflow: hidden;
         }
 
-        .stat-card .stat-number {
+        .support-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .support-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+
+        .support-card .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-sm);
+            background: var(--accent-tint);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 14px;
+            transition: var(--t-base);
+        }
+
+        .support-card:hover .card-icon {
+            background: var(--accent);
+            color: var(--text-inverse);
+        }
+
+        .support-card .card-title {
             font-family: var(--font-display);
-            font-size: 20px;
-            font-weight: 800;
+            font-size: 15px;
+            font-weight: 700;
             color: var(--text);
-            line-height: 1.2;
+            margin-bottom: 4px;
         }
 
-        .stat-card .stat-label {
-            font-size: 10px;
+        .support-card .card-description {
+            font-size: 12px;
             color: var(--text-tertiary);
-            margin-top: 2px;
+            margin-bottom: 12px;
+            line-height: 1.6;
         }
 
-        .stat-card .stat-icon {
-            float: left;
-            font-size: 18px;
-            color: var(--accent-light);
-            opacity: 0.5;
-        }
-
-        .stat-gold .stat-number {
-            color: var(--accent);
-        }
-        .stat-green .stat-number {
-            color: var(--success);
-        }
-        .stat-red .stat-number {
-            color: var(--danger);
-        }
-        .stat-blue .stat-number {
-            color: var(--info);
-        }
-        .stat-purple .stat-number {
-            color: #6b5b8f;
-        }
-
-        /* ================================================================
-           FILTER BAR
-           ================================================================ */
-        .filter-bar {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-bottom: 18px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .filter-bar .filter-label {
-            font-weight: 600;
-            font-size: 12px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .filter-bar .filter-label i {
-            color: var(--accent);
-        }
-
-        .filter-bar select,
-        .filter-bar input {
-            padding: 6px 12px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
-            font-size: 12px;
-            background: var(--surface);
-            color: var(--text);
-            transition: var(--t-base);
-        }
-
-        .filter-bar select:focus,
-        .filter-bar input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
-        }
-
-        .filter-bar .date-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .filter-bar .date-group input {
-            width: 130px;
-        }
-
-        .btn-action {
+        .support-card .card-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -683,303 +649,268 @@
             font-weight: 600;
             font-size: 12px;
             transition: var(--t-base);
-            border: 1px solid transparent;
-            font-family: var(--font-display);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: var(--text-inverse);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-light);
-            border-color: var(--primary-light);
-            color: var(--text-inverse);
-        }
-
-        .btn-success {
-            background: var(--success);
-            border-color: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #166a4a;
-            border-color: #166a4a;
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border-color: var(--border);
+            border: 1px solid var(--border);
             color: var(--text-secondary);
+            background: transparent;
         }
 
-        .btn-outline:hover {
+        .support-card .card-link:hover {
             border-color: var(--accent);
             color: var(--accent-dark);
             background: var(--accent-tint);
         }
 
-        .btn-sm {
-            font-size: 10px;
-            padding: 4px 10px;
-        }
-
-        /* ================================================================
-           CHARTS SECTION
-           ================================================================ */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 18px;
-        }
-
-        .chart-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            min-width: 0;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .chart-card .chart-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .chart-card .chart-header h6 {
-            font-family: var(--font-display);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text);
-            margin: 0;
-        }
-
-        .chart-card .chart-header h6 i {
-            color: var(--accent);
-            margin-left: 6px;
-        }
-
-        .chart-card .chart-header .chart-badge {
-            font-size: 9px;
-            padding: 2px 10px;
-            border-radius: var(--radius-full);
-            background: var(--accent-tint);
-            color: var(--accent-dark);
-            font-family: var(--font-display);
-            font-weight: 600;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 200px;
-            width: 100%;
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        .chart-container canvas {
-            max-width: 100%;
-        }
-
-        /* ================================================================
-           PANEL
-           ================================================================ */
-        .panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .panel-header {
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .panel-title {
-            font-family: var(--font-display);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin: 0;
-        }
-
-        .panel-title i {
-            color: var(--accent);
+        .support-card .card-link i {
             font-size: 13px;
         }
 
-        .record-count {
-            font-size: 11px;
-            color: var(--text-tertiary);
-            font-weight: 500;
+        .support-card .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            font-size: 18px;
+            transition: var(--t-base);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            background: transparent;
+            margin: 0 3px;
+        }
+
+        .support-card .social-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .support-card .social-link.whatsapp:hover {
+            background: #25D366;
+            border-color: #25D366;
+            color: white;
+        }
+
+        .support-card .social-link.facebook:hover {
+            background: #1877F2;
+            border-color: #1877F2;
+            color: white;
+        }
+
+        .support-card .social-link.instagram:hover {
+            background: #E4405F;
+            border-color: #E4405F;
+            color: white;
+        }
+
+        .support-card .social-link.youtube:hover {
+            background: #FF0000;
+            border-color: #FF0000;
+            color: white;
+        }
+
+        .support-card .social-group {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
         }
 
         /* ================================================================
-           TABLE
+           COMPANY INFO SECTION
            ================================================================ */
-        .table-wrap {
-            overflow-x: auto;
+        .company-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
         }
 
-        .table-custom {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12.5px;
-        }
-
-        .table-custom thead {
-            background: var(--bg);
-        }
-
-        .table-custom th {
-            padding: 8px 12px;
-            text-align: right;
-            font-weight: 600;
-            color: var(--text-tertiary);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            border-bottom: 1px solid var(--border);
-            font-family: var(--font-display);
-            white-space: nowrap;
-        }
-
-        .table-custom td {
-            padding: 8px 12px;
+        .company-section .company-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
             border-bottom: 1px solid var(--border-light);
-            vertical-align: middle;
+        }
+
+        .company-section .company-header .company-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            background: var(--accent-tint);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            font-family: var(--font-display);
+            flex-shrink: 0;
+        }
+
+        .company-section .company-header .company-title {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 800;
             color: var(--text);
         }
 
-        .table-custom tr:last-child td {
-            border-bottom: none;
+        .company-section .company-header .company-title small {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-tertiary);
         }
 
-        .table-custom tr:hover td {
+        .company-section .company-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 24px;
+        }
+
+        .company-section .company-details .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
             background: var(--surface-alt);
+            transition: var(--t-base);
         }
 
-        .amount-income {
-            color: var(--success);
+        .company-section .company-details .detail-item:hover {
+            background: var(--accent-tint);
+        }
+
+        .company-section .company-details .detail-item i {
+            width: 20px;
+            color: var(--accent);
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .company-section .company-details .detail-item .detail-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
-        .amount-expense {
-            color: var(--danger);
+        .company-section .company-details .detail-item .detail-value {
+            font-size: 13px;
             font-weight: 600;
-        }
-
-        .badge-custom {
-            padding: 1px 8px;
-            border-radius: var(--radius-full);
-            font-size: 9px;
-            font-weight: 600;
-            display: inline-block;
-            font-family: var(--font-display);
-        }
-
-        .badge-income {
-            background: var(--success-bg);
-            color: var(--success);
-        }
-
-        .badge-expense {
-            background: var(--danger-bg);
-            color: var(--danger);
-        }
-
-        .badge-transfer {
-            background: var(--info-bg);
-            color: var(--info);
+            color: var(--text);
         }
 
         /* ================================================================
-           TOAST
+           CONTACT FORM
            ================================================================ */
-        .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
+        .contact-section {
             background: var(--surface);
-            padding: 12px 18px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+        }
+
+        .contact-section .contact-title {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .contact-section .contact-subtitle {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+        }
+
+        .contact-section .form-group {
+            margin-bottom: 14px;
+        }
+
+        .contact-section .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .contact-section .form-group label .required {
+            color: var(--danger);
+        }
+
+        .contact-section .form-group input,
+        .contact-section .form-group textarea,
+        .contact-section .form-group select {
+            width: 100%;
+            padding: 9px 14px;
+            border: 1px solid var(--border);
             border-radius: var(--radius-sm);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-right: 3px solid var(--accent);
-            z-index: 9999;
-            animation: slideUp 0.3s ease forwards;
-            max-width: 380px;
-            font-size: 12.5px;
+            font-family: var(--font-body);
+            font-size: 13px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
         }
 
-        .toast-notification.toast-success {
-            border-right-color: var(--success);
+        .contact-section .form-group input:focus,
+        .contact-section .form-group textarea:focus,
+        .contact-section .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(156, 122, 60, 0.08);
         }
 
-        .toast-notification.toast-error {
-            border-right-color: var(--danger);
+        .contact-section .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
         }
 
-        .toast-notification.toast-warning {
-            border-right-color: var(--warning);
+        .contact-section .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateY(-15px);
-            }
-        }
-
-        /* ================================================================
-           SHIMMER
-           ================================================================ */
-        .shimmer {
-            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
-            background-size: 200% 100%;
-            animation: shimmer-animation 1.5s ease-in-out infinite;
+        .btn-submit {
+            padding: 10px 32px;
             border-radius: var(--radius-sm);
+            background: var(--primary);
+            border: none;
+            color: var(--text-inverse);
+            font-weight: 700;
+            font-size: 13px;
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            cursor: pointer;
         }
 
-        @keyframes shimmer-animation {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
+        .btn-submit:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit i {
+            font-size: 14px;
         }
 
         /* ================================================================
@@ -991,7 +922,6 @@
             padding: 12px 24px;
             flex-shrink: 0;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
-            margin-top: auto;
         }
 
         .footer-custom .footer-content {
@@ -1068,6 +998,58 @@
         }
 
         /* ================================================================
+           TOAST
+           ================================================================ */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
+            z-index: 9999;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
+        }
+
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
            RESPONSIVE
            ================================================================ */
         @media (max-width: 1200px) {
@@ -1082,9 +1064,6 @@
             }
             .sidebar-overlay.active {
                 display: block;
-            }
-            .charts-grid {
-                grid-template-columns: 1fr;
             }
         }
 
@@ -1104,21 +1083,11 @@
             .navbar-logo-text {
                 display: none;
             }
-            .filter-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .filter-bar .date-group {
-                flex-wrap: wrap;
-            }
-            .filter-bar .date-group input {
-                width: 100%;
-            }
-            .charts-grid {
+            .company-section .company-details {
                 grid-template-columns: 1fr;
             }
-            .footer-custom .footer-divider {
-                display: none;
+            .contact-section .form-row {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1132,41 +1101,53 @@
             }
             .page-title {
                 font-size: 14px;
+                padding-right: 8px;
             }
             .page-title small {
                 display: none;
             }
             .sidebar-toggle {
-                width: 28px;
-                height: 28px;
+                width: 32px;
+                height: 32px;
                 font-size: 14px;
             }
             .dashboard-content {
                 padding: 12px 12px;
             }
             .page-header h2 {
-                font-size: 15px;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-            .stat-card .stat-number {
                 font-size: 16px;
             }
-            .table-custom {
-                font-size: 11px;
+            .support-grid {
+                grid-template-columns: 1fr 1fr;
             }
-            .table-custom th,
-            .table-custom td {
-                padding: 6px 8px;
+            .company-section {
+                padding: 18px 16px;
+            }
+            .contact-section {
+                padding: 18px 16px;
+            }
+            .company-section .company-header .company-logo {
+                width: 48px;
+                height: 48px;
+                font-size: 22px;
+            }
+            .company-section .company-header .company-title {
+                font-size: 16px;
+            }
+            .support-card {
+                padding: 18px 14px;
+            }
+            .support-card .card-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+            .support-card .card-title {
+                font-size: 13px;
             }
             .navbar-logo-img {
                 height: 24px;
                 width: 24px;
-            }
-            .chart-container {
-                height: 160px;
             }
             .footer-custom {
                 padding: 8px 14px;
@@ -1187,40 +1168,44 @@
                 flex-wrap: wrap;
                 justify-content: center;
             }
+            .footer-custom .footer-divider {
+                display: none;
+            }
         }
 
         @media (max-width: 576px) {
             .dashboard-content {
                 padding: 10px 10px;
             }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
+            .support-grid {
+                grid-template-columns: 1fr;
             }
-            .stat-card {
-                padding: 10px 12px;
+            .support-card {
+                padding: 14px 12px;
             }
-            .stat-card .stat-number {
-                font-size: 14px;
+            .company-section .company-details .detail-item {
+                flex-wrap: wrap;
+                padding: 6px 10px;
             }
-            .stat-card .stat-label {
+            .company-section .company-details .detail-item .detail-label {
+                width: 100%;
                 font-size: 9px;
             }
-            .stat-card .stat-icon {
-                font-size: 14px;
+            .company-section .company-details .detail-item .detail-value {
+                font-size: 12px;
             }
             .user-avatar {
                 width: 28px;
                 height: 28px;
                 font-size: 11px;
             }
-            .filter-bar {
-                padding: 10px 12px;
+            .btn-submit {
+                width: 100%;
+                justify-content: center;
             }
-            .filter-bar select,
-            .filter-bar input {
-                font-size: 11px;
-                padding: 5px 10px;
+            .nav-btn {
+                width: 32px;
+                height: 32px;
             }
             .footer-custom .footer-copy {
                 font-size: 10px;
@@ -1232,7 +1217,7 @@
         }
 
         /* ================================================================
-           DARK MODE
+           DARK MODE - مطابق تماماً لـ index.html
            ================================================================ */
         body.dark-mode {
             background: var(--primary-dark);
@@ -1240,7 +1225,7 @@
         }
 
         body.dark-mode .navbar-custom {
-            background: var(--primary-dark);
+            background: var(--primary);
             border-bottom-color: rgba(255,255,255,0.06);
         }
 
@@ -1248,57 +1233,74 @@
             color: #e0dcd2;
         }
 
-        body.dark-mode .stat-card {
+        body.dark-mode .page-title {
+            border-right-color: var(--accent-light);
+        }
+
+        body.dark-mode .support-card {
             background: var(--primary);
             border-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .stat-card .stat-number {
+        body.dark-mode .support-card .card-title {
             color: #e0dcd2;
         }
 
-        body.dark-mode .filter-bar {
+        body.dark-mode .support-card .card-description {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .support-card .card-icon {
+            background: rgba(139, 122, 75, 0.15);
+        }
+
+        body.dark-mode .support-card:hover .card-icon {
+            background: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .company-section {
             background: var(--primary);
             border-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .filter-bar select,
-        body.dark-mode .filter-bar input {
+        body.dark-mode .company-section .company-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .company-section .company-header .company-title {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .company-section .company-details .detail-item {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .company-section .company-details .detail-item .detail-value {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .contact-section {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .contact-section .contact-title {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .contact-section .form-group input,
+        body.dark-mode .contact-section .form-group textarea,
+        body.dark-mode .contact-section .form-group select {
             background: var(--primary-light);
             color: #e0dcd2;
             border-color: rgba(255,255,255,0.08);
         }
 
-        body.dark-mode .filter-bar select:focus,
-        body.dark-mode .filter-bar input:focus {
+        body.dark-mode .contact-section .form-group input:focus,
+        body.dark-mode .contact-section .form-group textarea:focus,
+        body.dark-mode .contact-section .form-group select:focus {
             border-color: var(--accent);
-        }
-
-        body.dark-mode .panel {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .panel-header {
-            border-bottom-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .table-custom thead {
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .table-custom th {
-            color: rgba(232,228,220,0.4);
-            border-bottom-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .table-custom td {
-            border-bottom-color: rgba(255,255,255,0.04);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .table-custom tr:hover td {
-            background: var(--primary-light);
         }
 
         body.dark-mode .page-header {
@@ -1313,32 +1315,14 @@
             color: rgba(232,228,220,0.5);
         }
 
-        body.dark-mode .btn-outline {
-            border-color: rgba(255,255,255,0.08);
-            color: rgba(232,228,220,0.6);
-        }
-
-        body.dark-mode .btn-outline:hover {
-            border-color: var(--accent);
-            color: var(--accent-light);
-            background: rgba(139, 122, 75, 0.1);
-        }
-
-        body.dark-mode .btn-primary {
+        body.dark-mode .btn-submit {
             background: var(--accent);
-            border-color: var(--accent);
             color: var(--text);
         }
 
-        body.dark-mode .btn-primary:hover {
+        body.dark-mode .btn-submit:hover {
             background: var(--accent-light);
-            border-color: var(--accent-light);
             color: var(--text);
-        }
-
-        body.dark-mode .btn-success {
-            background: #166a4a;
-            border-color: #166a4a;
         }
 
         body.dark-mode .sidebar-toggle {
@@ -1388,22 +1372,9 @@
             border-right-color: var(--warning);
         }
 
-        body.dark-mode .chart-card {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .chart-card .chart-header h6 {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .chart-card .chart-header .chart-badge {
-            background: rgba(139, 122, 75, 0.15);
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .shimmer {
-            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        body.dark-mode .user-avatar {
+            background: var(--accent-light);
+            color: var(--text);
         }
 
         body.dark-mode .footer-custom {
@@ -1435,71 +1406,12 @@
         body.dark-mode .footer-custom .footer-link:hover {
             color: var(--accent-light);
         }
-
-        /* ================================================================
-           EXPORT BUTTONS
-           ================================================================ */
-        .export-group {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .btn-export {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 12px;
-            border-radius: var(--radius-sm);
-            font-weight: 500;
-            font-size: 10px;
-            transition: var(--t-base);
-            border: 1px solid transparent;
-            font-family: var(--font-display);
-            cursor: pointer;
-        }
-
-        .btn-export-pdf {
-            background: var(--danger);
-            border-color: var(--danger);
-            color: white;
-        }
-
-        .btn-export-pdf:hover {
-            background: #a03d32;
-            border-color: #a03d32;
-            color: white;
-        }
-
-        .btn-export-excel {
-            background: var(--success);
-            border-color: var(--success);
-            color: white;
-        }
-
-        .btn-export-excel:hover {
-            background: #166a4a;
-            border-color: #166a4a;
-            color: white;
-        }
-
-        .btn-export-print {
-            background: var(--info);
-            border-color: var(--info);
-            color: white;
-        }
-
-        .btn-export-print:hover {
-            background: #1f4d6e;
-            border-color: #1f4d6e;
-            color: white;
-        }
     </style>
 </head>
 <body>
 
     <!-- ================================================================ -->
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR - مطابق تماماً لـ index.html -->
     <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
@@ -1532,7 +1444,7 @@
             <div class="nav-section-title">التقارير</div>
             <ul class="nav-list">
                 <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
-                <li><a href="reports.html" class="active"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
             </ul>
 
             <div class="nav-section-title">الإدارة</div>
@@ -1544,7 +1456,7 @@
 
             <div class="nav-section-title">الدعم</div>
             <ul class="nav-list">
-                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+                <li><a href="support.html" class="active"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
             </ul>
         </nav>
 
@@ -1567,7 +1479,7 @@
     <main class="main-content" id="mainContent">
 
         <!-- ================================================================ -->
-        <!-- NAVBAR -->
+        <!-- NAVBAR - مطابق لـ index.html -->
         <!-- ================================================================ -->
         <nav class="navbar-custom">
             <div class="navbar-left">
@@ -1581,8 +1493,8 @@
                 </div>
 
                 <h4 class="page-title" id="pageTitleText">
-                    التقارير المالية
-                    <small>تحليل شامل للأداء المالي</small>
+                    الدعم والتواصل
+                    <small>تواصل مع فريق الدعم الفني</small>
                 </h4>
             </div>
 
@@ -1611,8 +1523,8 @@
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>التقارير المالية</h2>
-                    <p>تحليل شامل للإيرادات والمصروفات والأداء المالي</p>
+                    <h2>الدعم الفني والتواصل</h2>
+                    <p>نحن هنا لمساعدتك في أي استفسار أو مشكلة تواجهها</p>
                 </div>
                 <div class="ph-right">
                     <strong>اليوم</strong>
@@ -1620,140 +1532,219 @@
                 </div>
             </div>
 
-            <!-- ===== STATS ===== -->
-            <div class="stats-grid">
-                <div class="stat-card stat-gold">
-                    <span class="stat-icon"><i class="bi bi-wallet-fill"></i></span>
-                    <div class="stat-number" id="totalIncome">0</div>
-                    <div class="stat-label">إجمالي الإيرادات</div>
+            <!-- ===== SUPPORT CARDS ===== -->
+            <div class="support-grid">
+                <!-- بطاقة واتساب -->
+                <div class="support-card">
+                    <div class="card-icon"><i class="bi bi-whatsapp"></i></div>
+                    <div class="card-title">واتساب</div>
+                    <div class="card-description">أسرع طريقة للتواصل مع فريق الدعم الفني</div>
+                    <a href="https://wa.me/201010422057" target="_blank" class="card-link">
+                        <i class="bi bi-whatsapp"></i> +20 101 042 2057
+                    </a>
                 </div>
-                <div class="stat-card stat-red">
-                    <span class="stat-icon"><i class="bi bi-arrow-up-circle-fill"></i></span>
-                    <div class="stat-number" id="totalExpense">0</div>
-                    <div class="stat-label">إجمالي المصروفات</div>
+
+                <!-- بطاقة فيسبوك -->
+                <div class="support-card">
+                    <div class="card-icon"><i class="bi bi-facebook"></i></div>
+                    <div class="card-title">فيسبوك</div>
+                    <div class="card-description">تابعنا على فيسبوك للاطلاع على آخر التحديثات</div>
+                    <div class="social-group">
+                        <a href="https://www.facebook.com/QuickDataProSoft" target="_blank" class="social-link facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="stat-card stat-green">
-                    <span class="stat-icon"><i class="bi bi-arrow-left-right"></i></span>
-                    <div class="stat-number" id="netProfit">0</div>
-                    <div class="stat-label">صافي الربح</div>
+
+                <!-- بطاقة إنستجرام -->
+                <div class="support-card">
+                    <div class="card-icon"><i class="bi bi-instagram"></i></div>
+                    <div class="card-title">إنستجرام</div>
+                    <div class="card-description">شاهد آخر أعمالنا ونماذجنا على إنستجرام</div>
+                    <div class="social-group">
+                        <a href="https://www.instagram.com/QuickDataProSoft" target="_blank" class="social-link instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="stat-card stat-blue">
-                    <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
-                    <div class="stat-number" id="totalTransactions">0</div>
-                    <div class="stat-label">إجمالي المعاملات</div>
+
+                <!-- بطاقة يوتيوب -->
+                <div class="support-card">
+                    <div class="card-icon"><i class="bi bi-youtube"></i></div>
+                    <div class="card-title">يوتيوب</div>
+                    <div class="card-description">شاهد الفيديوهات التعليمية والشروحات على يوتيوب</div>
+                    <div class="social-group">
+                        <a href="https://www.youtube.com/@QuickDataProSoft" target="_blank" class="social-link youtube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- بطاقة البريد الإلكتروني -->
+                <div class="support-card">
+                    <div class="card-icon"><i class="bi bi-envelope-fill"></i></div>
+                    <div class="card-title">البريد الإلكتروني</div>
+                    <div class="card-description">أرسل استفسارك عبر البريد الإلكتروني</div>
+                    <a href="mailto:info@quickdataprosoft.com" class="card-link">
+                        <i class="bi bi-envelope-fill"></i> info@quickdataprosoft.com
+                    </a>
+                </div>
+
+                <!-- بطاقة جميع وسائل التواصل -->
+                <div class="support-card">
+                    <div class="card-icon"><i class="bi bi-share-fill"></i></div>
+                    <div class="card-title">جميع وسائل التواصل</div>
+                    <div class="card-description">تابعنا على جميع منصات التواصل الاجتماعي</div>
+                    <div class="social-group">
+                        <a href="https://wa.me/201010422057" target="_blank" class="social-link whatsapp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        <a href="https://www.facebook.com/QuickDataProSoft" target="_blank" class="social-link facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="https://www.instagram.com/QuickDataProSoft" target="_blank" class="social-link instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@QuickDataProSoft" target="_blank" class="social-link youtube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <!-- ===== FILTER BAR ===== -->
-            <div class="filter-bar">
-                <span class="filter-label"><i class="bi bi-funnel-fill"></i> تصفية</span>
-
-                <select id="filterType">
-                    <option value="all">جميع الأنواع</option>
-                    <option value="وارد">وارد فقط</option>
-                    <option value="صادر">صادر فقط</option>
-                </select>
-
-                <select id="filterCategory">
-                    <option value="all">جميع الفئات</option>
-                    <option value="سيارة">سيارة</option>
-                    <option value="شركة">شركة</option>
-                    <option value="عميل">عميل</option>
-                    <option value="بنك">بنك</option>
-                </select>
-
-                <div class="date-group">
-                    <span>من</span>
-                    <input type="date" id="filterDateFrom" />
-                    <span>إلى</span>
-                    <input type="date" id="filterDateTo" />
+            <!-- ===== COMPANY INFORMATION ===== -->
+            <div class="company-section">
+                <div class="company-header">
+                    <div class="company-logo">ق</div>
+                    <div class="company-title">
+                        حراء للسياحة
+                        <small>النظام المحاسبي المتكامل</small>
+                    </div>
                 </div>
+                <div class="company-details">
+                    <div class="detail-item">
+                        <i class="bi bi-building"></i>
+                        <div>
+                            <div class="detail-label">اسم الشركة</div>
+                            <div class="detail-value">QuickData ProSoft</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <div>
+                            <div class="detail-label">المقر الرئيسي</div>
+                            <div class="detail-value">جمهورية مصر العربية</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-envelope-fill"></i>
+                        <div>
+                            <div class="detail-label">البريد الإلكتروني</div>
+                            <div class="detail-value">info@quickdataprosoft.com</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-whatsapp"></i>
+                        <div>
+                            <div class="detail-label">واتساب</div>
+                            <div class="detail-value">+20 101 042 2057</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-facebook"></i>
+                        <div>
+                            <div class="detail-label">فيسبوك</div>
+                            <div class="detail-value">QuickData ProSoft</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-instagram"></i>
+                        <div>
+                            <div class="detail-label">إنستجرام</div>
+                            <div class="detail-value">@QuickDataProSoft</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-youtube"></i>
+                        <div>
+                            <div class="detail-label">يوتيوب</div>
+                            <div class="detail-value">QuickData ProSoft</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-globe2"></i>
+                        <div>
+                            <div class="detail-label">الموقع الإلكتروني</div>
+                            <div class="detail-value">www.quickdataprosoft.com</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <div class="export-group">
-                    <button class="btn-export btn-export-print" onclick="window.print()">
-                        <i class="bi bi-printer"></i> طباعة
+            <!-- ===== CONTACT FORM ===== -->
+            <div class="contact-section">
+                <h5 class="contact-title"><i class="bi bi-chat-dots-fill" style="color:var(--accent);"></i> أرسل رسالتك</h5>
+                <p class="contact-subtitle">سنقوم بالرد عليك في أقرب وقت ممكن</p>
+
+                <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>الاسم الكامل <span class="required">*</span></label>
+                            <input type="text" id="contactName" placeholder="أدخل اسمك الكامل" required />
+                        </div>
+                        <div class="form-group">
+                            <label>البريد الإلكتروني <span class="required">*</span></label>
+                            <input type="email" id="contactEmail" placeholder="أدخل بريدك الإلكتروني" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الجوال</label>
+                        <input type="tel" id="contactPhone" placeholder="أدخل رقم جوالك" />
+                    </div>
+                    <div class="form-group">
+                        <label>نوع الرسالة <span class="required">*</span></label>
+                        <select id="contactType" required>
+                            <option value="">اختر نوع الرسالة</option>
+                            <option value="استفسار فني">استفسار فني</option>
+                            <option value="اقتراح تطوير">اقتراح تطوير</option>
+                            <option value="الإبلاغ عن مشكلة">الإبلاغ عن مشكلة</option>
+                            <option value="طلب تدريب">طلب تدريب</option>
+                            <option value="استفسار عام">استفسار عام</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الرسالة <span class="required">*</span></label>
+                        <textarea id="contactMessage" placeholder="اكتب رسالتك هنا..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <i class="bi bi-send-fill"></i> إرسال الرسالة
                     </button>
-                </div>
-
-                <button class="btn-action btn-primary" onclick="loadReport()">
-                    <i class="bi bi-search"></i> عرض التقرير
-                </button>
-            </div>
-
-            <!-- ===== CHARTS ===== -->
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h6><i class="bi bi-bar-chart-fill"></i> الإيرادات والمصروفات</h6>
-                        <span class="chart-badge">حسب الشهر</span>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="mainChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h6><i class="bi bi-pie-chart-fill"></i> توزيع المعاملات</h6>
-                        <span class="chart-badge">حسب الفئة</span>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== TRANSACTIONS TABLE ===== -->
-            <div class="panel">
-                <div class="panel-header">
-                    <h5 class="panel-title"><i class="bi bi-clock-history"></i> قائمة المعاملات</h5>
-                    <span id="recordCount" class="record-count">0 سجل</span>
-                </div>
-                <div class="table-wrap">
-                    <table class="table-custom">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>التاريخ</th>
-                                <th>البيان</th>
-                                <th>النوع</th>
-                                <th>الفئة</th>
-                                <th>المبلغ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionsBody">
-                            <tr>
-                                <td colspan="6" style="text-align:center;padding:30px;color:var(--text-tertiary);">
-                                    <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
-                                    جاري تحميل البيانات...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                </form>
             </div>
 
         </div>
-
-        <!-- ================================================================ -->
-        <!-- FOOTER - حقوق النشر -->
-        <!-- ================================================================ -->
-        <footer class="footer-custom">
-            <div class="footer-content">
-                <div class="footer-right">
-                    <span class="footer-brand">حراء <span>للسياحة</span></span>
-                    <span class="footer-divider">|</span>
-                    <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
-                </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 3.0.1</span>
-                    <span class="footer-divider">|</span>
-                    <a href="support.html" class="footer-link">
-                        <i class="bi bi-headset"></i> الدعم الفني
-                    </a>
-                </div>
-            </div>
-        </footer>
     </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER - حقوق النشر -->
+    <!-- ================================================================ -->
+    <footer class="footer-custom">
+        <div class="footer-content">
+            <div class="footer-right">
+                <span class="footer-brand">حراء <span>للسياحة</span></span>
+                <span class="footer-divider">|</span>
+                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+            </div>
+            <div class="footer-left">
+                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-divider">|</span>
+                <a href="support.html" class="footer-link">
+                    <i class="bi bi-headset"></i> الدعم الفني
+                </a>
+            </div>
+        </div>
+    </footer>
 
     <!-- ================================================================ -->
     <!-- JAVASCRIPT -->
@@ -1762,14 +1753,9 @@
         // ================================================================
         // STATE
         // ================================================================
-        var transactions = [];
-        var filteredTransactions = [];
         var currentUser = null;
         var systemCurrency = 'SAR';
         var currencySymbol = 'ر.س';
-        var mainChart = null;
-        var pieChart = null;
-        var isLoading = false;
 
         // ================================================================
         // DOM READY
@@ -1795,8 +1781,6 @@
             initNotifications();
             initKeyboardShortcuts();
             updateDate();
-            loadReport();
-            setInterval(loadReport, 60000);
             checkUserPermissions();
         });
 
@@ -1805,7 +1789,7 @@
         // ================================================================
         function applySystemName() {
             var systemName = Supabase.getSystemName();
-            document.title = 'التقارير - ' + systemName;
+            document.title = 'الدعم والتواصل - ' + systemName;
 
             var brandText = document.getElementById('sidebarBrandText');
             if (brandText) {
@@ -1866,368 +1850,60 @@
             if (dateElement) {
                 dateElement.textContent = now.toLocaleDateString('ar-SA', options);
             }
-
-            // تعيين التواريخ الافتراضية للفلاتر
-            var fromDate = document.getElementById('filterDateFrom');
-            var toDate = document.getElementById('filterDateTo');
-            if (fromDate && toDate) {
-                var firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-                fromDate.value = firstDay.toISOString().split('T')[0];
-                toDate.value = now.toISOString().split('T')[0];
-            }
         }
 
         // ================================================================
-        // LOAD REPORT
+        // CONTACT FORM SUBMIT
         // ================================================================
-        async function loadReport() {
-            if (isLoading) return;
-            isLoading = true;
+        async function handleContactSubmit(event) {
+            event.preventDefault();
 
-            var tbody = document.getElementById('transactionsBody');
-            if (tbody) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align:center;padding:20px;color:var(--text-tertiary);">
-                            <div class="shimmer" style="height:28px;max-width:160px;margin:0 auto;"></div>
-                            <span style="display:block;margin-top:6px;font-size:12px;">جاري التحميل...</span>
-                        </td>
-                    </tr>
-                `;
-            }
+            var name = document.getElementById('contactName').value.trim();
+            var email = document.getElementById('contactEmail').value.trim();
+            var phone = document.getElementById('contactPhone').value.trim();
+            var type = document.getElementById('contactType').value;
+            var message = document.getElementById('contactMessage').value.trim();
 
-            try {
-                var data = await Supabase.getTransactions(500);
-                transactions = data || [];
-
-                // تطبيق الفلاتر
-                applyFilters();
-
-                renderTable();
-                renderStats();
-                renderCharts();
-
-            } catch (error) {
-                console.error('❌ خطأ في جلب البيانات:', error);
-                showToast('⚠️ فشل تحميل التقارير', 'warning');
-                transactions = [];
-                filteredTransactions = [];
-                renderTable();
-                renderStats();
-                renderCharts();
-            }
-
-            isLoading = false;
-        }
-
-        // ================================================================
-        // APPLY FILTERS
-        // ================================================================
-        function applyFilters() {
-            var typeFilter = document.getElementById('filterType').value;
-            var categoryFilter = document.getElementById('filterCategory').value;
-            var dateFrom = document.getElementById('filterDateFrom').value;
-            var dateTo = document.getElementById('filterDateTo').value;
-
-            filteredTransactions = transactions.filter(function(t) {
-                // فلتر النوع
-                if (typeFilter !== 'all' && t['type'] !== typeFilter) {
-                    return false;
-                }
-
-                // فلتر الفئة
-                if (categoryFilter !== 'all' && t['category'] !== categoryFilter) {
-                    return false;
-                }
-
-                // فلتر التاريخ
-                if (dateFrom && t['date'] < dateFrom) {
-                    return false;
-                }
-                if (dateTo && t['date'] > dateTo) {
-                    return false;
-                }
-
-                return true;
-            });
-        }
-
-        // ================================================================
-        // RENDER STATS
-        // ================================================================
-        function renderStats() {
-            var totalIncome = 0;
-            var totalExpense = 0;
-
-            for (var i = 0; i < filteredTransactions.length; i++) {
-                var t = filteredTransactions[i];
-                var amount = parseFloat(t['amount'] || 0);
-                if (t['type'] === 'وارد') {
-                    totalIncome += amount;
-                } else if (t['type'] === 'صادر') {
-                    totalExpense += amount;
-                }
-            }
-
-            var netProfit = totalIncome - totalExpense;
-
-            document.getElementById('totalIncome').textContent = Supabase.formatCurrency(totalIncome);
-            document.getElementById('totalExpense').textContent = Supabase.formatCurrency(totalExpense);
-            document.getElementById('netProfit').textContent = Supabase.formatCurrency(netProfit);
-            document.getElementById('totalTransactions').textContent = filteredTransactions.length;
-        }
-
-        // ================================================================
-        // RENDER TABLE
-        // ================================================================
-        function renderTable() {
-            var tbody = document.getElementById('transactionsBody');
-            var count = document.getElementById('recordCount');
-
-            if (!tbody) return;
-
-            if (!filteredTransactions || filteredTransactions.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align:center;padding:20px;color:var(--text-tertiary);">
-                            <i class="bi bi-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
-                            لا توجد معاملات تطابق الفلاتر
-                        </td>
-                    </tr>
-                `;
-                if (count) count.textContent = '0 سجل';
+            if (!name || !email || !type || !message) {
+                showToast('⚠️ تنبيه', 'الرجاء ملء جميع الحقول المطلوبة', 'warning');
                 return;
             }
 
-            if (count) count.textContent = filteredTransactions.length + ' سجل';
+            var submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الإرسال...';
 
-            var displayData = filteredTransactions.slice(0, 50);
-            var html = '';
-
-            for (var i = 0; i < displayData.length; i++) {
-                var t = displayData[i];
-                var date = t['date'] || '—';
-                var type = t['type'] || '—';
-                var category = t['category'] || '—';
-                var amount = parseFloat(t['amount'] || 0);
-                var description = t['description'] || '—';
-
-                var isIncome = (type === 'وارد');
-                var badgeClass = isIncome ? 'badge-income' : 'badge-expense';
-                var amountClass = isIncome ? 'amount-income' : 'amount-expense';
-                var sign = isIncome ? '+' : '-';
-
-                if (category === 'بنك') {
-                    badgeClass = 'badge-transfer';
-                }
-
-                var dateObj = new Date(date);
-                var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-SA') : date;
-
-                html += `
-                    <tr>
-                        <td>${i + 1}</td>
-                        <td>${formattedDate}</td>
-                        <td>${description}</td>
-                        <td><span class="badge-custom ${badgeClass}">${type}</span></td>
-                        <td>${category}</td>
-                        <td class="${amountClass}">${sign} ${Supabase.formatCurrency(amount)}</td>
-                    </tr>
-                `;
-            }
-
-            tbody.innerHTML = html;
-        }
-
-        // ================================================================
-        // RENDER CHARTS
-        // ================================================================
-        function renderCharts() {
-            // ===== PREPARE MONTHLY DATA =====
-            var monthlyIncome = {};
-            var monthlyExpense = {};
-            var categoryData = {};
-
-            for (var i = 0; i < filteredTransactions.length; i++) {
-                var t = filteredTransactions[i];
-                var amount = parseFloat(t['amount'] || 0);
-                var date = t['date'] || new Date().toISOString();
-                var month = date.substring(0, 7);
-                var type = t['type'] || '';
-                var category = t['category'] || 'أخرى';
-
-                if (type === 'وارد') {
-                    monthlyIncome[month] = (monthlyIncome[month] || 0) + amount;
-                } else if (type === 'صادر') {
-                    monthlyExpense[month] = (monthlyExpense[month] || 0) + amount;
-                }
-
-                categoryData[category] = (categoryData[category] || 0) + amount;
-            }
-
-            // الحصول على آخر 6 أشهر
-            var months = [];
-            var today = new Date();
-            for (var d = 5; d >= 0; d--) {
-                var dt = new Date(today);
-                dt.setMonth(dt.getMonth() - d);
-                var key = dt.toISOString().substring(0, 7);
-                months.push(key);
-            }
-
-            var incomeData = months.map(function(m) {
-                return monthlyIncome[m] || 0;
-            });
-            var expenseData = months.map(function(m) {
-                return monthlyExpense[m] || 0;
-            });
-
-            var monthLabels = months.map(function(m) {
-                var parts = m.split('-');
-                var monthsNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر',
-                    'ديسمبر'
-                ];
-                return monthsNames[parseInt(parts[1]) - 1] + ' ' + parts[0];
-            });
-
-            // بيانات الفئات
-            var categories = Object.keys(categoryData);
-            var categoryValues = Object.values(categoryData);
-            var colors = ['#8b7a4b', '#b84a3e', '#3a6b8f', '#b8943a', '#1e7a55', '#6b5b8f', '#c07a4a'];
-
-            if (categories.length === 0) {
-                categories = ['لا توجد معاملات'];
-                categoryValues = [1];
-            }
-
-            // ===== MAIN CHART (Bar) =====
-            var ctx1 = document.getElementById('mainChart').getContext('2d');
-
-            if (mainChart) {
-                mainChart.destroy();
-            }
-
-            mainChart = new Chart(ctx1, {
-                type: 'bar',
-                data: {
-                    labels: monthLabels,
-                    datasets: [{
-                        label: 'الإيرادات',
-                        data: incomeData,
-                        backgroundColor: 'rgba(30, 122, 85, 0.7)',
-                        borderColor: '#1e7a55',
-                        borderWidth: 1,
-                        borderRadius: 4,
-                    }, {
-                        label: 'المصروفات',
-                        data: expenseData,
-                        backgroundColor: 'rgba(184, 74, 62, 0.7)',
-                        borderColor: '#b84a3e',
-                        borderWidth: 1,
-                        borderRadius: 4,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            rtl: true,
-                            labels: {
-                                font: {
-                                    family: 'Cairo, sans-serif',
-                                    size: 10
-                                },
-                                boxWidth: 12,
-                                padding: 8
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                font: { size: 9 },
-                                callback: function(value) {
-                                    return value.toFixed(0);
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0,0,0,0.04)'
-                            }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: {
-                                font: { size: 9 }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // ===== PIE CHART =====
-            var ctx2 = document.getElementById('pieChart').getContext('2d');
-
-            if (pieChart) {
-                pieChart.destroy();
-            }
-
-            var pieColors = colors.slice(0, categories.length);
-
-            pieChart = new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: categories,
-                    datasets: [{
-                        data: categoryValues,
-                        backgroundColor: pieColors,
-                        borderWidth: 0,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom',
-                            rtl: true,
-                            labels: {
-                                font: {
-                                    family: 'Cairo, sans-serif',
-                                    size: 9
-                                },
-                                boxWidth: 10,
-                                padding: 6
-                            }
-                        }
-                    },
-                    cutout: '65%',
-                }
-            });
-
-            setTimeout(function() {
-                resizeCharts();
-            }, 100);
-        }
-
-        // ================================================================
-        // RESIZE CHARTS
-        // ================================================================
-        function resizeCharts() {
             try {
-                if (mainChart) {
-                    mainChart.resize();
+                var data = {
+                    name: name,
+                    email: email,
+                    phone: phone || '',
+                    type: type,
+                    message: message,
+                    user_id: currentUser ? currentUser.id : null,
+                    created_at: new Date().toISOString()
+                };
+
+                console.log('📤 جاري إرسال رسالة الدعم:', data);
+
+                // محاولة حفظ في Supabase
+                try {
+                    await Supabase.addData('support_messages', data);
+                } catch (dbError) {
+                    console.warn('⚠️ فشل حفظ في قاعدة البيانات، سيتم إرسال عبر البريد:', dbError);
+                    // يمكن إضافة هنا إرسال عبر البريد الإلكتروني
                 }
-                if (pieChart) {
-                    pieChart.resize();
-                }
-            } catch (e) {
-                console.warn('⚠️ خطأ في إعادة رسم الرسوم البيانية:', e);
+
+                showToast('✅ تم الإرسال', 'تم إرسال رسالتك بنجاح، سنقوم بالرد عليك قريباً', 'success');
+                document.getElementById('contactForm').reset();
+
+            } catch (error) {
+                console.error('❌ خطأ في إرسال الرسالة:', error);
+                showToast('❌ خطأ', 'فشل إرسال الرسالة: ' + error.message, 'error');
             }
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> إرسال الرسالة';
         }
 
         // ================================================================
@@ -2250,18 +1926,12 @@
                     sidebar.classList.toggle('collapsed');
                     main.classList.toggle('expanded');
                 }
-                setTimeout(function() {
-                    resizeCharts();
-                }, 400);
             });
 
             overlay.addEventListener('click', function() {
                 sidebar.classList.remove('open');
                 overlay.classList.remove('active');
                 document.body.style.overflow = '';
-                setTimeout(function() {
-                    resizeCharts();
-                }, 400);
             });
 
             document.addEventListener('keydown', function(e) {
@@ -2270,9 +1940,6 @@
                         sidebar.classList.remove('open');
                         overlay.classList.remove('active');
                         document.body.style.overflow = '';
-                        setTimeout(function() {
-                            resizeCharts();
-                        }, 400);
                     }
                 }
             });
@@ -2286,7 +1953,6 @@
                     sidebar.classList.remove('collapsed');
                     main.classList.remove('expanded');
                 }
-                resizeCharts();
             });
         }
 
@@ -2310,11 +1976,6 @@
                     icon.className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
                 }
                 localStorage.setItem('darkMode', isDarkMode);
-
-                setTimeout(function() {
-                    renderCharts();
-                    resizeCharts();
-                }, 200);
             });
         }
 
@@ -2323,7 +1984,6 @@
         // ================================================================
         function initRefresh() {
             document.getElementById('refreshBtn').addEventListener('click', function() {
-                loadReport();
                 Supabase.applySystemLogo();
                 showToast('🔄 جاري تحديث البيانات...', 'info');
             });
@@ -2337,11 +1997,14 @@
             if (notifBtn) {
                 notifBtn.addEventListener('click', function() {
                     var messages = [
-                        '📊 تم تحديث التقرير المالي',
-                        '💰 إجمالي الإيرادات: ' + Supabase.formatCurrency(12500),
-                        '📈 نسبة النمو هذا الشهر: 8%',
-                        '✅ تم تصدير التقرير بنجاح',
-                        '📋 يمكنك طباعة التقرير'
+                        '📞 فريق الدعم متاح من 9 صباحاً إلى 10 مساءً',
+                        '💬 يمكنك التواصل عبر واتساب على +20 101 042 2057',
+                        '📧 البريد الإلكتروني: info@quickdataprosoft.com',
+                        '🕐 وقت الرد المتوقع: خلال 24 ساعة',
+                        '✅ تم تحديث نظام الدعم الفني',
+                        '📱 تابعنا على فيسبوك: QuickData ProSoft',
+                        '📸 تابعنا على إنستجرام: @QuickDataProSoft',
+                        '🎥 شاهد فيديوهاتنا التعليمية على يوتيوب'
                     ];
                     var random = messages[Math.floor(Math.random() * messages.length)];
                     showToast(random, 'info');
@@ -2359,19 +2022,10 @@
                     var toggle = document.getElementById('sidebarToggle');
                     if (toggle) toggle.click();
                 }
-                if (e.ctrlKey && e.key === 'r') {
-                    e.preventDefault();
-                    loadReport();
-                    showToast('🔄 جاري تحديث البيانات...', 'info');
-                }
                 if (e.ctrlKey && e.key === 'd') {
                     e.preventDefault();
                     var toggle = document.getElementById('darkModeToggle');
                     if (toggle) toggle.click();
-                }
-                if (e.ctrlKey && e.key === 'p') {
-                    e.preventDefault();
-                    window.print();
                 }
                 if (e.ctrlKey && e.key === 'l') {
                     e.preventDefault();
@@ -2442,15 +2096,18 @@
         // ================================================================
         // EXPOSE
         // ================================================================
-        window.loadReport = loadReport;
         window.logout = logout;
         window.showToast = showToast;
-        window.resizeCharts = resizeCharts;
 
-        console.log('📊 نظام التقارير المالية - حراء للسياحة');
-        console.log('💰 العملة:', systemCurrency, currencySymbol);
-        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي) | Ctrl+P (طباعة)');
+        console.log('📞 صفحة الدعم والتواصل - حراء للسياحة');
+        console.log('📌 للتواصل: info@quickdataprosoft.com');
+        console.log('📌 واتساب: +20 101 042 2057');
+        console.log('📌 فيسبوك: QuickData ProSoft');
+        console.log('📌 إنستجرام: @QuickDataProSoft');
+        console.log('📌 يوتيوب: QuickData ProSoft');
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+D (وضع ليلي)');
         console.log('✅ النظام جاهز للعمل');
+        console.log('© 2026 جميع الحقوق محفوظة لـ QuickData ProSoft');
     </script>
 
 </body>

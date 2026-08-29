@@ -3,602 +3,1561 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>الملف الشخصي - حراء للسياحة</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
-    <style>
-        * { font-family: 'Cairo', sans-serif; }
-        body { background: #f0f4f8; }
+    <title id="pageTitle">الملف الشخصي - حراء للسياحة</title>
 
-        /* ===== الشريط الجانبي ===== */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            position: fixed;
-            right: 0;
-            top: 0;
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-            overflow-y: auto;
-            z-index: 50;
-            transition: transform 0.3s ease;
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- ============================================================ -->
+    <!-- SUPABASE.JS - الملف المركزي -->
+    <!-- ============================================================ -->
+    <script src="supabase.js"></script>
+
+    <style>
+        /* ================================================================
+           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           ================================================================ */
+        :root {
+            --primary: #0e1c2e;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
+            --accent-tint: rgba(156, 122, 60, 0.08);
+            --success: #1c7a4e;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
+            --surface: #ffffff;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-full: 9999px;
+            --t-base: 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
         }
-        .sidebar::-webkit-scrollbar { width: 4px; }
-        .sidebar::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 8px; }
+
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ================================================================
+           SIDEBAR
+           ================================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary);
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+        }
 
         .sidebar.collapsed {
-            transform: translateX(calc(100% - 60px));
-        }
-        .sidebar.collapsed .logo-area h1 { font-size: 16px; }
-        .sidebar.collapsed .logo-area span { display: none; }
-        .sidebar.collapsed .nav-link span { display: none; }
-        .sidebar.collapsed .nav-link .badge { display: none; }
-        .sidebar.collapsed .nav-link i { font-size: 20px; width: 30px; }
-        .sidebar.collapsed .nav-link { justify-content: center; padding: 12px 8px; }
-        .sidebar.collapsed .nav-section-title { display: none; }
-        .sidebar.collapsed .logout-btn span { display: none; }
-        .sidebar.collapsed .logout-btn { justify-content: center; }
-        .sidebar.collapsed .sidebar-footer { padding: 12px 8px; }
-
-        .sidebar.open {
-            transform: translateX(0);
+            transform: translateX(calc(var(--sidebar-width) + 20px));
         }
 
-        .sidebar .logo-area {
-            padding: 24px 20px;
+        .sidebar-brand {
+            padding: 20px 20px 16px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .sidebar .logo-area h1 {
-            font-size: 22px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #0d9488, #14b8a6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .sidebar .logo-area span {
-            font-size: 13px;
-            color: rgba(255,255,255,0.4);
-            display: block;
-            margin-top: 2px;
+            flex-shrink: 0;
         }
 
-        .sidebar .nav-link {
+        .brand-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            margin: 4px 12px;
-            border-radius: 12px;
-            color: rgba(255,255,255,0.6);
-            transition: all 0.2s;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        .sidebar .nav-link i { width: 22px; font-size: 16px; }
-        .sidebar .nav-link:hover {
-            background: rgba(255,255,255,0.06);
-            color: #fff;
-        }
-        .sidebar .nav-link.active {
-            background: rgba(13, 148, 136, 0.2);
-            color: #14b8a6;
-        }
-        .sidebar .nav-link .badge {
-            margin-right: auto;
-            background: rgba(255,255,255,0.1);
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: rgba(255,255,255,0.6);
+            gap: 10px;
         }
 
-        .sidebar .nav-section-title {
-            font-size: 11px;
+        .brand-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            display: none;
+        }
+
+        .brand-logo-img.visible {
+            display: block;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-inverse);
+            flex-shrink: 0;
+        }
+
+        .brand-mark.hidden {
+            display: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-inverse);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            color: var(--accent-light);
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 10px 8px;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 9px;
             font-weight: 700;
             color: rgba(255,255,255,0.2);
-            padding: 16px 16px 6px;
-            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 12px 6px;
+            font-family: var(--font-display);
         }
 
-        .sidebar .sidebar-footer {
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 0;
+        }
+
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.5);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: var(--t-base);
+            position: relative;
+        }
+
+        .nav-list a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-inverse);
+        }
+
+        .nav-list a.active {
+            background: rgba(139, 122, 75, 0.12);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        .nav-list a.active i {
+            color: var(--accent-light);
+        }
+
+        .nav-list a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .nav-list a i {
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-badge {
+            margin-right: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(139, 122, 75, 0.18);
+            color: var(--accent-light);
+            border: 1px solid rgba(139, 122, 75, 0.15);
+            font-family: var(--font-display);
+        }
+
+        .sidebar-footer {
             padding: 12px 16px 16px;
             border-top: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
         }
 
         .logout-btn {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 8px 14px;
-            border-radius: 10px;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
             color: rgba(255,255,255,0.3);
-            transition: all 0.25s ease;
-            font-size: 14px;
+            transition: var(--t-base);
+            font-size: 12.5px;
             font-weight: 500;
-            text-decoration: none;
         }
-        .logout-btn:hover { background: rgba(184, 74, 62, 0.15); color: #e8a09a; }
-        .logout-btn i { font-size: 16px; width: 22px; text-align: center; }
+
+        .logout-btn:hover {
+            background: rgba(184, 74, 62, 0.12);
+            color: #e8a09a;
+        }
+
+        .logout-btn i {
+            font-size: 14px;
+        }
 
         .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 45;
-            backdrop-filter: blur(2px);
+            background: rgba(0,0,0,0.35);
+            z-index: 1045;
         }
-        .sidebar-overlay.active { display: block; }
 
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
         .main-content {
-            margin-right: 260px;
-            padding: 24px 32px;
+            margin-right: var(--sidebar-width);
             min-height: 100vh;
             transition: margin-right 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
-        .main-content.expanded { margin-right: 60px; }
 
-        .hamburger-btn {
-            display: flex !important;
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* ================================================================
+           NAVBAR
+           ================================================================ */
+        .navbar-custom {
+            background: var(--bg);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
             align-items: center;
             justify-content: center;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #1e293b;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
-            width: 44px;
-            height: 44px;
-        }
-        .hamburger-btn:hover {
-            background: rgba(0,0,0,0.05);
         }
 
+        .sidebar-toggle:hover {
+            background: var(--surface);
+            border-color: var(--text-tertiary);
+        }
+
+        .navbar-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 4px;
+        }
+
+        .navbar-logo-img {
+            height: 28px;
+            width: 28px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+
+        .navbar-logo-img.visible {
+            display: block;
+        }
+
+        .navbar-logo-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--font-display);
+        }
+
+        .navbar-logo-text span {
+            color: var(--accent);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            margin-right: 6px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 4px 3px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: var(--font-display);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* ================================================================
+           DASHBOARD CONTENT
+           ================================================================ */
+        .dashboard-content {
+            padding: 20px 24px 30px;
+            flex: 1;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           PROFILE CARD
+           ================================================================ */
         .profile-grid {
             display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 20px;
+            grid-template-columns: 300px 1fr;
+            gap: 18px;
         }
 
         .profile-card {
-            background: #fff;
-            border-radius: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
             padding: 24px;
-            border: 1px solid #e2e8f0;
             text-align: center;
-            transition: all 0.25s ease;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
         }
-        .profile-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
 
-        .profile-avatar {
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+        }
+
+        .profile-avatar-large {
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #0d9488, #14b8a6);
-            color: #fff;
+            background: var(--accent);
+            color: var(--text-inverse);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
             font-weight: 800;
+            font-family: var(--font-display);
             margin: 0 auto 12px;
-            border: 4px solid #e2e8f0;
+            border: 3px solid var(--border);
+            box-shadow: var(--shadow-md);
         }
+
         .profile-card .profile-name {
+            font-family: var(--font-display);
             font-size: 20px;
             font-weight: 800;
-            color: #0f172a;
+            color: var(--text);
         }
+
         .profile-card .profile-email {
-            font-size: 14px;
-            color: #64748b;
+            font-size: 13px;
+            color: var(--text-secondary);
             margin-bottom: 4px;
         }
+
         .profile-card .profile-role {
-            font-size: 13px;
-            color: #0d9488;
+            font-size: 12px;
+            color: var(--accent);
             font-weight: 600;
-            background: #f0fdfa;
-            padding: 2px 16px;
-            border-radius: 20px;
+            background: var(--accent-tint);
+            padding: 2px 14px;
+            border-radius: var(--radius-full);
             display: inline-block;
             margin-bottom: 16px;
         }
+
         .profile-card .profile-meta {
             text-align: right;
-            border-top: 1px solid #f1f5f9;
+            border-top: 1px solid var(--border);
             padding-top: 14px;
+            margin-top: 4px;
         }
+
         .profile-card .profile-meta .meta-item {
             display: flex;
             justify-content: space-between;
             padding: 4px 0;
-            font-size: 13px;
+            font-size: 12px;
         }
-        .profile-card .profile-meta .meta-item .label { color: #94a3b8; }
-        .profile-card .profile-meta .meta-item .value { font-weight: 600; color: #0f172a; }
+
+        .profile-card .profile-meta .meta-item .label {
+            color: var(--text-tertiary);
+        }
+
+        .profile-card .profile-meta .meta-item .value {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ================================================================
+           PROFILE FORM
+           ================================================================ */
+        .profile-form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
         .profile-form-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.25s ease;
-            margin-bottom: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px 26px;
+            box-shadow: var(--shadow-sm);
         }
-        .profile-form-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+
         .profile-form-card .card-title {
-            font-size: 16px;
+            font-family: var(--font-display);
+            font-size: 14px;
             font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 16px;
+            color: var(--text);
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
-        .profile-form-card .card-title i { color: #0d9488; }
 
-        .profile-form-card label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #334155;
-            margin-bottom: 4px;
+        .profile-form-card .card-title i {
+            color: var(--accent);
+            font-size: 16px;
         }
-        .profile-form-card input {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 14px;
-            margin-bottom: 14px;
-            transition: all 0.25s ease;
-            background: #f8fafc;
-            color: #0f172a;
-        }
-        .profile-form-card input:focus {
-            outline: none;
-            border-color: #0d9488;
-            box-shadow: 0 0 0 3px rgba(13,148,136,0.15);
-            background: #fff;
-        }
-        .profile-form-card input:disabled {
-            background: #f1f5f9;
-            color: #94a3b8;
-            cursor: not-allowed;
-        }
+
         .profile-form-card .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
+            gap: 12px;
+        }
+
+        .profile-form-card .form-group {
+            margin-bottom: 6px;
+        }
+
+        .profile-form-card label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .profile-form-card label .required {
+            color: var(--danger);
+        }
+
+        .profile-form-card input,
+        .profile-form-card select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .profile-form-card input:focus,
+        .profile-form-card select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
+        }
+
+        .profile-form-card input:disabled {
+            background: var(--bg);
+            color: var(--text-tertiary);
+            cursor: not-allowed;
         }
 
         .btn-action {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 10px;
+            gap: 6px;
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
             font-weight: 600;
-            font-size: 13px;
-            transition: all 0.25s ease;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
+            font-size: 12px;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+            font-family: var(--font-display);
         }
-        .btn-primary { background: #0d9488; color: #fff; }
-        .btn-primary:hover { background: #0f766e; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(13,148,136,0.3); }
-        .btn-success { background: #16a34a; color: #fff; }
-        .btn-success:hover { background: #15803d; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(22,163,74,0.3); }
-        .btn-outline { background: transparent; border: 1px solid #e2e8f0; color: #64748b; }
-        .btn-outline:hover { border-color: #0d9488; color: #0d9488; background: #f0fdfa; }
 
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--text-inverse);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #166a4a;
+            border-color: #166a4a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a03d32;
+            border-color: #a03d32;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: var(--accent-tint);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            justify-content: flex-end;
+        }
+
+        /* ================================================================
+           TOAST
+           ================================================================ */
         .toast-notification {
             position: fixed;
-            bottom: 24px;
-            left: 24px;
-            background: #fff;
-            padding: 14px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            border-right: 4px solid #0d9488;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
             z-index: 9999;
-            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            max-width: 400px;
-            font-size: 13px;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
+        }
+
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
+           ================================================================ */
+        .footer-custom {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 12px 24px;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            margin-top: auto;
+        }
+
+        .footer-custom .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-custom .footer-right {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        .toast-notification.toast-success { border-right-color: #16a34a; }
-        .toast-notification.toast-error { border-right-color: #dc2626; }
-        .toast-notification.toast-warning { border-right-color: #f59e0b; }
-        .toast-notification .toast-icon { font-size: 20px; flex-shrink: 0; }
-        .toast-success .toast-icon { color: #16a34a; }
-        .toast-error .toast-icon { color: #dc2626; }
-        .toast-warning .toast-icon { color: #f59e0b; }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-15px); }
+            font-size: 12px;
+            color: var(--text-tertiary);
         }
 
-        @media (max-width: 1024px) {
+        .footer-custom .footer-brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .footer-custom .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-custom .footer-copy {
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-copy strong {
+            color: var(--accent-dark);
+            font-weight: 700;
+        }
+
+        .footer-custom .footer-divider {
+            color: var(--border);
+            font-size: 14px;
+        }
+
+        .footer-custom .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-version {
+            font-family: var(--font-display);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .footer-custom .footer-link {
+            color: var(--text-tertiary);
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 1200px) {
             .sidebar {
-                transform: translateX(100%);
-                width: 280px;
+                transform: translateX(calc(var(--sidebar-width) + 20px));
             }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-right: 0; padding: 16px; }
-            .main-content.expanded { margin-right: 0; }
-            .profile-grid { grid-template-columns: 1fr; }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            .profile-card {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-content {
+                padding: 16px 18px;
+            }
+            .navbar-custom {
+                padding: 0 16px;
+            }
+            .user-info {
+                display: none;
+            }
+            .page-header .ph-right {
+                display: none;
+            }
+            .navbar-logo-text {
+                display: none;
+            }
+            .profile-form-card .form-row {
+                grid-template-columns: 1fr;
+            }
+            .footer-custom .footer-divider {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
-            .main-content { padding: 16px; }
-            .profile-card { padding: 18px; }
-            .profile-form-card { padding: 18px; }
-            .profile-form-card .form-row { grid-template-columns: 1fr; }
+            .navbar-right .nav-btn:not(:first-child) {
+                display: none;
+            }
+            .navbar-custom {
+                height: 54px;
+                padding: 0 12px;
+            }
+            .page-title {
+                font-size: 14px;
+            }
+            .page-title small {
+                display: none;
+            }
+            .sidebar-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            .dashboard-content {
+                padding: 12px 12px;
+            }
+            .page-header h2 {
+                font-size: 15px;
+            }
+            .profile-card {
+                padding: 16px;
+            }
+            .profile-avatar-large {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            .profile-form-card {
+                padding: 16px 18px;
+            }
+            .profile-form-card .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .form-actions .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+            .navbar-logo-img {
+                height: 24px;
+                width: 24px;
+            }
+            .footer-custom {
+                padding: 8px 14px;
+            }
+            .footer-custom .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .footer-custom .footer-right {
+                flex-wrap: wrap;
+                justify-content: center;
+                font-size: 11px;
+            }
+            .footer-custom .footer-left {
+                font-size: 11px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 576px) {
-            .main-content { padding: 12px; }
-            .profile-avatar { width: 80px; height: 80px; font-size: 32px; }
-            .profile-card .profile-name { font-size: 18px; }
-            .btn-action { padding: 8px 14px; font-size: 12px; }
-            .hamburger-btn { width: 38px; height: 38px; font-size: 20px; }
+            .dashboard-content {
+                padding: 10px 10px;
+            }
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            .profile-avatar-large {
+                width: 64px;
+                height: 64px;
+                font-size: 26px;
+            }
+            .profile-card .profile-name {
+                font-size: 17px;
+            }
+            .footer-custom .footer-copy {
+                font-size: 10px;
+            }
+            .footer-custom .footer-version {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 8px; }
-        ::-webkit-scrollbar-thumb:hover { background: #0d9488; }
+        /* ================================================================
+           DARK MODE
+           ================================================================ */
+        body.dark-mode {
+            background: var(--primary-dark);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .navbar-custom {
+            background: var(--primary-dark);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .navbar-logo-text {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .profile-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .profile-card .profile-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .profile-card .profile-email {
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .profile-card .profile-role {
+            background: rgba(139, 122, 75, 0.15);
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .profile-card .profile-meta {
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .profile-card .profile-meta .meta-item .value {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .profile-form-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .profile-form-card input,
+        body.dark-mode .profile-form-card select {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .profile-form-card input:focus,
+        body.dark-mode .profile-form-card select:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .profile-form-card input:disabled {
+            background: var(--primary);
+            color: rgba(232,228,220,0.4);
+        }
+
+        body.dark-mode .profile-form-card label {
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .page-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header .ph-left h2 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .page-header .ph-left p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .btn-outline {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: rgba(139, 122, 75, 0.1);
+        }
+
+        body.dark-mode .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-success {
+            background: #166a4a;
+            border-color: #166a4a;
+        }
+
+        body.dark-mode .btn-danger {
+            background: #a03d32;
+            border-color: #a03d32;
+        }
+
+        body.dark-mode .sidebar-toggle {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .sidebar-toggle:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.15);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .nav-btn {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .nav-btn:hover {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .user-profile:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .user-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .toast-notification {
+            background: var(--primary);
+            color: #e0dcd2;
+            border-right-color: var(--accent);
+        }
+
+        body.dark-mode .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        body.dark-mode .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        body.dark-mode .user-avatar {
+            background: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .shimmer {
+            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
+    <!-- ================================================================ -->
+    <!-- SIDEBAR -->
+    <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
-        <div class="logo-area">
-            <h1>🕋 حراء للسياحة</h1>
-            <span>نظام إدارة الرحلات</span>
-        </div>
-        
-        <nav style="padding: 12px 0;">
-            <a href="index.html" class="nav-link">
-                <i class="fas fa-home"></i> <span>الرئيسية</span>
-            </a>
-            <a href="trips.html" class="nav-link">
-                <i class="fas fa-plane"></i> <span>الرحلات</span>
-                <span class="badge" id="badge-trips">0</span>
-            </a>
-            <a href="bookings.html" class="nav-link">
-                <i class="fas fa-ticket"></i> <span>الحجوزات</span>
-                <span class="badge" id="badge-bookings">0</span>
-            </a>
-            <a href="clients.html" class="nav-link">
-                <i class="fas fa-users"></i> <span>العملاء</span>
-                <span class="badge" id="badge-clients">0</span>
-            </a>
-            <a href="representatives.html" class="nav-link">
-                <i class="fas fa-user-tie"></i> <span>المناديب</span>
-                <span class="badge" id="badge-reps">0</span>
-            </a>
-            <a href="hotels.html" class="nav-link">
-                <i class="fas fa-hotel"></i> <span>الفنادق</span>
-                <span class="badge" id="badge-hotels">0</span>
-            </a>
-            <a href="agents.html" class="nav-link">
-                <i class="fas fa-handshake"></i> <span>الوكلاء</span>
-                <span class="badge" id="badge-agents">0</span>
-            </a>
-            <a href="treasury.html" class="nav-link">
-                <i class="fas fa-coins"></i> <span>الخزينة</span>
-                <span class="badge" id="badge-treasury">0</span>
-            </a>
-            <a href="banks.html" class="nav-link">
-                <i class="fas fa-university"></i> <span>البنوك</span>
-                <span class="badge" id="badge-banks">0</span>
-            </a>
-            <a href="reports.html" class="nav-link">
-                <i class="fas fa-chart-bar"></i> <span>التقارير</span>
-            </a>
-            <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
-            <a href="users.html" class="nav-link">
-                <i class="fas fa-user-shield"></i> <span>المستخدمون</span>
-            </a>
-            <a href="settings.html" class="nav-link">
-                <i class="fas fa-cog"></i> <span>الإعدادات</span>
-            </a>
-            <a href="profile.html" class="nav-link active">
-                <i class="fas fa-id-badge"></i> <span>الملف الشخصي</span>
-            </a>
-            <a href="support.html" class="nav-link">
-                <i class="fas fa-headset"></i> <span>الدعم</span>
-            </a>
-            <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
-            <div class="sidebar-footer">
-                <a href="#" class="logout-btn" onclick="logout(); return false;">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>تسجيل الخروج</span>
-                </a>
+        <div class="sidebar-brand">
+            <div class="brand-row">
+                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
+                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
+                <div class="brand-text" id="sidebarBrandText">
+                    حراء <span>للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
+                </div>
             </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">القائمة الرئيسية</div>
+            <ul class="nav-list">
+                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
+            </ul>
+
+            <div class="nav-section-title">الإدارة المالية</div>
+            <ul class="nav-list">
+                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
+                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
+                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+            </ul>
+
+            <div class="nav-section-title">التقارير</div>
+            <ul class="nav-list">
+                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+            </ul>
+
+            <div class="nav-section-title">الإدارة</div>
+            <ul class="nav-list">
+                <li><a href="profile.html" class="active"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+            </ul>
+
+            <div class="nav-section-title">الدعم</div>
+            <ul class="nav-list">
+                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+            </ul>
         </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i>
+                تسجيل الخروج
+            </a>
+        </div>
     </aside>
 
+    <!-- ================================================================ -->
+    <!-- SIDEBAR OVERLAY -->
+    <!-- ================================================================ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ================================================================ -->
     <main class="main-content" id="mainContent">
 
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-                <button class="hamburger-btn" onclick="toggleSidebar()" id="hamburgerBtn" title="فتح/إغلاق القائمة">
-                    <i class="fas fa-bars"></i>
+        <!-- ================================================================ -->
+        <!-- NAVBAR -->
+        <!-- ================================================================ -->
+        <nav class="navbar-custom">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
                 </button>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">👤 الملف الشخصي</h1>
-                    <p class="text-gray-500 text-sm">إدارة بيانات الحساب والمعلومات الشخصية</p>
+
+                <div class="navbar-logo-container">
+                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
+                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
+                </div>
+
+                <h4 class="page-title" id="pageTitleText">
+                    الملف الشخصي
+                    <small>إدارة بيانات الحساب</small>
+                </h4>
+            </div>
+
+            <div class="navbar-right">
+                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-role" id="userRole">حراء للسياحة</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">م</div>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500">اليوم</span>
-                <span class="font-semibold text-gray-700" id="current-date"></span>
-            </div>
-        </div>
+        </nav>
 
-        <div class="profile-grid">
+        <!-- ================================================================ -->
+        <!-- DASHBOARD CONTENT -->
+        <!-- ================================================================ -->
+        <div class="dashboard-content">
 
-            <div class="profile-card">
-                <div class="profile-avatar" id="profileAvatar">م</div>
-                <div class="profile-name" id="profileName">مدير النظام</div>
-                <div class="profile-email" id="profileEmail">admin@qasr.com</div>
-                <div class="profile-role" id="profileRole">مدير</div>
-                <div class="profile-meta">
-                    <div class="meta-item">
-                        <span class="label">الحالة</span>
-                        <span class="value" style="color:#16a34a;">نشط</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="label">آخر تسجيل دخول</span>
-                        <span class="value" id="lastLogin">اليوم</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="label">تاريخ الانضمام</span>
-                        <span class="value" id="joinDate">—</span>
-                    </div>
+            <!-- ===== PAGE HEADER ===== -->
+            <div class="page-header">
+                <div class="ph-left">
+                    <h2>الملف الشخصي</h2>
+                    <p>إدارة بيانات الحساب والمعلومات الشخصية</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">جاري التحميل...</span>
                 </div>
             </div>
 
-            <div>
+            <!-- ===== PROFILE GRID ===== -->
+            <div class="profile-grid">
 
-                <div class="profile-form-card">
-                    <div class="card-title"><i class="fas fa-user"></i> المعلومات الشخصية</div>
-                    <form id="profileForm" onsubmit="handleProfileSubmit(event)">
-                        <label for="fullName">الاسم الكامل</label>
-                        <input type="text" id="fullName" placeholder="الاسم الكامل" required />
-                        <label for="email">البريد الإلكتروني</label>
-                        <input type="email" id="email" placeholder="البريد الإلكتروني" disabled />
-                        <div class="form-row">
-                            <div>
-                                <label for="phone">رقم الهاتف</label>
-                                <input type="tel" id="phone" placeholder="رقم الهاتف" />
-                            </div>
-                            <div>
-                                <label for="role">الدور</label>
-                                <input type="text" id="role" disabled />
-                            </div>
+                <!-- ===== PROFILE CARD ===== -->
+                <div class="profile-card">
+                    <div class="profile-avatar-large" id="profileAvatarLarge">م</div>
+                    <div class="profile-name" id="profileDisplayName">مدير النظام</div>
+                    <div class="profile-email" id="profileDisplayEmail">admin@qasr.com</div>
+                    <div class="profile-role" id="profileDisplayRole">مدير</div>
+
+                    <div class="profile-meta">
+                        <div class="meta-item">
+                            <span class="label">الحالة</span>
+                            <span class="value" style="color:var(--success);">نشط</span>
                         </div>
-                        <button type="submit" class="btn-action btn-primary"><i class="fas fa-save"></i> تحديث الملف الشخصي</button>
-                    </form>
-                </div>
-
-                <div class="profile-form-card">
-                    <div class="card-title"><i class="fas fa-key"></i> تغيير كلمة المرور</div>
-                    <form id="passwordForm" onsubmit="handlePasswordSubmit(event)">
-                        <label for="currentPassword">كلمة المرور الحالية</label>
-                        <input type="password" id="currentPassword" placeholder="كلمة المرور الحالية" required />
-                        <div class="form-row">
-                            <div>
-                                <label for="newPassword">كلمة المرور الجديدة</label>
-                                <input type="password" id="newPassword" placeholder="كلمة المرور الجديدة" required minlength="6" />
-                            </div>
-                            <div>
-                                <label for="confirmPassword">تأكيد كلمة المرور</label>
-                                <input type="password" id="confirmPassword" placeholder="تأكيد كلمة المرور" required />
-                            </div>
+                        <div class="meta-item">
+                            <span class="label">آخر تسجيل دخول</span>
+                            <span class="value" id="lastLogin">اليوم</span>
                         </div>
-                        <button type="submit" class="btn-action btn-success"><i class="fas fa-key"></i> تغيير كلمة المرور</button>
-                    </form>
+                        <div class="meta-item">
+                            <span class="label">تاريخ الانضمام</span>
+                            <span class="value" id="joinDate">—</span>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- ===== PROFILE FORMS ===== -->
+                <div class="profile-form-section">
+
+                    <!-- ===== المعلومات الشخصية ===== -->
+                    <div class="profile-form-card">
+                        <div class="card-title"><i class="bi bi-person-fill"></i> المعلومات الشخصية</div>
+                        <form id="profileForm" onsubmit="handleProfileUpdate(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>الاسم الكامل <span class="required">*</span></label>
+                                    <input type="text" id="fullName" placeholder="الاسم الكامل" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>البريد الإلكتروني <span class="required">*</span></label>
+                                    <input type="email" id="email" placeholder="البريد الإلكتروني" required disabled />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>الدور</label>
+                                    <input type="text" id="role" placeholder="الدور" disabled />
+                                </div>
+                                <div class="form-group">
+                                    <label>رقم الهاتف</label>
+                                    <input type="tel" id="phone" placeholder="رقم الهاتف" />
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-action btn-primary">
+                                    <i class="bi bi-check-lg"></i> تحديث الملف الشخصي
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ===== تغيير كلمة المرور ===== -->
+                    <div class="profile-form-card">
+                        <div class="card-title"><i class="bi bi-shield-lock-fill"></i> تغيير كلمة المرور</div>
+                        <form id="passwordForm" onsubmit="handlePasswordChange(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>كلمة المرور الحالية <span class="required">*</span></label>
+                                    <input type="password" id="currentPassword" placeholder="كلمة المرور الحالية" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>كلمة المرور الجديدة <span class="required">*</span></label>
+                                    <input type="password" id="newPassword" placeholder="كلمة المرور الجديدة" required minlength="6" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>تأكيد كلمة المرور الجديدة <span class="required">*</span></label>
+                                    <input type="password" id="confirmPassword" placeholder="تأكيد كلمة المرور" required />
+                                </div>
+                                <div class="form-group">
+                                    <!-- فارغ للمحاذاة -->
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-action btn-success">
+                                    <i class="bi bi-key-fill"></i> تغيير كلمة المرور
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
             </div>
 
         </div>
 
-        <div class="text-center text-gray-400 text-sm mt-8 border-t pt-6" id="footerText">
-            © 2026 حراء للسياحة — جميع الحقوق محفوظة
-        </div>
+        <!-- ================================================================ -->
+        <!-- FOOTER - حقوق النشر -->
+        <!-- ================================================================ -->
+        <footer class="footer-custom">
+            <div class="footer-content">
+                <div class="footer-right">
+                    <span class="footer-brand">حراء <span>للسياحة</span></span>
+                    <span class="footer-divider">|</span>
+                    <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+                </div>
+                <div class="footer-left">
+                    <span class="footer-version">الإصدار 3.0.1</span>
+                    <span class="footer-divider">|</span>
+                    <a href="support.html" class="footer-link">
+                        <i class="bi bi-headset"></i> الدعم الفني
+                    </a>
+                </div>
+            </div>
+        </footer>
     </main>
 
-    <script src="supabase.js"></script>
+    <!-- ================================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ================================================================ -->
     <script>
-
-        // ============================================================
-        // 1. تبديل القائمة الجانبية - يعمل على جميع الشاشات
-        // ============================================================
-        function toggleSidebar() {
-            var sidebar = document.getElementById('sidebar');
-            var mainContent = document.getElementById('mainContent');
-            var overlay = document.getElementById('sidebarOverlay');
-            var isMobile = window.innerWidth <= 1024;
-            
-            if (isMobile) {
-                sidebar.classList.toggle('open');
-                overlay.classList.toggle('active');
-                document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
-            } else {
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('expanded');
-            }
-        }
-
-        document.addEventListener('click', function(event) {
-            var sidebar = document.getElementById('sidebar');
-            var hamburger = document.getElementById('hamburgerBtn');
-            var overlay = document.getElementById('sidebarOverlay');
-            var isMobile = window.innerWidth <= 1024;
-            
-            if (isMobile && sidebar.classList.contains('open')) {
-                if (!sidebar.contains(event.target) && !hamburger.contains(event.target)) {
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }
-        });
-
-        // ============================================================
-        // 2. عرض التاريخ الحالي
-        // ============================================================
-        function updateDate() {
-            var now = new Date();
-            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date').textContent = now.toLocaleDateString('ar-EG', options);
-            document.getElementById('lastLogin').textContent = now.toLocaleDateString('ar-EG', options);
-            document.getElementById('joinDate').textContent = now.toLocaleDateString('ar-EG', options);
-        }
-        updateDate();
-
-        // ============================================================
-        // 3. تحديث اسم النظام
-        // ============================================================
-        function applySystemName() {
-            var systemName = 'حراء للسياحة';
-            try { systemName = Supabase.getSystemName() || systemName; } catch (e) {}
-            document.title = 'الملف الشخصي - ' + systemName;
-            var footer = document.getElementById('footerText');
-            if (footer) footer.textContent = '© ' + new Date().getFullYear() + ' ' + systemName + ' — جميع الحقوق محفوظة';
-        }
-        applySystemName();
-
-        // ============================================================
-        // 4. STATE
-        // ============================================================
+        // ================================================================
+        // STATE
+        // ================================================================
         var currentUser = null;
+        var systemCurrency = 'SAR';
+        var currencySymbol = 'ر.س';
 
-        // ============================================================
-        // 5. INIT
-        // ============================================================
+        // ================================================================
+        // DOM READY
+        // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             if (!Supabase.initSystem()) return;
+
+            var settings = Supabase.getSystemSettings();
+            systemCurrency = settings.currency || 'SAR';
+            currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
             currentUser = Supabase.getCurrentUser();
             if (!currentUser) {
@@ -606,36 +1565,108 @@
                 return;
             }
 
+            updateUserUI();
+            applySystemName();
+            Supabase.applySystemLogo();
+
+            initSidebar();
+            initDarkMode();
+            initRefresh();
+            initNotifications();
+            initKeyboardShortcuts();
+            updateDate();
             loadProfile();
+            checkUserPermissions();
         });
 
-        // ============================================================
-        // 6. LOAD PROFILE
-        // ============================================================
-        function loadProfile() {
+        // ================================================================
+        // APPLY SYSTEM NAME
+        // ================================================================
+        function applySystemName() {
+            var systemName = Supabase.getSystemName();
+            document.title = 'الملف الشخصي - ' + systemName;
+
+            var brandText = document.getElementById('sidebarBrandText');
+            if (brandText) {
+                brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+            }
+
+            var navbarText = document.getElementById('navbarBrandText');
+            if (navbarText) {
+                navbarText.innerHTML = systemName;
+            }
+
+            var userRole = document.getElementById('userRole');
+            if (userRole) {
+                userRole.textContent = systemName;
+            }
+        }
+
+        // ================================================================
+        // UPDATE USER UI
+        // ================================================================
+        function updateUserUI() {
             if (!currentUser) return;
 
             var fullName = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
             var email = currentUser.email || '';
             var role = currentUser.user_metadata?.role || 'المالية';
-            var phone = currentUser.user_metadata?.phone || '';
             var initial = fullName.charAt(0).toUpperCase();
 
-            document.getElementById('profileAvatar').textContent = initial;
-            document.getElementById('profileName').textContent = fullName;
-            document.getElementById('profileEmail').textContent = email;
-            document.getElementById('profileRole').textContent = role;
+            document.getElementById('userName').textContent = fullName;
+            document.getElementById('userAvatar').textContent = initial;
+            document.getElementById('userRole').textContent = Supabase.getSystemName();
+
+            document.getElementById('profileAvatarLarge').textContent = initial;
+            document.getElementById('profileDisplayName').textContent = fullName;
+            document.getElementById('profileDisplayEmail').textContent = email;
+            document.getElementById('profileDisplayRole').textContent = role;
 
             document.getElementById('fullName').value = fullName;
             document.getElementById('email').value = email;
             document.getElementById('role').value = role;
-            document.getElementById('phone').value = phone;
+            document.getElementById('phone').value = currentUser.user_metadata?.phone || '';
         }
 
-        // ============================================================
-        // 7. UPDATE PROFILE
-        // ============================================================
-        async function handleProfileSubmit(event) {
+        // ================================================================
+        // CHECK USER PERMISSIONS
+        // ================================================================
+        function checkUserPermissions() {
+            var usersMenu = document.getElementById('usersMenu');
+            if (!usersMenu) return;
+            var isAdmin = currentUser && (currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com');
+            if (!isAdmin) {
+                usersMenu.style.display = 'none';
+            }
+        }
+
+        // ================================================================
+        // DATE DISPLAY
+        // ================================================================
+        function updateDate() {
+            var now = new Date();
+            var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            var dateElement = document.getElementById('headerDate');
+            if (dateElement) {
+                dateElement.textContent = now.toLocaleDateString('ar-SA', options);
+            }
+
+            document.getElementById('lastLogin').textContent = now.toLocaleDateString('ar-SA', options);
+            document.getElementById('joinDate').textContent = now.toLocaleDateString('ar-SA', options);
+        }
+
+        // ================================================================
+        // LOAD PROFILE
+        // ================================================================
+        function loadProfile() {
+            if (!currentUser) return;
+            updateUserUI();
+        }
+
+        // ================================================================
+        // HANDLE PROFILE UPDATE
+        // ================================================================
+        async function handleProfileUpdate(event) {
             event.preventDefault();
 
             var fullName = document.getElementById('fullName').value.trim();
@@ -648,50 +1679,34 @@
 
             var btn = event.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحديث...';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري التحديث...';
 
             try {
-                var response = await fetch(Supabase.CONFIG.URL + '/auth/v1/user', {
-                    method: 'PUT',
-                    headers: {
-                        'apikey': Supabase.CONFIG.KEY,
-                        'Authorization': 'Bearer ' + Supabase.getToken(),
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        data: {
-                            full_name: fullName,
-                            phone: phone
-                        }
-                    })
-                });
+                var result = await Supabase.updateUserProfile(fullName, phone);
 
-                if (!response.ok) {
-                    throw new Error('فشل تحديث الملف الشخصي');
+                if (result && result.error) {
+                    throw new Error(result.error.message || 'فشل تحديث الملف الشخصي');
                 }
 
-                var session = Supabase.getSession();
-                if (session) {
-                    session.user.user_metadata.full_name = fullName;
-                    session.user.user_metadata.phone = phone;
-                    Supabase.saveSession(session);
-                }
-
+                // تحديث البيانات المحلية
                 currentUser = Supabase.getCurrentUser();
-                loadProfile();
+                updateUserUI();
+
                 showToast('✅ تم تحديث الملف الشخصي بنجاح', 'success');
+
             } catch (error) {
-                showToast('❌ فشل تحديث الملف الشخصي: ' + error.message, 'error');
+                console.error('❌ خطأ في تحديث الملف الشخصي:', error);
+                showToast('❌ ' + (error.message || 'فشل تحديث الملف الشخصي'), 'error');
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-save"></i> تحديث الملف الشخصي';
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> تحديث الملف الشخصي';
         }
 
-        // ============================================================
-        // 8. CHANGE PASSWORD
-        // ============================================================
-        async function handlePasswordSubmit(event) {
+        // ================================================================
+        // HANDLE PASSWORD CHANGE
+        // ================================================================
+        async function handlePasswordChange(event) {
             event.preventDefault();
 
             var currentPassword = document.getElementById('currentPassword').value;
@@ -715,112 +1730,227 @@
 
             var btn = event.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التغيير...';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري التغيير...';
 
             try {
-                var response = await fetch(Supabase.CONFIG.URL + '/auth/v1/user', {
-                    method: 'PUT',
-                    headers: {
-                        'apikey': Supabase.CONFIG.KEY,
-                        'Authorization': 'Bearer ' + Supabase.getToken(),
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        password: newPassword
-                    })
-                });
+                var result = await Supabase.changePassword(currentPassword, newPassword);
 
-                if (!response.ok) {
-                    var errorData = await response.json();
-                    if (errorData.error_description) {
-                        throw new Error(errorData.error_description);
-                    }
-                    throw new Error('فشل تغيير كلمة المرور');
+                if (result && result.error) {
+                    throw new Error(result.error.message || 'فشل تغيير كلمة المرور');
                 }
 
                 showToast('✅ تم تغيير كلمة المرور بنجاح', 'success');
                 document.getElementById('passwordForm').reset();
+
             } catch (error) {
-                showToast('❌ فشل تغيير كلمة المرور: ' + error.message, 'error');
+                console.error('❌ خطأ في تغيير كلمة المرور:', error);
+                showToast('❌ ' + (error.message || 'فشل تغيير كلمة المرور'), 'error');
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-key"></i> تغيير كلمة المرور';
+            btn.innerHTML = '<i class="bi bi-key-fill"></i> تغيير كلمة المرور';
         }
 
-        // ============================================================
-        // 9. TOAST
-        // ============================================================
+        // ================================================================
+        // SIDEBAR TOGGLE
+        // ================================================================
+        function initSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var toggle = document.getElementById('sidebarToggle');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
+
+            var MOBILE_BREAKPOINT = 1200;
+
+            toggle.addEventListener('click', function() {
+                if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                    var isOpen = sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = isOpen ? 'hidden' : '';
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
+                }
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > MOBILE_BREAKPOINT) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    main.classList.remove('expanded');
+                }
+            });
+        }
+
+        // ================================================================
+        // DARK MODE
+        // ================================================================
+        function initDarkMode() {
+            var toggle = document.getElementById('darkModeToggle');
+            var icon = toggle.querySelector('i');
+            var savedMode = localStorage.getItem('darkMode');
+
+            if (savedMode === 'true') {
+                document.body.classList.add('dark-mode');
+                if (icon) icon.className = 'bi bi-sun-fill';
+            }
+
+            toggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                var isDarkMode = document.body.classList.contains('dark-mode');
+                if (icon) {
+                    icon.className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                }
+                localStorage.setItem('darkMode', isDarkMode);
+            });
+        }
+
+        // ================================================================
+        // REFRESH BUTTON
+        // ================================================================
+        function initRefresh() {
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                loadProfile();
+                Supabase.applySystemLogo();
+                showToast('🔄 جاري تحديث البيانات...', 'info');
+            });
+        }
+
+        // ================================================================
+        // NOTIFICATIONS
+        // ================================================================
+        function initNotifications() {
+            var notifBtn = document.getElementById('notifBtn');
+            if (notifBtn) {
+                notifBtn.addEventListener('click', function() {
+                    var messages = [
+                        '👤 تم تحديث الملف الشخصي',
+                        '🔑 يمكنك تغيير كلمة المرور من هنا',
+                        '📧 تم تأكيد البريد الإلكتروني',
+                        '✅ جميع البيانات محدثة',
+                        '📱 قم بتحديث رقم الهاتف'
+                    ];
+                    var random = messages[Math.floor(Math.random() * messages.length)];
+                    showToast(random, 'info');
+                });
+            }
+        }
+
+        // ================================================================
+        // KEYBOARD SHORTCUTS
+        // ================================================================
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'b') {
+                    e.preventDefault();
+                    var toggle = document.getElementById('sidebarToggle');
+                    if (toggle) toggle.click();
+                }
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    loadProfile();
+                    showToast('🔄 جاري تحديث البيانات...', 'info');
+                }
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    var toggle = document.getElementById('darkModeToggle');
+                    if (toggle) toggle.click();
+                }
+                if (e.ctrlKey && e.key === 'l') {
+                    e.preventDefault();
+                    logout();
+                }
+            });
+        }
+
+        // ================================================================
+        // LOGOUT
+        // ================================================================
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('darkMode');
+            window.location.href = 'login.html';
+        }
+
+        // ================================================================
+        // TOAST
+        // ================================================================
         function showToast(message, type) {
-            var existing = document.querySelectorAll('.toast-notification');
-            existing.forEach(function(t) { t.remove(); });
+            var existingToasts = document.querySelectorAll('.toast-notification');
+            for (var i = 0; i < existingToasts.length; i++) {
+                existingToasts[i].remove();
+            }
 
             var toast = document.createElement('div');
             toast.className = 'toast-notification';
 
-            var iconMap = {
-                'success': 'fa-check-circle',
-                'error': 'fa-times-circle',
-                'warning': 'fa-exclamation-triangle',
-                'info': 'fa-info-circle'
-            };
+            var iconClass = 'bi-info-circle-fill';
+            var toastClass = '';
 
-            var icon = iconMap[type] || 'fa-info-circle';
-            toast.innerHTML = '<span class="toast-icon"><i class="fas ' + icon + '"></i></span> <span>' + message + '</span>';
+            if (type === 'success') {
+                iconClass = 'bi-check-circle-fill';
+                toastClass = 'toast-success';
+            } else if (type === 'error') {
+                iconClass = 'bi-x-circle-fill';
+                toastClass = 'toast-error';
+            } else if (type === 'warning') {
+                iconClass = 'bi-exclamation-triangle-fill';
+                toastClass = 'toast-warning';
+            }
 
-            if (type === 'success') toast.classList.add('toast-success');
-            if (type === 'error') toast.classList.add('toast-error');
-            if (type === 'warning') toast.classList.add('toast-warning');
+            toast.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
+                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
+                </div>
+            `;
+
+            if (toastClass) {
+                toast.classList.add(toastClass);
+            }
 
             document.body.appendChild(toast);
 
             setTimeout(function() {
                 toast.style.animation = 'fadeOut 0.3s ease forwards';
                 setTimeout(function() {
-                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
                 }, 300);
             }, 3000);
         }
 
-        // ============================================================
-        // 10. LOGOUT
-        // ============================================================
-        function logout() {
-            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                localStorage.removeItem('supabase_session');
-                localStorage.removeItem('darkMode');
-                window.location.href = 'login.html';
-            }
-        }
-
-        // ============================================================
-        // 11. KEYBOARD SHORTCUTS
-        // ============================================================
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'b') {
-                e.preventDefault();
-                toggleSidebar();
-            }
-            if (e.key === 'Escape') {
-                if (window.innerWidth <= 1024) {
-                    document.getElementById('sidebar').classList.remove('open');
-                    document.getElementById('sidebarOverlay').classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            }
-        });
-
-        // ============================================================
-        // 12. EXPOSE
-        // ============================================================
-        window.toggleSidebar = toggleSidebar;
+        // ================================================================
+        // EXPOSE
+        // ================================================================
         window.logout = logout;
         window.showToast = showToast;
         window.loadProfile = loadProfile;
 
         console.log('👤 الملف الشخصي - حراء للسياحة');
         console.log('👤 المستخدم:', currentUser ? currentUser.email : 'غير مسجل');
-        console.log('🔑 اختصارات: Ctrl+B (قائمة)');
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
         console.log('✅ النظام جاهز للعمل');
     </script>
 
