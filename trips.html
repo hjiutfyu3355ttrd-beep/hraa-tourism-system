@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <style>
-        /* نفس الـ Styles من index.html */
         * { font-family: 'Cairo', sans-serif; }
         body { background: #f0f4f8; }
         
@@ -321,7 +320,6 @@
 <!-- ===== MAIN CONTENT ===== -->
 <main class="main-content" id="mainContent">
 
-    <!-- ===== الهيدر ===== -->
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-4">
             <button class="hamburger-btn" onclick="toggleSidebar()" id="hamburgerBtn">
@@ -338,7 +336,6 @@
         </div>
     </div>
 
-    <!-- ===== الإحصائيات ===== -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5 mb-8">
         <div class="stat-card flex items-center gap-4">
             <div class="icon bg-blue-50 text-blue-600"><i class="fas fa-plane"></i></div>
@@ -362,7 +359,6 @@
         </div>
     </div>
 
-    <!-- ===== شريط الأدوات ===== -->
     <div class="toolbar">
         <h6>قائمة الرحلات</h6>
         <div class="toolbar-actions">
@@ -371,7 +367,6 @@
         </div>
     </div>
 
-    <!-- ===== الجدول ===== -->
     <div class="table-card">
         <div class="flex items-center justify-between mb-4">
             <h3 class="section-title"><i class="fas fa-list text-emerald-600 ml-2"></i>سجل الرحلات</h3>
@@ -449,13 +444,9 @@
     </div>
 </div>
 
-<!-- ===== JAVASCRIPT ===== -->
 <script src="supabase.js"></script>
 <script>
 
-// ============================================================
-// دوال مساعدة (نفس النظام من index.html)
-// ============================================================
 function toggleSidebar() {
     var sidebar = document.getElementById('sidebar');
     var mainContent = document.getElementById('mainContent');
@@ -492,9 +483,6 @@ function logout() {
     }
 }
 
-// ============================================================
-// منطق الرحلات
-// ============================================================
 var trips = [];
 var allTransactions = [];
 var isLoading = false;
@@ -519,7 +507,7 @@ async function loadData() {
         renderTable();
         renderStats();
     } catch (error) {
-        console.error('❌ خطأ في جلب البيانات:', error);
+        console.error('خطأ في جلب البيانات:', error);
         trips = [];
         renderTable();
         renderStats();
@@ -541,8 +529,8 @@ function renderTable() {
 
     if (count) count.textContent = trips.length + ' سجل';
 
-    var html = '';
     var statusMap = { 'مخطط': 'status-pending', 'جاري': 'status-active', 'منتهي': 'status-completed', 'ملغي': 'status-cancelled' };
+    var html = '';
 
     for (var i = 0; i < trips.length; i++) {
         var tr = trips[i];
@@ -577,9 +565,7 @@ function renderTable() {
             '<td class="amount-expense">' + Supabase.formatCurrency(totalExpense) + '</td>' +
             '<td class="' + profitClass + '">' + Supabase.formatCurrency(profit) + '</td>' +
             '<td><span class="status-badge ' + (statusMap[status] || 'status-pending') + '">' + status + '</span></td>' +
-            '<td>' +
-                '<button class="btn-icon" onclick="deleteTrip(\'' + tripId + '\', \'' + tripCode + '\')" title="حذف"><i class="fas fa-trash"></i></button>' +
-            '</td>' +
+            '<td><button class="btn-icon btn-icon-delete" onclick="deleteTrip(\'' + tripId + '\')" title="حذف"><i class="fas fa-trash"></i></button></td>' +
         '</tr>';
     }
     tbody.innerHTML = html;
@@ -613,8 +599,8 @@ function renderStats() {
     if (badge) badge.textContent = trips.length;
 }
 
-function deleteTrip(id, code) {
-    if (!confirm('هل أنت متأكد من حذف الرحلة ' + code + '؟')) return;
+function deleteTrip(id) {
+    if (!confirm('هل أنت متأكد من حذف هذه الرحلة؟')) return;
     Supabase.deleteData('trips', id)
         .then(function() { loadData(); })
         .catch(function(error) { alert('فشل حذف الرحلة: ' + error.message); });
@@ -686,7 +672,6 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeModal();
 });
 
-// إغلاق القائمة عند النقر خارجها
 document.addEventListener('click', function(event) {
     var sidebar = document.getElementById('sidebar');
     var hamburger = document.getElementById('hamburgerBtn');
