@@ -35,10 +35,10 @@
     </nav>
 </aside>
 
-<main class="main-content">
+<main class="main-content" id="mainContent">
 
     <div class="flex items-center gap-3 mb-6 menu-toggle">
-        <button data-sidebar-toggle class="text-2xl text-gray-700"><i class="fas fa-bars"></i></button>
+        <button id="sidebarToggle" class="text-2xl text-gray-700"><i class="fas fa-bars"></i></button>
         <h1 class="text-xl font-bold text-gray-800" id="mobileBrandText">🕋 حراء للسياحة</h1>
     </div>
 
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     Layout.applySystemName('الحجوزات');
     Layout.setCurrentDate('current-date');
-    Layout.initMobileSidebar();
+    Layout.initSidebar();
 
     loadData();
     setInterval(loadData, 60000);
