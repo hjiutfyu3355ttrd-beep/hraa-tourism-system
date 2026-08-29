@@ -224,9 +224,6 @@
                 align-items: center;
                 justify-content: center;
             }
-            .header-title {
-                display: none;
-            }
         }
     </style>
 </head>
@@ -244,7 +241,6 @@
     <nav style="padding: 12px 0;">
         <a href="index.html" class="nav-link active">
             <i class="fas fa-home"></i> الرئيسية
-            <span class="badge" id="badge-dashboard">0</span>
         </a>
         <a href="trips.html" class="nav-link">
             <i class="fas fa-plane"></i> الرحلات
@@ -306,14 +302,14 @@
 <!-- ============================================================ -->
 <main class="main-content">
 
-    <!-- ===== الهيدر مع زر الهامبورجر ===== -->
+    <!-- ===== الهيدر مع زر الهامبورجر والكعبة 🕋 ===== -->
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-4">
             <button class="hamburger-btn" onclick="toggleSidebar()" id="hamburgerBtn" title="فتح/إغلاق القائمة">
                 <i class="fas fa-bars"></i>
             </button>
             <div>
-                <h1 class="text-2xl font-bold text-gray-800 header-title" id="welcomeTitle">مرحباً بك 👋</h1>
+                <h1 class="text-2xl font-bold text-gray-800" id="welcomeTitle">🕋 مرحباً بك 👋</h1>
                 <p class="text-gray-500 text-sm">نظرة عامة على أداء النظام</p>
             </div>
         </div>
@@ -471,7 +467,6 @@ function applySystemName() {
 // ============================================================
 async function loadDashboard() {
     try {
-        // === 4a. جلب البيانات ===
         var [trips, bookings, clients, reps, repTransactions, hotels] = await Promise.all([
             Supabase.getTrips().catch(function() { return []; }),
             Supabase.getBookings().catch(function() { return []; }),
@@ -488,7 +483,6 @@ async function loadDashboard() {
         repTransactions = repTransactions || [];
         hotels = hotels || [];
 
-        // === 4b. الإحصائيات ===
         var stats = [
             { icon: 'fa-plane', color: 'bg-blue-50 text-blue-600', number: trips.length, label: 'الرحلات' },
             { icon: 'fa-ticket', color: 'bg-emerald-50 text-emerald-600', number: bookings.length, label: 'الحجوزات' },
@@ -505,7 +499,6 @@ async function loadDashboard() {
                 '</div>';
         }).join('');
 
-        // === 4c. تحديث البادجات في القائمة الجانبية ===
         var badgeIds = ['badge-trips', 'badge-bookings', 'badge-clients', 'badge-reps', 'badge-hotels', 'badge-agents', 'badge-treasury', 'badge-banks'];
         var counts = [trips.length, bookings.length, clients.length, reps.length, hotels.length, 0, 0, 0];
         badgeIds.forEach(function(id, index) {
@@ -515,7 +508,6 @@ async function loadDashboard() {
             }
         });
 
-        // === 4d. أحدث الحجوزات ===
         var statusBadgeMap = {
             'مبدئي': 'status-pending',
             'مؤكد': 'status-active',
@@ -546,7 +538,6 @@ async function loadDashboard() {
             bookingsTbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-400 py-6">لا توجد حجوزات</td></tr>';
         }
 
-        // === 4e. أبرز المناديب ===
         var repsData = reps.map(function(rep) {
             var repBookings = bookings.filter(function(b) { return String(b['rep_id']) === String(rep['id']); });
             var expected = repBookings.reduce(function(sum, b) { return sum + parseFloat(b['booking_value'] || 0); }, 0);
@@ -575,7 +566,6 @@ async function loadDashboard() {
             repsTbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-400 py-6">لا يوجد مناديب</td></tr>';
         }
 
-        // === 4f. الرحلات النشطة ===
         var activeTrips = trips
             .filter(function(t) { return t['status'] === 'جاري' || t['status'] === 'مخطط'; })
             .sort(function(a, b) { return new Date(a['departure_date'] || 0) - new Date(b['departure_date'] || 0); })
