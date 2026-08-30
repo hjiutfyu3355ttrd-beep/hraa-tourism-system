@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title id="pageTitle">التقارير - حراء للسياحة</title>
+    <title id="pageTitle">التقارير المالية - حراء للسياحة</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.rel='stylesheet'" />
 
-    <!-- Bootstrap 5 RTL -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- Theme CSS الموحد -->
+    <link rel="stylesheet" href="theme.css" />
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
@@ -26,576 +28,18 @@
 
     <style>
         /* ================================================================
-           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           STYLES الخاصة بصفحة التقارير - مكملة لـ theme.css
            ================================================================ */
-        :root {
-            /* — الألوان الأساسية (Corporate Navy & Gold) — */
-            --primary: #0e1c2e;
-            --primary-light: #1a2e46;
-            --primary-dark: #08131f;
-            --accent: #9c7a3c;
-            --accent-light: #c9a86a;
-            --accent-dark: #755a29;
-            --accent-tint: rgba(156, 122, 60, 0.08);
-            --success: #1c7a4e;
-            --success-bg: #e6f3ec;
-            --danger: #ad3f39;
-            --danger-bg: #f7e8e6;
-            --info: #2d6088;
-            --info-bg: #e6edf4;
-            --warning: #ad7f2e;
-            --warning-bg: #f6eee1;
-            --bg: #f3f1eb;
-            --surface: #ffffff;
-            --surface-alt: #faf8f3;
-            --border: #e0dccf;
-            --border-light: #ebe7db;
-            --text: #181712;
-            --text-secondary: #5c5648;
-            --text-tertiary: #928c79;
-            --text-inverse: #f5f3ec;
 
-            /* — الظلال (تدرّج موحّد بأربع درجات) — */
-            --shadow-xs: 0 1px 2px rgba(14,28,46,0.05);
-            --shadow-sm: 0 1px 3px rgba(14,28,46,0.05), 0 2px 6px rgba(14,28,46,0.04);
-            --shadow-md: 0 4px 14px rgba(14,28,46,0.08), 0 1px 3px rgba(14,28,46,0.05);
-            --shadow-lg: 0 16px 40px rgba(14,28,46,0.14), 0 4px 10px rgba(14,28,46,0.05);
-            --shadow-focus: 0 0 0 3px rgba(156,122,60,0.16);
-
-            /* — الحواف (أكثر رقّة وانسجاماً) — */
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 18px;
-            --radius-full: 9999px;
-
-            /* — الحركة، المقاسات الهيكلية — */
-            --t-base: 0.2s ease;
-            --t-fast: 0.15s ease;
-            --sidebar-width: 260px;
-            --header-height: 60px;
-
-            /* — الطباعة: خط واحد موحّد لكامل النظام — */
-            --font-display: 'Cairo', sans-serif;
-            --font-body: 'Cairo', sans-serif;
-            --font-numeric: 'Cairo', sans-serif;
-
-            /* — مقياس التباعد الموحّد — */
-            --space-1: 4px;
-            --space-2: 8px;
-            --space-3: 12px;
-            --space-4: 16px;
-            --space-5: 24px;
-            --space-6: 32px;
-            --space-7: 48px;
-
-            /* — مقياس أحجام الخط الموحّد — */
-            --text-xs: 11px;
-            --text-sm: 12.5px;
-            --text-base: 13.5px;
-            --text-md: 15px;
-            --text-lg: 18px;
-            --text-xl: 22px;
-            --text-2xl: 28px;
-        }
-
-        /* ================================================================
-           RESET & BASE
-           ================================================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-body);
-            background: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            font-size: 13.5px;
-            line-height: 1.5;
-            display: flex;
-            flex-direction: column;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-        button {
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
-        }
-
-        /* ================================================================
-           SIDEBAR
-           ================================================================ */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--primary);
-            z-index: 1050;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            border-left: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 3px;
-        }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.12);
-        }
-
-        .sidebar.collapsed {
-            transform: translateX(calc(var(--sidebar-width) + 20px));
-        }
-
-        .sidebar-brand {
-            padding: 20px 20px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            flex-shrink: 0;
-        }
-
-        .brand-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .brand-logo-img {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-sm);
-            object-fit: contain;
-            flex-shrink: 0;
-            background: rgba(255,255,255,0.05);
-            padding: 2px;
-            display: none;
-        }
-
-        .brand-logo-img.visible {
-            display: block;
-        }
-
-        .brand-mark {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-sm);
-            background: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--text-inverse);
-            flex-shrink: 0;
-        }
-
-        .brand-mark.hidden {
-            display: none;
-        }
-
-        .brand-text {
-            font-family: var(--font-display);
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-inverse);
-            line-height: 1.2;
-        }
-
-        .brand-text span {
-            color: var(--accent-light);
-        }
-
-        .brand-text small {
-            display: block;
-            font-size: 9px;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-            color: rgba(255,255,255,0.3);
-            margin-top: 1px;
-        }
-
-        .sidebar-nav {
-            padding: 10px 8px;
-            flex: 1;
-        }
-
-        .nav-section-title {
-            font-size: 9px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.2);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 14px 12px 6px;
-            font-family: var(--font-display);
-        }
-
-        .nav-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .nav-list li {
-            margin-bottom: 0;
-        }
-
-        .nav-list a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 7px 12px;
-            border-radius: var(--radius-sm);
-            color: rgba(255,255,255,0.5);
-            font-size: 12.5px;
-            font-weight: 500;
-            transition: var(--t-base);
-            position: relative;
-        }
-
-        .nav-list a:hover {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-inverse);
-        }
-
-        .nav-list a.active {
-            background: rgba(139, 122, 75, 0.12);
-            color: var(--text-inverse);
-            font-weight: 600;
-        }
-
-        .nav-list a.active i {
-            color: var(--accent-light);
-        }
-
-        .nav-list a.active::before {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 2px;
-            height: 16px;
-            background: var(--accent);
-        }
-
-        .nav-list a i {
-            width: 16px;
-            text-align: center;
-            font-size: 14px;
-            flex-shrink: 0;
-            opacity: 0.7;
-        }
-
-        .sidebar-badge {
-            margin-right: auto;
-            font-size: 8px;
-            font-weight: 700;
-            padding: 1px 8px;
-            border-radius: var(--radius-full);
-            background: rgba(139, 122, 75, 0.18);
-            color: var(--accent-light);
-            border: 1px solid rgba(139, 122, 75, 0.15);
-            font-family: var(--font-display);
-        }
-
-        .sidebar-footer {
-            padding: 12px 16px 16px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            flex-shrink: 0;
-        }
-
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 7px 12px;
-            border-radius: var(--radius-sm);
-            color: rgba(255,255,255,0.3);
-            transition: var(--t-base);
-            font-size: 12.5px;
-            font-weight: 500;
-        }
-
-        .logout-btn:hover {
-            background: rgba(184, 74, 62, 0.12);
-            color: #e8a09a;
-        }
-
-        .logout-btn i {
-            font-size: 14px;
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.35);
-            z-index: 1045;
-        }
-
-        .sidebar-overlay.active {
-            display: block;
-        }
-
-        /* ================================================================
-           MAIN CONTENT
-           ================================================================ */
-        .main-content {
-            margin-right: var(--sidebar-width);
-            min-height: 100vh;
-            transition: margin-right 0.3s ease;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .main-content.expanded {
-            margin-right: 0;
-        }
-
-        /* ================================================================
-           NAVBAR
-           ================================================================ */
-        .navbar-custom {
-            background: var(--bg);
-            padding: 0 24px;
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1040;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .navbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar-toggle {
-            width: 32px;
-            height: 32px;
-            border: 1px solid var(--border);
-            background: transparent;
-            font-size: 16px;
-            color: var(--text-secondary);
-            transition: var(--t-base);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sidebar-toggle:hover {
-            background: var(--surface);
-            border-color: var(--text-tertiary);
-        }
-
-        .navbar-logo-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-right: 4px;
-        }
-
-        .navbar-logo-img {
-            height: 28px;
-            width: 28px;
-            object-fit: contain;
-            border-radius: var(--radius-sm);
-            display: none;
-        }
-
-        .navbar-logo-img.visible {
-            display: block;
-        }
-
-        .navbar-logo-text {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text);
-            font-family: var(--font-display);
-        }
-
-        .navbar-logo-text span {
-            color: var(--accent);
-        }
-
-        .page-title {
-            font-family: var(--font-display);
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .page-title small {
-            font-size: 11px;
-            font-weight: 400;
-            color: var(--text-tertiary);
-            margin-right: 6px;
-        }
-
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .nav-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            font-size: 15px;
-            transition: var(--t-base);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .nav-btn:hover {
-            background: var(--surface);
-            color: var(--text);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 3px 4px 3px 12px;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            transition: var(--t-base);
-            border: 1px solid transparent;
-        }
-
-        .user-profile:hover {
-            background: var(--surface);
-            border-color: var(--border);
-        }
-
-        .user-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: var(--text-inverse);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 12px;
-            font-family: var(--font-display);
-            flex-shrink: 0;
-        }
-
-        .user-info {
-            line-height: 1.2;
-        }
-
-        .user-name {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .user-role {
-            font-size: 10px;
-            color: var(--text-tertiary);
-        }
-
-        /* ================================================================
-           DASHBOARD CONTENT
-           ================================================================ */
-        .dashboard-content {
-            padding: 20px 24px 30px;
-            flex: 1;
-        }
-
-        /* ================================================================
-           PAGE HEADER
-           ================================================================ */
-        .page-header {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .page-header .ph-left h2 {
-            font-family: var(--font-display);
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--text);
-            margin: 0;
-        }
-
-        .page-header .ph-left p {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            margin: 0;
-        }
-
-        .page-header .ph-right {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            text-align: left;
-        }
-
-        .page-header .ph-right strong {
-            display: block;
-            font-weight: 600;
-            color: var(--text);
-            font-size: 13px;
-        }
-
-        /* ================================================================
-           STAT CARDS
-           ================================================================ */
-        .stats-grid {
+        /* ===== إحصائيات ===== */
+        .stats-grid-custom {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 12px;
             margin-bottom: 18px;
         }
 
-        .stat-card {
+        .stat-card-custom {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
@@ -604,13 +48,13 @@
             cursor: pointer;
         }
 
-        .stat-card:hover {
+        .stat-card-custom:hover {
             border-color: var(--accent);
             box-shadow: var(--shadow-sm);
             transform: translateY(-1px);
         }
 
-        .stat-card .stat-number {
+        .stat-card-custom .stat-number {
             font-family: var(--font-display);
             font-size: 20px;
             font-weight: 800;
@@ -618,13 +62,13 @@
             line-height: 1.2;
         }
 
-        .stat-card .stat-label {
+        .stat-card-custom .stat-label {
             font-size: 10px;
             color: var(--text-tertiary);
             margin-top: 2px;
         }
 
-        .stat-card .stat-icon {
+        .stat-card-custom .stat-icon {
             float: left;
             font-size: 18px;
             color: var(--accent-light);
@@ -643,13 +87,8 @@
         .stat-blue .stat-number {
             color: var(--info);
         }
-        .stat-purple .stat-number {
-            color: #6b5b8f;
-        }
 
-        /* ================================================================
-           FILTER BAR
-           ================================================================ */
+        /* ===== شريط التصفية ===== */
         .filter-bar {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -692,7 +131,7 @@
         .filter-bar input:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
+            box-shadow: 0 0 0 3px rgba(156, 122, 60, 0.08);
         }
 
         .filter-bar .date-group {
@@ -705,63 +144,7 @@
             width: 130px;
         }
 
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 16px;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 12px;
-            transition: var(--t-base);
-            border: 1px solid transparent;
-            font-family: var(--font-display);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: var(--text-inverse);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-light);
-            border-color: var(--primary-light);
-            color: var(--text-inverse);
-        }
-
-        .btn-success {
-            background: var(--success);
-            border-color: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #166a4a;
-            border-color: #166a4a;
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border-color: var(--border);
-            color: var(--text-secondary);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--accent);
-            color: var(--accent-dark);
-            background: var(--accent-tint);
-        }
-
-        .btn-sm {
-            font-size: 10px;
-            padding: 4px 10px;
-        }
-
-        /* ================================================================
-           CHARTS SECTION
-           ================================================================ */
+        /* ===== الرسوم البيانية ===== */
         .charts-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -820,9 +203,7 @@
             max-width: 100%;
         }
 
-        /* ================================================================
-           PANEL
-           ================================================================ */
+        /* ===== الجدول ===== */
         .panel {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -863,9 +244,6 @@
             font-weight: 500;
         }
 
-        /* ================================================================
-           TABLE
-           ================================================================ */
         .table-wrap {
             overflow-x: auto;
         }
@@ -908,16 +286,7 @@
             background: var(--surface-alt);
         }
 
-        .amount-income {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .amount-expense {
-            color: var(--danger);
-            font-weight: 600;
-        }
-
+        /* ===== البادجات ===== */
         .badge-custom {
             padding: 1px 8px;
             border-radius: var(--radius-full);
@@ -942,576 +311,40 @@
             color: var(--info);
         }
 
-        /* ================================================================
-           TOAST
-           ================================================================ */
-        .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: var(--surface);
-            padding: 12px 18px;
-            border-radius: var(--radius-sm);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-right: 3px solid var(--accent);
-            z-index: 9999;
-            animation: slideUp 0.3s ease forwards;
-            max-width: 380px;
-            font-size: 12.5px;
+        .amount-income {
+            color: var(--success);
+            font-weight: 600;
         }
 
-        .toast-notification.toast-success {
-            border-right-color: var(--success);
+        .amount-expense {
+            color: var(--danger);
+            font-weight: 600;
         }
 
-        .toast-notification.toast-error {
-            border-right-color: var(--danger);
-        }
-
-        .toast-notification.toast-warning {
-            border-right-color: var(--warning);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateY(-15px);
-            }
-        }
-
-        /* ================================================================
-           SHIMMER
-           ================================================================ */
-        .shimmer {
-            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
-            background-size: 200% 100%;
-            animation: shimmer-animation 1.5s ease-in-out infinite;
-            border-radius: var(--radius-sm);
-        }
-
-        @keyframes shimmer-animation {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
-        }
-
-        /* ================================================================
-           FOOTER - تذييل الصفحة
-           ================================================================ */
-        .footer-custom {
-            background: var(--surface);
-            border-top: 2px solid var(--border);
-            padding: 12px 24px;
-            flex-shrink: 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
-            margin-top: auto;
-        }
-
-        .footer-custom .footer-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .footer-custom .footer-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .footer-custom .footer-brand {
-            font-family: var(--font-display);
-            font-weight: 700;
-            color: var(--text);
-            font-size: 13px;
-        }
-
-        .footer-custom .footer-brand span {
-            color: var(--accent);
-        }
-
-        .footer-custom .footer-copy {
-            font-size: 12px;
-        }
-
-        .footer-custom .footer-copy strong {
-            color: var(--accent-dark);
-            font-weight: 700;
-        }
-
-        .footer-custom .footer-divider {
-            color: var(--border);
-            font-size: 14px;
-        }
-
-        .footer-custom .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .footer-custom .footer-version {
-            font-family: var(--font-display);
-            font-size: 11px;
-            color: var(--text-tertiary);
-            background: var(--bg);
-            padding: 2px 10px;
-            border-radius: var(--radius-full);
-        }
-
-        .footer-custom .footer-link {
-            color: var(--text-tertiary);
-            transition: var(--t-base);
+        /* ===== الأزرار ===== */
+        .btn-action {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            font-size: 12px;
-        }
-
-        .footer-custom .footer-link:hover {
-            color: var(--accent);
-        }
-
-        /* ================================================================
-           RESPONSIVE
-           ================================================================ */
-        @media (max-width: 1200px) {
-            .sidebar {
-                transform: translateX(calc(var(--sidebar-width) + 20px));
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-right: 0;
-            }
-            .sidebar-overlay.active {
-                display: block;
-            }
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .dashboard-content {
-                padding: 16px 18px;
-            }
-            .navbar-custom {
-                padding: 0 16px;
-            }
-            .user-info {
-                display: none;
-            }
-            .page-header .ph-right {
-                display: none;
-            }
-            .navbar-logo-text {
-                display: none;
-            }
-            .filter-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .filter-bar .date-group {
-                flex-wrap: wrap;
-            }
-            .filter-bar .date-group input {
-                width: 100%;
-            }
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-            .footer-custom .footer-divider {
-                display: none;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar-right .nav-btn:not(:first-child) {
-                display: none;
-            }
-            .navbar-custom {
-                height: 54px;
-                padding: 0 12px;
-            }
-            .page-title {
-                font-size: 14px;
-            }
-            .page-title small {
-                display: none;
-            }
-            .sidebar-toggle {
-                width: 28px;
-                height: 28px;
-                font-size: 14px;
-            }
-            .dashboard-content {
-                padding: 12px 12px;
-            }
-            .page-header h2 {
-                font-size: 15px;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-            .stat-card .stat-number {
-                font-size: 16px;
-            }
-            .table-custom {
-                font-size: 11px;
-            }
-            .table-custom th,
-            .table-custom td {
-                padding: 6px 8px;
-            }
-            .navbar-logo-img {
-                height: 24px;
-                width: 24px;
-            }
-            .chart-container {
-                height: 160px;
-            }
-            .footer-custom {
-                padding: 8px 14px;
-            }
-            .footer-custom .footer-content {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                gap: 4px;
-            }
-            .footer-custom .footer-right {
-                flex-wrap: wrap;
-                justify-content: center;
-                font-size: 11px;
-            }
-            .footer-custom .footer-left {
-                font-size: 11px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .dashboard-content {
-                padding: 10px 10px;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
-            .stat-card {
-                padding: 10px 12px;
-            }
-            .stat-card .stat-number {
-                font-size: 14px;
-            }
-            .stat-card .stat-label {
-                font-size: 9px;
-            }
-            .stat-card .stat-icon {
-                font-size: 14px;
-            }
-            .user-avatar {
-                width: 28px;
-                height: 28px;
-                font-size: 11px;
-            }
-            .filter-bar {
-                padding: 10px 12px;
-            }
-            .filter-bar select,
-            .filter-bar input {
-                font-size: 11px;
-                padding: 5px 10px;
-            }
-            .footer-custom .footer-copy {
-                font-size: 10px;
-            }
-            .footer-custom .footer-version {
-                font-size: 10px;
-                padding: 1px 8px;
-            }
-        }
-
-        /* ================================================================
-           DARK MODE
-           ================================================================ */
-        body.dark-mode {
-            background: var(--primary-dark);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .navbar-custom {
-            background: var(--primary-dark);
-            border-bottom-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .navbar-logo-text {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .stat-card {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .stat-card .stat-number {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .filter-bar {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .filter-bar select,
-        body.dark-mode .filter-bar input {
-            background: var(--primary-light);
-            color: #e0dcd2;
-            border-color: rgba(255,255,255,0.08);
-        }
-
-        body.dark-mode .filter-bar select:focus,
-        body.dark-mode .filter-bar input:focus {
-            border-color: var(--accent);
-        }
-
-        body.dark-mode .panel {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .panel-header {
-            border-bottom-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .table-custom thead {
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .table-custom th {
-            color: rgba(232,228,220,0.4);
-            border-bottom-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .table-custom td {
-            border-bottom-color: rgba(255,255,255,0.04);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .table-custom tr:hover td {
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .page-header {
-            border-bottom-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .page-header .ph-left h2 {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .page-header .ph-left p {
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .btn-outline {
-            border-color: rgba(255,255,255,0.08);
-            color: rgba(232,228,220,0.6);
-        }
-
-        body.dark-mode .btn-outline:hover {
-            border-color: var(--accent);
-            color: var(--accent-light);
-            background: rgba(139, 122, 75, 0.1);
-        }
-
-        body.dark-mode .btn-primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--text);
-        }
-
-        body.dark-mode .btn-primary:hover {
-            background: var(--accent-light);
-            border-color: var(--accent-light);
-            color: var(--text);
-        }
-
-        body.dark-mode .btn-success {
-            background: #166a4a;
-            border-color: #166a4a;
-        }
-
-        body.dark-mode .sidebar-toggle {
-            border-color: rgba(255,255,255,0.08);
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .sidebar-toggle:hover {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.15);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .nav-btn {
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .nav-btn:hover {
-            background: var(--primary);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .user-profile:hover {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.08);
-        }
-
-        body.dark-mode .user-name {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .toast-notification {
-            background: var(--primary);
-            color: #e0dcd2;
-            border-right-color: var(--accent);
-        }
-
-        body.dark-mode .toast-notification.toast-success {
-            border-right-color: var(--success);
-        }
-
-        body.dark-mode .toast-notification.toast-error {
-            border-right-color: var(--danger);
-        }
-
-        body.dark-mode .toast-notification.toast-warning {
-            border-right-color: var(--warning);
-        }
-
-        body.dark-mode .chart-card {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .chart-card .chart-header h6 {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .chart-card .chart-header .chart-badge {
-            background: rgba(139, 122, 75, 0.15);
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .shimmer {
-            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
-        }
-
-        body.dark-mode .footer-custom {
-            background: var(--primary);
-            border-top-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .footer-custom .footer-brand {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .footer-custom .footer-copy {
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .footer-custom .footer-copy strong {
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .footer-custom .footer-version {
-            background: var(--primary-light);
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .footer-custom .footer-link {
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .footer-custom .footer-link:hover {
-            color: var(--accent-light);
-        }
-
-        /* ================================================================
-           EXPORT BUTTONS
-           ================================================================ */
-        .export-group {
-            display: flex;
             gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .btn-export {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 12px;
+            padding: 6px 16px;
             border-radius: var(--radius-sm);
-            font-weight: 500;
-            font-size: 10px;
+            font-weight: 600;
+            font-size: 12px;
             transition: var(--t-base);
             border: 1px solid transparent;
             font-family: var(--font-display);
-            cursor: pointer;
         }
 
-        .btn-export-pdf {
-            background: var(--danger);
-            border-color: var(--danger);
-            color: white;
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
         }
 
-        .btn-export-pdf:hover {
-            background: #a03d32;
-            border-color: #a03d32;
-            color: white;
-        }
-
-        .btn-export-excel {
-            background: var(--success);
-            border-color: var(--success);
-            color: white;
-        }
-
-        .btn-export-excel:hover {
-            background: #166a4a;
-            border-color: #166a4a;
-            color: white;
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--text-inverse);
         }
 
         .btn-export-print {
@@ -1525,270 +358,369 @@
             border-color: #1f4d6e;
             color: white;
         }
+
+        /* ===== الوضع المظلم ===== */
+        body.dark-mode .stat-card-custom {
+            background: var(--primary);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        body.dark-mode .stat-card-custom .stat-number {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .filter-bar {
+            background: var(--primary);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        body.dark-mode .filter-bar select,
+        body.dark-mode .filter-bar input {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body.dark-mode .filter-bar select:focus,
+        body.dark-mode .filter-bar input:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .panel {
+            background: var(--primary);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        body.dark-mode .panel-header {
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+
+        body.dark-mode .table-custom thead {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .table-custom th {
+            color: rgba(232, 228, 220, 0.4);
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+
+        body.dark-mode .table-custom td {
+            border-bottom-color: rgba(255, 255, 255, 0.04);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .table-custom tr:hover td {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .chart-card {
+            background: var(--primary);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        body.dark-mode .chart-card .chart-header h6 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .chart-card .chart-header .chart-badge {
+            background: rgba(156, 122, 60, 0.15);
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .shimmer {
+            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        /* ===== استجابة ===== */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-bar .date-group {
+                flex-wrap: wrap;
+            }
+            .filter-bar .date-group input {
+                width: 100%;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid-custom {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card-custom .stat-number {
+                font-size: 16px;
+            }
+            .table-custom {
+                font-size: 11px;
+            }
+            .table-custom th,
+            .table-custom td {
+                padding: 6px 8px;
+            }
+            .chart-container {
+                height: 160px;
+            }
+            .main-content {
+                padding: var(--space-3);
+            }
+            .page-title-main {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-grid-custom {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card-custom {
+                padding: 10px 12px;
+            }
+            .stat-card-custom .stat-number {
+                font-size: 14px;
+            }
+            .stat-card-custom .stat-label {
+                font-size: 9px;
+            }
+            .stat-card-custom .stat-icon {
+                font-size: 14px;
+            }
+            .filter-bar {
+                padding: 10px 12px;
+            }
+            .filter-bar select,
+            .filter-bar input {
+                font-size: 11px;
+                padding: 5px 10px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <!-- ================================================================ -->
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR - قائمة جانبية موحدة -->
     <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <div class="brand-row">
-                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
-                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
-                <div class="brand-text" id="sidebarBrandText">
-                    حراء <span>للسياحة</span>
-                    <small>النظام المحاسبي المتكامل</small>
-                </div>
-            </div>
+        <div class="logo-area">
+            <h1 data-brand>🕋 حراء للسياحة</h1>
+            <span>نظام إدارة الرحلات</span>
         </div>
-
-        <nav class="sidebar-nav">
+        <nav>
             <div class="nav-section-title">القائمة الرئيسية</div>
-            <ul class="nav-list">
-                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
-            </ul>
+            <a href="index.html" class="nav-link"><i class="fas fa-house"></i> الرئيسية</a>
 
             <div class="nav-section-title">الإدارة المالية</div>
-            <ul class="nav-list">
-                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
-                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
-                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
-                <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
-                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
-                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
-            </ul>
+            <a href="treasury.html" class="nav-link"><i class="fas fa-wallet"></i> الخزينة</a>
+            <a href="trips.html" class="nav-link"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
+            <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء <span class="badge" id="badge-clients">0</span></a>
+            <a href="banks.html" class="nav-link"><i class="fas fa-building-columns"></i> البنوك <span class="badge" id="badge-banks">0</span></a>
+            <a href="bookings.html" class="nav-link"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
+            <a href="representatives.html" class="nav-link"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
 
             <div class="nav-section-title">التقارير</div>
-            <ul class="nav-list">
-                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
-                <li><a href="reports.html" class="active"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
-            </ul>
+            <a href="client_statement.html" class="nav-link"><i class="fas fa-receipt"></i> كشف حساب العميل</a>
+            <a href="reports.html" class="nav-link active"><i class="fas fa-chart-bar"></i> التقارير</a>
 
             <div class="nav-section-title">الإدارة</div>
-            <ul class="nav-list">
-                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
-                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
-                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
-            </ul>
+            <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
+            <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
+            <a href="settings.html" class="nav-link"><i class="fas fa-gear"></i> الإعدادات</a>
 
             <div class="nav-section-title">الدعم</div>
-            <ul class="nav-list">
-                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
-            </ul>
-        </nav>
+            <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> الدعم والتواصل</a>
 
-        <div class="sidebar-footer">
-            <a href="#" class="logout-btn" onclick="logout()">
-                <i class="bi bi-box-arrow-left"></i>
-                تسجيل الخروج
-            </a>
-        </div>
+            <hr />
+            <a href="#" class="nav-link logout-link" onclick="logout(); return false;"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</a>
+        </nav>
     </aside>
 
     <!-- ================================================================ -->
     <!-- SIDEBAR OVERLAY -->
     <!-- ================================================================ -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <!-- ================================================================ -->
     <!-- MAIN CONTENT -->
     <!-- ================================================================ -->
-    <main class="main-content" id="mainContent">
+    <main class="main-content" id="main-content">
 
-        <!-- ================================================================ -->
-        <!-- NAVBAR -->
-        <!-- ================================================================ -->
-        <nav class="navbar-custom">
-            <div class="navbar-left">
-                <button class="sidebar-toggle" id="sidebarToggle">
-                    <i class="bi bi-list"></i>
-                </button>
-
-                <div class="navbar-logo-container">
-                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
-                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
-                </div>
-
-                <h4 class="page-title" id="pageTitleText">
-                    التقارير المالية
-                    <small>تحليل شامل للأداء المالي</small>
-                </h4>
-            </div>
-
-            <div class="navbar-right">
-                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
-                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
-                <button class="nav-btn" id="notifBtn">
-                    <i class="bi bi-bell-fill"></i>
-                    <span class="notification-dot"></span>
-                </button>
-                <div class="user-profile" onclick="window.location.href='profile.html'">
-                    <div class="user-info">
-                        <span class="user-name" id="userName">مدير النظام</span>
-                        <span class="user-role" id="userRole">حراء للسياحة</span>
-                    </div>
-                    <div class="user-avatar" id="userAvatar">م</div>
-                </div>
-            </div>
-        </nav>
-
-        <!-- ================================================================ -->
-        <!-- DASHBOARD CONTENT -->
-        <!-- ================================================================ -->
-        <div class="dashboard-content">
-
-            <!-- ===== PAGE HEADER ===== -->
-            <div class="page-header">
-                <div class="ph-left">
-                    <h2>التقارير المالية</h2>
-                    <p>تحليل شامل للإيرادات والمصروفات والأداء المالي</p>
-                </div>
-                <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">جاري التحميل...</span>
-                </div>
-            </div>
-
-            <!-- ===== STATS ===== -->
-            <div class="stats-grid">
-                <div class="stat-card stat-gold">
-                    <span class="stat-icon"><i class="bi bi-wallet-fill"></i></span>
-                    <div class="stat-number" id="totalIncome">0</div>
-                    <div class="stat-label">إجمالي الإيرادات</div>
-                </div>
-                <div class="stat-card stat-red">
-                    <span class="stat-icon"><i class="bi bi-arrow-up-circle-fill"></i></span>
-                    <div class="stat-number" id="totalExpense">0</div>
-                    <div class="stat-label">إجمالي المصروفات</div>
-                </div>
-                <div class="stat-card stat-green">
-                    <span class="stat-icon"><i class="bi bi-arrow-left-right"></i></span>
-                    <div class="stat-number" id="netProfit">0</div>
-                    <div class="stat-label">صافي الربح</div>
-                </div>
-                <div class="stat-card stat-blue">
-                    <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
-                    <div class="stat-number" id="totalTransactions">0</div>
-                    <div class="stat-label">إجمالي المعاملات</div>
-                </div>
-            </div>
-
-            <!-- ===== FILTER BAR ===== -->
-            <div class="filter-bar">
-                <span class="filter-label"><i class="bi bi-funnel-fill"></i> تصفية</span>
-
-                <select id="filterType">
-                    <option value="all">جميع الأنواع</option>
-                    <option value="وارد">وارد فقط</option>
-                    <option value="صادر">صادر فقط</option>
-                </select>
-
-                <select id="filterCategory">
-                    <option value="all">جميع الفئات</option>
-                    <option value="سيارة">سيارة</option>
-                    <option value="شركة">شركة</option>
-                    <option value="عميل">عميل</option>
-                    <option value="بنك">بنك</option>
-                </select>
-
-                <div class="date-group">
-                    <span>من</span>
-                    <input type="date" id="filterDateFrom" />
-                    <span>إلى</span>
-                    <input type="date" id="filterDateTo" />
-                </div>
-
-                <div class="export-group">
-                    <button class="btn-export btn-export-print" onclick="window.print()">
-                        <i class="bi bi-printer"></i> طباعة
-                    </button>
-                </div>
-
-                <button class="btn-action btn-primary" onclick="loadReport()">
-                    <i class="bi bi-search"></i> عرض التقرير
-                </button>
-            </div>
-
-            <!-- ===== CHARTS ===== -->
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h6><i class="bi bi-bar-chart-fill"></i> الإيرادات والمصروفات</h6>
-                        <span class="chart-badge">حسب الشهر</span>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="mainChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h6><i class="bi bi-pie-chart-fill"></i> توزيع المعاملات</h6>
-                        <span class="chart-badge">حسب الفئة</span>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== TRANSACTIONS TABLE ===== -->
-            <div class="panel">
-                <div class="panel-header">
-                    <h5 class="panel-title"><i class="bi bi-clock-history"></i> قائمة المعاملات</h5>
-                    <span id="recordCount" class="record-count">0 سجل</span>
-                </div>
-                <div class="table-wrap">
-                    <table class="table-custom">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>التاريخ</th>
-                                <th>البيان</th>
-                                <th>النوع</th>
-                                <th>الفئة</th>
-                                <th>المبلغ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionsBody">
-                            <tr>
-                                <td colspan="6" style="text-align:center;padding:30px;color:var(--text-tertiary);">
-                                    <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
-                                    جاري تحميل البيانات...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+        <!-- ===== زر القائمة للشاشات الصغيرة ===== -->
+        <div class="flex items-center gap-3 mb-6 menu-toggle">
+            <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة">
+                <i class="fas fa-bars" id="menu-toggle-icon"></i>
+            </button>
+            <h1 class="brand-mobile" data-brand>🕋 حراء للسياحة</h1>
         </div>
 
-        <!-- ================================================================ -->
-        <!-- FOOTER - حقوق النشر -->
-        <!-- ================================================================ -->
-        <footer class="footer-custom">
-            <div class="footer-content">
-                <div class="footer-right">
-                    <span class="footer-brand">حراء <span>للسياحة</span></span>
-                    <span class="footer-divider">|</span>
-                    <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+        <!-- ===== HEADER ===== -->
+        <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
+            <div>
+                <h1 class="page-title-main">التقارير المالية</h1>
+                <p class="text-gray-500 text-sm">تحليل شامل للإيرادات والمصروفات والأداء المالي</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
+                <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn">
+                    <i class="fas fa-arrow-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== الإحصائيات ===== -->
+        <div class="stats-grid-custom" id="stats-container">
+            <div class="stat-card-custom stat-gold">
+                <span class="stat-icon"><i class="fas fa-wallet"></i></span>
+                <div class="stat-number" id="totalIncome">0</div>
+                <div class="stat-label">إجمالي الإيرادات</div>
+            </div>
+            <div class="stat-card-custom stat-red">
+                <span class="stat-icon"><i class="fas fa-arrow-up"></i></span>
+                <div class="stat-number" id="totalExpense">0</div>
+                <div class="stat-label">إجمالي المصروفات</div>
+            </div>
+            <div class="stat-card-custom stat-green">
+                <span class="stat-icon"><i class="fas fa-arrow-left-right"></i></span>
+                <div class="stat-number" id="netProfit">0</div>
+                <div class="stat-label">صافي الربح</div>
+            </div>
+            <div class="stat-card-custom stat-blue">
+                <span class="stat-icon"><i class="fas fa-list"></i></span>
+                <div class="stat-number" id="totalTransactions">0</div>
+                <div class="stat-label">إجمالي المعاملات</div>
+            </div>
+        </div>
+
+        <!-- ===== شريط التصفية ===== -->
+        <div class="filter-bar">
+            <span class="filter-label"><i class="fas fa-filter"></i> تصفية</span>
+
+            <select id="filterType">
+                <option value="all">جميع الأنواع</option>
+                <option value="وارد">وارد فقط</option>
+                <option value="صادر">صادر فقط</option>
+            </select>
+
+            <select id="filterCategory">
+                <option value="all">جميع الفئات</option>
+                <option value="سيارة">سيارة</option>
+                <option value="شركة">شركة</option>
+                <option value="عميل">عميل</option>
+                <option value="بنك">بنك</option>
+            </select>
+
+            <div class="date-group">
+                <span>من</span>
+                <input type="date" id="filterDateFrom" />
+                <span>إلى</span>
+                <input type="date" id="filterDateTo" />
+            </div>
+
+            <button class="btn-action btn-primary" onclick="loadReport()">
+                <i class="fas fa-search"></i> عرض التقرير
+            </button>
+
+            <button class="btn-action btn-export-print" onclick="window.print()">
+                <i class="fas fa-print"></i> طباعة
+            </button>
+        </div>
+
+        <!-- ===== الرسوم البيانية ===== -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h6><i class="fas fa-chart-bar"></i> الإيرادات والمصروفات</h6>
+                    <span class="chart-badge">حسب الشهر</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 3.0.1</span>
-                    <span class="footer-divider">|</span>
-                    <a href="support.html" class="footer-link">
-                        <i class="bi bi-headset"></i> الدعم الفني
-                    </a>
+                <div class="chart-container">
+                    <canvas id="mainChart"></canvas>
                 </div>
             </div>
-        </footer>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h6><i class="fas fa-chart-pie"></i> توزيع المعاملات</h6>
+                    <span class="chart-badge">حسب الفئة</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== جدول المعاملات ===== -->
+        <div class="panel">
+            <div class="panel-header">
+                <h5 class="panel-title"><i class="fas fa-clock-rotate-left"></i> قائمة المعاملات</h5>
+                <span id="recordCount" class="record-count">0 سجل</span>
+            </div>
+            <div class="table-wrap">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>التاريخ</th>
+                            <th>البيان</th>
+                            <th>النوع</th>
+                            <th>الفئة</th>
+                            <th>المبلغ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsBody">
+                        <tr>
+                            <td colspan="6" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                <i class="fas fa-hourglass-half" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
+                                جاري تحميل البيانات...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER - تذييل الصفحة -->
+    <!-- ================================================================ -->
+    <footer class="footer-custom" style="margin-top: auto;">
+        <div class="footer-content">
+            <div class="footer-right">
+                <span class="footer-brand">حراء <span>للسياحة</span></span>
+                <span class="footer-divider">|</span>
+                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+            </div>
+            <div class="footer-left">
+                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-divider">|</span>
+                <a href="support.html" class="footer-link">
+                    <i class="fas fa-headset"></i> الدعم الفني
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================================================================ -->
+    <!-- TOAST CONTAINER -->
+    <!-- ================================================================ -->
+    <div id="toastContainer"></div>
 
     <!-- ================================================================ -->
     <!-- JAVASCRIPT -->
     <!-- ================================================================ -->
+    <script src="supabase.js"></script>
+    <script src="layout.js"></script>
     <script>
         // ================================================================
         // STATE
@@ -1806,62 +738,67 @@
         // DOM READY
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
-            if (!Supabase.initSystem()) return;
+            try {
+                // تهيئة النظام
+                if (!Supabase.initSystem()) {
+                    console.warn('⚠️ فشل تهيئة النظام');
+                    return;
+                }
 
-            var settings = Supabase.getSystemSettings();
-            systemCurrency = settings.currency || 'SAR';
-            currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+                // جلب الإعدادات
+                var settings = Supabase.getSystemSettings();
+                systemCurrency = settings.currency || 'SAR';
+                currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
-            currentUser = Supabase.getCurrentUser();
-            if (currentUser) {
-                updateUserUI();
+                // جلب المستخدم الحالي
+                currentUser = Supabase.getCurrentUser();
+                if (currentUser) {
+                    updateUserUI();
+                }
+
+                // تطبيق اسم النظام والشعار
+                applySystemName({ pageLabel: 'التقارير المالية', welcome: false });
+                Supabase.applySystemLogo();
+
+                // تهيئة القائمة الجانبية والوضع المظلم
+                initSidebar();
+                initDarkMode();
+                initRefresh();
+                initKeyboardShortcuts();
+                updateDate();
+
+                // تعيين التواريخ الافتراضية
+                setDefaultDates();
+
+                // تحميل التقرير
+                loadReport();
+
+                // تحديث تلقائي كل 60 ثانية
+                setInterval(loadReport, 60000);
+
+                // التحقق من صلاحيات المستخدم
+                checkUserPermissions();
+
+                console.log('📊 نظام التقارير المالية - حراء للسياحة');
+                console.log('💰 العملة:', systemCurrency, currencySymbol);
+                console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي) | Ctrl+P (طباعة)');
+                console.log('✅ النظام جاهز للعمل');
+
+            } catch (error) {
+                console.error('❌ خطأ في تهيئة الصفحة:', error);
+                showToast('⚠️ فشل تهيئة الصفحة: ' + error.message, 'warning');
             }
-
-            applySystemName();
-            Supabase.applySystemLogo();
-
-            initSidebar();
-            initDarkMode();
-            initRefresh();
-            initNotifications();
-            initKeyboardShortcuts();
-            updateDate();
-            loadReport();
-            setInterval(loadReport, 60000);
-            checkUserPermissions();
         });
-
-        // ================================================================
-        // APPLY SYSTEM NAME
-        // ================================================================
-        function applySystemName() {
-            var systemName = Supabase.getSystemName();
-            document.title = 'التقارير - ' + systemName;
-
-            var brandText = document.getElementById('sidebarBrandText');
-            if (brandText) {
-                brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
-            }
-
-            var navbarText = document.getElementById('navbarBrandText');
-            if (navbarText) {
-                navbarText.innerHTML = systemName;
-            }
-
-            var userRole = document.getElementById('userRole');
-            if (userRole) {
-                userRole.textContent = systemName;
-            }
-        }
 
         // ================================================================
         // UPDATE USER UI
         // ================================================================
         function updateUserUI() {
             if (!currentUser) return;
-            var userName = document.getElementById('userName');
-            var userRole = document.getElementById('userRole');
-            var userAvatar = document.getElementById('userAvatar');
+
+            var userName = document.querySelector('.user-name');
+            var userRole = document.querySelector('.user-role');
+            var userAvatar = document.querySelector('.user-avatar');
 
             if (userName) {
                 userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
@@ -1879,7 +816,7 @@
         // CHECK USER PERMISSIONS
         // ================================================================
         function checkUserPermissions() {
-            var usersMenu = document.getElementById('usersMenu');
+            var usersMenu = document.querySelector('#usersMenu');
             if (!usersMenu) return;
             var isAdmin = currentUser && (currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com');
             if (!isAdmin) {
@@ -1893,19 +830,24 @@
         function updateDate() {
             var now = new Date();
             var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-            var dateElement = document.getElementById('headerDate');
+            var dateElement = document.querySelector('.page-header .ph-right span');
             if (dateElement) {
                 dateElement.textContent = now.toLocaleDateString('ar-SA', options);
             }
+        }
 
-            // تعيين التواريخ الافتراضية للفلاتر
+        // ================================================================
+        // SET DEFAULT DATES
+        // ================================================================
+        function setDefaultDates() {
+            var now = new Date();
+            var firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+
             var fromDate = document.getElementById('filterDateFrom');
             var toDate = document.getElementById('filterDateTo');
-            if (fromDate && toDate) {
-                var firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-                fromDate.value = firstDay.toISOString().split('T')[0];
-                toDate.value = now.toISOString().split('T')[0];
-            }
+
+            if (fromDate) fromDate.value = firstDay.toISOString().split('T')[0];
+            if (toDate) toDate.value = now.toISOString().split('T')[0];
         }
 
         // ================================================================
@@ -1937,6 +879,8 @@
                 renderTable();
                 renderStats();
                 renderCharts();
+
+                updateLastRefreshed();
 
             } catch (error) {
                 console.error('❌ خطأ في جلب البيانات:', error);
@@ -2021,7 +965,7 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="6" style="text-align:center;padding:20px;color:var(--text-tertiary);">
-                            <i class="bi bi-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
+                            <i class="fas fa-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
                             لا توجد معاملات تطابق الفلاتر
                         </td>
                     </tr>
@@ -2115,8 +1059,8 @@
 
             var monthLabels = months.map(function(m) {
                 var parts = m.split('-');
-                var monthsNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر',
-                    'ديسمبر'
+                var monthsNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
                 ];
                 return monthsNames[parseInt(parts[1]) - 1] + ' ' + parts[0];
             });
@@ -2267,55 +1211,43 @@
         function initSidebar() {
             var sidebar = document.getElementById('sidebar');
             var toggle = document.getElementById('sidebarToggle');
-            var main = document.getElementById('mainContent');
-            var overlay = document.getElementById('sidebarOverlay');
+            var main = document.getElementById('main-content');
+            var overlay = document.getElementById('sidebar-overlay');
 
-            var MOBILE_BREAKPOINT = 1200;
+            if (!sidebar || !toggle) return;
+
+            var MOBILE_BREAKPOINT = 768;
 
             toggle.addEventListener('click', function() {
                 if (window.innerWidth <= MOBILE_BREAKPOINT) {
-                    var isOpen = sidebar.classList.toggle('open');
-                    overlay.classList.toggle('active');
-                    document.body.style.overflow = isOpen ? 'hidden' : '';
+                    sidebar.classList.toggle('open');
+                    overlay.classList.toggle('show');
                 } else {
-                    sidebar.classList.toggle('collapsed');
-                    main.classList.toggle('expanded');
+                    sidebar.classList.toggle('closed');
+                    main.classList.toggle('full');
                 }
                 setTimeout(function() {
                     resizeCharts();
                 }, 400);
             });
 
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
-                setTimeout(function() {
-                    resizeCharts();
-                }, 400);
-            });
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
-                        sidebar.classList.remove('open');
-                        overlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                        setTimeout(function() {
-                            resizeCharts();
-                        }, 400);
-                    }
-                }
-            });
+            if (overlay) {
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('show');
+                    setTimeout(function() {
+                        resizeCharts();
+                    }, 400);
+                });
+            }
 
             window.addEventListener('resize', function() {
                 if (window.innerWidth > MOBILE_BREAKPOINT) {
                     sidebar.classList.remove('open');
-                    overlay.classList.remove('active');
-                    document.body.style.overflow = '';
+                    if (overlay) overlay.classList.remove('show');
                 } else {
-                    sidebar.classList.remove('collapsed');
-                    main.classList.remove('expanded');
+                    sidebar.classList.remove('closed');
+                    main.classList.remove('full');
                 }
                 resizeCharts();
             });
@@ -2326,26 +1258,30 @@
         // ================================================================
         function initDarkMode() {
             var toggle = document.getElementById('darkModeToggle');
-            var icon = toggle.querySelector('i');
-            var savedMode = localStorage.getItem('darkMode');
+            if (!toggle) return;
 
-            if (savedMode === 'true') {
-                document.body.classList.add('dark-mode');
-                if (icon) icon.className = 'bi bi-sun-fill';
+            var icon = toggle.querySelector('i');
+
+            var isDark = Supabase.isDarkModeEnabled();
+            Supabase.applyTheme(isDark);
+
+            if (icon) {
+                icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
             }
 
             toggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark-mode');
-                var isDarkMode = document.body.classList.contains('dark-mode');
-                if (icon) {
-                    icon.className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-                }
-                localStorage.setItem('darkMode', isDarkMode);
+                var currentState = document.body.classList.contains('dark-mode');
+                var newState = !currentState;
 
-                setTimeout(function() {
-                    renderCharts();
-                    resizeCharts();
-                }, 200);
+                Supabase.toggleTheme(newState).then(function() {
+                    if (icon) {
+                        icon.className = newState ? 'fas fa-sun' : 'fas fa-moon';
+                    }
+                    setTimeout(function() {
+                        renderCharts();
+                        resizeCharts();
+                    }, 200);
+                });
             });
         }
 
@@ -2353,31 +1289,14 @@
         // REFRESH BUTTON
         // ================================================================
         function initRefresh() {
-            document.getElementById('refreshBtn').addEventListener('click', function() {
+            var refreshBtn = document.getElementById('refreshBtn');
+            if (!refreshBtn) return;
+
+            refreshBtn.addEventListener('click', function() {
                 loadReport();
                 Supabase.applySystemLogo();
                 showToast('🔄 جاري تحديث البيانات...', 'info');
             });
-        }
-
-        // ================================================================
-        // NOTIFICATIONS
-        // ================================================================
-        function initNotifications() {
-            var notifBtn = document.getElementById('notifBtn');
-            if (notifBtn) {
-                notifBtn.addEventListener('click', function() {
-                    var messages = [
-                        '📊 تم تحديث التقرير المالي',
-                        '💰 إجمالي الإيرادات: ' + Supabase.formatCurrency(12500),
-                        '📈 نسبة النمو هذا الشهر: 8%',
-                        '✅ تم تصدير التقرير بنجاح',
-                        '📋 يمكنك طباعة التقرير'
-                    ];
-                    var random = messages[Math.floor(Math.random() * messages.length)];
-                    showToast(random, 'info');
-                });
-            }
         }
 
         // ================================================================
@@ -2387,7 +1306,7 @@
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 'b') {
                     e.preventDefault();
-                    var toggle = document.getElementById('sidebarToggle');
+                    var toggle = document.querySelector('.menu-toggle-btn');
                     if (toggle) toggle.click();
                 }
                 if (e.ctrlKey && e.key === 'r') {
@@ -2422,52 +1341,14 @@
         }
 
         // ================================================================
-        // TOAST
+        // MANUAL REFRESH
         // ================================================================
-        function showToast(message, type) {
-            var existingToasts = document.querySelectorAll('.toast-notification');
-            for (var i = 0; i < existingToasts.length; i++) {
-                existingToasts[i].remove();
-            }
-
-            var toast = document.createElement('div');
-            toast.className = 'toast-notification';
-
-            var iconClass = 'bi-info-circle-fill';
-            var toastClass = '';
-
-            if (type === 'success') {
-                iconClass = 'bi-check-circle-fill';
-                toastClass = 'toast-success';
-            } else if (type === 'error') {
-                iconClass = 'bi-x-circle-fill';
-                toastClass = 'toast-error';
-            } else if (type === 'warning') {
-                iconClass = 'bi-exclamation-triangle-fill';
-                toastClass = 'toast-warning';
-            }
-
-            toast.innerHTML = `
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
-                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
-                </div>
-            `;
-
-            if (toastClass) {
-                toast.classList.add(toastClass);
-            }
-
-            document.body.appendChild(toast);
-
-            setTimeout(function() {
-                toast.style.animation = 'fadeOut 0.3s ease forwards';
-                setTimeout(function() {
-                    if (toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
-                }, 300);
-            }, 3000);
+        async function manualRefresh() {
+            var icon = document.querySelector('#refreshBtn i');
+            if (icon) icon.classList.add('fa-spin');
+            await loadReport();
+            if (icon) icon.classList.remove('fa-spin');
+            showToast('✅ تم تحديث البيانات', 'success');
         }
 
         // ================================================================
@@ -2475,13 +1356,13 @@
         // ================================================================
         window.loadReport = loadReport;
         window.logout = logout;
-        window.showToast = showToast;
+        window.manualRefresh = manualRefresh;
         window.resizeCharts = resizeCharts;
 
-        console.log('📊 نظام التقارير المالية - حراء للسياحة');
-        console.log('💰 العملة:', systemCurrency, currencySymbol);
-        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي) | Ctrl+P (طباعة)');
-        console.log('✅ النظام جاهز للعمل');
+        console.log('✅ تم تحميل reports.html بنجاح');
+        console.log('📌 يمكنك تصفية المعاملات حسب النوع والفئة والتاريخ');
+        console.log('📌 يتم تحديث الرسوم البيانية تلقائياً');
+        console.log('📌 يمكنك طباعة التقرير');
     </script>
 
 </body>
