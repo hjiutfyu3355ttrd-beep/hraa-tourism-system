@@ -48,31 +48,63 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 20px;
-            margin: 4px 12px;
+            padding: 10px 20px;
+            margin: 3px 12px;
             border-radius: 12px;
             color: rgba(255,255,255,0.6);
             transition: all 0.2s;
             text-decoration: none;
             font-weight: 500;
             font-size: 14px;
+            border-right: 3px solid transparent;
         }
-        .sidebar .nav-link i { width: 22px; font-size: 16px; }
+        .sidebar .nav-link i {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            border-radius: 9px;
+            background: rgba(255,255,255,0.04);
+            transition: all 0.2s;
+        }
         .sidebar .nav-link:hover {
             background: rgba(255,255,255,0.06);
             color: #fff;
         }
+        .sidebar .nav-link:hover i { background: rgba(255,255,255,0.08); }
         .sidebar .nav-link.active {
-            background: rgba(13, 148, 136, 0.2);
+            background: rgba(13, 148, 136, 0.15);
+            color: #14b8a6;
+            border-right-color: #14b8a6;
+        }
+        .sidebar .nav-link.active i {
+            background: rgba(20, 184, 166, 0.18);
             color: #14b8a6;
         }
         .sidebar .nav-link .badge {
             margin-right: auto;
+            min-width: 22px;
+            text-align: center;
             background: rgba(255,255,255,0.1);
             padding: 2px 10px;
             border-radius: 20px;
             font-size: 11px;
+            font-variant-numeric: tabular-nums;
             color: rgba(255,255,255,0.6);
+            transition: all 0.2s;
+        }
+        .sidebar .nav-link.active .badge {
+            background: rgba(20, 184, 166, 0.2);
+            color: #14b8a6;
+        }
+        .sidebar .nav-link:focus-visible,
+        .quick-action:focus-visible,
+        .menu-toggle-btn:focus-visible,
+        a:focus-visible {
+            outline: 2px solid #14b8a6;
+            outline-offset: 2px;
         }
         
         /* ===== المحتوى الرئيسي ===== */
@@ -89,6 +121,7 @@
             padding: 22px 24px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
             border: 1px solid rgba(0,0,0,0.04);
+            border-top: 3px solid transparent;
             transition: all 0.25s;
             position: relative;
             overflow: hidden;
@@ -141,19 +174,35 @@
         .table-card th {
             text-align: right;
             padding: 12px 8px;
-            font-weight: 600;
-            font-size: 13px;
-            color: #64748b;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #94a3b8;
             border-bottom: 2px solid #f1f5f9;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
         .table-card td {
             padding: 14px 8px;
             border-bottom: 1px solid #f1f5f9;
             font-size: 14px;
             color: #1e293b;
+            transition: background 0.15s;
         }
         .table-card tr:last-child td { border-bottom: none; }
         .table-card tr:hover td { background: #f8fafc; }
+        .table-card .empty-state, .table-card .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 28px 0;
+            color: #94a3b8;
+        }
+        .table-card .empty-state i, .table-card .loading-state i { font-size: 20px; }
         
         .status-badge {
             padding: 4px 14px;
@@ -213,6 +262,26 @@
             }
         }
         .menu-toggle { display: flex; }
+        .menu-toggle-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #1e293b;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .menu-toggle-btn:hover {
+            color: #0d9488;
+            border-color: #0d9488;
+            background: #f0fdfa;
+        }
 
         /* ===== تبديل القائمة الجانبية على الشاشات الكبيرة ===== */
         @media (min-width: 769px) {
@@ -300,8 +369,8 @@
 
     <!-- ===== زر القائمة (للشاشات الصغيرة) ===== -->
     <div class="flex items-center gap-3 mb-6 menu-toggle">
-        <button onclick="toggleSidebar()" class="text-2xl text-gray-700">
-            <i class="fas fa-bars"></i>
+        <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة">
+            <i class="fas fa-bars" id="menu-toggle-icon"></i>
         </button>
         <h1 class="text-xl font-bold text-gray-800">🕋 حراء للسياحة</h1>
     </div>
@@ -314,7 +383,7 @@
         </div>
         <div class="flex items-center gap-3">
             <span class="text-sm text-gray-500">اليوم</span>
-            <span class="font-semibold text-gray-700" id="current-date"></span>
+            <span class="font-semibold text-gray-700 bg-white px-3 py-1.5 rounded-full shadow-sm border border-gray-100 text-sm" id="current-date"></span>
         </div>
     </div>
 
@@ -359,7 +428,7 @@
                     </thead>
                     <tbody id="recent-bookings">
                         <!-- سيتم تعبئتها بواسطة JavaScript -->
-                        <tr><td colspan="4" class="text-center text-gray-400 py-6">جاري التحميل...</td></tr>
+                        <tr><td colspan="4"><div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i>جاري التحميل...</div></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -378,7 +447,7 @@
                     </thead>
                     <tbody id="top-representatives">
                         <!-- سيتم تعبئتها بواسطة JavaScript -->
-                        <tr><td colspan="4" class="text-center text-gray-400 py-6">جاري التحميل...</td></tr>
+                        <tr><td colspan="4"><div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i>جاري التحميل...</div></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -398,7 +467,7 @@
                 </thead>
                 <tbody id="active-trips">
                     <!-- سيتم تعبئتها بواسطة JavaScript -->
-                    <tr><td colspan="5" class="text-center text-gray-400 py-6">جاري التحميل...</td></tr>
+                    <tr><td colspan="5"><div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i>جاري التحميل...</div></td></tr>
                 </tbody>
             </table>
         </div>
@@ -423,17 +492,23 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('main-content');
     const overlay = document.getElementById('sidebar-overlay');
+    const icon = document.getElementById('menu-toggle-icon');
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    let isOpenNow;
 
     if (isMobile) {
         // على الشاشات الصغيرة: القائمة تظهر فوق المحتوى
         sidebar.classList.toggle('open');
-        overlay.classList.toggle('show', sidebar.classList.contains('open'));
+        isOpenNow = sidebar.classList.contains('open');
+        overlay.classList.toggle('show', isOpenNow);
     } else {
         // على الشاشات الكبيرة: القائمة تختفي والمحتوى يتمدد
         sidebar.classList.toggle('closed');
-        mainContent.classList.toggle('full', sidebar.classList.contains('closed'));
+        isOpenNow = !sidebar.classList.contains('closed');
+        mainContent.classList.toggle('full', !isOpenNow);
     }
+
+    if (icon) icon.className = isOpenNow ? 'fas fa-xmark' : 'fas fa-bars';
 }
 
 // إغلاق القائمة تلقائياً عند تكبير الشاشة لتفادي تعارض الكلاسات
@@ -476,16 +551,16 @@ async function loadDashboard() {
         ]);
 
         const stats = [
-            { icon: 'fa-plane', color: 'bg-blue-50 text-blue-600', number: tripsRes.count || 0, label: 'الرحلات' },
-            { icon: 'fa-ticket', color: 'bg-emerald-50 text-emerald-600', number: bookingsRes.count || 0, label: 'الحجوزات' },
-            { icon: 'fa-users', color: 'bg-purple-50 text-purple-600', number: clientsRes.count || 0, label: 'العملاء' },
-            { icon: 'fa-user-tie', color: 'bg-amber-50 text-amber-600', number: repsRes.count || 0, label: 'المناديب' },
-            { icon: 'fa-hotel', color: 'bg-rose-50 text-rose-600', number: 0, label: 'الفنادق' }
+            { icon: 'fa-plane', color: 'bg-blue-50 text-blue-600', border: 'border-blue-400', number: tripsRes.count || 0, label: 'الرحلات' },
+            { icon: 'fa-ticket', color: 'bg-emerald-50 text-emerald-600', border: 'border-emerald-400', number: bookingsRes.count || 0, label: 'الحجوزات' },
+            { icon: 'fa-users', color: 'bg-purple-50 text-purple-600', border: 'border-purple-400', number: clientsRes.count || 0, label: 'العملاء' },
+            { icon: 'fa-user-tie', color: 'bg-amber-50 text-amber-600', border: 'border-amber-400', number: repsRes.count || 0, label: 'المناديب' },
+            { icon: 'fa-hotel', color: 'bg-rose-50 text-rose-600', border: 'border-rose-400', number: 0, label: 'الفنادق' }
         ];
 
         const container = document.getElementById('stats-container');
         container.innerHTML = stats.map(s => `
-            <div class="stat-card flex items-center gap-4">
+            <div class="stat-card flex items-center gap-4 ${s.border}">
                 <div class="icon ${s.color}"><i class="fas ${s.icon}"></i></div>
                 <div>
                     <div class="number">${s.number}</div>
@@ -518,7 +593,7 @@ async function loadDashboard() {
                 </tr>
             `).join('');
         } else {
-            bookingsTbody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-400 py-6">لا توجد حجوزات</td></tr>`;
+            bookingsTbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="fas fa-inbox"></i>لا توجد حجوزات</div></td></tr>`;
         }
 
         // === 3c. أبرز المناديب ===
@@ -549,7 +624,7 @@ async function loadDashboard() {
                 </tr>
             `).join('');
         } else {
-            repsTbody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-400 py-6">لا يوجد مناديب</td></tr>`;
+            repsTbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="fas fa-user-slash"></i>لا يوجد مناديب</div></td></tr>`;
         }
 
         // === 3d. الرحلات النشطة ===
@@ -572,7 +647,7 @@ async function loadDashboard() {
                 </tr>
             `).join('');
         } else {
-            tripsTbody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-400 py-6">لا توجد رحلات نشطة</td></tr>`;
+            tripsTbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fas fa-plane-slash"></i>لا توجد رحلات نشطة</div></td></tr>`;
         }
 
         // === 3e. تحديث البادجات في القائمة الجانبية ===
