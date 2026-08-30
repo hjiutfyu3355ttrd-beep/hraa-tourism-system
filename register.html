@@ -10,66 +10,84 @@
     <link rel="stylesheet" href="theme.css" />
     <style>
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0d9488 160%);
+            background:
+                radial-gradient(circle at 15% 15%, rgba(156,122,60,0.16), transparent 40%),
+                linear-gradient(135deg, #0e1c2e 0%, #14263b 55%, #1a2e46 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: var(--space-5);
         }
-        .register-card {
-            background: #fff;
-            border-radius: 22px;
-            padding: 40px 36px;
+        .auth-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-7) var(--space-6);
             width: 100%;
             max-width: 440px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
             animation: modalPop 0.25s ease;
         }
         .brand-icon {
-            width: 64px; height: 64px; border-radius: 18px;
-            background: linear-gradient(135deg, #0d9488, #14b8a6);
+            width: 60px; height: 60px; border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             display: flex; align-items: center; justify-content: center;
-            font-size: 30px; margin: 0 auto 16px;
+            font-size: 26px; margin: 0 auto var(--space-4);
+            box-shadow: var(--shadow-md);
+            color: var(--accent-light);
         }
-        .error-message, .success-message, .info-message {
+        .auth-title { font-size: var(--text-xl); font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
+        .auth-title .accent { color: var(--accent-dark); }
+        .auth-subtitle { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: 4px; }
+
+        .admin-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--warning-bg); color: var(--accent-dark);
+            font-size: var(--text-xs); font-weight: 700; padding: 4px 12px;
+            border-radius: var(--radius-full); margin-top: var(--space-3);
+            border: 1px solid rgba(156,122,60,0.15);
+        }
+
+        .form-note {
             display: none;
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 14px;
             align-items: center;
             gap: 8px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-4);
+            border: 1px solid transparent;
         }
-        .error-message.show, .success-message.show, .info-message.show { display: flex; }
-        .error-message { background: #fee2e2; color: #991b1b; }
-        .success-message { background: #dcfce7; color: #166534; }
-        .info-message { background: #e0f2fe; color: #075985; }
-        .admin-badge {
-            display: inline-block; background: #fef3c7; color: #92400e;
-            font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px;
-            margin-top: 8px;
-        }
-        .password-strength { height: 4px; background: #e2e8f0; border-radius: 4px; margin-top: 6px; overflow: hidden; }
-        .password-strength .fill { height: 100%; width: 0%; transition: 0.25s; }
-        .password-strength-text { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+        .form-note.show { display: flex; }
+        .form-note.error { background: var(--danger-bg); color: var(--danger); border-color: rgba(173,63,57,0.15); }
+        .form-note.success { background: var(--success-bg); color: var(--success); border-color: rgba(28,122,78,0.15); }
+        .form-note.info { background: var(--info-bg); color: var(--info); border-color: rgba(45,96,136,0.15); }
+
+        .password-strength { height: 4px; background: var(--border); border-radius: var(--radius-full); margin-top: 6px; overflow: hidden; }
+        .password-strength .fill { height: 100%; width: 0%; transition: 0.25s; border-radius: var(--radius-full); }
+        .password-strength-text { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 4px; }
+
+        .auth-footer-link { font-size: var(--text-sm); color: var(--text-tertiary); }
+        .auth-footer-link a { color: var(--accent-dark); font-weight: 600; }
+        .auth-footer-link a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
-<div class="register-card">
+<div class="auth-card">
     <div class="text-center mb-5">
-        <div class="brand-icon"><i class="fas fa-user-plus text-white"></i></div>
-        <h1 class="text-2xl font-extrabold text-gray-800">🕋 حراء <span class="text-emerald-600">للسياحة</span></h1>
-        <p class="text-gray-400 text-sm mt-1">إنشاء حساب جديد</p>
+        <div class="brand-icon"><i class="fas fa-user-plus"></i></div>
+        <h1 class="auth-title">حراء <span class="accent">للسياحة</span></h1>
+        <p class="auth-subtitle">إنشاء حساب جديد</p>
         <div id="adminBadgeContainer" style="display:none;">
-            <span class="admin-badge">👑 المستخدم الأول - سيكون مديراً</span>
+            <span class="admin-badge"><i class="fas fa-shield-halved"></i> أول مستخدم مسجَّل — سيُمنح صلاحية المدير</span>
         </div>
     </div>
 
-    <div id="infoMessage" class="info-message">
+    <div id="infoMessage" class="form-note info">
         <i class="fas fa-circle-info"></i>
-        <span id="infoText">جاري التحقق من وجود مستخدمين...</span>
+        <span id="infoText">جاري التحقق من وجود مستخدمين مسجَّلين...</span>
     </div>
 
     <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4">
@@ -79,26 +97,26 @@
         </div>
         <div class="form-field">
             <label>البريد الإلكتروني</label>
-            <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required />
+            <input type="email" id="email" placeholder="name@company.com" required />
         </div>
         <div class="form-field">
             <label>كلمة المرور</label>
-            <input type="password" id="password" placeholder="أدخل كلمة المرور (6 أحرف)" required minlength="6" oninput="checkPasswordStrength(this.value)" />
+            <input type="password" id="password" placeholder="6 أحرف على الأقل" required minlength="6" oninput="checkPasswordStrength(this.value)" />
             <div class="password-strength"><div class="fill" id="strengthFill"></div></div>
-            <div class="password-strength-text" id="strengthText">ضعيفة</div>
+            <div class="password-strength-text" id="strengthText">قوة كلمة المرور: ضعيفة</div>
         </div>
         <div class="form-field">
             <label>اسم الشركة</label>
-            <input type="text" id="companyName" placeholder="اسم الشركة" required />
+            <input type="text" id="companyName" placeholder="اسم الشركة أو المؤسسة" required />
         </div>
 
-        <div id="errorMessage" class="error-message">
+        <div id="errorMessage" class="form-note error">
             <i class="fas fa-circle-exclamation"></i>
-            <span id="errorText">حدث خطأ</span>
+            <span id="errorText">حدث خطأ أثناء إنشاء الحساب</span>
         </div>
-        <div id="successMessage" class="success-message">
+        <div id="successMessage" class="form-note success">
             <i class="fas fa-circle-check"></i>
-            <span>تم إنشاء الحساب بنجاح... جاري التحويل</span>
+            <span>تم إنشاء الحساب بنجاح، جاري تحويلك إلى صفحة تسجيل الدخول</span>
         </div>
 
         <button type="submit" class="btn-primary-solid w-full justify-center py-3" id="registerBtn">
@@ -107,8 +125,8 @@
         </button>
     </form>
 
-    <div class="text-center text-sm text-gray-400 mt-6">
-        لديك حساب بالفعل؟ <a href="login.html" class="text-emerald-600 font-semibold hover:underline">تسجيل الدخول</a>
+    <div class="text-center auth-footer-link mt-6">
+        لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a>
     </div>
 </div>
 
@@ -151,9 +169,9 @@ async function checkIfUsersExist() {
             hideAdminBadge();
         }
     } catch (error) {
-        console.error('❌ خطأ في التحقق من المستخدمين:', error);
+        console.error('خطأ في التحقق من المستخدمين:', error);
         var shouldContinue = confirm(
-            '⚠️ لا يمكن الاتصال بقاعدة البيانات.\nتأكد من:\n1. أن RPC function "get_users_count" موجودة في Supabase\n2. أنك متصل بالإنترنت\n\nهل تريد المتابعة كمستخدم أول؟'
+            'تعذّر الاتصال بقاعدة البيانات.\nتأكد من:\n1. وجود دالة RPC باسم "get_users_count" في Supabase\n2. اتصالك بالإنترنت\n\nهل ترغب في المتابعة كأول مستخدم؟'
         );
         if (shouldContinue) {
             isFirstUser = true;
@@ -161,7 +179,7 @@ async function checkIfUsersExist() {
         } else {
             var im = document.getElementById('infoMessage');
             im.classList.add('show');
-            document.getElementById('infoText').textContent = '⚠️ يرجى إنشاء RPC function "get_users_count" في Supabase SQL Editor أولاً.';
+            document.getElementById('infoText').textContent = 'يرجى إنشاء دالة RPC باسم "get_users_count" في محرر SQL الخاص بـ Supabase أولاً.';
         }
     }
 }
@@ -169,13 +187,13 @@ async function checkIfUsersExist() {
 function showAdminBadge() {
     document.getElementById('adminBadgeContainer').style.display = 'block';
     document.getElementById('infoMessage').classList.add('show');
-    document.getElementById('infoText').textContent = '🚀 لا يوجد مستخدمين حالياً. سيتم منحك صلاحية المدير (Admin) عند التسجيل!';
+    document.getElementById('infoText').textContent = 'لا يوجد مستخدمون مسجَّلون حالياً. سيُمنح هذا الحساب صلاحية المدير (Admin) فور التسجيل.';
 }
 
 function hideAdminBadge() {
     document.getElementById('adminBadgeContainer').style.display = 'none';
     document.getElementById('infoMessage').classList.remove('show');
-    document.getElementById('infoText').textContent = '✅ يوجد مستخدمين مسجلين بالفعل. سيتم إنشاء حسابك كـ (User) عادي.';
+    document.getElementById('infoText').textContent = 'يوجد مستخدمون مسجَّلون بالفعل. سيُنشأ هذا الحساب بصلاحية مستخدم عادي.';
 }
 
 function checkPasswordStrength(password) {
@@ -192,12 +210,12 @@ function checkPasswordStrength(password) {
     var percentage = (strength / 5) * 100;
     fill.style.width = percentage + '%';
 
-    var colors = ['#ef4444', '#f59e0b', '#eab308', '#22c55e', '#22c55e'];
+    var colors = ['#ad3f39', '#ad7f2e', '#ad7f2e', '#1c7a4e', '#1c7a4e'];
     var labels = ['ضعيفة جداً', 'ضعيفة', 'متوسطة', 'قوية', 'قوية جداً'];
     var colorIndex = Math.min(strength, 4);
 
     fill.style.background = colors[colorIndex];
-    text.textContent = labels[colorIndex];
+    text.textContent = 'قوة كلمة المرور: ' + labels[colorIndex];
 }
 
 async function handleRegister(event) {
@@ -218,12 +236,12 @@ async function handleRegister(event) {
     successMessage.classList.remove('show');
 
     if (!fullName || !email || !password || !companyName) {
-        errorText.textContent = 'الرجاء ملء جميع الحقول';
+        errorText.textContent = 'الرجاء تعبئة جميع الحقول';
         errorMessage.classList.add('show');
         return;
     }
     if (password.length < 6) {
-        errorText.textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+        errorText.textContent = 'يجب ألا تقل كلمة المرور عن 6 أحرف';
         errorMessage.classList.add('show');
         return;
     }
@@ -245,12 +263,12 @@ async function handleRegister(event) {
         var data = await response.json();
 
         if (response.status === 429) {
-            throw new Error('⚠️ تم تجاوز معدل الطلبات. يرجى الانتظار دقيقة ثم المحاولة مرة أخرى.');
+            throw new Error('تم تجاوز الحد المسموح من المحاولات. يرجى الانتظار دقيقة ثم إعادة المحاولة.');
         }
         if (!response.ok) {
-            var errorMsg = data.error_description || data.message || 'فشل إنشاء الحساب';
+            var errorMsg = data.error_description || data.message || 'تعذّر إنشاء الحساب';
             if (errorMsg.includes('already registered')) {
-                errorMsg = 'هذا البريد الإلكتروني مسجل بالفعل. يرجى استخدام بريد آخر.';
+                errorMsg = 'هذا البريد الإلكتروني مسجَّل بالفعل. يرجى استخدام بريد آخر.';
             }
             throw new Error(errorMsg);
         }
@@ -259,15 +277,15 @@ async function handleRegister(event) {
         var userEmail = data.email || (data.user && data.user.email);
 
         if (!userId || !userEmail) {
-            throw new Error('لم يتم استلام بيانات المستخدم بشكل صحيح');
+            throw new Error('تعذّر استلام بيانات المستخدم بشكل صحيح');
         }
 
         var role = isFirstUser ? 'admin' : 'user';
         await addUserToDatabase(userId, fullName, userEmail, role, companyName);
 
         var successMsg = isFirstUser ?
-            '✅ تم إنشاء حساب المدير بنجاح! سيتم تحويلك إلى صفحة تسجيل الدخول.' :
-            '✅ تم إنشاء الحساب بنجاح! سيتم تحويلك إلى صفحة تسجيل الدخول.';
+            'تم إنشاء حساب المدير بنجاح، سيتم تحويلك إلى صفحة تسجيل الدخول.' :
+            'تم إنشاء الحساب بنجاح، سيتم تحويلك إلى صفحة تسجيل الدخول.';
 
         successMessage.querySelector('span').textContent = successMsg;
         successMessage.classList.add('show');
@@ -275,7 +293,7 @@ async function handleRegister(event) {
         setTimeout(function() { window.location.href = 'login.html'; }, 2500);
 
     } catch (error) {
-        console.error('❌ خطأ:', error);
+        console.error('خطأ:', error);
         errorText.textContent = error.message || 'حدث خطأ أثناء إنشاء الحساب';
         errorMessage.classList.add('show');
     }
@@ -301,11 +319,11 @@ async function addUserToDatabase(userId, fullName, email, role, companyName) {
 
         if (!response.ok) {
             var errText = await response.text();
-            console.warn('⚠️ فشل إضافة المستخدم إلى جدول users:', errText);
+            console.warn('فشل إضافة المستخدم إلى جدول users:', errText);
             throw new Error('فشل إضافة المستخدم إلى قاعدة البيانات');
         }
     } catch (error) {
-        console.error('❌ خطأ في إضافة المستخدم:', error);
+        console.error('خطأ في إضافة المستخدم:', error);
         throw new Error('فشل إضافة المستخدم إلى قاعدة البيانات: ' + error.message);
     }
 }

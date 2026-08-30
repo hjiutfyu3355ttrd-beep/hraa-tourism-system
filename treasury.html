@@ -25,6 +25,7 @@
            DESIGN SYSTEM - Corporate Accounting (مطابق لـ index.html)
            ================================================================ */
         :root {
+            /* — الألوان الأساسية (Corporate Navy & Gold) — */
             --primary: #0e1c2e;
             --primary-light: #1a2e46;
             --primary-dark: #08131f;
@@ -49,18 +50,48 @@
             --text-secondary: #5c5648;
             --text-tertiary: #928c79;
             --text-inverse: #f5f3ec;
-            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
-            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
-            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
-            --radius-sm: 4px;
-            --radius-md: 6px;
-            --radius-lg: 10px;
+
+            /* — الظلال (تدرّج موحّد بأربع درجات) — */
+            --shadow-xs: 0 1px 2px rgba(14,28,46,0.05);
+            --shadow-sm: 0 1px 3px rgba(14,28,46,0.05), 0 2px 6px rgba(14,28,46,0.04);
+            --shadow-md: 0 4px 14px rgba(14,28,46,0.08), 0 1px 3px rgba(14,28,46,0.05);
+            --shadow-lg: 0 16px 40px rgba(14,28,46,0.14), 0 4px 10px rgba(14,28,46,0.05);
+            --shadow-focus: 0 0 0 3px rgba(156,122,60,0.16);
+
+            /* — الحواف (أكثر رقّة وانسجاماً) — */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
             --radius-full: 9999px;
+
+            /* — الحركة، المقاسات الهيكلية — */
             --t-base: 0.2s ease;
+            --t-fast: 0.15s ease;
             --sidebar-width: 260px;
             --header-height: 60px;
-            --font-display: 'Inter', 'Cairo', sans-serif;
-            --font-body: 'Cairo', 'Inter', sans-serif;
+
+            /* — الطباعة: خط واحد موحّد لكامل النظام — */
+            --font-display: 'Cairo', sans-serif;
+            --font-body: 'Cairo', sans-serif;
+            --font-numeric: 'Cairo', sans-serif;
+
+            /* — مقياس التباعد الموحّد — */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 24px;
+            --space-6: 32px;
+            --space-7: 48px;
+
+            /* — مقياس أحجام الخط الموحّد — */
+            --text-xs: 11px;
+            --text-sm: 12.5px;
+            --text-base: 13.5px;
+            --text-md: 15px;
+            --text-lg: 18px;
+            --text-xl: 22px;
+            --text-2xl: 28px;
         }
 
         /* ================================================================
@@ -79,7 +110,7 @@
             overflow-x: hidden;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
-            font-size: 13px;
+            font-size: 13.5px;
             line-height: 1.5;
             display: flex;
             flex-direction: column;
