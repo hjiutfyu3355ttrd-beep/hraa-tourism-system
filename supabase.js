@@ -200,6 +200,10 @@ var currentCurrency = 'SAR';
 var currentCurrencySymbol = 'ر.س';
 var _systemSettings = null;
 
+/**
+ * الحصول على الإعدادات الافتراضية للنظام
+ * @returns {Object} كائن الإعدادات الافتراضية
+ */
 function getDefaultSettings() {
     return {
         systemName: 'حراء للسياحة',
@@ -211,12 +215,13 @@ function getDefaultSettings() {
         notifyDebts: true,
         notifySystem: false,
         logoUrl: '',
-        darkMode: true
+        darkMode: false  // ✅ تم التعديل: false بدلاً من true
     };
 }
 
 /**
  * الحصول على الإعدادات المحلية من localStorage
+ * @returns {Object} كائن الإعدادات المحلية
  */
 function getLocalSettings() {
     try {
@@ -271,7 +276,7 @@ async function getUserSettings() {
                         notifyDebts: settings.notify_debts !== undefined ? settings.notify_debts : true,
                         notifySystem: settings.notify_system !== undefined ? settings.notify_system : false,
                         logoUrl: settings.logo_url || '',
-                        darkMode: settings.dark_mode !== undefined ? settings.dark_mode : true
+                        darkMode: settings.dark_mode !== undefined ? settings.dark_mode : false  // ✅ تم التعديل: false بدلاً من true
                     };
                     
                     // تحديث المتغيرات العامة
@@ -298,7 +303,7 @@ async function getUserSettings() {
 
 /**
  * حفظ إعدادات المستخدم (باستخدام الجدول المباشر - بدون RPC)
- * @param {Object} settings كائن الإعدادات
+ * @param {Object} settings - كائن الإعدادات
  * @returns {Promise<boolean>} نجاح العملية
  */
 async function saveUserSettings(settings) {
@@ -322,7 +327,7 @@ async function saveUserSettings(settings) {
             notify_debts: settings.notifyDebts !== undefined ? settings.notifyDebts : true,
             notify_system: settings.notifySystem !== undefined ? settings.notifySystem : false,
             logo_url: settings.logoUrl || '',
-            dark_mode: settings.darkMode !== undefined ? settings.darkMode : true,
+            dark_mode: settings.darkMode !== undefined ? settings.darkMode : false,  // ✅ تم التعديل: false بدلاً من true
             updated_at: new Date().toISOString()
         };
 
@@ -630,6 +635,8 @@ async function clearAllData() {
 
 /**
  * الحصول على Headers مع التوكن
+ * @param {boolean} includeAuth - هل يتضمن التوكن
+ * @returns {Object} كائن الـ Headers
  */
 function getHeaders(includeAuth) {
     var headers = {
@@ -649,6 +656,10 @@ function getHeaders(includeAuth) {
 
 /**
  * تنفيذ طلب مع إعادة المحاولة عند انتهاء التوكن
+ * @param {string} url - رابط الطلب
+ * @param {Object} options - خيارات الطلب
+ * @param {number} retryCount - عدد محاولات إعادة المحاولة
+ * @returns {Promise<Response>} استجابة الطلب
  */
 async function fetchWithRetry(url, options, retryCount) {
     retryCount = retryCount || 0;
@@ -690,6 +701,9 @@ async function fetchWithRetry(url, options, retryCount) {
 
 /**
  * جلب البيانات من جدول في Supabase
+ * @param {string} table - اسم الجدول
+ * @param {Object} options - خيارات الجلب (order, limit, filter)
+ * @returns {Promise<Array>} مصفوفة البيانات
  */
 async function fetchData(table, options) {
     try {
@@ -731,6 +745,9 @@ async function fetchData(table, options) {
 
 /**
  * إضافة بيانات إلى جدول في Supabase
+ * @param {string} table - اسم الجدول
+ * @param {Object} data - البيانات المراد إضافتها
+ * @returns {Promise<Object>} البيانات المضافة
  */
 async function addData(table, data) {
     try {
@@ -761,6 +778,10 @@ async function addData(table, data) {
 
 /**
  * تحديث بيانات في جدول في Supabase
+ * @param {string} table - اسم الجدول
+ * @param {string|number} id - معرف السجل
+ * @param {Object} data - البيانات المراد تحديثها
+ * @returns {Promise<Object>} البيانات المحدثة
  */
 async function updateData(table, id, data) {
     try {
@@ -791,6 +812,9 @@ async function updateData(table, id, data) {
 
 /**
  * حذف بيانات من جدول في Supabase
+ * @param {string} table - اسم الجدول
+ * @param {string|number} id - معرف السجل
+ * @returns {Promise<boolean>} نجاح العملية
  */
 async function deleteData(table, id) {
     try {
@@ -818,6 +842,11 @@ async function deleteData(table, id) {
 // 6. دوال خاصة بجداول النظام
 // ================================================================
 
+/**
+ * جلب المعاملات المالية
+ * @param {number} limit - الحد الأقصى لعدد السجلات
+ * @returns {Promise<Array>} مصفوفة المعاملات
+ */
 async function getTransactions(limit) {
     return await fetchData('transactions', {
         order: 'date',
@@ -825,51 +854,98 @@ async function getTransactions(limit) {
     });
 }
 
+/**
+ * جلب البنوك
+ * @returns {Promise<Array>} مصفوفة البنوك
+ */
 async function getBanks() {
     return await fetchData('banks');
 }
 
+/**
+ * جلب السيارات
+ * @returns {Promise<Array>} مصفوفة السيارات
+ */
 async function getCars() {
     return await fetchData('cars');
 }
 
+/**
+ * جلب العملاء
+ * @returns {Promise<Array>} مصفوفة العملاء
+ */
 async function getClients() {
     return await fetchData('clients');
 }
 
+/**
+ * جلب المستخدمين
+ * @returns {Promise<Array>} مصفوفة المستخدمين
+ */
 async function getUsers() {
     return await fetchData('users');
 }
 
+/**
+ * جلب الخدمات
+ * @returns {Promise<Array>} مصفوفة الخدمات
+ */
 async function getServices() {
     return await fetchData('services');
 }
 
 // ---- وحدات السياحة الدينية ----
+
+/**
+ * جلب الرحلات
+ * @returns {Promise<Array>} مصفوفة الرحلات
+ */
 async function getTrips() {
     return await fetchData('trips', { order: 'departure_date' });
 }
 
+/**
+ * جلب الحجوزات
+ * @param {string} tripId - معرف الرحلة (اختياري)
+ * @returns {Promise<Array>} مصفوفة الحجوزات
+ */
 async function getBookings(tripId) {
     var opts = {};
     if (tripId) opts.filter = { trip_id: tripId };
     return await fetchData('bookings', opts);
 }
 
+/**
+ * جلب الفنادق
+ * @returns {Promise<Array>} مصفوفة الفنادق
+ */
 async function getHotels() {
     return await fetchData('hotels');
 }
 
+/**
+ * جلب المناديب
+ * @returns {Promise<Array>} مصفوفة المناديب
+ */
 async function getRepresentatives() {
     return await fetchData('representatives');
 }
 
+/**
+ * جلب معاملات المناديب
+ * @param {string} repId - معرف المندوب (اختياري)
+ * @returns {Promise<Array>} مصفوفة المعاملات
+ */
 async function getRepTransactions(repId) {
     var opts = {};
     if (repId) opts.filter = { rep_id: repId };
     return await fetchData('rep_transactions', opts);
 }
 
+/**
+ * جلب الوكلاء
+ * @returns {Promise<Array>} مصفوفة الوكلاء
+ */
 async function getAgents() {
     return await fetchData('agents');
 }
@@ -878,6 +954,10 @@ async function getAgents() {
 // 7. دوال خاصة بالشعار
 // ================================================================
 
+/**
+ * الحصول على شعار النظام
+ * @returns {string|null} رابط الشعار أو null
+ */
 function getSystemLogo() {
     try {
         var settings = _systemSettings || getLocalSettings();
@@ -894,6 +974,9 @@ function getSystemLogo() {
     }
 }
 
+/**
+ * تطبيق شعار النظام على جميع عناصر الواجهة
+ */
 function applySystemLogo() {
     var logo = getSystemLogo();
     var logoElements = document.querySelectorAll('.brand-logo-img, .navbar-logo-img, #ledgerLogoImg, #logoPreview');
@@ -927,19 +1010,36 @@ function applySystemLogo() {
 // 8. دوال خاصة باسم النظام
 // ================================================================
 
+/**
+ * الحصول على اسم النظام
+ * @returns {string} اسم النظام
+ */
 function getSystemName() {
     var settings = _systemSettings || getLocalSettings();
     return settings.systemName || 'حراء للسياحة';
 }
 
+/**
+ * الحصول على إعدادات النظام بالكامل
+ * @returns {Object} كائن الإعدادات
+ */
 function getSystemSettings() {
     return _systemSettings || getLocalSettings();
 }
 
+/**
+ * الحصول على العملة الحالية
+ * @returns {string} رمز العملة
+ */
 function getCurrency() {
     return currentCurrency || 'SAR';
 }
 
+/**
+ * الحصول على رمز العملة
+ * @param {string} currencyCode - رمز العملة
+ * @returns {string} رمز العملة للتنسيق
+ */
 function getCurrencySymbol(currencyCode) {
     var symbols = {
         'SAR': 'ر.س',
@@ -956,6 +1056,12 @@ function getCurrencySymbol(currencyCode) {
     return symbols[currencyCode] || 'ر.س';
 }
 
+/**
+ * تنسيق المبلغ بالعملة
+ * @param {number} amount - المبلغ
+ * @param {string} currencyCode - رمز العملة (اختياري)
+ * @returns {string} المبلغ المنسق
+ */
 function formatCurrency(amount, currencyCode) {
     if (typeof amount !== 'number') amount = parseFloat(amount) || 0;
     
@@ -972,6 +1078,9 @@ function formatCurrency(amount, currencyCode) {
     return formatted + ' ' + symbol;
 }
 
+/**
+ * تطبيق اسم النظام على جميع عناصر الواجهة
+ */
 function applySystemName() {
     var systemName = getSystemName();
     
@@ -1011,6 +1120,7 @@ function applySystemName() {
 /**
  * تطبيق الوضع المظلم أو الفاتح بناءً على الإعدادات
  * @param {boolean} forceDark - (اختياري) فرض الوضع المظلم
+ * @returns {boolean} حالة الوضع المظلم بعد التطبيق
  */
 function applyTheme(forceDark) {
     try {
@@ -1020,7 +1130,7 @@ function applyTheme(forceDark) {
         if (forceDark !== undefined) {
             isDarkMode = forceDark;
         } else {
-            isDarkMode = settings.darkMode !== undefined ? settings.darkMode : true;
+            isDarkMode = settings.darkMode !== undefined ? settings.darkMode : false;  // ✅ false افتراضياً
         }
         
         if (isDarkMode) {
@@ -1081,13 +1191,17 @@ async function toggleTheme(isDark) {
  */
 function isDarkModeEnabled() {
     var settings = _systemSettings || getLocalSettings();
-    return settings.darkMode !== undefined ? settings.darkMode : true;
+    return settings.darkMode !== undefined ? settings.darkMode : false;  // ✅ false افتراضياً
 }
 
 // ================================================================
 // 10. الدوال الرئيسية عند تحميل أي صفحة
 // ================================================================
 
+/**
+ * تهيئة النظام عند تحميل الصفحة
+ * @returns {boolean} نجاح التهيئة
+ */
 function initSystem() {
     applySystemName();
     applySystemLogo();
@@ -1108,6 +1222,9 @@ function initSystem() {
     return true;
 }
 
+/**
+ * تحديث واجهة المستخدم بمعلومات المستخدم الحالي
+ */
 function updateUserUI() {
     var user = getCurrentUser();
     if (!user) return;
@@ -1128,9 +1245,9 @@ function updateUserUI() {
 // 11. تحديث المتغيرات العامة عند التحميل
 // ================================================================
 
-(async function initCurrency() {
+(function initCurrency() {
     try {
-        var settings = await getUserSettings();
+        var settings = getLocalSettings();
         if (settings && settings.currency) {
             currentCurrency = settings.currency;
             currentCurrencySymbol = getCurrencySymbol(currentCurrency);
@@ -1221,10 +1338,14 @@ window.Supabase = {
     currentCurrencySymbol: currentCurrencySymbol
 };
 
+// ================================================================
+// 13. رسائل التهيئة
+// ================================================================
+
 console.log('📦 تم تحميل Supabase.js - نظام التوكن المتكامل');
 console.log('📡 URL:', SUPABASE_CONFIG.URL);
 console.log('🔑 التوكن:', getToken() ? 'موجود ✅' : 'غير موجود ❌');
 console.log('💰 العملات المتاحة: SAR, AED, EGP, USD, EUR');
 console.log('⚙️ الإعدادات محفوظة في جدول user_settings (بدون RPC)');
 console.log('💰 العملة الحالية:', currentCurrency, currentCurrencySymbol);
-console.log('🎨 الوضع المظلم:', isDarkModeEnabled() ? 'مفعل ✅' : 'غير مفعل ❌');
+console.log('🎨 الوضع المظلم:', isDarkModeEnabled() ? 'مفعل ✅' : 'غير مفعل ❌ (الوضع الفاتح افتراضي)');
