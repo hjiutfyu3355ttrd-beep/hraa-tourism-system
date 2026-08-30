@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="pageTitle">الإعدادات - حراء للسياحة</title>
 
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.rel='stylesheet'" />
 
-    <!-- Bootstrap 5 RTL -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- Theme CSS الموحد -->
+    <link rel="stylesheet" href="theme.css" />
 
     <!-- ============================================================ -->
     <!-- SUPABASE.JS - الملف المركزي -->
@@ -22,543 +24,275 @@
 
     <style>
         /* ================================================================
-           DESIGN SYSTEM - مطابق تماماً لـ index.html
+           STYLES الخاصة بصفحة الإعدادات - مكملة لـ theme.css
            ================================================================ */
-        :root {
-            /* — الألوان الأساسية (Corporate Navy & Gold) — */
-            --primary: #0e1c2e;
-            --primary-light: #1a2e46;
-            --primary-dark: #08131f;
-            --accent: #9c7a3c;
-            --accent-light: #c9a86a;
-            --accent-dark: #755a29;
-            --accent-tint: rgba(156, 122, 60, 0.08);
-            --success: #1c7a4e;
-            --success-bg: #e6f3ec;
-            --danger: #ad3f39;
-            --danger-bg: #f7e8e6;
-            --info: #2d6088;
-            --info-bg: #e6edf4;
-            --warning: #ad7f2e;
-            --warning-bg: #f6eee1;
-            --bg: #f3f1eb;
-            --surface: #ffffff;
-            --surface-alt: #faf8f3;
-            --border: #e0dccf;
-            --border-light: #ebe7db;
-            --text: #181712;
-            --text-secondary: #5c5648;
-            --text-tertiary: #928c79;
-            --text-inverse: #f5f3ec;
 
-            /* — الظلال (تدرّج موحّد بأربع درجات) — */
-            --shadow-xs: 0 1px 2px rgba(14,28,46,0.05);
-            --shadow-sm: 0 1px 3px rgba(14,28,46,0.05), 0 2px 6px rgba(14,28,46,0.04);
-            --shadow-md: 0 4px 14px rgba(14,28,46,0.08), 0 1px 3px rgba(14,28,46,0.05);
-            --shadow-lg: 0 16px 40px rgba(14,28,46,0.14), 0 4px 10px rgba(14,28,46,0.05);
-            --shadow-focus: 0 0 0 3px rgba(156,122,60,0.16);
-
-            /* — الحواف (أكثر رقّة وانسجاماً) — */
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 18px;
-            --radius-full: 9999px;
-
-            /* — الحركة، المقاسات الهيكلية — */
-            --t-base: 0.2s ease;
-            --t-fast: 0.15s ease;
-            --sidebar-width: 260px;
-            --header-height: 52px;
-
-            /* — الطباعة: خط واحد موحّد لكامل النظام — */
-            --font-display: 'Cairo', sans-serif;
-            --font-body: 'Cairo', sans-serif;
-            --font-numeric: 'Cairo', sans-serif;
-
-            /* — مقياس التباعد الموحّد — */
-            --space-1: 4px;
-            --space-2: 8px;
-            --space-3: 12px;
-            --space-4: 16px;
-            --space-5: 24px;
-            --space-6: 32px;
-            --space-7: 48px;
-
-            /* — مقياس أحجام الخط الموحّد — */
-            --text-xs: 11px;
-            --text-sm: 12.5px;
-            --text-base: 13.5px;
-            --text-md: 15px;
-            --text-lg: 18px;
-            --text-xl: 22px;
-            --text-2xl: 28px;
+        /* ===== شبكة الإعدادات ===== */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            align-items: start;
         }
 
-        /* ================================================================
-           RESET & BASE
-           ================================================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-body);
-            background: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            font-size: 13.5px;
-            line-height: 1.5;
-            display: flex;
-            flex-direction: column;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-        button {
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
-        }
-
-        /* ================================================================
-           SIDEBAR - مطابق تماماً لـ index.html
-           ================================================================ */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--primary);
-            z-index: 1050;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            border-left: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 3px;
-        }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.12);
-        }
-
-        .sidebar.collapsed {
-            transform: translateX(calc(var(--sidebar-width) + 20px));
-        }
-
-        .sidebar-brand {
-            padding: 20px 20px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            flex-shrink: 0;
-        }
-
-        .brand-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .brand-logo-img {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-sm);
-            object-fit: contain;
-            flex-shrink: 0;
-            background: rgba(255,255,255,0.05);
-            padding: 2px;
-            display: none;
-        }
-
-        .brand-logo-img.visible {
-            display: block;
-        }
-
-        .brand-mark {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-sm);
-            background: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--text-inverse);
-            flex-shrink: 0;
-        }
-
-        .brand-mark.hidden {
-            display: none;
-        }
-
-        .brand-text {
-            font-family: var(--font-display);
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-inverse);
-            line-height: 1.2;
-        }
-
-        .brand-text span {
-            color: var(--accent-light);
-        }
-
-        .brand-text small {
-            display: block;
-            font-size: 9px;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-            color: rgba(255,255,255,0.3);
-            margin-top: 1px;
-        }
-
-        .sidebar-nav {
-            padding: 10px 8px;
-            flex: 1;
-        }
-
-        .nav-section-title {
-            font-size: 9px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.2);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 14px 12px 6px;
-            font-family: var(--font-display);
-        }
-
-        .nav-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .nav-list li {
-            margin-bottom: 0;
-        }
-
-        .nav-list a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 7px 12px;
-            border-radius: var(--radius-sm);
-            color: rgba(255,255,255,0.5);
-            font-size: 12.5px;
-            font-weight: 500;
-            transition: var(--t-base);
+        .settings-card {
             position: relative;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--t-base);
+            overflow: hidden;
         }
 
-        .nav-list a:hover {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-inverse);
-        }
-
-        .nav-list a.active {
-            background: rgba(139, 122, 75, 0.12);
-            color: var(--text-inverse);
-            font-weight: 600;
-        }
-
-        .nav-list a.active i {
-            color: var(--accent-light);
-        }
-
-        .nav-list a.active::before {
+        .settings-card::before {
             content: '';
             position: absolute;
+            top: 0;
             right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 2px;
-            height: 16px;
-            background: var(--accent);
+            left: 0;
+            height: 3px;
+            background: var(--cat-color, var(--accent));
+            opacity: 0.85;
         }
 
-        .nav-list a i {
-            width: 16px;
-            text-align: center;
-            font-size: 14px;
-            flex-shrink: 0;
-            opacity: 0.7;
+        .settings-card:hover {
+            border-color: var(--cat-color, var(--accent));
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
 
-        .sidebar-badge {
-            margin-right: auto;
-            font-size: 8px;
-            font-weight: 700;
-            padding: 1px 8px;
-            border-radius: var(--radius-full);
-            background: rgba(139, 122, 75, 0.18);
-            color: var(--accent-light);
-            border: 1px solid rgba(139, 122, 75, 0.15);
+        .settings-card.cat-general {
+            --cat-color: var(--info);
+            --cat-bg: var(--info-bg);
+        }
+        .settings-card.cat-appearance {
+            --cat-color: var(--accent);
+            --cat-bg: var(--accent-tint);
+        }
+        .settings-card.cat-logo {
+            --cat-color: #6d5aa8;
+            --cat-bg: rgba(109, 90, 168, 0.08);
+        }
+        .settings-card.cat-advanced {
+            --cat-color: var(--danger);
+            --cat-bg: var(--danger-bg);
+        }
+        .settings-card.cat-info {
+            --cat-color: var(--success);
+            --cat-bg: var(--success-bg);
+        }
+
+        .settings-card .card-title {
             font-family: var(--font-display);
-        }
-
-        .sidebar-footer {
-            padding: 12px 16px 16px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            flex-shrink: 0;
-        }
-
-        .logout-btn {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 7px 12px;
-            border-radius: var(--radius-sm);
-            color: rgba(255,255,255,0.3);
-            transition: var(--t-base);
-            font-size: 12.5px;
-            font-weight: 500;
         }
 
-        .logout-btn:hover {
-            background: rgba(184, 74, 62, 0.12);
-            color: #e8a09a;
-        }
-
-        .logout-btn i {
-            font-size: 14px;
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.35);
-            z-index: 1045;
-        }
-
-        .sidebar-overlay.active {
-            display: block;
-        }
-
-        /* ================================================================
-           MAIN CONTENT
-           ================================================================ */
-        .main-content {
-            margin-right: var(--sidebar-width);
-            min-height: 100vh;
-            transition: margin-right 0.3s ease;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .main-content.expanded {
-            margin-right: 0;
-        }
-
-        /* ================================================================
-           NAVBAR - مطابق لـ index.html
-           ================================================================ */
-        .navbar-custom {
-            background: var(--bg);
-            padding: 0 24px;
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1040;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .navbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar-toggle {
+        .settings-card .card-icon-chip {
             width: 32px;
             height: 32px;
-            border: 1px solid var(--border);
-            background: transparent;
-            font-size: 16px;
-            color: var(--text-secondary);
-            transition: var(--t-base);
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
+            background: var(--cat-bg, var(--accent-tint));
+            color: var(--cat-color, var(--accent));
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
         }
 
-        .sidebar-toggle:hover {
-            background: var(--surface);
+        .settings-card .card-title .card-badge {
+            font-size: 9px;
+            padding: 2px 12px;
+            border-radius: var(--radius-full);
+            background: var(--cat-bg, var(--accent-tint));
+            color: var(--cat-color, var(--accent-dark));
+            font-family: var(--font-display);
+            font-weight: 700;
+            margin-right: auto;
+            letter-spacing: 0.3px;
+        }
+
+        .settings-card .form-group {
+            margin-bottom: 10px;
+        }
+
+        .settings-card label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .settings-card label .required {
+            color: var(--danger);
+        }
+
+        .settings-card input,
+        .settings-card select {
+            width: 100%;
+            padding: 7px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            transition: var(--t-base);
+            background: var(--surface-alt);
+            color: var(--text);
+        }
+
+        .settings-card input:hover,
+        .settings-card select:hover {
             border-color: var(--text-tertiary);
         }
 
-        .navbar-logo-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-right: 4px;
-        }
-
-        .navbar-logo-img {
-            height: 28px;
-            width: 28px;
-            object-fit: contain;
-            border-radius: var(--radius-sm);
-            display: none;
-        }
-
-        .navbar-logo-img.visible {
-            display: block;
-        }
-
-        .navbar-logo-text {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text);
-            font-family: var(--font-display);
-        }
-
-        .navbar-logo-text span {
-            color: var(--accent);
-        }
-
-        .page-title {
-            font-family: var(--font-display);
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .page-title small {
-            font-size: 11px;
-            font-weight: 400;
-            color: var(--text-tertiary);
-            margin-right: 6px;
-        }
-
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .nav-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            font-size: 15px;
-            transition: var(--t-base);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .nav-btn:hover {
+        .settings-card input:focus,
+        .settings-card select:focus {
+            outline: none;
+            border-color: var(--cat-color, var(--accent));
             background: var(--surface);
-            color: var(--text);
+            box-shadow: 0 0 0 4px var(--cat-bg, var(--accent-tint));
         }
 
-        .nav-btn .notification-dot {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--danger);
-            border: 1.5px solid var(--bg);
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 3px 4px 3px 12px;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            transition: var(--t-base);
-            border: 1px solid transparent;
-        }
-
-        .user-profile:hover {
-            background: var(--surface);
-            border-color: var(--border);
-        }
-
-        .user-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: var(--text-inverse);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
+        .settings-card input[type="file"] {
+            padding: 6px 10px;
             font-size: 12px;
+            cursor: pointer;
+        }
+
+        .settings-card .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .settings-card .logo-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding: 10px 14px;
+            background: var(--surface-alt);
+            border-radius: var(--radius-md);
+            border: 1.5px dashed var(--border);
+            transition: var(--t-base);
+        }
+
+        .settings-card .logo-preview:hover {
+            border-color: var(--cat-color, var(--accent));
+            background: var(--cat-bg, var(--accent-tint));
+        }
+
+        .settings-card .logo-preview img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: white;
+            padding: 4px;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+
+        .settings-card .logo-preview .logo-placeholder {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            background: var(--cat-bg, var(--accent-tint));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--cat-color, var(--accent));
+            border: 1px solid var(--border);
             font-family: var(--font-display);
             flex-shrink: 0;
         }
 
-        .user-info {
-            line-height: 1.2;
-        }
-
-        .user-name {
+        .settings-card .logo-preview .logo-info {
             font-size: 12px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .user-role {
-            font-size: 10px;
             color: var(--text-tertiary);
+            line-height: 1.6;
         }
 
-        /* ================================================================
-           DASHBOARD CONTENT
-           ================================================================ */
-        .dashboard-content {
-            padding: 12px 20px 12px;
-            flex: 1;
+        .settings-card .logo-preview .logo-info strong {
+            display: block;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px;
         }
 
-        /* ================================================================
-           BUTTONS - نظام الأزرار (لم يكن مُعرّفاً في هذه الصفحة)
-           ================================================================ */
+        /* ===== محدد الثيم ===== */
+        .theme-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 3px;
+        }
+
+        .theme-selector .theme-option {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: var(--t-base);
+            background: var(--surface-alt);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .theme-selector .theme-option:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .theme-selector .theme-option.active {
+            border-color: var(--accent);
+            background: var(--accent-tint);
+            color: var(--accent-dark);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-selector .theme-option .theme-icon {
+            font-size: 18px;
+        }
+
+        .theme-selector .theme-option .theme-check {
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            display: none;
+            color: var(--success);
+            font-size: 14px;
+        }
+
+        .theme-selector .theme-option.active .theme-check {
+            display: inline-block;
+        }
+
+        /* ===== الأزرار ===== */
         .btn-action {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 16px;
+            padding: 7px 16px;
             border-radius: var(--radius-sm);
             font-weight: 600;
             font-size: 12px;
@@ -566,10 +300,6 @@
             border: 1px solid transparent;
             font-family: var(--font-display);
             cursor: pointer;
-        }
-
-        .btn-action:active {
-            transform: translateY(1px);
         }
 
         .btn-primary {
@@ -609,7 +339,7 @@
         }
 
         .btn-outline {
-            background: var(--surface);
+            background: transparent;
             border-color: var(--border);
             color: var(--text-secondary);
         }
@@ -620,443 +350,7 @@
             background: var(--accent-tint);
         }
 
-        /* ================================================================
-           PAGE HEADER - تصميم مُطوّر
-           ================================================================ */
-        .page-header {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-            padding: 10px 20px;
-            margin-bottom: 10px;
-            border-radius: var(--radius-lg);
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .page-header::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image:
-                radial-gradient(circle at 12% 15%, rgba(255,255,255,0.07) 0, transparent 45%),
-                radial-gradient(circle at 88% 85%, rgba(201,168,106,0.28) 0, transparent 55%);
-            pointer-events: none;
-        }
-
-        .page-header .ph-left {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .page-header .ph-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-md);
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.14);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: var(--accent-light);
-            flex-shrink: 0;
-        }
-
-        .page-header .ph-left h2 {
-            font-family: var(--font-display);
-            font-size: 15.5px;
-            font-weight: 800;
-            color: var(--text-inverse);
-            margin: 0;
-        }
-
-        .page-header .ph-left p {
-            font-size: 11px;
-            color: rgba(245,243,236,0.55);
-            margin: 2px 0 0;
-        }
-
-        .page-header .ph-right {
-            position: relative;
-            z-index: 1;
-            font-size: 10.5px;
-            color: rgba(245,243,236,0.55);
-            text-align: left;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.12);
-            padding: 5px 14px;
-            border-radius: var(--radius-md);
-        }
-
-        .page-header .ph-right strong {
-            display: block;
-            font-weight: 700;
-            color: var(--text-inverse);
-            font-size: 13px;
-            margin-bottom: 1px;
-        }
-
-        /* ================================================================
-           SETTINGS GRID
-           ================================================================ */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 10px;
-            align-items: start;
-        }
-
-        .settings-grid .span-2 {
-            grid-column: span 2;
-        }
-
-        .settings-card {
-            position: relative;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 14px 16px;
-            box-shadow: var(--shadow-sm);
-            transition: var(--t-base);
-            overflow: hidden;
-        }
-
-        .settings-card::before {
-            content: '';
-            position: absolute;
-            top: 0; right: 0; left: 0;
-            height: 3px;
-            background: var(--cat-color, var(--accent));
-            opacity: 0.85;
-        }
-
-        .settings-card:hover {
-            border-color: var(--cat-color, var(--accent));
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-
-        .settings-card.cat-general    { --cat-color: var(--info);    --cat-bg: var(--info-bg); }
-        .settings-card.cat-appearance { --cat-color: var(--accent);  --cat-bg: var(--accent-tint); }
-        .settings-card.cat-logo       { --cat-color: #6d5aa8;        --cat-bg: rgba(109,90,168,0.08); }
-        .settings-card.cat-advanced   { --cat-color: var(--danger);  --cat-bg: var(--danger-bg); }
-        .settings-card.cat-info       { --cat-color: var(--success); --cat-bg: var(--success-bg); }
-
-        .settings-card .card-title {
-            font-family: var(--font-display);
-            font-size: 13.5px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .settings-card .card-icon-chip {
-            width: 30px;
-            height: 30px;
-            border-radius: var(--radius-md);
-            background: var(--cat-bg, var(--accent-tint));
-            color: var(--cat-color, var(--accent));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .settings-card .card-title .title-text small {
-            display: block;
-            font-size: 10.5px;
-            font-weight: 500;
-            color: var(--text-tertiary);
-            margin-top: 1px;
-        }
-
-        .settings-card .card-title .card-badge {
-            font-size: 9px;
-            padding: 3px 10px;
-            border-radius: var(--radius-full);
-            background: var(--cat-bg, var(--accent-tint));
-            color: var(--cat-color, var(--accent-dark));
-            font-family: var(--font-display);
-            font-weight: 700;
-            margin-right: auto;
-            letter-spacing: 0.3px;
-        }
-
-        .settings-card .form-group {
-            margin-bottom: 9px;
-        }
-
-        .settings-card label {
-            display: block;
-            font-size: 11.5px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .settings-card label .required {
-            color: var(--danger);
-        }
-
-        .settings-card input,
-        .settings-card select {
-            width: 100%;
-            padding: 6px 11px;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
-            font-size: 12.5px;
-            transition: var(--t-base);
-            background: var(--surface-alt);
-            color: var(--text);
-        }
-
-        .settings-card input:hover,
-        .settings-card select:hover {
-            border-color: var(--text-tertiary);
-        }
-
-        .settings-card input:focus,
-        .settings-card select:focus {
-            outline: none;
-            border-color: var(--cat-color, var(--accent));
-            background: var(--surface);
-            box-shadow: 0 0 0 4px var(--cat-bg, var(--accent-tint));
-        }
-
-        .settings-card input[type="file"] {
-            padding: 8px 10px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .settings-card .form-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .settings-card .logo-preview {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-            padding: 9px 14px;
-            background: var(--surface-alt);
-            border-radius: var(--radius-md);
-            border: 1.5px dashed var(--border);
-            transition: var(--t-base);
-        }
-
-        .settings-card .logo-preview:hover {
-            border-color: var(--cat-color, var(--accent));
-            background: var(--cat-bg, var(--accent-tint));
-        }
-
-        .settings-card .logo-preview img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            background: white;
-            padding: 5px;
-            box-shadow: var(--shadow-sm);
-            flex-shrink: 0;
-        }
-
-        .settings-card .logo-preview .logo-placeholder {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-md);
-            background: var(--cat-bg, var(--accent-tint));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--cat-color, var(--accent));
-            border: 1px solid var(--border);
-            font-family: var(--font-display);
-            flex-shrink: 0;
-        }
-
-        .settings-card .logo-preview .logo-info {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            line-height: 1.6;
-        }
-
-        .settings-card .logo-preview .logo-info strong {
-            display: block;
-            color: var(--text);
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-
-        /* ================================================================
-           THEME SELECTOR - معاينة مرئية
-           ================================================================ */
-        .theme-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 3px;
-        }
-
-        .theme-selector .theme-option {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            padding: 8px 8px 10px;
-            border-radius: var(--radius-md);
-            border: 2px solid var(--border);
-            cursor: pointer;
-            transition: var(--t-base);
-            background: var(--surface-alt);
-        }
-
-        .theme-selector .theme-option:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .theme-selector .theme-option.active {
-            border-color: var(--accent);
-            background: var(--accent-tint);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .theme-selector .theme-option .theme-preview {
-            width: 100%;
-            height: 30px;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .theme-selector .theme-option .theme-preview .tp-bar {
-            height: 12px;
-            background: #0e1c2e;
-            flex-shrink: 0;
-        }
-
-        .theme-selector .theme-option .theme-preview .tp-body {
-            flex: 1;
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            padding: 6px;
-        }
-
-        #lightThemeOption .theme-preview .tp-body { background: #f3f1eb; }
-        #darkThemeOption .theme-preview .tp-body { background: #1a2e46; }
-
-        .theme-selector .theme-option .theme-preview .tp-line {
-            flex: 1;
-            border-radius: 2px;
-            background: rgba(0,0,0,0.1);
-            height: 60%;
-        }
-
-        #darkThemeOption .theme-preview .tp-line { background: rgba(255,255,255,0.14); }
-
-        .theme-selector .theme-option .theme-label-row {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-weight: 700;
-            font-size: 12.5px;
-            color: var(--text-secondary);
-        }
-
-        .theme-selector .theme-option.active .theme-label-row {
-            color: var(--accent-dark);
-        }
-
-        .theme-selector .theme-option .theme-icon {
-            font-size: 15px;
-        }
-
-        .theme-selector .theme-option .theme-check {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            color: var(--success);
-            font-size: 16px;
-            background: var(--surface);
-            border-radius: 50%;
-        }
-
-        .theme-selector .theme-option.active .theme-check {
-            display: inline-flex;
-        }
-
-        /* ================================================================
-           DANGER / ACTION ZONES (إعدادات متقدمة)
-           ================================================================ */
-        .danger-zone,
-        .action-zone {
-            padding: 9px 12px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-        }
-
-        .danger-zone {
-            background: var(--danger-bg);
-            border-color: rgba(173,63,57,0.25);
-        }
-
-        .action-zone {
-            background: var(--info-bg);
-            border-color: rgba(45,96,136,0.2);
-            margin-top: 9px;
-        }
-
-        .danger-zone .zone-title,
-        .action-zone .zone-title {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 700;
-            font-size: 12px;
-            margin-bottom: 4px;
-        }
-
-        .danger-zone .zone-title { color: var(--danger); }
-        .action-zone .zone-title { color: var(--info); }
-
-        .danger-zone p,
-        .action-zone p {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            line-height: 1.5;
-        }
-
-        /* ================================================================
-           SYSTEM INFO LIST
-           ================================================================ */
+        /* ===== معلومات النظام ===== */
         .info-list {
             display: flex;
             flex-direction: column;
@@ -1066,9 +360,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 5px 0;
+            padding: 6px 0;
             border-bottom: 1px dashed var(--border-light);
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .info-row:last-of-type {
@@ -1085,8 +379,8 @@
 
         .info-row .info-label i {
             color: var(--cat-color, var(--success));
-            font-size: 13px;
-            width: 16px;
+            font-size: 14px;
+            width: 18px;
             text-align: center;
         }
 
@@ -1108,380 +402,43 @@
             margin-top: 10px;
             padding-top: 10px;
             border-top: 1px solid var(--border);
-            font-size: 10.5px;
+            font-size: 11px;
             color: var(--text-tertiary);
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        .info-footer-note strong {
-            color: var(--accent-dark);
+        /* ===== منطقة الخطر ===== */
+        .danger-zone {
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(173, 63, 57, 0.25);
+            background: var(--danger-bg);
+            margin-top: 4px;
         }
 
-        /* ================================================================
-           TOAST
-           ================================================================ */
-        .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: var(--surface);
-            padding: 12px 18px;
-            border-radius: var(--radius-sm);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-right: 3px solid var(--accent);
-            z-index: 9999;
-            animation: slideUp 0.3s ease forwards;
-            max-width: 380px;
-            font-size: 12.5px;
-        }
-
-        .toast-notification.toast-success {
-            border-right-color: var(--success);
-        }
-
-        .toast-notification.toast-error {
-            border-right-color: var(--danger);
-        }
-
-        .toast-notification.toast-warning {
-            border-right-color: var(--warning);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateY(-15px);
-            }
-        }
-
-        /* ================================================================
-           FOOTER - تذييل الصفحة (مع إصلاح المشكلة)
-           ================================================================ */
-        .footer-custom {
-            background: var(--surface);
-            border-top: 2px solid var(--border);
-            padding: 7px 24px;
-            flex-shrink: 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
-            margin-top: auto;
-            margin-right: 0;
-            width: 100%;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 1;
-        }
-
-        .footer-custom .footer-content {
+        .danger-zone .zone-title {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding-right: 0;
-        }
-
-        .footer-custom .footer-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .footer-custom .footer-brand {
-            font-family: var(--font-display);
+            gap: 6px;
             font-weight: 700;
-            color: var(--text);
             font-size: 13px;
+            color: var(--danger);
+            margin-bottom: 4px;
         }
 
-        .footer-custom .footer-brand span {
-            color: var(--accent);
-        }
-
-        .footer-custom .footer-copy {
+        .danger-zone p {
             font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            line-height: 1.5;
         }
 
-        .footer-custom .footer-copy strong {
-            color: var(--accent-dark);
-            font-weight: 700;
-        }
-
-        .footer-custom .footer-divider {
-            color: var(--border);
-            font-size: 14px;
-        }
-
-        .footer-custom .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .footer-custom .footer-version {
-            font-family: var(--font-display);
-            font-size: 11px;
-            color: var(--text-tertiary);
-            background: var(--bg);
-            padding: 2px 10px;
-            border-radius: var(--radius-full);
-        }
-
-        .footer-custom .footer-link {
-            color: var(--text-tertiary);
-            transition: var(--t-base);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-        }
-
-        .footer-custom .footer-link:hover {
-            color: var(--accent);
-        }
-
-        /* ================================================================
-           DARK MODE - FOOTER
-           ================================================================ */
-        body.dark-mode .footer-custom {
-            background: var(--primary);
-            border-top-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .footer-custom .footer-brand {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .footer-custom .footer-copy {
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .footer-custom .footer-copy strong {
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .footer-custom .footer-version {
-            background: var(--primary-light);
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .footer-custom .footer-link {
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .footer-custom .footer-link:hover {
-            color: var(--accent-light);
-        }
-
-        /* ================================================================
-           RESPONSIVE - FOOTER
-           ================================================================ */
-        @media (max-width: 768px) {
-            .footer-custom {
-                padding: 8px 14px;
-            }
-            .footer-custom .footer-content {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                gap: 4px;
-            }
-            .footer-custom .footer-right {
-                flex-wrap: wrap;
-                justify-content: center;
-                font-size: 11px;
-            }
-            .footer-custom .footer-left {
-                font-size: 11px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .footer-custom .footer-divider {
-                display: none;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .footer-custom .footer-copy {
-                font-size: 10px;
-            }
-            .footer-custom .footer-version {
-                font-size: 10px;
-                padding: 1px 8px;
-            }
-        }
-
-        /* ================================================================
-           FIX: FOOTER POSITION WITH SIDEBAR
-           ================================================================ */
-        @media (min-width: 1201px) {
-            .main-content .footer-custom {
-                padding-right: 24px;
-                padding-left: 24px;
-            }
-        }
-
-        @media (max-width: 1200px) {
-            .footer-custom {
-                padding-right: 16px;
-                padding-left: 16px;
-            }
-        }
-
-        /* ================================================================
-           RESPONSIVE - باقي العناصر
-           ================================================================ */
-        @media (max-width: 1200px) {
-            .sidebar {
-                transform: translateX(calc(var(--sidebar-width) + 20px));
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-right: 0;
-            }
-            .sidebar-overlay.active {
-                display: block;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .dashboard-content {
-                padding: 16px 18px;
-            }
-            .navbar-custom {
-                padding: 0 16px;
-            }
-            .user-info {
-                display: none;
-            }
-            .page-header .ph-right {
-                display: none;
-            }
-            .navbar-logo-text {
-                display: none;
-            }
-            .settings-card {
-                padding: 16px 18px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar-right .nav-btn:not(:first-child) {
-                display: none;
-            }
-            .navbar-custom {
-                height: 54px;
-                padding: 0 12px;
-            }
-            .page-title {
-                font-size: 14px;
-            }
-            .page-title small {
-                display: none;
-            }
-            .sidebar-toggle {
-                width: 28px;
-                height: 28px;
-                font-size: 14px;
-            }
-            .dashboard-content {
-                padding: 12px 12px;
-            }
-            .page-header h2 {
-                font-size: 15px;
-            }
-            .settings-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            .settings-card {
-                padding: 14px 14px;
-            }
-            .form-actions {
-                flex-direction: column;
-            }
-            .form-actions .btn-action {
-                width: 100%;
-                justify-content: center;
-            }
-            .navbar-logo-img {
-                height: 24px;
-                width: 24px;
-            }
-            .settings-card .logo-preview {
-                flex-direction: column;
-                text-align: center;
-            }
-            .theme-selector .theme-option {
-                padding: 6px 12px;
-                font-size: 11px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .dashboard-content {
-                padding: 10px 10px;
-            }
-            .user-avatar {
-                width: 28px;
-                height: 28px;
-                font-size: 11px;
-            }
-            .settings-card .card-title {
-                font-size: 13px;
-            }
-            .theme-selector {
-                flex-direction: column;
-            }
-            .theme-selector .theme-option {
-                justify-content: center;
-            }
-        }
-
-        /* ================================================================
-           DARK MODE - باقي العناصر
-           ================================================================ */
-        body.dark-mode {
-            background: var(--primary-dark);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .navbar-custom {
-            background: var(--primary-dark);
-            border-bottom-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .navbar-logo-text {
-            color: #e0dcd2;
-        }
-
+        /* ===== الوضع المظلم ===== */
         body.dark-mode .settings-card {
             background: var(--primary);
-            border-color: rgba(255,255,255,0.06);
+            border-color: rgba(255, 255, 255, 0.06);
         }
 
         body.dark-mode .settings-card .card-title {
@@ -1489,7 +446,7 @@
         }
 
         body.dark-mode .settings-card .card-title .card-badge {
-            background: rgba(139, 122, 75, 0.15);
+            background: rgba(156, 122, 60, 0.15);
             color: var(--accent-light);
         }
 
@@ -1497,7 +454,7 @@
         body.dark-mode .settings-card select {
             background: var(--primary-light);
             color: #e0dcd2;
-            border-color: rgba(255,255,255,0.08);
+            border-color: rgba(255, 255, 255, 0.08);
         }
 
         body.dark-mode .settings-card input:focus,
@@ -1506,442 +463,384 @@
         }
 
         body.dark-mode .settings-card label {
-            color: rgba(232,228,220,0.6);
+            color: rgba(232, 228, 220, 0.6);
         }
 
         body.dark-mode .settings-card .logo-preview {
             background: var(--primary-light);
-            border-color: rgba(255,255,255,0.06);
+            border-color: rgba(255, 255, 255, 0.06);
         }
 
         body.dark-mode .settings-card .logo-preview .logo-placeholder {
-            background: rgba(139, 122, 75, 0.15);
-            border-color: rgba(255,255,255,0.08);
+            background: rgba(156, 122, 60, 0.15);
+            border-color: rgba(255, 255, 255, 0.08);
         }
 
         body.dark-mode .theme-selector .theme-option {
             background: var(--primary-light);
-            border-color: rgba(255,255,255,0.08);
-            color: rgba(232,228,220,0.6);
+            border-color: rgba(255, 255, 255, 0.08);
+            color: rgba(232, 228, 220, 0.6);
         }
 
         body.dark-mode .theme-selector .theme-option:hover {
             border-color: var(--accent);
-            background: rgba(139, 122, 75, 0.1);
+            background: rgba(156, 122, 60, 0.1);
         }
 
         body.dark-mode .theme-selector .theme-option.active {
             border-color: var(--accent);
-            background: rgba(139, 122, 75, 0.15);
+            background: rgba(156, 122, 60, 0.15);
             color: var(--accent-light);
         }
 
-        body.dark-mode .page-header {
-            border-bottom-color: rgba(255,255,255,0.06);
+        body.dark-mode .danger-zone {
+            background: rgba(184, 74, 62, 0.15);
+            border-color: rgba(184, 74, 62, 0.25);
         }
 
-        body.dark-mode .page-header .ph-left h2 {
+        body.dark-mode .danger-zone p {
+            color: rgba(232, 228, 220, 0.6);
+        }
+
+        body.dark-mode .info-row {
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+
+        body.dark-mode .info-row .info-value {
             color: #e0dcd2;
         }
 
-        body.dark-mode .page-header .ph-left p {
-            color: rgba(232,228,220,0.5);
+        body.dark-mode .info-footer-note {
+            border-top-color: rgba(255, 255, 255, 0.06);
+            color: rgba(232, 228, 220, 0.4);
         }
 
-        body.dark-mode .btn-outline {
-            border-color: rgba(255,255,255,0.08);
-            color: rgba(232,228,220,0.6);
+        /* ===== استجابة ===== */
+        @media (max-width: 992px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            .settings-card {
+                padding: 16px 18px;
+            }
         }
 
-        body.dark-mode .btn-outline:hover {
-            border-color: var(--accent);
-            color: var(--accent-light);
-            background: rgba(139, 122, 75, 0.1);
+        @media (max-width: 768px) {
+            .settings-card {
+                padding: 14px 14px;
+            }
+            .settings-card .form-actions {
+                flex-direction: column;
+            }
+            .settings-card .form-actions .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+            .settings-card .logo-preview {
+                flex-direction: column;
+                text-align: center;
+            }
+            .theme-selector {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                padding: var(--space-3);
+            }
+            .page-title-main {
+                font-size: 16px;
+            }
         }
 
-        body.dark-mode .btn-primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--text);
-        }
-
-        body.dark-mode .btn-primary:hover {
-            background: var(--accent-light);
-            border-color: var(--accent-light);
-            color: var(--text);
-        }
-
-        body.dark-mode .btn-success {
-            background: #166a4a;
-            border-color: #166a4a;
-        }
-
-        body.dark-mode .btn-danger {
-            background: #a03d32;
-            border-color: #a03d32;
-        }
-
-        body.dark-mode .sidebar-toggle {
-            border-color: rgba(255,255,255,0.08);
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .sidebar-toggle:hover {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.15);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .nav-btn {
-            color: rgba(232,228,220,0.5);
-        }
-
-        body.dark-mode .nav-btn:hover {
-            background: var(--primary);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .user-profile:hover {
-            background: var(--primary);
-            border-color: rgba(255,255,255,0.08);
-        }
-
-        body.dark-mode .user-name {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .toast-notification {
-            background: var(--primary);
-            color: #e0dcd2;
-            border-right-color: var(--accent);
-        }
-
-        body.dark-mode .toast-notification.toast-success {
-            border-right-color: var(--success);
-        }
-
-        body.dark-mode .toast-notification.toast-error {
-            border-right-color: var(--danger);
-        }
-
-        body.dark-mode .toast-notification.toast-warning {
-            border-right-color: var(--warning);
-        }
-
-        body.dark-mode .user-avatar {
-            background: var(--accent-light);
-            color: var(--text);
-        }
-
-        body.dark-mode .shimmer {
-            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        @media (max-width: 576px) {
+            .settings-card .card-title {
+                font-size: 13px;
+            }
+            .theme-selector .theme-option {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
         }
     </style>
 </head>
 <body>
 
     <!-- ================================================================ -->
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR - قائمة جانبية موحدة -->
     <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <div class="brand-row">
-                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
-                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
-                <div class="brand-text" id="sidebarBrandText">
-                    حراء <span>للسياحة</span>
-                    <small>النظام المحاسبي المتكامل</small>
-                </div>
-            </div>
+        <div class="logo-area">
+            <h1 data-brand>🕋 حراء للسياحة</h1>
+            <span>نظام إدارة الرحلات</span>
         </div>
-
-        <nav class="sidebar-nav">
+        <nav>
             <div class="nav-section-title">القائمة الرئيسية</div>
-            <ul class="nav-list">
-                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
-            </ul>
+            <a href="index.html" class="nav-link"><i class="fas fa-house"></i> الرئيسية</a>
 
             <div class="nav-section-title">الإدارة المالية</div>
-            <ul class="nav-list">
-                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
-                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
-                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
-                <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
-                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
-                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
-            </ul>
+            <a href="treasury.html" class="nav-link"><i class="fas fa-wallet"></i> الخزينة</a>
+            <a href="trips.html" class="nav-link"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
+            <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء <span class="badge" id="badge-clients">0</span></a>
+            <a href="banks.html" class="nav-link"><i class="fas fa-building-columns"></i> البنوك <span class="badge" id="badge-banks">0</span></a>
+            <a href="bookings.html" class="nav-link"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
+            <a href="services.html" class="nav-link"><i class="fas fa-tools"></i> الخدمات <span class="badge" id="badge-services">0</span></a>
+            <a href="representatives.html" class="nav-link"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
 
             <div class="nav-section-title">التقارير</div>
-            <ul class="nav-list">
-                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
-                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
-            </ul>
+            <a href="client_statement.html" class="nav-link"><i class="fas fa-receipt"></i> كشف حساب العميل</a>
+            <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
 
             <div class="nav-section-title">الإدارة</div>
-            <ul class="nav-list">
-                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
-                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
-                <li><a href="settings.html" class="active"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
-            </ul>
+            <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
+            <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
+            <a href="settings.html" class="nav-link active"><i class="fas fa-gear"></i> الإعدادات</a>
 
             <div class="nav-section-title">الدعم</div>
-            <ul class="nav-list">
-                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
-            </ul>
-        </nav>
+            <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> الدعم والتواصل</a>
 
-        <div class="sidebar-footer">
-            <a href="#" class="logout-btn" onclick="logout()">
-                <i class="bi bi-box-arrow-left"></i>
-                تسجيل الخروج
-            </a>
-        </div>
+            <hr />
+            <a href="#" class="nav-link logout-link" onclick="logout(); return false;"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</a>
+        </nav>
     </aside>
 
     <!-- ================================================================ -->
     <!-- SIDEBAR OVERLAY -->
     <!-- ================================================================ -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <!-- ================================================================ -->
     <!-- MAIN CONTENT -->
     <!-- ================================================================ -->
-    <main class="main-content" id="mainContent">
+    <main class="main-content" id="main-content">
 
-        <!-- ================================================================ -->
-        <!-- NAVBAR -->
-        <!-- ================================================================ -->
-        <nav class="navbar-custom">
-            <div class="navbar-left">
-                <button class="sidebar-toggle" id="sidebarToggle">
-                    <i class="bi bi-list"></i>
+        <!-- ===== زر القائمة للشاشات الصغيرة ===== -->
+        <div class="flex items-center gap-3 mb-6 menu-toggle">
+            <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة">
+                <i class="fas fa-bars" id="menu-toggle-icon"></i>
+            </button>
+            <h1 class="brand-mobile" data-brand>🕋 حراء للسياحة</h1>
+        </div>
+
+        <!-- ===== HEADER ===== -->
+        <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
+            <div>
+                <h1 class="page-title-main">إعدادات النظام</h1>
+                <p class="text-gray-500 text-sm">تخصيص إعدادات النظام والمظهر والبيانات</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
+                <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn">
+                    <i class="fas fa-arrow-rotate-right"></i>
                 </button>
-
-                <div class="navbar-logo-container">
-                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
-                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
-                </div>
-
-                <h4 class="page-title" id="pageTitleText">
-                    الإعدادات
-                    <small>إدارة إعدادات النظام والتخصيص</small>
-                </h4>
             </div>
+        </div>
 
-            <div class="navbar-right">
-                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
-                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
-                <button class="nav-btn" id="notifBtn">
-                    <i class="bi bi-bell-fill"></i>
-                    <span class="notification-dot"></span>
-                </button>
-                <div class="user-profile" onclick="window.location.href='profile.html'">
-                    <div class="user-info">
-                        <span class="user-name" id="userName">مدير النظام</span>
-                        <span class="user-role" id="userRole">حراء للسياحة</span>
-                    </div>
-                    <div class="user-avatar" id="userAvatar">م</div>
+        <!-- ===== شبكة الإعدادات ===== -->
+        <div class="settings-grid">
+
+            <!-- ===== الإعدادات العامة ===== -->
+            <div class="settings-card cat-general">
+                <div class="card-title">
+                    <span class="card-icon-chip"><i class="fas fa-sliders-h"></i></span>
+                    الإعدادات العامة
+                    <span class="card-badge">رئيسي</span>
                 </div>
-            </div>
-        </nav>
-
-        <!-- ================================================================ -->
-        <!-- DASHBOARD CONTENT -->
-        <!-- ================================================================ -->
-        <div class="dashboard-content">
-
-            <!-- ===== PAGE HEADER ===== -->
-            <div class="page-header">
-                <div class="ph-left">
-                    <h2>إعدادات النظام</h2>
-                    <p>تخصيص إعدادات النظام والمظهر والبيانات</p>
-                </div>
-                <div class="ph-right" id="dateDisplay">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">جاري التحميل...</span>
-                </div>
-            </div>
-
-            <!-- ===== SETTINGS GRID ===== -->
-            <div class="settings-grid">
-
-                <!-- ===== الإعدادات العامة ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-sliders2"></i> الإعدادات العامة
-                        <span class="card-badge">رئيسي</span>
-                    </div>
-                    <form id="generalSettingsForm" onsubmit="handleGeneralSettings(event)">
-                        <div class="form-group">
-                            <label>اسم النظام <span class="required">*</span></label>
-                            <input type="text" id="systemName" placeholder="اسم النظام" required />
-                        </div>
-                        <div class="form-group">
-                            <label>العملة الأساسية <span class="required">*</span></label>
-                            <select id="systemCurrency">
-                                <option value="SAR">ريال سعودي (SAR) ر.س</option>
-                                <option value="AED">درهم إماراتي (AED) د.إ</option>
-                                <option value="EGP">جنيه مصري (EGP) ج.م</option>
-                                <option value="USD">دولار أمريكي (USD) $</option>
-                                <option value="EUR">يورو (EUR) €</option>
-                                <option value="KWD">دينار كويتي (KWD) د.ك</option>
-                                <option value="BHD">دينار بحريني (BHD) د.ب</option>
-                                <option value="OMR">ريال عماني (OMR) ر.ع</option>
-                                <option value="QAR">ريال قطري (QAR) ر.ق</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>اللغة</label>
-                            <select id="systemLanguage">
-                                <option value="ar" selected>العربية</option>
-                                <option value="en">English</option>
-                            </select>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn-action btn-primary">
-                                <i class="bi bi-check-lg"></i> حفظ الإعدادات
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- ===== إعدادات المظهر ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-palette-fill"></i> إعدادات المظهر
-                        <span class="card-badge">ثيم</span>
+                <form id="generalSettingsForm" onsubmit="handleGeneralSettings(event)">
+                    <div class="form-group">
+                        <label>اسم النظام <span class="required">*</span></label>
+                        <input type="text" id="systemName" placeholder="اسم النظام" required />
                     </div>
                     <div class="form-group">
-                        <label>اختر الثيم المفضل</label>
-                        <div class="theme-selector">
-                            <div class="theme-option active" id="darkThemeOption" onclick="selectTheme('dark')">
-                                <span class="theme-icon">🌙</span>
-                                <span>مظلم</span>
-                                <span class="theme-check"><i class="bi bi-check-circle-fill"></i></span>
-                            </div>
-                            <div class="theme-option" id="lightThemeOption" onclick="selectTheme('light')">
-                                <span class="theme-icon">☀️</span>
-                                <span>فاتح</span>
-                                <span class="theme-check"><i class="bi bi-check-circle-fill"></i></span>
-                            </div>
-                        </div>
-                        <p style="font-size:10.5px;color:var(--text-tertiary);margin-top:4px;">
-                            <i class="bi bi-info-circle"></i> سيتم تطبيق الثيم على جميع صفحات النظام فوراً
-                        </p>
+                        <label>العملة الأساسية <span class="required">*</span></label>
+                        <select id="systemCurrency">
+                            <option value="SAR">ريال سعودي (SAR) ر.س</option>
+                            <option value="AED">درهم إماراتي (AED) د.إ</option>
+                            <option value="EGP">جنيه مصري (EGP) ج.م</option>
+                            <option value="USD">دولار أمريكي (USD) $</option>
+                            <option value="EUR">يورو (EUR) €</option>
+                            <option value="KWD">دينار كويتي (KWD) د.ك</option>
+                            <option value="BHD">دينار بحريني (BHD) د.ب</option>
+                            <option value="OMR">ريال عماني (OMR) ر.ع</option>
+                            <option value="QAR">ريال قطري (QAR) ر.ق</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>اللغة</label>
+                        <select id="systemLanguage">
+                            <option value="ar" selected>العربية</option>
+                            <option value="en">English</option>
+                        </select>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-action btn-success" onclick="saveThemeSettings()">
-                            <i class="bi bi-check-lg"></i> حفظ إعدادات المظهر
+                        <button type="submit" class="btn-action btn-primary">
+                            <i class="fas fa-check"></i> حفظ الإعدادات
                         </button>
                     </div>
-                </div>
+                </form>
+            </div>
 
-                <!-- ===== شعار النظام ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-image"></i> شعار النظام
-                        <span class="card-badge">تخصيص</span>
-                    </div>
-                    <div class="logo-preview">
-                        <div id="logoPreviewContainer">
-                            <img id="logoPreview" src="" alt="شعار النظام" style="display:none;" />
-                            <div class="logo-placeholder" id="logoPlaceholder">ق</div>
-                        </div>
-                        <div class="logo-info">
-                            <span id="logoFileName">لم يتم اختيار شعار</span><br />
-                            <small style="color:var(--text-tertiary);">يُفضل استخدام صورة مربعة بحجم 64×64 بكسل</small>
-                        </div>
-                    </div>
-                    <form id="logoForm" onsubmit="handleLogoUpload(event)">
-                        <div class="form-group">
-                            <label>اختر صورة الشعار</label>
-                            <input type="file" id="logoFile" accept="image/*" />
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn-action btn-success">
-                                <i class="bi bi-upload"></i> رفع الشعار
-                            </button>
-                            <button type="button" class="btn-action btn-danger" onclick="removeLogo()">
-                                <i class="bi bi-trash"></i> حذف الشعار
-                            </button>
-                        </div>
-                    </form>
+            <!-- ===== إعدادات المظهر ===== -->
+            <div class="settings-card cat-appearance">
+                <div class="card-title">
+                    <span class="card-icon-chip"><i class="fas fa-palette"></i></span>
+                    إعدادات المظهر
+                    <span class="card-badge">ثيم</span>
                 </div>
-
-                <!-- ===== إعدادات النظام المتقدمة ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-shield-check"></i> إعدادات متقدمة
-                        <span class="card-badge">مطور</span>
+                <div class="form-group">
+                    <label>اختر الثيم المفضل</label>
+                    <div class="theme-selector">
+                        <div class="theme-option active" id="darkThemeOption" onclick="selectTheme('dark')">
+                            <span class="theme-icon">🌙</span>
+                            <span>مظلم</span>
+                            <span class="theme-check"><i class="fas fa-check-circle"></i></span>
+                        </div>
+                        <div class="theme-option" id="lightThemeOption" onclick="selectTheme('light')">
+                            <span class="theme-icon">☀️</span>
+                            <span>فاتح</span>
+                            <span class="theme-check"><i class="fas fa-check-circle"></i></span>
+                        </div>
                     </div>
+                    <p style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">
+                        <i class="fas fa-info-circle"></i> سيتم تطبيق الثيم على جميع صفحات النظام فوراً
+                    </p>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-action btn-success" onclick="saveThemeSettings()">
+                        <i class="fas fa-check"></i> حفظ إعدادات المظهر
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== شعار النظام ===== -->
+            <div class="settings-card cat-logo">
+                <div class="card-title">
+                    <span class="card-icon-chip"><i class="fas fa-image"></i></span>
+                    شعار النظام
+                    <span class="card-badge">تخصيص</span>
+                </div>
+                <div class="logo-preview">
+                    <div id="logoPreviewContainer">
+                        <img id="logoPreview" src="" alt="شعار النظام" style="display:none;" />
+                        <div class="logo-placeholder" id="logoPlaceholder">ق</div>
+                    </div>
+                    <div class="logo-info">
+                        <span id="logoFileName">لم يتم اختيار شعار</span><br />
+                        <small style="color:var(--text-tertiary);">يُفضل استخدام صورة مربعة بحجم 64×64 بكسل</small>
+                    </div>
+                </div>
+                <form id="logoForm" onsubmit="handleLogoUpload(event)">
                     <div class="form-group">
-                        <label>إعادة تعيين النظام</label>
-                        <p style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;">
-                            سيتم حذف جميع البيانات وإعادة النظام إلى الإعدادات الافتراضية.
-                        </p>
-                        <button type="button" class="btn-action btn-danger" onclick="resetSystem()">
-                            <i class="bi bi-exclamation-triangle-fill"></i> إعادة تعيين النظام
+                        <label>اختر صورة الشعار</label>
+                        <input type="file" id="logoFile" accept="image/*" />
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-action btn-success">
+                            <i class="fas fa-upload"></i> رفع الشعار
+                        </button>
+                        <button type="button" class="btn-action btn-danger" onclick="removeLogo()">
+                            <i class="fas fa-trash"></i> حذف الشعار
                         </button>
                     </div>
-                    <div class="form-group" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
-                        <label>تصدير البيانات</label>
-                        <p style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;">
-                            تصدير جميع بيانات النظام كملف JSON.
-                        </p>
-                        <button type="button" class="btn-action btn-primary" onclick="exportData()">
-                            <i class="bi bi-download"></i> تصدير البيانات
-                        </button>
+                </form>
+            </div>
+
+            <!-- ===== إعدادات متقدمة ===== -->
+            <div class="settings-card cat-advanced">
+                <div class="card-title">
+                    <span class="card-icon-chip"><i class="fas fa-shield-halved"></i></span>
+                    إعدادات متقدمة
+                    <span class="card-badge">مطور</span>
+                </div>
+                <div class="danger-zone">
+                    <div class="zone-title"><i class="fas fa-triangle-exclamation"></i> إعادة تعيين النظام</div>
+                    <p>سيتم حذف جميع البيانات وإعادة النظام إلى الإعدادات الافتراضية.</p>
+                    <button type="button" class="btn-action btn-danger" onclick="resetSystem()">
+                        <i class="fas fa-rotate-left"></i> إعادة تعيين النظام
+                    </button>
+                </div>
+                <div class="form-group" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+                    <label style="font-weight:600;font-size:12px;color:var(--text-secondary);">تصدير البيانات</label>
+                    <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:6px;">
+                        تصدير جميع بيانات النظام كملف JSON.
+                    </p>
+                    <button type="button" class="btn-action btn-primary" onclick="exportData()">
+                        <i class="fas fa-download"></i> تصدير البيانات
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== معلومات النظام ===== -->
+            <div class="settings-card cat-info">
+                <div class="card-title">
+                    <span class="card-icon-chip"><i class="fas fa-circle-info"></i></span>
+                    معلومات النظام
+                    <span class="card-badge">حول</span>
+                </div>
+                <div class="info-list">
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-tag"></i> اسم النظام</span>
+                        <span class="info-value" id="infoSystemName">حراء للسياحة</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-code"></i> الإصدار</span>
+                        <span class="info-value" id="infoVersion">3.0.1</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-coins"></i> العملة</span>
+                        <span class="info-value" id="infoCurrency">ريال سعودي (SAR)</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-users"></i> عدد المستخدمين</span>
+                        <span class="info-value" id="infoUsers">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-list"></i> عدد المعاملات</span>
+                        <span class="info-value" id="infoTransactions">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-clock"></i> آخر تحديث</span>
+                        <span class="info-value" id="infoLastUpdate">—</span>
                     </div>
                 </div>
-
-                <!-- ===== معلومات النظام ===== -->
-                <div class="settings-card">
-                    <div class="card-title">
-                        <i class="bi bi-info-circle"></i> معلومات النظام
-                        <span class="card-badge">حول</span>
-                    </div>
-                    <div style="font-size:12px;line-height:1.5;">
-                        <p><strong>اسم النظام:</strong> <span id="infoSystemName">حراء للسياحة</span></p>
-                        <p><strong>الإصدار:</strong> <span id="infoVersion">3.0.1</span></p>
-                        <p><strong>العملة:</strong> <span id="infoCurrency">ريال سعودي (SAR)</span></p>
-                        <p><strong>عدد المستخدمين:</strong> <span id="infoUsers">0</span></p>
-                        <p><strong>عدد المعاملات:</strong> <span id="infoTransactions">0</span></p>
-                        <p><strong>آخر تحديث:</strong> <span id="infoLastUpdate">—</span></p>
-                        <hr style="border-color:var(--border);margin:5px 0;" />
-                        <p style="font-size:10.5px;color:var(--text-tertiary);">
-                            <i class="bi bi-c-circle"></i> 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong>
-                        </p>
-                    </div>
+                <div class="info-footer-note">
+                    <i class="fas fa-copyright"></i>
+                    2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong>
                 </div>
-
             </div>
 
         </div>
 
-        <!-- ================================================================ -->
-        <!-- FOOTER - حقوق النشر -->
-        <!-- ================================================================ -->
-        <footer class="footer-custom">
-            <div class="footer-content">
-                <div class="footer-right">
-                    <span class="footer-brand">حراء <span>للسياحة</span></span>
-                    <span class="footer-divider">|</span>
-                    <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
-                </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 3.0.1</span>
-                    <span class="footer-divider">|</span>
-                    <a href="support.html" class="footer-link">
-                        <i class="bi bi-headset"></i> الدعم الفني
-                    </a>
-                </div>
-            </div>
-        </footer>
     </main>
+
+    <!-- ================================================================ -->
+    <!-- FOOTER - تذييل الصفحة -->
+    <!-- ================================================================ -->
+    <footer class="footer-custom" style="margin-top: auto;">
+        <div class="footer-content">
+            <div class="footer-right">
+                <span class="footer-brand">حراء <span>للسياحة</span></span>
+                <span class="footer-divider">|</span>
+                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+            </div>
+            <div class="footer-left">
+                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-divider">|</span>
+                <a href="support.html" class="footer-link">
+                    <i class="fas fa-headset"></i> الدعم الفني
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================================================================ -->
+    <!-- TOAST CONTAINER -->
+    <!-- ================================================================ -->
+    <div id="toastContainer"></div>
 
     <!-- ================================================================ -->
     <!-- JAVASCRIPT -->
     <!-- ================================================================ -->
+    <script src="supabase.js"></script>
+    <script src="layout.js"></script>
     <script>
         // ================================================================
         // STATE
@@ -1956,65 +855,62 @@
         // DOM READY
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
-            if (!Supabase.initSystem()) return;
+            try {
+                // تهيئة النظام
+                if (!Supabase.initSystem()) {
+                    console.warn('⚠️ فشل تهيئة النظام');
+                    return;
+                }
 
-            settings = Supabase.getSystemSettings();
-            systemCurrency = settings.currency || 'SAR';
-            currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+                // جلب الإعدادات
+                settings = Supabase.getSystemSettings();
+                systemCurrency = settings.currency || 'SAR';
+                currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
-            currentUser = Supabase.getCurrentUser();
-            if (!currentUser) {
-                window.location.href = 'login.html';
-                return;
+                // جلب المستخدم الحالي
+                currentUser = Supabase.getCurrentUser();
+                if (!currentUser) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // التحقق من صلاحية المدير
+                var isAdmin = currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com';
+                if (!isAdmin) {
+                    showToast('⛔ غير مصرح لك بالوصول إلى هذه الصفحة', 'error');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // تحديث واجهة المستخدم
+                updateUserUI();
+                applySystemName({ pageLabel: 'الإعدادات', welcome: false });
+                Supabase.applySystemLogo();
+
+                // تهيئة القائمة الجانبية والوضع المظلم
+                initSidebar();
+                initDarkMode();
+                initRefresh();
+                initKeyboardShortcuts();
+                updateDate();
+
+                // تحميل الإعدادات والمعلومات
+                loadSettings();
+                loadInfo();
+                loadTheme();
+
+                console.log('⚙️ نظام الإعدادات - حراء للسياحة');
+                console.log('👤 المستخدم:', currentUser ? currentUser.email : 'غير مسجل');
+                console.log('💰 العملة:', systemCurrency, currencySymbol);
+                console.log('🎨 الثيم الحالي:', selectedTheme);
+                console.log('🔑 اختصارات: Ctrl+S (حفظ) | Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
+                console.log('✅ النظام جاهز للعمل');
+
+            } catch (error) {
+                console.error('❌ خطأ في تهيئة الصفحة:', error);
+                showToast('⚠️ فشل تهيئة الصفحة: ' + error.message, 'warning');
             }
-
-            // التحقق من صلاحية المدير
-            var isAdmin = currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com';
-            if (!isAdmin) {
-                showToast('⛔ غير مصرح لك بالوصول إلى هذه الصفحة', 'error');
-                window.location.href = 'index.html';
-                return;
-            }
-
-            updateUserUI();
-            applySystemName();
-            Supabase.applySystemLogo();
-
-            initSidebar();
-            initDarkMode();
-            initRefresh();
-            initNotifications();
-            initKeyboardShortcuts();
-            updateDate();
-            loadSettings();
-            loadInfo();
-            loadTheme();
         });
-
-        // ================================================================
-        // APPLY SYSTEM NAME
-        // ================================================================
-        function applySystemName() {
-            var systemName = Supabase.getSystemName();
-            document.title = 'الإعدادات - ' + systemName;
-
-            var brandText = document.getElementById('sidebarBrandText');
-            if (brandText) {
-                brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
-            }
-
-            var navbarText = document.getElementById('navbarBrandText');
-            if (navbarText) {
-                navbarText.innerHTML = systemName;
-            }
-
-            var userRole = document.getElementById('userRole');
-            if (userRole) {
-                userRole.textContent = systemName;
-            }
-
-            document.getElementById('infoSystemName').textContent = systemName;
-        }
 
         // ================================================================
         // UPDATE USER UI
@@ -2025,9 +921,13 @@
             var fullName = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
             var initial = fullName.charAt(0).toUpperCase();
 
-            document.getElementById('userName').textContent = fullName;
-            document.getElementById('userAvatar').textContent = initial;
-            document.getElementById('userRole').textContent = Supabase.getSystemName();
+            var userName = document.querySelector('.user-name');
+            var userRole = document.querySelector('.user-role');
+            var userAvatar = document.querySelector('.user-avatar');
+
+            if (userName) userName.textContent = fullName;
+            if (userRole) userRole.textContent = currentUser.user_metadata?.role || 'المالية';
+            if (userAvatar) userAvatar.textContent = initial;
         }
 
         // ================================================================
@@ -2036,7 +936,7 @@
         function updateDate() {
             var now = new Date();
             var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-            var dateElement = document.getElementById('headerDate');
+            var dateElement = document.querySelector('.page-header .ph-right span');
             if (dateElement) {
                 dateElement.textContent = now.toLocaleDateString('ar-SA', options);
             }
@@ -2105,7 +1005,7 @@
             if (toggle) {
                 var icon = toggle.querySelector('i');
                 if (icon) {
-                    icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                    icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
                 }
             }
 
@@ -2118,7 +1018,7 @@
             var btn = event ? event.target : document.querySelector('.settings-card .btn-success');
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الحفظ...';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
             }
 
             try {
@@ -2135,7 +1035,7 @@
 
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-check-lg"></i> حفظ إعدادات المظهر';
+                btn.innerHTML = '<i class="fas fa-check"></i> حفظ إعدادات المظهر';
             }
         }
 
@@ -2185,7 +1085,7 @@
 
             var btn = event.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الحفظ...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
 
             try {
                 await Supabase.updateSystemSettings({
@@ -2198,7 +1098,7 @@
                 settings = Supabase.getSystemSettings();
                 systemCurrency = currency;
                 currencySymbol = Supabase.getCurrencySymbol(currency);
-                applySystemName();
+                applySystemName({ pageLabel: 'الإعدادات', welcome: false });
                 Supabase.applySystemLogo();
 
                 showToast('✅ تم حفظ الإعدادات بنجاح', 'success');
@@ -2210,7 +1110,7 @@
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-check-lg"></i> حفظ الإعدادات';
+            btn.innerHTML = '<i class="fas fa-check"></i> حفظ الإعدادات';
         }
 
         // ================================================================
@@ -2229,7 +1129,7 @@
 
             var btn = event.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الرفع...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
 
             try {
                 var result = await Supabase.uploadLogo(file);
@@ -2248,7 +1148,7 @@
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-upload"></i> رفع الشعار';
+            btn.innerHTML = '<i class="fas fa-upload"></i> رفع الشعار';
             fileInput.value = '';
         }
 
@@ -2327,46 +1227,37 @@
         function initSidebar() {
             var sidebar = document.getElementById('sidebar');
             var toggle = document.getElementById('sidebarToggle');
-            var main = document.getElementById('mainContent');
-            var overlay = document.getElementById('sidebarOverlay');
+            var main = document.getElementById('main-content');
+            var overlay = document.getElementById('sidebar-overlay');
 
-            var MOBILE_BREAKPOINT = 1200;
+            if (!sidebar || !toggle) return;
+
+            var MOBILE_BREAKPOINT = 768;
 
             toggle.addEventListener('click', function() {
                 if (window.innerWidth <= MOBILE_BREAKPOINT) {
-                    var isOpen = sidebar.classList.toggle('open');
-                    overlay.classList.toggle('active');
-                    document.body.style.overflow = isOpen ? 'hidden' : '';
+                    sidebar.classList.toggle('open');
+                    overlay.classList.toggle('show');
                 } else {
-                    sidebar.classList.toggle('collapsed');
-                    main.classList.toggle('expanded');
+                    sidebar.classList.toggle('closed');
+                    main.classList.toggle('full');
                 }
             });
 
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
-                        sidebar.classList.remove('open');
-                        overlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                }
-            });
+            if (overlay) {
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('show');
+                });
+            }
 
             window.addEventListener('resize', function() {
                 if (window.innerWidth > MOBILE_BREAKPOINT) {
                     sidebar.classList.remove('open');
-                    overlay.classList.remove('active');
-                    document.body.style.overflow = '';
+                    if (overlay) overlay.classList.remove('show');
                 } else {
-                    sidebar.classList.remove('collapsed');
-                    main.classList.remove('expanded');
+                    sidebar.classList.remove('closed');
+                    main.classList.remove('full');
                 }
             });
         }
@@ -2380,12 +1271,11 @@
 
             var icon = toggle.querySelector('i');
 
-            // تطبيق الثيم من الإعدادات المركزية
             var isDark = Supabase.isDarkModeEnabled();
             Supabase.applyTheme(isDark);
 
             if (icon) {
-                icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
             }
 
             toggle.addEventListener('click', function() {
@@ -2394,7 +1284,7 @@
 
                 Supabase.toggleTheme(newState).then(function() {
                     if (icon) {
-                        icon.className = newState ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                        icon.className = newState ? 'fas fa-sun' : 'fas fa-moon';
                     }
                     // تحديث واجهة اختيار الثيم في الإعدادات
                     selectedTheme = newState ? 'dark' : 'light';
@@ -2407,34 +1297,16 @@
         // REFRESH BUTTON
         // ================================================================
         function initRefresh() {
-            document.getElementById('refreshBtn').addEventListener('click', function() {
+            var refreshBtn = document.getElementById('refreshBtn');
+            if (!refreshBtn) return;
+
+            refreshBtn.addEventListener('click', function() {
                 loadSettings();
                 loadInfo();
                 loadTheme();
                 Supabase.applySystemLogo();
                 showToast('🔄 جاري تحديث البيانات...', 'info');
             });
-        }
-
-        // ================================================================
-        // NOTIFICATIONS
-        // ================================================================
-        function initNotifications() {
-            var notifBtn = document.getElementById('notifBtn');
-            if (notifBtn) {
-                notifBtn.addEventListener('click', function() {
-                    var messages = [
-                        '⚙️ تم تحديث إعدادات النظام',
-                        '🔄 يمكنك إعادة تعيين النظام من هنا',
-                        '📤 تصدير البيانات متاح',
-                        '📸 قم بتخصيص شعار النظام',
-                        '🔑 تم حفظ الإعدادات بنجاح',
-                        '🎨 يمكنك تغيير الثيم بين المظلم والفاتح'
-                    ];
-                    var random = messages[Math.floor(Math.random() * messages.length)];
-                    showToast(random, 'info');
-                });
-            }
         }
 
         // ================================================================
@@ -2448,7 +1320,7 @@
                 }
                 if (e.ctrlKey && e.key === 'b') {
                     e.preventDefault();
-                    var toggle = document.getElementById('sidebarToggle');
+                    var toggle = document.querySelector('.menu-toggle-btn');
                     if (toggle) toggle.click();
                 }
                 if (e.ctrlKey && e.key === 'r') {
@@ -2480,73 +1352,36 @@
         }
 
         // ================================================================
-        // TOAST
+        // MANUAL REFRESH
         // ================================================================
-        function showToast(message, type) {
-            var existingToasts = document.querySelectorAll('.toast-notification');
-            for (var i = 0; i < existingToasts.length; i++) {
-                existingToasts[i].remove();
-            }
-
-            var toast = document.createElement('div');
-            toast.className = 'toast-notification';
-
-            var iconClass = 'bi-info-circle-fill';
-            var toastClass = '';
-
-            if (type === 'success') {
-                iconClass = 'bi-check-circle-fill';
-                toastClass = 'toast-success';
-            } else if (type === 'error') {
-                iconClass = 'bi-x-circle-fill';
-                toastClass = 'toast-error';
-            } else if (type === 'warning') {
-                iconClass = 'bi-exclamation-triangle-fill';
-                toastClass = 'toast-warning';
-            }
-
-            toast.innerHTML = `
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
-                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
-                </div>
-            `;
-
-            if (toastClass) {
-                toast.classList.add(toastClass);
-            }
-
-            document.body.appendChild(toast);
-
-            setTimeout(function() {
-                toast.style.animation = 'fadeOut 0.3s ease forwards';
-                setTimeout(function() {
-                    if (toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
-                }, 300);
-            }, 3000);
+        async function manualRefresh() {
+            var icon = document.querySelector('#refreshBtn i');
+            if (icon) icon.classList.add('fa-spin');
+            loadSettings();
+            loadInfo();
+            loadTheme();
+            Supabase.applySystemLogo();
+            if (icon) icon.classList.remove('fa-spin');
+            showToast('✅ تم تحديث البيانات', 'success');
         }
 
         // ================================================================
         // EXPOSE
         // ================================================================
         window.logout = logout;
-        window.showToast = showToast;
         window.loadSettings = loadSettings;
         window.loadInfo = loadInfo;
+        window.manualRefresh = manualRefresh;
         window.resetSystem = resetSystem;
         window.exportData = exportData;
         window.removeLogo = removeLogo;
         window.selectTheme = selectTheme;
         window.saveThemeSettings = saveThemeSettings;
 
-        console.log('⚙️ نظام الإعدادات - حراء للسياحة');
-        console.log('👤 المستخدم:', currentUser ? currentUser.email : 'غير مسجل');
-        console.log('💰 العملة:', systemCurrency, currencySymbol);
-        console.log('🎨 الثيم الحالي:', selectedTheme);
-        console.log('🔑 اختصارات: Ctrl+S (حفظ) | Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
-        console.log('✅ النظام جاهز للعمل');
+        console.log('✅ تم تحميل settings.html بنجاح');
+        console.log('📌 يمكنك تخصيص إعدادات النظام والمظهر');
+        console.log('📌 يمكنك رفع شعار النظام أو حذفه');
+        console.log('📌 يمكنك تصدير جميع البيانات أو إعادة تعيين النظام');
     </script>
 
 </body>
