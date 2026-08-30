@@ -206,6 +206,7 @@
                 transform: translateX(100%);
                 width: 280px;
                 transition: transform 0.3s ease;
+                z-index: 60;
             }
             .sidebar.open {
                 transform: translateX(0);
@@ -228,7 +229,7 @@
                 right: 0;
                 bottom: 0;
                 background: rgba(0,0,0,0.5);
-                z-index: 40;
+                z-index: 55;
                 transition: opacity 0.3s ease;
             }
             .sidebar-overlay.active {
@@ -241,12 +242,14 @@
 <body>
 
 <!-- ============================================================ -->
+<!-- خلفية معتمة للقائمة الجانبية (خارج الـ sidebar) -->
+<!-- ============================================================ -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- ============================================================ -->
 <!-- SIDEBAR -->
 <!-- ============================================================ -->
 <aside class="sidebar" id="sidebar">
-    <!-- خلفية معتمة للقائمة الجانبية (للشاشات الصغيرة) -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-    
     <div class="logo-area">
         <h1>🕋 حراء للسياحة</h1>
         <span>نظام إدارة الرحلات</span>
@@ -428,13 +431,15 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
     
+    // تبديل حالة القائمة
     sidebar.classList.toggle('open');
     
+    // تبديل حالة الخلفية المعتمة
     if (overlay) {
         overlay.classList.toggle('active');
     }
     
-    // منع تمرير الصفحة عند فتح القائمة
+    // منع/السماح بتمرير الصفحة
     if (sidebar.classList.contains('open')) {
         document.body.style.overflow = 'hidden';
     } else {
@@ -448,12 +453,14 @@ function toggleSidebar() {
 document.querySelectorAll('.sidebar .nav-link').forEach(link => {
     link.addEventListener('click', function(e) {
         if (window.innerWidth <= 768) {
-            // نغلق القائمة إذا كان الرابط لا يحتوي على logout
+            // لا نغلق القائمة إذا كان الرابط هو تسجيل الخروج
             if (!this.href.includes('logout')) {
-                // نترك وقت لتنفيذ الرابط ثم نغلق القائمة
+                // نغلق القائمة بعد تنفيذ الرابط
                 setTimeout(() => {
-                    toggleSidebar();
-                }, 100);
+                    if (document.getElementById('sidebar').classList.contains('open')) {
+                        toggleSidebar();
+                    }
+                }, 150);
             }
         }
     });
@@ -630,7 +637,6 @@ document.addEventListener('DOMContentLoaded', loadDashboard);
 // ============================================================
 function logout() {
     if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-        // سيتم إضافة منطق تسجيل الخروج لاحقاً
         alert('تم تسجيل الخروج بنجاح');
     }
 }
