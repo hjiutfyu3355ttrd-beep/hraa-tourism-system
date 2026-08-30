@@ -16,22 +16,27 @@
         <h1 data-brand>🕋 حراء للسياحة</h1>
         <span>نظام إدارة الرحلات</span>
     </div>
-    <nav style="padding: 12px 0;">
-        <a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a>
+    <nav>
+        <div class="nav-section-title">القائمة الرئيسية</div>
+        <a href="index.html" class="nav-link"><i class="fas fa-house"></i> الرئيسية</a>
+        <div class="nav-section-title">الإدارة المالية</div>
+        <a href="treasury.html" class="nav-link"><i class="fas fa-wallet"></i> الخزينة</a>
         <a href="trips.html" class="nav-link active"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
+        <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء <span class="badge" id="badge-clients">0</span></a>
+        <a href="banks.html" class="nav-link"><i class="fas fa-building-columns"></i> البنوك</a>
         <a href="bookings.html" class="nav-link"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
-        <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء / المعتمرين <span class="badge" id="badge-clients">0</span></a>
         <a href="representatives.html" class="nav-link"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
-        <a href="hotels.html" class="nav-link"><i class="fas fa-hotel"></i> الفنادق</a>
-        <a href="agents.html" class="nav-link"><i class="fas fa-handshake"></i> الوكلاء والتأشيرات</a>
-        <a href="treasury.html" class="nav-link"><i class="fas fa-coins"></i> الخزينة</a>
-        <a href="banks.html" class="nav-link"><i class="fas fa-university"></i> البنوك</a>
+        <div class="nav-section-title">التقارير</div>
+        <a href="client_statement.html" class="nav-link"><i class="fas fa-receipt"></i> كشف حساب العميل</a>
         <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
-        <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
-        <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
-        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> الإعدادات</a>
+        <div class="nav-section-title">الإدارة</div>
         <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
-        <a href="#" class="nav-link" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+        <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
+        <a href="settings.html" class="nav-link"><i class="fas fa-gear"></i> الإعدادات</a>
+        <div class="nav-section-title">الدعم</div>
+        <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> الدعم والتواصل</a>
+        <hr />
+        <a href="#" class="nav-link logout-link" onclick="logout(); return false;"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</a>
     </nav>
 </aside>
 
@@ -40,12 +45,12 @@
 <main class="main-content" id="main-content">
     <div class="flex items-center gap-3 mb-6 menu-toggle">
         <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة"><i class="fas fa-bars" id="menu-toggle-icon"></i></button>
-        <h1 class="text-xl font-bold text-gray-800" data-brand>🕋 حراء للسياحة</h1>
+        <h1 class="brand-mobile" data-brand>🕋 حراء للسياحة</h1>
     </div>
 
     <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">إدارة الرحلات</h1>
+            <h1 class="page-title-main">إدارة الرحلات</h1>
             <p class="text-gray-500 text-sm">تسجيل ومتابعة رحلات العمرة والحج وتكاليفها وإيراداتها</p>
         </div>
         <div class="flex items-center gap-3">
@@ -56,16 +61,16 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5 mb-8" id="stats-container">
-        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
-        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
-        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
-        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
-        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
     </div>
 
     <div class="table-card">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="section-title"><i class="fas fa-list-check text-emerald-600 ml-2"></i>سجل الرحلات</h3>
+            <h3 class="section-title"><i class="fas fa-list-check text-[#9c7a3c] ml-2"></i>سجل الرحلات</h3>
             <span class="text-sm text-gray-400" id="recordCount">0 سجل</span>
         </div>
         <div style="max-height: 560px; overflow-y: auto;">
@@ -88,7 +93,7 @@
 <!-- ===== مودال إضافة رحلة ===== -->
 <div class="modal-backdrop" id="tripModal">
     <div class="modal-box">
-        <h3 class="text-lg font-bold mb-1"><i class="fas fa-plane text-emerald-600 ml-2"></i>إضافة رحلة جديدة</h3>
+        <h3 class="text-lg font-bold mb-1"><i class="fas fa-plane text-[#9c7a3c] ml-2"></i>إضافة رحلة جديدة</h3>
         <p class="text-sm text-gray-400 mb-5">أدخل بيانات الرحلة لإضافتها إلى السجل</p>
         <form id="tripForm" onsubmit="handleTripSubmit(event)" class="space-y-4">
             <div class="form-field">
