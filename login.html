@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تسجيل الدخول - حراء للسياحة</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+        /* ================================================================
+           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           ================================================================ */
+        :root {
+            --primary: #1a2332;
+            --primary-light: #243044;
+            --primary-dark: #111927;
+            --accent: #8b7a4b;
+            --accent-light: #b8a77d;
+            --accent-dark: #6d5f39;
+            --accent-tint: rgba(139, 122, 75, 0.06);
+
+            --success: #1e7a55;
+            --success-bg: #e8f3ed;
+            --danger: #b84a3e;
+            --danger-bg: #f5e8e6;
+            --info: #3a6b8f;
+            --info-bg: #e6edf3;
+            --warning: #b8943a;
+            --warning-bg: #f5eee6;
+
+            --bg: #f0eee9;
+            --surface: #ffffff;
+            --surface-alt: #f8f6f1;
+            --border: #dcd8cf;
+            --border-light: #e8e5dc;
+            --text: #1c1913;
+            --text-secondary: #5a5448;
+            --text-tertiary: #8f897a;
+            --text-inverse: #f4f2ed;
+
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
+
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-full: 9999px;
+
+            --t-base: 0.2s ease;
+
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
+        }
+
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, #0f172a 0%, #1a2332 50%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* ================================================================
+           LOGIN CARD
+           ================================================================ */
+        .login-card {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: 44px 40px 36px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: var(--shadow-xl);
+            animation: loginFadeIn 0.6s ease;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @keyframes loginFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ===== BRAND ===== */
+        .login-card .brand {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-card .brand .brand-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--text-inverse);
+            margin: 0 auto 14px;
+            box-shadow: 0 8px 24px rgba(139, 122, 75, 0.25);
+        }
+
+        .login-card .brand h1 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .login-card .brand h1 span {
+            color: var(--accent);
+        }
+
+        .login-card .brand p {
+            color: var(--text-tertiary);
+            font-size: 13px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ===== FORM ===== */
+        .login-card .form-label {
+            font-weight: 600;
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .login-card .form-control {
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            border: 1px solid var(--border);
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
+            height: 44px;
+        }
+
+        .login-card .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
+            outline: none;
+        }
+
+        .login-card .input-group-text {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-left: none;
+            color: var(--text-tertiary);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            padding: 0 14px;
+            font-size: 14px;
+            height: 44px;
+        }
+
+        .login-card .input-group .form-control {
+            border-left: none;
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+        }
+
+        .login-card .input-group .form-control:focus {
+            border-color: var(--accent);
+        }
+
+        .login-card .input-group .form-control:focus + .input-group-text {
+            border-color: var(--accent);
+        }
+
+        .login-card .form-check-label {
+            font-size: 12.5px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        .login-card .form-check-input {
+            border-color: var(--border);
+            cursor: pointer;
+        }
+
+        .login-card .form-check-input:checked {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .login-card .forgot-link {
+            font-size: 12.5px;
+            color: var(--accent);
+            font-weight: 600;
+            transition: var(--t-base);
+        }
+
+        .login-card .forgot-link:hover {
+            color: var(--accent-dark);
+            text-decoration: underline;
+        }
+
+        /* ===== BUTTON ===== */
+        .login-card .btn-login {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            color: var(--text-inverse);
+            font-weight: 700;
+            font-size: 15px;
+            font-family: var(--font-display);
+            transition: var(--t-base);
+            cursor: pointer;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .login-card .btn-login:hover {
+            background: var(--accent-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(139, 122, 75, 0.3);
+        }
+
+        .login-card .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-card .btn-login .spinner-border {
+            width: 18px;
+            height: 18px;
+            border-width: 2px;
+        }
+
+        /* ===== MESSAGES ===== */
+        .login-card .error-message {
+            background: var(--danger-bg);
+            color: var(--danger);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 12.5px;
+            display: none;
+            margin-top: 12px;
+            border-right: 3px solid var(--danger);
+        }
+
+        .login-card .error-message.show {
+            display: block;
+        }
+
+        .login-card .error-message i {
+            margin-left: 6px;
+        }
+
+        .login-card .success-message {
+            background: var(--success-bg);
+            color: var(--success);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 12.5px;
+            display: none;
+            margin-top: 12px;
+            border-right: 3px solid var(--success);
+        }
+
+        .login-card .success-message.show {
+            display: block;
+        }
+
+        .login-card .success-message i {
+            margin-left: 6px;
+        }
+
+        /* ===== REGISTER LINK ===== */
+        .login-card .register-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .login-card .register-link a {
+            color: var(--accent);
+            font-weight: 700;
+            transition: var(--t-base);
+        }
+
+        .login-card .register-link a:hover {
+            color: var(--accent-dark);
+            text-decoration: underline;
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 28px 20px 24px;
+            }
+
+            .login-card .brand h1 {
+                font-size: 20px;
+            }
+
+            .login-card .brand .brand-icon {
+                width: 52px;
+                height: 52px;
+                font-size: 22px;
+            }
+
+            .login-card .form-control,
+            .login-card .input-group-text,
+            .login-card .btn-login {
+                height: 42px;
+            }
+
+            .login-card .btn-login {
+                font-size: 14px;
+            }
+        }
+
+        /* ================================================================
+           DARK MODE
+           ================================================================ */
+        body.dark-mode .login-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        body.dark-mode .login-card .brand h1 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .login-card .brand p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .login-card .form-label {
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .login-card .form-control {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .login-card .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.15);
+        }
+
+        body.dark-mode .login-card .input-group-text {
+            background: var(--primary-light);
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .login-card .form-check-label {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .login-card .error-message {
+            background: rgba(184, 74, 62, 0.15);
+            color: #dba09a;
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .login-card .success-message {
+            background: rgba(30, 122, 85, 0.15);
+            color: #7bc4a0;
+            border-right-color: var(--success);
+        }
+
+        body.dark-mode .login-card .register-link {
+            border-top-color: rgba(255,255,255,0.06);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .login-card .register-link a {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .login-card .register-link a:hover {
+            color: var(--accent);
+        }
+
+        body.dark-mode .login-card .btn-login {
+            background: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .login-card .btn-login:hover {
+            background: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .login-card .forgot-link {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .login-card .forgot-link:hover {
+            color: var(--accent);
+        }
+
+        body.dark-mode .login-card .form-check-input {
+            border-color: rgba(255,255,255,0.15);
+            background-color: var(--primary-light);
+        }
+
+        body.dark-mode .login-card .form-check-input:checked {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- LOGIN CARD -->
+    <!-- ================================================================ -->
+    <div class="login-card">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="bi bi-cash-coin"></i>
+            </div>
+            <h1>🕋 حراء <span>للسياحة</span></h1>
+            <p>النظام المحاسبي المتكامل</p>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <!-- البريد الإلكتروني -->
+            <div class="mb-3">
+                <label for="email" class="form-label">البريد الإلكتروني</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                    <input type="email" class="form-control" id="email" placeholder="أدخل بريدك الإلكتروني" required autofocus />
+                </div>
+            </div>
+
+            <!-- كلمة المرور -->
+            <div class="mb-3">
+                <label for="password" class="form-label">كلمة المرور</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                    <input type="password" class="form-control" id="password" placeholder="أدخل كلمة المرور" required />
+                </div>
+            </div>
+
+            <!-- تذكرني + نسيت كلمة المرور -->
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe" />
+                    <label class="form-check-label" for="rememberMe">تذكرني</label>
+                </div>
+                <a href="#" class="forgot-link">نسيت كلمة المرور؟</a>
+            </div>
+
+            <!-- رسائل الخطأ والنجاح -->
+            <div id="errorMessage" class="error-message">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span id="errorText">خطأ في البريد الإلكتروني أو كلمة المرور</span>
+            </div>
+
+            <div id="successMessage" class="success-message">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>تم تسجيل الدخول بنجاح... جاري التحويل</span>
+            </div>
+
+            <!-- زر تسجيل الدخول -->
+            <button type="submit" class="btn-login" id="loginBtn">
+                <span id="loginText">تسجيل الدخول</span>
+                <span id="loginSpinner" class="spinner-border spinner-border-sm" style="display:none;"></span>
+            </button>
+        </form>
+
+        <!-- رابط التسجيل -->
+        <div class="register-link">
+            ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ================================================================ -->
+    <script>
+        // ================================================================
+        // SUPABASE CONFIGURATION
+        // ================================================================
+        var SUPABASE_URL = 'https://exalyiwznoadnugtkyne.supabase.co';
+        var SUPABASE_KEY = 'sb_publishable_ySucS0qeduwnGooAgMrPEw_coMeDbno';
+
+        // ================================================================
+        // DOM READY
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // التحقق من وجود جلسة نشطة
+            var session = localStorage.getItem('supabase_session');
+            if (session) {
+                try {
+                    var sessionData = JSON.parse(session);
+                    if (sessionData && sessionData.user) {
+                        // إذا كان هناك جلسة نشطة، انتقل إلى الصفحة الرئيسية
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                } catch (e) {
+                    // تجاهل
+                }
+            }
+
+            // تفعيل الوضع الليلي إذا كان مخزناً
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+
+            // إضافة اختصار Enter
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    var form = document.getElementById('loginForm');
+                    if (form && document.activeElement && 
+                        (document.activeElement.id === 'email' || document.activeElement.id === 'password')) {
+                        form.dispatchEvent(new Event('submit'));
+                    }
+                }
+            });
+        });
+
+        // ================================================================
+        // HANDLE LOGIN
+        // ================================================================
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            var email = document.getElementById('email').value.trim();
+            var password = document.getElementById('password').value.trim();
+            var errorMessage = document.getElementById('errorMessage');
+            var errorText = document.getElementById('errorText');
+            var successMessage = document.getElementById('successMessage');
+            var loginBtn = document.getElementById('loginBtn');
+            var loginText = document.getElementById('loginText');
+            var loginSpinner = document.getElementById('loginSpinner');
+
+            // إخفاء الرسائل السابقة
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+
+            // التحقق من صحة الإدخال
+            if (!email || !password) {
+                errorText.textContent = 'الرجاء إدخال البريد الإلكتروني وكلمة المرور';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            // تعطيل الزر أثناء المعالجة
+            loginBtn.disabled = true;
+            loginText.textContent = 'جاري تسجيل الدخول...';
+            loginSpinner.style.display = 'inline-block';
+
+            try {
+                console.log('📡 محاولة تسجيل الدخول إلى Supabase...');
+
+                // استخدام Supabase Auth API
+                var response = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                var data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error_description || data.message || 'فشل تسجيل الدخول');
+                }
+
+                console.log('✅ تم تسجيل الدخول بنجاح:', data.user.email);
+
+                // حفظ الجلسة في localStorage مع معلومات إضافية
+                var sessionData = {
+                    user: data.user,
+                    access_token: data.access_token,
+                    refresh_token: data.refresh_token,
+                    expires_in: data.expires_in,
+                    expires_at: Math.floor(Date.now() / 1000) + data.expires_in
+                };
+
+                localStorage.setItem('supabase_session', JSON.stringify(sessionData));
+
+                // تذكرني - حفظ البريد الإلكتروني
+                if (document.getElementById('rememberMe').checked) {
+                    localStorage.setItem('remembered_email', email);
+                } else {
+                    localStorage.removeItem('remembered_email');
+                }
+
+                // عرض رسالة نجاح
+                successMessage.querySelector('span').textContent = 'تم تسجيل الدخول بنجاح... جاري التحويل';
+                successMessage.classList.add('show');
+
+                // الانتقال إلى الصفحة الرئيسية بعد 1.2 ثانية
+                setTimeout(function() {
+                    window.location.href = 'index.html';
+                }, 1200);
+
+            } catch (error) {
+                console.error('❌ خطأ في تسجيل الدخول:', error);
+                errorText.textContent = error.message || 'فشل تسجيل الدخول. تحقق من البريد الإلكتروني وكلمة المرور';
+                errorMessage.classList.add('show');
+            }
+
+            // إعادة تفعيل الزر
+            loginBtn.disabled = false;
+            loginText.textContent = 'تسجيل الدخول';
+            loginSpinner.style.display = 'none';
+        }
+
+        // ================================================================
+        // CONSOLE WELCOME
+        // ================================================================
+        console.log('🔐 نظام تسجيل الدخول - حراء للسياحة');
+        console.log('📡 Supabase URL:', SUPABASE_URL);
+        console.log('📧 استخدم حساباً موجوداً في Supabase Auth');
+        console.log('🔑 أو قم بإنشاء حساب جديد من صفحة التسجيل');
+        console.log('🎨 التصميم متوافق مع الصفحة الرئيسية');
+    </script>
+
+</body>
+</html>

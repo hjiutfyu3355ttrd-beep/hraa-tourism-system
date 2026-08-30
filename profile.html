@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="pageTitle">الملف الشخصي - حراء للسياحة</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- ============================================================ -->
+    <!-- SUPABASE.JS - الملف المركزي -->
+    <!-- ============================================================ -->
+    <script src="supabase.js"></script>
+
+    <style>
+        /* ================================================================
+           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           ================================================================ */
+        :root {
+            --primary: #0e1c2e;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
+            --accent-tint: rgba(156, 122, 60, 0.08);
+            --success: #1c7a4e;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
+            --surface: #ffffff;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-full: 9999px;
+            --t-base: 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
+        }
+
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ================================================================
+           SIDEBAR
+           ================================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary);
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(calc(var(--sidebar-width) + 20px));
+        }
+
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            display: none;
+        }
+
+        .brand-logo-img.visible {
+            display: block;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-inverse);
+            flex-shrink: 0;
+        }
+
+        .brand-mark.hidden {
+            display: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-inverse);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            color: var(--accent-light);
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 10px 8px;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 12px 6px;
+            font-family: var(--font-display);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 0;
+        }
+
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.5);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: var(--t-base);
+            position: relative;
+        }
+
+        .nav-list a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-inverse);
+        }
+
+        .nav-list a.active {
+            background: rgba(139, 122, 75, 0.12);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        .nav-list a.active i {
+            color: var(--accent-light);
+        }
+
+        .nav-list a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .nav-list a i {
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-badge {
+            margin-right: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(139, 122, 75, 0.18);
+            color: var(--accent-light);
+            border: 1px solid rgba(139, 122, 75, 0.15);
+            font-family: var(--font-display);
+        }
+
+        .sidebar-footer {
+            padding: 12px 16px 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.3);
+            transition: var(--t-base);
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: rgba(184, 74, 62, 0.12);
+            color: #e8a09a;
+        }
+
+        .logout-btn i {
+            font-size: 14px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1045;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
+        .main-content {
+            margin-right: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-right 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* ================================================================
+           NAVBAR
+           ================================================================ */
+        .navbar-custom {
+            background: var(--bg);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--surface);
+            border-color: var(--text-tertiary);
+        }
+
+        .navbar-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 4px;
+        }
+
+        .navbar-logo-img {
+            height: 28px;
+            width: 28px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+
+        .navbar-logo-img.visible {
+            display: block;
+        }
+
+        .navbar-logo-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--font-display);
+        }
+
+        .navbar-logo-text span {
+            color: var(--accent);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            margin-right: 6px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 4px 3px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: var(--font-display);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* ================================================================
+           DASHBOARD CONTENT
+           ================================================================ */
+        .dashboard-content {
+            padding: 20px 24px 30px;
+            flex: 1;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           PROFILE CARD
+           ================================================================ */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 18px;
+        }
+
+        .profile-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 800;
+            font-family: var(--font-display);
+            margin: 0 auto 12px;
+            border: 3px solid var(--border);
+            box-shadow: var(--shadow-md);
+        }
+
+        .profile-card .profile-name {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .profile-card .profile-email {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .profile-card .profile-role {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 600;
+            background: var(--accent-tint);
+            padding: 2px 14px;
+            border-radius: var(--radius-full);
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .profile-card .profile-meta {
+            text-align: right;
+            border-top: 1px solid var(--border);
+            padding-top: 14px;
+            margin-top: 4px;
+        }
+
+        .profile-card .profile-meta .meta-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 12px;
+        }
+
+        .profile-card .profile-meta .meta-item .label {
+            color: var(--text-tertiary);
+        }
+
+        .profile-card .profile-meta .meta-item .value {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ================================================================
+           PROFILE FORM
+           ================================================================ */
+        .profile-form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .profile-form-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px 26px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .profile-form-card .card-title {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-form-card .card-title i {
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        .profile-form-card .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .profile-form-card .form-group {
+            margin-bottom: 6px;
+        }
+
+        .profile-form-card label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .profile-form-card label .required {
+            color: var(--danger);
+        }
+
+        .profile-form-card input,
+        .profile-form-card select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .profile-form-card input:focus,
+        .profile-form-card select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
+        }
+
+        .profile-form-card input:disabled {
+            background: var(--bg);
+            color: var(--text-tertiary);
+            cursor: not-allowed;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 12px;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+            font-family: var(--font-display);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--text-inverse);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #166a4a;
+            border-color: #166a4a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a03d32;
+            border-color: #a03d32;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: var(--accent-tint);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            justify-content: flex-end;
+        }
+
+        /* ================================================================
+           TOAST
+           ================================================================ */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
+            z-index: 9999;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
+        }
+
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
+           ================================================================ */
+        .footer-custom {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 12px 24px;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            margin-top: auto;
+        }
+
+        .footer-custom .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-custom .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .footer-custom .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-custom .footer-copy {
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-copy strong {
+            color: var(--accent-dark);
+            font-weight: 700;
+        }
+
+        .footer-custom .footer-divider {
+            color: var(--border);
+            font-size: 14px;
+        }
+
+        .footer-custom .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-version {
+            font-family: var(--font-display);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .footer-custom .footer-link {
+            color: var(--text-tertiary);
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(calc(var(--sidebar-width) + 20px));
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            .profile-card {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-content {
+                padding: 16px 18px;
+            }
+            .navbar-custom {
+                padding: 0 16px;
+            }
+            .user-info {
+                display: none;
+            }
+            .page-header .ph-right {
+                display: none;
+            }
+            .navbar-logo-text {
+                display: none;
+            }
+            .profile-form-card .form-row {
+                grid-template-columns: 1fr;
+            }
+            .footer-custom .footer-divider {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-right .nav-btn:not(:first-child) {
+                display: none;
+            }
+            .navbar-custom {
+                height: 54px;
+                padding: 0 12px;
+            }
+            .page-title {
+                font-size: 14px;
+            }
+            .page-title small {
+                display: none;
+            }
+            .sidebar-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            .dashboard-content {
+                padding: 12px 12px;
+            }
+            .page-header h2 {
+                font-size: 15px;
+            }
+            .profile-card {
+                padding: 16px;
+            }
+            .profile-avatar-large {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+            .profile-form-card {
+                padding: 16px 18px;
+            }
+            .profile-form-card .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .form-actions .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+            .navbar-logo-img {
+                height: 24px;
+                width: 24px;
+            }
+            .footer-custom {
+                padding: 8px 14px;
+            }
+            .footer-custom .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .footer-custom .footer-right {
+                flex-wrap: wrap;
+                justify-content: center;
+                font-size: 11px;
+            }
+            .footer-custom .footer-left {
+                font-size: 11px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-content {
+                padding: 10px 10px;
+            }
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            .profile-avatar-large {
+                width: 64px;
+                height: 64px;
+                font-size: 26px;
+            }
+            .profile-card .profile-name {
+                font-size: 17px;
+            }
+            .footer-custom .footer-copy {
+                font-size: 10px;
+            }
+            .footer-custom .footer-version {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
+        }
+
+        /* ================================================================
+           DARK MODE
+           ================================================================ */
+        body.dark-mode {
+            background: var(--primary-dark);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .navbar-custom {
+            background: var(--primary-dark);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .navbar-logo-text {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .profile-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .profile-card .profile-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .profile-card .profile-email {
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .profile-card .profile-role {
+            background: rgba(139, 122, 75, 0.15);
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .profile-card .profile-meta {
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .profile-card .profile-meta .meta-item .value {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .profile-form-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .profile-form-card input,
+        body.dark-mode .profile-form-card select {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .profile-form-card input:focus,
+        body.dark-mode .profile-form-card select:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .profile-form-card input:disabled {
+            background: var(--primary);
+            color: rgba(232,228,220,0.4);
+        }
+
+        body.dark-mode .profile-form-card label {
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .page-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header .ph-left h2 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .page-header .ph-left p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .btn-outline {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: rgba(139, 122, 75, 0.1);
+        }
+
+        body.dark-mode .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-success {
+            background: #166a4a;
+            border-color: #166a4a;
+        }
+
+        body.dark-mode .btn-danger {
+            background: #a03d32;
+            border-color: #a03d32;
+        }
+
+        body.dark-mode .sidebar-toggle {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .sidebar-toggle:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.15);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .nav-btn {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .nav-btn:hover {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .user-profile:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .user-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .toast-notification {
+            background: var(--primary);
+            color: #e0dcd2;
+            border-right-color: var(--accent);
+        }
+
+        body.dark-mode .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        body.dark-mode .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        body.dark-mode .user-avatar {
+            background: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .shimmer {
+            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================================================================ -->
+    <!-- SIDEBAR -->
+    <!-- ================================================================ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-row">
+                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
+                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
+                <div class="brand-text" id="sidebarBrandText">
+                    حراء <span>للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">القائمة الرئيسية</div>
+            <ul class="nav-list">
+                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
+            </ul>
+
+            <div class="nav-section-title">الإدارة المالية</div>
+            <ul class="nav-list">
+                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
+                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
+                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+            </ul>
+
+            <div class="nav-section-title">التقارير</div>
+            <ul class="nav-list">
+                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+            </ul>
+
+            <div class="nav-section-title">الإدارة</div>
+            <ul class="nav-list">
+                <li><a href="profile.html" class="active"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+            </ul>
+
+            <div class="nav-section-title">الدعم</div>
+            <ul class="nav-list">
+                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i>
+                تسجيل الخروج
+            </a>
+        </div>
+    </aside>
+
+    <!-- ================================================================ -->
+    <!-- SIDEBAR OVERLAY -->
+    <!-- ================================================================ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ================================================================ -->
+    <main class="main-content" id="mainContent">
+
+        <!-- ================================================================ -->
+        <!-- NAVBAR -->
+        <!-- ================================================================ -->
+        <nav class="navbar-custom">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+
+                <div class="navbar-logo-container">
+                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
+                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
+                </div>
+
+                <h4 class="page-title" id="pageTitleText">
+                    الملف الشخصي
+                    <small>إدارة بيانات الحساب</small>
+                </h4>
+            </div>
+
+            <div class="navbar-right">
+                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-role" id="userRole">حراء للسياحة</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ================================================================ -->
+        <!-- DASHBOARD CONTENT -->
+        <!-- ================================================================ -->
+        <div class="dashboard-content">
+
+            <!-- ===== PAGE HEADER ===== -->
+            <div class="page-header">
+                <div class="ph-left">
+                    <h2>الملف الشخصي</h2>
+                    <p>إدارة بيانات الحساب والمعلومات الشخصية</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">جاري التحميل...</span>
+                </div>
+            </div>
+
+            <!-- ===== PROFILE GRID ===== -->
+            <div class="profile-grid">
+
+                <!-- ===== PROFILE CARD ===== -->
+                <div class="profile-card">
+                    <div class="profile-avatar-large" id="profileAvatarLarge">م</div>
+                    <div class="profile-name" id="profileDisplayName">مدير النظام</div>
+                    <div class="profile-email" id="profileDisplayEmail">admin@qasr.com</div>
+                    <div class="profile-role" id="profileDisplayRole">مدير</div>
+
+                    <div class="profile-meta">
+                        <div class="meta-item">
+                            <span class="label">الحالة</span>
+                            <span class="value" style="color:var(--success);">نشط</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">آخر تسجيل دخول</span>
+                            <span class="value" id="lastLogin">اليوم</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">تاريخ الانضمام</span>
+                            <span class="value" id="joinDate">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PROFILE FORMS ===== -->
+                <div class="profile-form-section">
+
+                    <!-- ===== المعلومات الشخصية ===== -->
+                    <div class="profile-form-card">
+                        <div class="card-title"><i class="bi bi-person-fill"></i> المعلومات الشخصية</div>
+                        <form id="profileForm" onsubmit="handleProfileUpdate(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>الاسم الكامل <span class="required">*</span></label>
+                                    <input type="text" id="fullName" placeholder="الاسم الكامل" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>البريد الإلكتروني <span class="required">*</span></label>
+                                    <input type="email" id="email" placeholder="البريد الإلكتروني" required disabled />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>الدور</label>
+                                    <input type="text" id="role" placeholder="الدور" disabled />
+                                </div>
+                                <div class="form-group">
+                                    <label>رقم الهاتف</label>
+                                    <input type="tel" id="phone" placeholder="رقم الهاتف" />
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-action btn-primary">
+                                    <i class="bi bi-check-lg"></i> تحديث الملف الشخصي
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ===== تغيير كلمة المرور ===== -->
+                    <div class="profile-form-card">
+                        <div class="card-title"><i class="bi bi-shield-lock-fill"></i> تغيير كلمة المرور</div>
+                        <form id="passwordForm" onsubmit="handlePasswordChange(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>كلمة المرور الحالية <span class="required">*</span></label>
+                                    <input type="password" id="currentPassword" placeholder="كلمة المرور الحالية" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>كلمة المرور الجديدة <span class="required">*</span></label>
+                                    <input type="password" id="newPassword" placeholder="كلمة المرور الجديدة" required minlength="6" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>تأكيد كلمة المرور الجديدة <span class="required">*</span></label>
+                                    <input type="password" id="confirmPassword" placeholder="تأكيد كلمة المرور" required />
+                                </div>
+                                <div class="form-group">
+                                    <!-- فارغ للمحاذاة -->
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-action btn-success">
+                                    <i class="bi bi-key-fill"></i> تغيير كلمة المرور
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================================================================ -->
+        <!-- FOOTER - حقوق النشر -->
+        <!-- ================================================================ -->
+        <footer class="footer-custom">
+            <div class="footer-content">
+                <div class="footer-right">
+                    <span class="footer-brand">حراء <span>للسياحة</span></span>
+                    <span class="footer-divider">|</span>
+                    <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+                </div>
+                <div class="footer-left">
+                    <span class="footer-version">الإصدار 3.0.1</span>
+                    <span class="footer-divider">|</span>
+                    <a href="support.html" class="footer-link">
+                        <i class="bi bi-headset"></i> الدعم الفني
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ================================================================ -->
+    <script>
+        // ================================================================
+        // STATE
+        // ================================================================
+        var currentUser = null;
+        var systemCurrency = 'SAR';
+        var currencySymbol = 'ر.س';
+
+        // ================================================================
+        // DOM READY
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!Supabase.initSystem()) return;
+
+            var settings = Supabase.getSystemSettings();
+            systemCurrency = settings.currency || 'SAR';
+            currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+
+            currentUser = Supabase.getCurrentUser();
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            updateUserUI();
+            applySystemName();
+            Supabase.applySystemLogo();
+
+            initSidebar();
+            initDarkMode();
+            initRefresh();
+            initNotifications();
+            initKeyboardShortcuts();
+            updateDate();
+            loadProfile();
+            checkUserPermissions();
+        });
+
+        // ================================================================
+        // APPLY SYSTEM NAME
+        // ================================================================
+        function applySystemName() {
+            var systemName = Supabase.getSystemName();
+            document.title = 'الملف الشخصي - ' + systemName;
+
+            var brandText = document.getElementById('sidebarBrandText');
+            if (brandText) {
+                brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+            }
+
+            var navbarText = document.getElementById('navbarBrandText');
+            if (navbarText) {
+                navbarText.innerHTML = systemName;
+            }
+
+            var userRole = document.getElementById('userRole');
+            if (userRole) {
+                userRole.textContent = systemName;
+            }
+        }
+
+        // ================================================================
+        // UPDATE USER UI
+        // ================================================================
+        function updateUserUI() {
+            if (!currentUser) return;
+
+            var fullName = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
+            var email = currentUser.email || '';
+            var role = currentUser.user_metadata?.role || 'المالية';
+            var initial = fullName.charAt(0).toUpperCase();
+
+            document.getElementById('userName').textContent = fullName;
+            document.getElementById('userAvatar').textContent = initial;
+            document.getElementById('userRole').textContent = Supabase.getSystemName();
+
+            document.getElementById('profileAvatarLarge').textContent = initial;
+            document.getElementById('profileDisplayName').textContent = fullName;
+            document.getElementById('profileDisplayEmail').textContent = email;
+            document.getElementById('profileDisplayRole').textContent = role;
+
+            document.getElementById('fullName').value = fullName;
+            document.getElementById('email').value = email;
+            document.getElementById('role').value = role;
+            document.getElementById('phone').value = currentUser.user_metadata?.phone || '';
+        }
+
+        // ================================================================
+        // CHECK USER PERMISSIONS
+        // ================================================================
+        function checkUserPermissions() {
+            var usersMenu = document.getElementById('usersMenu');
+            if (!usersMenu) return;
+            var isAdmin = currentUser && (currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com');
+            if (!isAdmin) {
+                usersMenu.style.display = 'none';
+            }
+        }
+
+        // ================================================================
+        // DATE DISPLAY
+        // ================================================================
+        function updateDate() {
+            var now = new Date();
+            var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            var dateElement = document.getElementById('headerDate');
+            if (dateElement) {
+                dateElement.textContent = now.toLocaleDateString('ar-SA', options);
+            }
+
+            document.getElementById('lastLogin').textContent = now.toLocaleDateString('ar-SA', options);
+            document.getElementById('joinDate').textContent = now.toLocaleDateString('ar-SA', options);
+        }
+
+        // ================================================================
+        // LOAD PROFILE
+        // ================================================================
+        function loadProfile() {
+            if (!currentUser) return;
+            updateUserUI();
+        }
+
+        // ================================================================
+        // HANDLE PROFILE UPDATE
+        // ================================================================
+        async function handleProfileUpdate(event) {
+            event.preventDefault();
+
+            var fullName = document.getElementById('fullName').value.trim();
+            var phone = document.getElementById('phone').value.trim();
+
+            if (!fullName) {
+                showToast('⚠️ الرجاء إدخال الاسم الكامل', 'warning');
+                return;
+            }
+
+            var btn = event.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري التحديث...';
+
+            try {
+                var result = await Supabase.updateUserProfile(fullName, phone);
+
+                if (result && result.error) {
+                    throw new Error(result.error.message || 'فشل تحديث الملف الشخصي');
+                }
+
+                // تحديث البيانات المحلية
+                currentUser = Supabase.getCurrentUser();
+                updateUserUI();
+
+                showToast('✅ تم تحديث الملف الشخصي بنجاح', 'success');
+
+            } catch (error) {
+                console.error('❌ خطأ في تحديث الملف الشخصي:', error);
+                showToast('❌ ' + (error.message || 'فشل تحديث الملف الشخصي'), 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i> تحديث الملف الشخصي';
+        }
+
+        // ================================================================
+        // HANDLE PASSWORD CHANGE
+        // ================================================================
+        async function handlePasswordChange(event) {
+            event.preventDefault();
+
+            var currentPassword = document.getElementById('currentPassword').value;
+            var newPassword = document.getElementById('newPassword').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword) {
+                showToast('⚠️ الرجاء إدخال كلمة المرور الحالية', 'warning');
+                return;
+            }
+
+            if (!newPassword || newPassword.length < 6) {
+                showToast('⚠️ كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل', 'warning');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showToast('⚠️ كلمة المرور الجديدة وتأكيدها غير متطابقين', 'warning');
+                return;
+            }
+
+            var btn = event.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري التغيير...';
+
+            try {
+                var result = await Supabase.changePassword(currentPassword, newPassword);
+
+                if (result && result.error) {
+                    throw new Error(result.error.message || 'فشل تغيير كلمة المرور');
+                }
+
+                showToast('✅ تم تغيير كلمة المرور بنجاح', 'success');
+                document.getElementById('passwordForm').reset();
+
+            } catch (error) {
+                console.error('❌ خطأ في تغيير كلمة المرور:', error);
+                showToast('❌ ' + (error.message || 'فشل تغيير كلمة المرور'), 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-key-fill"></i> تغيير كلمة المرور';
+        }
+
+        // ================================================================
+        // SIDEBAR TOGGLE
+        // ================================================================
+        function initSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var toggle = document.getElementById('sidebarToggle');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
+
+            var MOBILE_BREAKPOINT = 1200;
+
+            toggle.addEventListener('click', function() {
+                if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                    var isOpen = sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = isOpen ? 'hidden' : '';
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
+                }
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > MOBILE_BREAKPOINT) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    main.classList.remove('expanded');
+                }
+            });
+        }
+
+        // ================================================================
+        // DARK MODE
+        // ================================================================
+        function initDarkMode() {
+            var toggle = document.getElementById('darkModeToggle');
+            var icon = toggle.querySelector('i');
+            var savedMode = localStorage.getItem('darkMode');
+
+            if (savedMode === 'true') {
+                document.body.classList.add('dark-mode');
+                if (icon) icon.className = 'bi bi-sun-fill';
+            }
+
+            toggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                var isDarkMode = document.body.classList.contains('dark-mode');
+                if (icon) {
+                    icon.className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                }
+                localStorage.setItem('darkMode', isDarkMode);
+            });
+        }
+
+        // ================================================================
+        // REFRESH BUTTON
+        // ================================================================
+        function initRefresh() {
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                loadProfile();
+                Supabase.applySystemLogo();
+                showToast('🔄 جاري تحديث البيانات...', 'info');
+            });
+        }
+
+        // ================================================================
+        // NOTIFICATIONS
+        // ================================================================
+        function initNotifications() {
+            var notifBtn = document.getElementById('notifBtn');
+            if (notifBtn) {
+                notifBtn.addEventListener('click', function() {
+                    var messages = [
+                        '👤 تم تحديث الملف الشخصي',
+                        '🔑 يمكنك تغيير كلمة المرور من هنا',
+                        '📧 تم تأكيد البريد الإلكتروني',
+                        '✅ جميع البيانات محدثة',
+                        '📱 قم بتحديث رقم الهاتف'
+                    ];
+                    var random = messages[Math.floor(Math.random() * messages.length)];
+                    showToast(random, 'info');
+                });
+            }
+        }
+
+        // ================================================================
+        // KEYBOARD SHORTCUTS
+        // ================================================================
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'b') {
+                    e.preventDefault();
+                    var toggle = document.getElementById('sidebarToggle');
+                    if (toggle) toggle.click();
+                }
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    loadProfile();
+                    showToast('🔄 جاري تحديث البيانات...', 'info');
+                }
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    var toggle = document.getElementById('darkModeToggle');
+                    if (toggle) toggle.click();
+                }
+                if (e.ctrlKey && e.key === 'l') {
+                    e.preventDefault();
+                    logout();
+                }
+            });
+        }
+
+        // ================================================================
+        // LOGOUT
+        // ================================================================
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('darkMode');
+            window.location.href = 'login.html';
+        }
+
+        // ================================================================
+        // TOAST
+        // ================================================================
+        function showToast(message, type) {
+            var existingToasts = document.querySelectorAll('.toast-notification');
+            for (var i = 0; i < existingToasts.length; i++) {
+                existingToasts[i].remove();
+            }
+
+            var toast = document.createElement('div');
+            toast.className = 'toast-notification';
+
+            var iconClass = 'bi-info-circle-fill';
+            var toastClass = '';
+
+            if (type === 'success') {
+                iconClass = 'bi-check-circle-fill';
+                toastClass = 'toast-success';
+            } else if (type === 'error') {
+                iconClass = 'bi-x-circle-fill';
+                toastClass = 'toast-error';
+            } else if (type === 'warning') {
+                iconClass = 'bi-exclamation-triangle-fill';
+                toastClass = 'toast-warning';
+            }
+
+            toast.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
+                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
+                </div>
+            `;
+
+            if (toastClass) {
+                toast.classList.add(toastClass);
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(function() {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // ================================================================
+        // EXPOSE
+        // ================================================================
+        window.logout = logout;
+        window.showToast = showToast;
+        window.loadProfile = loadProfile;
+
+        console.log('👤 الملف الشخصي - حراء للسياحة');
+        console.log('👤 المستخدم:', currentUser ? currentUser.email : 'غير مسجل');
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
+        console.log('✅ النظام جاهز للعمل');
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="pageTitle">المناديب - حراء للسياحة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.rel='stylesheet'" />
+    <link rel="stylesheet" href="theme.css" />
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="logo-area">
+        <h1 data-brand>🕋 حراء للسياحة</h1>
+        <span>نظام إدارة الرحلات</span>
+    </div>
+    <nav style="padding: 12px 0;">
+        <a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a>
+        <a href="trips.html" class="nav-link"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
+        <a href="bookings.html" class="nav-link"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
+        <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء / المعتمرين <span class="badge" id="badge-clients">0</span></a>
+        <a href="representatives.html" class="nav-link active"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
+        <a href="hotels.html" class="nav-link"><i class="fas fa-hotel"></i> الفنادق</a>
+        <a href="agents.html" class="nav-link"><i class="fas fa-handshake"></i> الوكلاء والتأشيرات</a>
+        <a href="treasury.html" class="nav-link"><i class="fas fa-coins"></i> الخزينة</a>
+        <a href="banks.html" class="nav-link"><i class="fas fa-university"></i> البنوك</a>
+        <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
+        <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
+        <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
+        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> الإعدادات</a>
+        <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
+        <a href="#" class="nav-link" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+    </nav>
+</aside>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<main class="main-content" id="main-content">
+    <div class="flex items-center gap-3 mb-6 menu-toggle">
+        <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة"><i class="fas fa-bars" id="menu-toggle-icon"></i></button>
+        <h1 class="text-xl font-bold text-gray-800" data-brand>🕋 حراء للسياحة</h1>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">إدارة المناديب</h1>
+            <p class="text-gray-500 text-sm">متابعة مبيعات وتحصيل كل مندوب من عملائه ورحلاته</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
+            <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn"><i class="fas fa-arrow-rotate-right"></i></button>
+            <button onclick="openModalById('repModal')" class="btn-primary-solid"><i class="fas fa-plus"></i> مندوب جديد</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8" id="stats-container">
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+    </div>
+
+    <div class="table-card">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="section-title"><i class="fas fa-user-tie text-emerald-600 ml-2"></i>سجل المناديب</h3>
+            <span class="text-sm text-gray-400" id="recordCount">0 سجل</span>
+        </div>
+        <div style="max-height: 560px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th><th>اسم المندوب</th><th>الهاتف</th><th>عدد الحجوزات</th>
+                        <th>إجمالي المستحق</th><th>المحصّل</th><th>المتبقي</th><th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="repsBody">
+                    <tr><td colspan="8" class="text-center text-gray-400 py-8"><i class="fas fa-spinner fa-spin ml-2"></i>جاري تحميل المناديب...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- ===== مودال إضافة مندوب ===== -->
+<div class="modal-backdrop" id="repModal">
+    <div class="modal-box">
+        <h3 class="text-lg font-bold mb-1"><i class="fas fa-user-tie text-emerald-600 ml-2"></i>إضافة مندوب جديد</h3>
+        <p class="text-sm text-gray-400 mb-5">أدخل بيانات المندوب لإضافته إلى السجل</p>
+        <form id="repForm" onsubmit="handleRepSubmit(event)" class="space-y-4">
+            <div class="form-field">
+                <label>اسم المندوب</label>
+                <input type="text" id="repName" placeholder="مثال: رزق صابر" required />
+            </div>
+            <div class="form-field">
+                <label>رقم الهاتف</label>
+                <input type="text" id="repPhone" placeholder="مثال: 0100xxxxxxx" />
+            </div>
+            <div class="form-field">
+                <label>نسبة العمولة % (اختياري)</label>
+                <input type="number" id="repCommission" min="0" step="0.01" placeholder="0" />
+            </div>
+            <div class="flex gap-3 justify-end pt-2">
+                <button type="button" class="btn-outline-soft" onclick="closeModalById('repModal')">إلغاء</button>
+                <button type="submit" class="btn-primary-solid" id="saveRepBtn">حفظ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== مودال تسجيل تحصيل ===== -->
+<div class="modal-backdrop" id="collectModal">
+    <div class="modal-box">
+        <h3 class="text-lg font-bold mb-1"><i class="fas fa-hand-holding-dollar text-emerald-600 ml-2"></i>تسجيل تحصيل من مندوب</h3>
+        <p class="text-sm text-gray-400 mb-5" id="collectRepLabel">—</p>
+        <form id="collectForm" onsubmit="handleCollectSubmit(event)" class="space-y-4">
+            <input type="hidden" id="collectRepId" />
+            <div class="form-field">
+                <label>المبلغ المحصّل</label>
+                <input type="number" id="collectAmount" step="0.01" min="0.01" required placeholder="0" />
+            </div>
+            <div class="form-field">
+                <label>التاريخ</label>
+                <input type="date" id="collectDate" required />
+            </div>
+            <div class="form-field">
+                <label>البيان</label>
+                <input type="text" id="collectDesc" placeholder="مثال: توريد كاش يد بيد من الحج" />
+            </div>
+            <div class="flex gap-3 justify-end pt-2">
+                <button type="button" class="btn-outline-soft" onclick="closeModalById('collectModal')">إلغاء</button>
+                <button type="submit" class="btn-primary-solid" id="saveCollectBtn">حفظ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script src="supabase.js"></script>
+<script src="layout.js"></script>
+<script>
+
+var reps = [];
+var repTransactions = [];
+var bookings = [];
+
+// ================================================================
+// جلب البيانات
+// ================================================================
+async function loadData() {
+    try {
+        var results = await Promise.all([
+            Supabase.getRepresentatives().catch(function() { return []; }),
+            Supabase.getRepTransactions().catch(function() { return []; }),
+            Supabase.getBookings().catch(function() { return []; })
+        ]);
+        reps = results[0] || [];
+        repTransactions = results[1] || [];
+        bookings = results[2] || [];
+    } catch (error) {
+        console.error('❌ خطأ في جلب المناديب:', error);
+        showToast('⚠️ فشل تحميل البيانات', 'warning');
+        reps = [];
+    }
+
+    renderStats();
+    renderTable();
+    updateLastRefreshed();
+
+    var badge = document.getElementById('badge-reps');
+    if (badge) badge.textContent = reps.length;
+}
+
+function repBookings(repId) {
+    return bookings.filter(function(b) { return String(b['rep_id']) === String(repId); });
+}
+function repCollected(repId) {
+    return repTransactions
+        .filter(function(t) { return String(t['rep_id']) === String(repId); })
+        .reduce(function(sum, t) { return sum + parseFloat(t['amount'] || 0); }, 0);
+}
+
+function renderStats() {
+    var totalExpected = 0, totalCollected = 0, repBookingsCount = 0;
+
+    bookings.forEach(function(b) {
+        if (b['rep_id']) {
+            totalExpected += parseFloat(b['booking_value'] || 0);
+            repBookingsCount++;
+        }
+    });
+    repTransactions.forEach(function(t) { totalCollected += parseFloat(t['amount'] || 0); });
+
+    var stats = [
+        { icon: 'fa-user-tie', color: 'bg-blue-50 text-blue-600', number: reps.length, label: 'إجمالي المناديب' },
+        { icon: 'fa-ticket', color: 'bg-purple-50 text-purple-600', number: repBookingsCount, label: 'إجمالي حجوزاتهم' },
+        { icon: 'fa-hand-holding-dollar', color: 'bg-emerald-50 text-emerald-600', number: Supabase.formatCurrency(totalCollected), label: 'إجمالي المحصّل' },
+        { icon: 'fa-triangle-exclamation', color: 'bg-rose-50 text-rose-600', number: Supabase.formatCurrency(totalExpected - totalCollected), label: 'إجمالي المتبقي' }
+    ];
+
+    document.getElementById('stats-container').innerHTML = stats.map(function(s) {
+        return '<div class="stat-card flex items-center gap-4">' +
+            '<div class="icon ' + s.color + '"><i class="fas ' + s.icon + '"></i></div>' +
+            '<div><div class="number">' + s.number + '</div><div class="label">' + s.label + '</div></div></div>';
+    }).join('');
+}
+
+function renderTable() {
+    var tbody = document.getElementById('repsBody');
+    var count = document.getElementById('recordCount');
+
+    if (!reps.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-gray-400 py-8"><i class="fas fa-user-tie mb-2 block text-xl opacity-30"></i>لا يوجد مناديب مسجلون</td></tr>';
+        count.textContent = '0 سجل';
+        return;
+    }
+
+    count.textContent = reps.length + ' سجل';
+
+    tbody.innerHTML = reps.map(function(r, i) {
+        var rb = repBookings(r['id']);
+        var expected = rb.reduce(function(sum, b) { return sum + parseFloat(b['booking_value'] || 0); }, 0);
+        var collected = repCollected(r['id']);
+        var remaining = expected - collected;
+        var remColor = remaining > 0 ? 'text-rose-600' : 'text-emerald-600';
+
+        return '<tr>' +
+            '<td>' + (i + 1) + '</td>' +
+            '<td class="font-semibold">' + (r['rep_name'] || '—') + '</td>' +
+            '<td>' + (r['phone'] || '—') + '</td>' +
+            '<td>' + rb.length + '</td>' +
+            '<td>' + Supabase.formatCurrency(expected) + '</td>' +
+            '<td class="text-emerald-600">' + Supabase.formatCurrency(collected) + '</td>' +
+            '<td class="' + remColor + '">' + Supabase.formatCurrency(remaining) + '</td>' +
+            '<td class="whitespace-nowrap">' +
+                '<button class="icon-btn" title="تسجيل تحصيل" onclick="openCollectModal(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')"><i class="fas fa-hand-holding-dollar"></i></button> ' +
+                '<button class="icon-btn danger" title="حذف" onclick="deleteRep(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')"><i class="fas fa-trash"></i></button>' +
+            '</td>' +
+            '</tr>';
+    }).join('');
+}
+
+// ================================================================
+// إضافة / حذف مندوب
+// ================================================================
+async function handleRepSubmit(event) {
+    event.preventDefault();
+
+    var repName = document.getElementById('repName').value.trim();
+    var repPhone = document.getElementById('repPhone').value.trim();
+    var repCommission = document.getElementById('repCommission').value;
+
+    if (!repName) { showToast('⚠️ الرجاء إدخال اسم المندوب', 'warning'); return; }
+
+    var btn = document.getElementById('saveRepBtn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ...';
+
+    try {
+        await Supabase.addData('representatives', {
+            rep_name: repName,
+            phone: repPhone,
+            commission_rate: repCommission ? parseFloat(repCommission) : 0
+        });
+        closeModalById('repModal');
+        document.getElementById('repForm').reset();
+        showToast('✅ تمت إضافة المندوب بنجاح', 'success');
+        loadData();
+    } catch (error) {
+        showToast('❌ فشل إضافة المندوب: ' + error.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'حفظ';
+}
+
+function deleteRep(id, name) {
+    if (!confirm('هل أنت متأكد من حذف المندوب ' + name + '؟')) return;
+    Supabase.deleteData('representatives', id)
+        .then(function() {
+            showToast('✅ تم حذف المندوب بنجاح', 'success');
+            loadData();
+        })
+        .catch(function(error) {
+            showToast('❌ فشل حذف المندوب: ' + error.message, 'error');
+        });
+}
+
+// ================================================================
+// تسجيل تحصيل
+// ================================================================
+function openCollectModal(repId, repName) {
+    document.getElementById('collectRepId').value = repId;
+    document.getElementById('collectRepLabel').textContent = 'المندوب: ' + repName;
+    document.getElementById('collectForm').reset();
+    document.getElementById('collectRepId').value = repId;
+    document.getElementById('collectDate').value = new Date().toISOString().slice(0, 10);
+    openModalById('collectModal');
+}
+
+async function handleCollectSubmit(event) {
+    event.preventDefault();
+
+    var repId = document.getElementById('collectRepId').value;
+    var amount = parseFloat(document.getElementById('collectAmount').value);
+    var txnDate = document.getElementById('collectDate').value;
+    var desc = document.getElementById('collectDesc').value.trim();
+
+    if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
+
+    var btn = document.getElementById('saveCollectBtn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ...';
+
+    try {
+        await Supabase.addData('rep_transactions', {
+            rep_id: repId,
+            amount: amount,
+            txn_date: txnDate,
+            description: desc || 'تحصيل من العميل'
+        });
+        closeModalById('collectModal');
+        showToast('✅ تم تسجيل التحصيل بنجاح', 'success');
+        loadData();
+    } catch (error) {
+        showToast('❌ فشل تسجيل التحصيل: ' + error.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'حفظ';
+}
+
+async function manualRefresh() {
+    var icon = document.querySelector('#refreshBtn i');
+    icon.classList.add('fa-spin');
+    await loadData();
+    icon.classList.remove('fa-spin');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    applySystemName({ pageLabel: 'المناديب', welcome: false });
+    loadData();
+    startSmartAutoRefresh(loadData, 60000);
+});
+
+</script>
+</body>
+</html>

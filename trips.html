@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="pageTitle">الرحلات - حراء للسياحة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.rel='stylesheet'" />
+    <link rel="stylesheet" href="theme.css" />
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="logo-area">
+        <h1 data-brand>🕋 حراء للسياحة</h1>
+        <span>نظام إدارة الرحلات</span>
+    </div>
+    <nav style="padding: 12px 0;">
+        <a href="index.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a>
+        <a href="trips.html" class="nav-link active"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
+        <a href="bookings.html" class="nav-link"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
+        <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء / المعتمرين <span class="badge" id="badge-clients">0</span></a>
+        <a href="representatives.html" class="nav-link"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
+        <a href="hotels.html" class="nav-link"><i class="fas fa-hotel"></i> الفنادق</a>
+        <a href="agents.html" class="nav-link"><i class="fas fa-handshake"></i> الوكلاء والتأشيرات</a>
+        <a href="treasury.html" class="nav-link"><i class="fas fa-coins"></i> الخزينة</a>
+        <a href="banks.html" class="nav-link"><i class="fas fa-university"></i> البنوك</a>
+        <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
+        <hr style="border-color: rgba(255,255,255,0.06); margin: 12px 20px;" />
+        <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
+        <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> الإعدادات</a>
+        <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
+        <a href="#" class="nav-link" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+    </nav>
+</aside>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<main class="main-content" id="main-content">
+    <div class="flex items-center gap-3 mb-6 menu-toggle">
+        <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة"><i class="fas fa-bars" id="menu-toggle-icon"></i></button>
+        <h1 class="text-xl font-bold text-gray-800" data-brand>🕋 حراء للسياحة</h1>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">إدارة الرحلات</h1>
+            <p class="text-gray-500 text-sm">تسجيل ومتابعة رحلات العمرة والحج وتكاليفها وإيراداتها</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
+            <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn"><i class="fas fa-arrow-rotate-right"></i></button>
+            <button onclick="openModalById('tripModal')" class="btn-primary-solid"><i class="fas fa-plus"></i> رحلة جديدة</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5 mb-8" id="stats-container">
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:48px;height:48px;border-radius:14px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+    </div>
+
+    <div class="table-card">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="section-title"><i class="fas fa-list-check text-emerald-600 ml-2"></i>سجل الرحلات</h3>
+            <span class="text-sm text-gray-400" id="recordCount">0 سجل</span>
+        </div>
+        <div style="max-height: 560px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th><th>كود الرحلة</th><th>اسم الرحلة</th><th>النوع</th>
+                        <th>تاريخ السفر</th><th>تاريخ العودة</th><th>الإيراد</th><th>المصروف</th>
+                        <th>صافي الربح</th><th>الحالة</th><th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="tripsBody">
+                    <tr><td colspan="11" class="text-center text-gray-400 py-8"><i class="fas fa-spinner fa-spin ml-2"></i>جاري تحميل الرحلات...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- ===== مودال إضافة رحلة ===== -->
+<div class="modal-backdrop" id="tripModal">
+    <div class="modal-box">
+        <h3 class="text-lg font-bold mb-1"><i class="fas fa-plane text-emerald-600 ml-2"></i>إضافة رحلة جديدة</h3>
+        <p class="text-sm text-gray-400 mb-5">أدخل بيانات الرحلة لإضافتها إلى السجل</p>
+        <form id="tripForm" onsubmit="handleTripSubmit(event)" class="space-y-4">
+            <div class="form-field">
+                <label>كود الرحلة</label>
+                <input type="text" id="tripCode" placeholder="مثال: TRIP-260830" required />
+            </div>
+            <div class="form-field">
+                <label>اسم الرحلة</label>
+                <input type="text" id="tripName" placeholder="مثال: رحلة 30 أغسطس 2026 للطيران" required />
+            </div>
+            <div class="form-field">
+                <label>نوع الرحلة</label>
+                <select id="tripType">
+                    <option value="عمرة">عمرة</option>
+                    <option value="حج">حج</option>
+                    <option value="زيارة">زيارة</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="form-field">
+                    <label>تاريخ السفر</label>
+                    <input type="date" id="departureDate" required />
+                </div>
+                <div class="form-field">
+                    <label>تاريخ العودة</label>
+                    <input type="date" id="returnDate" required />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="form-field">
+                    <label>عدد المقاعد</label>
+                    <input type="number" id="seatsTotal" min="0" placeholder="0" />
+                </div>
+                <div class="form-field">
+                    <label>الحالة</label>
+                    <select id="tripStatus">
+                        <option value="مخطط">مخطط</option>
+                        <option value="جاري">جاري</option>
+                        <option value="منتهي">منتهي</option>
+                        <option value="ملغي">ملغي</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end pt-2">
+                <button type="button" class="btn-outline-soft" onclick="closeModalById('tripModal')">إلغاء</button>
+                <button type="submit" class="btn-primary-solid" id="saveTripBtn">حفظ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script src="supabase.js"></script>
+<script src="layout.js"></script>
+<script>
+
+var trips = [];
+var allTransactions = [];
+
+// ================================================================
+// جلب البيانات
+// ================================================================
+async function loadData() {
+    try {
+        var results = await Promise.all([
+            Supabase.getTrips().catch(function() { return []; }),
+            Supabase.getTransactions().catch(function() { return []; })
+        ]);
+        trips = results[0] || [];
+        allTransactions = results[1] || [];
+    } catch (error) {
+        console.error('❌ خطأ في جلب الرحلات:', error);
+        showToast('⚠️ فشل تحميل البيانات', 'warning');
+        trips = [];
+    }
+
+    renderStats();
+    renderTable();
+    updateLastRefreshed();
+
+    var badge = document.getElementById('badge-trips');
+    if (badge) badge.textContent = trips.length;
+}
+
+function tripTxns(tripCode) {
+    return allTransactions.filter(function(t) { return t['reference'] === tripCode; });
+}
+
+function renderStats() {
+    var totalIncome = 0, totalExpense = 0;
+    trips.forEach(function(tr) {
+        tripTxns(tr['trip_code']).forEach(function(t) {
+            var amount = parseFloat(t['amount'] || 0);
+            if (t['type'] === 'وارد') totalIncome += amount;
+            else if (t['type'] === 'صادر') totalExpense += amount;
+        });
+    });
+
+    var today = new Date().toISOString().slice(0, 10);
+    var upcoming = trips.filter(function(t) { return t['departure_date'] >= today && t['status'] !== 'ملغي'; }).length;
+
+    var stats = [
+        { icon: 'fa-plane', color: 'bg-blue-50 text-blue-600', number: trips.length, label: 'إجمالي الرحلات' },
+        { icon: 'fa-calendar-check', color: 'bg-purple-50 text-purple-600', number: upcoming, label: 'الرحلات القادمة' },
+        { icon: 'fa-arrow-trend-up', color: 'bg-emerald-50 text-emerald-600', number: Supabase.formatCurrency(totalIncome), label: 'إجمالي الإيرادات' },
+        { icon: 'fa-arrow-trend-down', color: 'bg-rose-50 text-rose-600', number: Supabase.formatCurrency(totalExpense), label: 'إجمالي المصروفات' },
+        { icon: 'fa-sack-dollar', color: 'bg-amber-50 text-amber-600', number: Supabase.formatCurrency(totalIncome - totalExpense), label: 'صافي الأرباح' }
+    ];
+
+    document.getElementById('stats-container').innerHTML = stats.map(function(s) {
+        return '<div class="stat-card flex items-center gap-4">' +
+            '<div class="icon ' + s.color + '"><i class="fas ' + s.icon + '"></i></div>' +
+            '<div><div class="number">' + s.number + '</div><div class="label">' + s.label + '</div></div></div>';
+    }).join('');
+}
+
+var TRIP_STATUS_CLASS = { 'مخطط': 'status-info', 'جاري': 'status-active', 'منتهي': 'status-completed', 'ملغي': 'status-cancelled' };
+
+function renderTable() {
+    var tbody = document.getElementById('tripsBody');
+    var count = document.getElementById('recordCount');
+
+    if (!trips.length) {
+        tbody.innerHTML = '<tr><td colspan="11" class="text-center text-gray-400 py-8"><i class="fas fa-plane-slash mb-2 block text-xl opacity-30"></i>لا توجد رحلات مسجلة</td></tr>';
+        count.textContent = '0 سجل';
+        return;
+    }
+
+    count.textContent = trips.length + ' سجل';
+
+    tbody.innerHTML = trips.map(function(tr, i) {
+        var txns = tripTxns(tr['trip_code']);
+        var income = 0, expense = 0;
+        txns.forEach(function(t) {
+            var amount = parseFloat(t['amount'] || 0);
+            if (t['type'] === 'وارد') income += amount;
+            else if (t['type'] === 'صادر') expense += amount;
+        });
+        var profit = income - expense;
+        var profitColor = profit >= 0 ? 'text-emerald-600' : 'text-rose-600';
+        var statusClass = TRIP_STATUS_CLASS[tr['status']] || 'status-info';
+
+        return '<tr>' +
+            '<td>' + (i + 1) + '</td>' +
+            '<td class="font-semibold">' + (tr['trip_code'] || '—') + '</td>' +
+            '<td>' + (tr['trip_name'] || '—') + '</td>' +
+            '<td>' + (tr['trip_type'] || '—') + '</td>' +
+            '<td>' + (tr['departure_date'] || '—') + '</td>' +
+            '<td>' + (tr['return_date'] || '—') + '</td>' +
+            '<td class="text-emerald-600">' + Supabase.formatCurrency(income) + '</td>' +
+            '<td class="text-rose-600">' + Supabase.formatCurrency(expense) + '</td>' +
+            '<td class="font-semibold ' + profitColor + '">' + Supabase.formatCurrency(profit) + '</td>' +
+            '<td><span class="status-badge ' + statusClass + '">' + tr['status'] + '</span></td>' +
+            '<td class="whitespace-nowrap">' +
+                '<button class="icon-btn" title="التفاصيل" onclick="location.href=\'trip_details.html?trip_id=' + tr['id'] + '\'"><i class="fas fa-eye"></i></button> ' +
+                '<button class="icon-btn danger" title="حذف" onclick="deleteTrip(\'' + tr['id'] + '\',\'' + tr['trip_code'] + '\')"><i class="fas fa-trash"></i></button>' +
+            '</td>' +
+            '</tr>';
+    }).join('');
+}
+
+// ================================================================
+// إضافة / حذف
+// ================================================================
+async function handleTripSubmit(event) {
+    event.preventDefault();
+
+    var tripCode = document.getElementById('tripCode').value.trim();
+    var tripName = document.getElementById('tripName').value.trim();
+    var tripType = document.getElementById('tripType').value;
+    var departureDate = document.getElementById('departureDate').value;
+    var returnDate = document.getElementById('returnDate').value;
+    var seatsTotal = document.getElementById('seatsTotal').value;
+    var tripStatus = document.getElementById('tripStatus').value;
+
+    if (!tripCode || !tripName || !departureDate || !returnDate) {
+        showToast('⚠️ الرجاء إدخال بيانات الرحلة الأساسية', 'warning');
+        return;
+    }
+    if (returnDate < departureDate) {
+        showToast('⚠️ تاريخ العودة لا يمكن أن يسبق تاريخ السفر', 'warning');
+        return;
+    }
+
+    var btn = document.getElementById('saveTripBtn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ...';
+
+    try {
+        await Supabase.addData('trips', {
+            trip_code: tripCode,
+            trip_name: tripName,
+            trip_type: tripType,
+            departure_date: departureDate,
+            return_date: returnDate,
+            seats_total: seatsTotal ? parseInt(seatsTotal) : 0,
+            status: tripStatus
+        });
+        closeModalById('tripModal');
+        document.getElementById('tripForm').reset();
+        showToast('✅ تمت إضافة الرحلة بنجاح', 'success');
+        loadData();
+    } catch (error) {
+        showToast('❌ فشل إضافة الرحلة: ' + error.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'حفظ';
+}
+
+function deleteTrip(id, code) {
+    if (!confirm('هل أنت متأكد من حذف الرحلة ' + code + '؟')) return;
+    Supabase.deleteData('trips', id)
+        .then(function() {
+            showToast('✅ تم حذف الرحلة بنجاح', 'success');
+            loadData();
+        })
+        .catch(function(error) {
+            showToast('❌ فشل حذف الرحلة: ' + error.message, 'error');
+        });
+}
+
+async function manualRefresh() {
+    var icon = document.querySelector('#refreshBtn i');
+    icon.classList.add('fa-spin');
+    await loadData();
+    icon.classList.remove('fa-spin');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    applySystemName({ pageLabel: 'الرحلات', welcome: false });
+    loadData();
+    startSmartAutoRefresh(loadData, 60000);
+});
+
+</script>
+</body>
+</html>
