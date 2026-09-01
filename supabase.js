@@ -1357,10 +1357,11 @@ console.log('🎨 الوضع المظلم:', isDarkModeEnabled() ? 'مفعل ✅
 // صالحة يتم تحويلها فورًا لصفحة تسجيل الدخول.
 // ================================================================
 (function requireAuthGuard() {
-    var PUBLIC_PAGES = ['login.html', 'register.html'];
-    var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    var path = window.location.pathname.toLowerCase();
+    var isPublicPage = /\/(login|register)(\.html)?\/?(\?.*)?$/.test(path) ||
+                        /^(login|register)(\.html)?$/.test(path.replace(/^\//, ''));
 
-    if (PUBLIC_PAGES.indexOf(currentPage) !== -1) return;
+    if (isPublicPage) return;
 
     if (!isLoggedIn()) {
         console.warn('⚠️ لا توجد جلسة نشطة، جاري التحويل لصفحة تسجيل الدخول');
