@@ -329,7 +329,7 @@ function getDefaultSettings() {
         notifyDebts: true,
         notifySystem: false,
         logoUrl: '',
-        darkMode: true
+        darkMode: false
     };
 }
 
@@ -389,7 +389,7 @@ async function getUserSettings() {
                         notifyDebts: settings.notify_debts !== undefined ? settings.notify_debts : true,
                         notifySystem: settings.notify_system !== undefined ? settings.notify_system : false,
                         logoUrl: settings.logo_url || '',
-                        darkMode: settings.dark_mode !== undefined ? settings.dark_mode : true
+                        darkMode: settings.dark_mode !== undefined ? settings.dark_mode : false
                     };
                     
                     // تحديث المتغيرات العامة
@@ -440,7 +440,7 @@ async function saveUserSettings(settings) {
             notify_debts: settings.notifyDebts !== undefined ? settings.notifyDebts : true,
             notify_system: settings.notifySystem !== undefined ? settings.notifySystem : false,
             logo_url: settings.logoUrl || '',
-            dark_mode: settings.darkMode !== undefined ? settings.darkMode : true,
+            dark_mode: settings.darkMode !== undefined ? settings.darkMode : false,
             updated_at: new Date().toISOString()
         };
 
@@ -1138,7 +1138,7 @@ function applyTheme(forceDark) {
         if (forceDark !== undefined) {
             isDarkMode = forceDark;
         } else {
-            isDarkMode = settings.darkMode !== undefined ? settings.darkMode : true;
+            isDarkMode = settings.darkMode !== undefined ? settings.darkMode : false;
         }
         
         if (isDarkMode) {
@@ -1199,7 +1199,7 @@ async function toggleTheme(isDark) {
  */
 function isDarkModeEnabled() {
     var settings = _systemSettings || getLocalSettings();
-    return settings.darkMode !== undefined ? settings.darkMode : true;
+    return settings.darkMode !== undefined ? settings.darkMode : false;
 }
 
 // ================================================================

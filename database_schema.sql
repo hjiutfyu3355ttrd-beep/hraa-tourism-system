@@ -34,7 +34,7 @@ create table if not exists public.user_settings (
     notify_debts boolean default true,
     notify_system boolean default false,
     logo_url text,
-    dark_mode boolean default true,
+    dark_mode boolean default false,
     updated_at timestamptz default now()
 );
 
