@@ -3,91 +3,77 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
     <title>إنشاء حساب - حراء للسياحة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="theme.css" />
+    <script src="supabase.js"></script>
     <style>
         body {
-            background:
-                radial-gradient(circle at 15% 15%, rgba(156,122,60,0.16), transparent 40%),
-                linear-gradient(135deg, #0e1c2e 0%, #14263b 55%, #1a2e46 100%);
+            background: radial-gradient(circle at 20% 20%, #16283f 0%, #0e1c2e 55%, #08131f 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: var(--space-5);
+            padding: 20px;
         }
-        .auth-card {
+        .register-card {
             background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: var(--space-7) var(--space-6);
+            border-radius: 16px;
+            padding: 38px 34px;
             width: 100%;
-            max-width: 440px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-light);
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(8,19,31,0.35);
+            border: 1px solid var(--border);
             animation: modalPop 0.25s ease;
         }
         .brand-icon {
-            width: 60px; height: 60px; border-radius: var(--radius-md);
+            width: 56px; height: 56px; border-radius: 12px;
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             display: flex; align-items: center; justify-content: center;
-            font-size: 26px; margin: 0 auto var(--space-4);
-            box-shadow: var(--shadow-md);
-            color: var(--accent-light);
+            font-size: 24px; margin: 0 auto 14px;
+            border: 1px solid var(--accent);
         }
-        .auth-title { font-size: var(--text-xl); font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
-        .auth-title .accent { color: var(--accent-dark); }
-        .auth-subtitle { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: 4px; }
-
-        .admin-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: var(--warning-bg); color: var(--accent-dark);
-            font-size: var(--text-xs); font-weight: 700; padding: 4px 12px;
-            border-radius: var(--radius-full); margin-top: var(--space-3);
-            border: 1px solid rgba(156,122,60,0.15);
-        }
-
-        .form-note {
+        .error-message, .success-message, .info-message {
             display: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            margin-bottom: 14px;
             align-items: center;
             gap: 8px;
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: var(--text-sm);
-            margin-bottom: var(--space-4);
-            border: 1px solid transparent;
         }
-        .form-note.show { display: flex; }
-        .form-note.error { background: var(--danger-bg); color: var(--danger); border-color: rgba(173,63,57,0.15); }
-        .form-note.success { background: var(--success-bg); color: var(--success); border-color: rgba(28,122,78,0.15); }
-        .form-note.info { background: var(--info-bg); color: var(--info); border-color: rgba(45,96,136,0.15); }
-
-        .password-strength { height: 4px; background: var(--border); border-radius: var(--radius-full); margin-top: 6px; overflow: hidden; }
-        .password-strength .fill { height: 100%; width: 0%; transition: 0.25s; border-radius: var(--radius-full); }
-        .password-strength-text { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 4px; }
-
-        .auth-footer-link { font-size: var(--text-sm); color: var(--text-tertiary); }
-        .auth-footer-link a { color: var(--accent-dark); font-weight: 600; }
-        .auth-footer-link a:hover { text-decoration: underline; }
+        .error-message.show, .success-message.show, .info-message.show { display: flex; }
+        .error-message { background: var(--danger-bg); color: var(--danger); }
+        .success-message { background: var(--success-bg); color: var(--success); }
+        .info-message { background: var(--info-bg); color: var(--info); }
+        .admin-badge {
+            display: inline-block; background: var(--warning-bg); color: var(--warning);
+            font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px;
+            margin-top: 8px;
+        }
+        .password-strength { height: 4px; background: var(--border-light); border-radius: 4px; margin-top: 6px; overflow: hidden; }
+        .password-strength .fill { height: 100%; width: 0%; transition: 0.25s; }
+        .password-strength-text { font-size: 10.5px; color: var(--text-tertiary); margin-top: 4px; }
     </style>
 </head>
 <body>
 
-<div class="auth-card">
+<div class="register-card">
     <div class="text-center mb-5">
-        <div class="brand-icon"><i class="fas fa-user-plus"></i></div>
-        <h1 class="auth-title">حراء <span class="accent">للسياحة</span></h1>
-        <p class="auth-subtitle">إنشاء حساب جديد</p>
+        <div class="brand-icon"><i class="fas fa-user-plus" style="color:var(--accent-light);"></i></div>
+        <h1 class="page-title-main" style="font-size:19px;">🕋 حراء <span style="color:var(--accent-dark);">للسياحة</span></h1>
+        <p class="text-gray-400" style="font-size:11.5px;">إنشاء حساب جديد</p>
         <div id="adminBadgeContainer" style="display:none;">
-            <span class="admin-badge"><i class="fas fa-shield-halved"></i> أول مستخدم مسجَّل — سيُمنح صلاحية المدير</span>
+            <span class="admin-badge">👑 المستخدم الأول - سيكون مديراً</span>
         </div>
     </div>
 
-    <div id="infoMessage" class="form-note info">
+    <div id="infoMessage" class="info-message">
         <i class="fas fa-circle-info"></i>
-        <span id="infoText">جاري التحقق من وجود مستخدمين مسجَّلين...</span>
+        <span id="infoText">جاري التحقق من وجود مستخدمين...</span>
     </div>
 
     <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4">
@@ -97,26 +83,26 @@
         </div>
         <div class="form-field">
             <label>البريد الإلكتروني</label>
-            <input type="email" id="email" placeholder="name@company.com" required />
+            <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required />
         </div>
         <div class="form-field">
             <label>كلمة المرور</label>
-            <input type="password" id="password" placeholder="6 أحرف على الأقل" required minlength="6" oninput="checkPasswordStrength(this.value)" />
+            <input type="password" id="password" placeholder="أدخل كلمة المرور (6 أحرف)" required minlength="6" oninput="checkPasswordStrength(this.value)" />
             <div class="password-strength"><div class="fill" id="strengthFill"></div></div>
-            <div class="password-strength-text" id="strengthText">قوة كلمة المرور: ضعيفة</div>
+            <div class="password-strength-text" id="strengthText">ضعيفة</div>
         </div>
         <div class="form-field">
             <label>اسم الشركة</label>
-            <input type="text" id="companyName" placeholder="اسم الشركة أو المؤسسة" required />
+            <input type="text" id="companyName" placeholder="اسم الشركة" required />
         </div>
 
-        <div id="errorMessage" class="form-note error">
+        <div id="errorMessage" class="error-message">
             <i class="fas fa-circle-exclamation"></i>
-            <span id="errorText">حدث خطأ أثناء إنشاء الحساب</span>
+            <span id="errorText">حدث خطأ</span>
         </div>
-        <div id="successMessage" class="form-note success">
+        <div id="successMessage" class="success-message">
             <i class="fas fa-circle-check"></i>
-            <span>تم إنشاء الحساب بنجاح، جاري تحويلك إلى صفحة تسجيل الدخول</span>
+            <span>تم إنشاء الحساب بنجاح... جاري التحويل</span>
         </div>
 
         <button type="submit" class="btn-primary-solid w-full justify-center py-3" id="registerBtn">
@@ -125,14 +111,14 @@
         </button>
     </form>
 
-    <div class="text-center auth-footer-link mt-6">
-        لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a>
+    <div class="text-center mt-6" style="font-size:12.5px;color:var(--text-tertiary);">
+        لديك حساب بالفعل؟ <a href="login.html" style="color:var(--accent-dark);" class="font-semibold hover:underline">تسجيل الدخول</a>
     </div>
 </div>
 
 <script>
-var SUPABASE_URL = 'https://exalyiwznoadnugtkyne.supabase.co';
-var SUPABASE_ANON_KEY = 'sb_publishable_ySucS0qeduwnGooAgMrPEw_coMeDbno';
+var SUPABASE_URL = SUPABASE_CONFIG.URL;
+var SUPABASE_ANON_KEY = SUPABASE_CONFIG.KEY;
 var isFirstUser = false;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -169,9 +155,9 @@ async function checkIfUsersExist() {
             hideAdminBadge();
         }
     } catch (error) {
-        console.error('خطأ في التحقق من المستخدمين:', error);
+        console.error('❌ خطأ في التحقق من المستخدمين:', error);
         var shouldContinue = confirm(
-            'تعذّر الاتصال بقاعدة البيانات.\nتأكد من:\n1. وجود دالة RPC باسم "get_users_count" في Supabase\n2. اتصالك بالإنترنت\n\nهل ترغب في المتابعة كأول مستخدم؟'
+            '⚠️ لا يمكن الاتصال بقاعدة البيانات.\nتأكد من:\n1. أن RPC function "get_users_count" موجودة في Supabase\n2. أنك متصل بالإنترنت\n\nهل تريد المتابعة كمستخدم أول؟'
         );
         if (shouldContinue) {
             isFirstUser = true;
@@ -179,7 +165,7 @@ async function checkIfUsersExist() {
         } else {
             var im = document.getElementById('infoMessage');
             im.classList.add('show');
-            document.getElementById('infoText').textContent = 'يرجى إنشاء دالة RPC باسم "get_users_count" في محرر SQL الخاص بـ Supabase أولاً.';
+            document.getElementById('infoText').textContent = '⚠️ يرجى إنشاء RPC function "get_users_count" في Supabase SQL Editor أولاً.';
         }
     }
 }
@@ -187,13 +173,13 @@ async function checkIfUsersExist() {
 function showAdminBadge() {
     document.getElementById('adminBadgeContainer').style.display = 'block';
     document.getElementById('infoMessage').classList.add('show');
-    document.getElementById('infoText').textContent = 'لا يوجد مستخدمون مسجَّلون حالياً. سيُمنح هذا الحساب صلاحية المدير (Admin) فور التسجيل.';
+    document.getElementById('infoText').textContent = '🚀 لا يوجد مستخدمين حالياً. سيتم منحك صلاحية المدير (Admin) عند التسجيل!';
 }
 
 function hideAdminBadge() {
     document.getElementById('adminBadgeContainer').style.display = 'none';
     document.getElementById('infoMessage').classList.remove('show');
-    document.getElementById('infoText').textContent = 'يوجد مستخدمون مسجَّلون بالفعل. سيُنشأ هذا الحساب بصلاحية مستخدم عادي.';
+    document.getElementById('infoText').textContent = '✅ يوجد مستخدمين مسجلين بالفعل. سيتم إنشاء حسابك كـ (User) عادي.';
 }
 
 function checkPasswordStrength(password) {
@@ -210,12 +196,12 @@ function checkPasswordStrength(password) {
     var percentage = (strength / 5) * 100;
     fill.style.width = percentage + '%';
 
-    var colors = ['#ad3f39', '#ad7f2e', '#ad7f2e', '#1c7a4e', '#1c7a4e'];
+    var colors = ['#ef4444', '#f59e0b', '#eab308', '#22c55e', '#22c55e'];
     var labels = ['ضعيفة جداً', 'ضعيفة', 'متوسطة', 'قوية', 'قوية جداً'];
     var colorIndex = Math.min(strength, 4);
 
     fill.style.background = colors[colorIndex];
-    text.textContent = 'قوة كلمة المرور: ' + labels[colorIndex];
+    text.textContent = labels[colorIndex];
 }
 
 async function handleRegister(event) {
@@ -236,12 +222,12 @@ async function handleRegister(event) {
     successMessage.classList.remove('show');
 
     if (!fullName || !email || !password || !companyName) {
-        errorText.textContent = 'الرجاء تعبئة جميع الحقول';
+        errorText.textContent = 'الرجاء ملء جميع الحقول';
         errorMessage.classList.add('show');
         return;
     }
     if (password.length < 6) {
-        errorText.textContent = 'يجب ألا تقل كلمة المرور عن 6 أحرف';
+        errorText.textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
         errorMessage.classList.add('show');
         return;
     }
@@ -263,12 +249,12 @@ async function handleRegister(event) {
         var data = await response.json();
 
         if (response.status === 429) {
-            throw new Error('تم تجاوز الحد المسموح من المحاولات. يرجى الانتظار دقيقة ثم إعادة المحاولة.');
+            throw new Error('⚠️ تم تجاوز معدل الطلبات. يرجى الانتظار دقيقة ثم المحاولة مرة أخرى.');
         }
         if (!response.ok) {
-            var errorMsg = data.error_description || data.message || 'تعذّر إنشاء الحساب';
+            var errorMsg = data.error_description || data.message || 'فشل إنشاء الحساب';
             if (errorMsg.includes('already registered')) {
-                errorMsg = 'هذا البريد الإلكتروني مسجَّل بالفعل. يرجى استخدام بريد آخر.';
+                errorMsg = 'هذا البريد الإلكتروني مسجل بالفعل. يرجى استخدام بريد آخر.';
             }
             throw new Error(errorMsg);
         }
@@ -277,15 +263,15 @@ async function handleRegister(event) {
         var userEmail = data.email || (data.user && data.user.email);
 
         if (!userId || !userEmail) {
-            throw new Error('تعذّر استلام بيانات المستخدم بشكل صحيح');
+            throw new Error('لم يتم استلام بيانات المستخدم بشكل صحيح');
         }
 
         var role = isFirstUser ? 'admin' : 'user';
         await addUserToDatabase(userId, fullName, userEmail, role, companyName);
 
         var successMsg = isFirstUser ?
-            'تم إنشاء حساب المدير بنجاح، سيتم تحويلك إلى صفحة تسجيل الدخول.' :
-            'تم إنشاء الحساب بنجاح، سيتم تحويلك إلى صفحة تسجيل الدخول.';
+            '✅ تم إنشاء حساب المدير بنجاح! سيتم تحويلك إلى صفحة تسجيل الدخول.' :
+            '✅ تم إنشاء الحساب بنجاح! سيتم تحويلك إلى صفحة تسجيل الدخول.';
 
         successMessage.querySelector('span').textContent = successMsg;
         successMessage.classList.add('show');
@@ -293,7 +279,7 @@ async function handleRegister(event) {
         setTimeout(function() { window.location.href = 'login.html'; }, 2500);
 
     } catch (error) {
-        console.error('خطأ:', error);
+        console.error('❌ خطأ:', error);
         errorText.textContent = error.message || 'حدث خطأ أثناء إنشاء الحساب';
         errorMessage.classList.add('show');
     }
@@ -319,11 +305,11 @@ async function addUserToDatabase(userId, fullName, email, role, companyName) {
 
         if (!response.ok) {
             var errText = await response.text();
-            console.warn('فشل إضافة المستخدم إلى جدول users:', errText);
+            console.warn('⚠️ فشل إضافة المستخدم إلى جدول users:', errText);
             throw new Error('فشل إضافة المستخدم إلى قاعدة البيانات');
         }
     } catch (error) {
-        console.error('خطأ في إضافة المستخدم:', error);
+        console.error('❌ خطأ في إضافة المستخدم:', error);
         throw new Error('فشل إضافة المستخدم إلى قاعدة البيانات: ' + error.message);
     }
 }

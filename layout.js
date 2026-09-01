@@ -67,7 +67,7 @@ function applySystemName(opts) {
 
     var welcome = document.getElementById('welcomeTitle');
     if (welcome && opts.welcome !== false) {
-        welcome.textContent = opts.welcomeText || (systemName ? 'مرحباً بك في ' + systemName : 'مرحباً بك');
+        welcome.textContent = opts.welcomeText || (systemName ? 'مرحباً بك في ' + systemName + ' 👋' : 'مرحباً بك 👋');
     }
 
     var footer = document.getElementById('footerText');

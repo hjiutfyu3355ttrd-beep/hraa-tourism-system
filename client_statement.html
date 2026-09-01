@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
     <title id="pageTitle">كشف حساب العميل - حراء للسياحة</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.rel='stylesheet'" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <!-- Theme CSS الموحد -->
-    <link rel="stylesheet" href="theme.css" />
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     <!-- ============================================================ -->
     <!-- SUPABASE.JS - الملف المركزي -->
@@ -24,10 +23,554 @@
 
     <style>
         /* ================================================================
-           STYLES الخاصة بصفحة كشف حساب العميل - مكملة لـ theme.css
+           DESIGN SYSTEM - مطابق للصفحة الرئيسية
            ================================================================ */
+        :root {
+            --primary: #0e1c2e;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
+            --accent-tint: rgba(156, 122, 60, 0.08);
+            --success: #1c7a4e;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
+            --surface: #ffffff;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-full: 9999px;
+            --t-base: 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
+        }
 
-        /* ===== محدد العميل ===== */
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ================================================================
+           SIDEBAR
+           ================================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary);
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(calc(var(--sidebar-width) + 20px));
+        }
+
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            display: none;
+        }
+
+        .brand-logo-img.visible {
+            display: block;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-inverse);
+            flex-shrink: 0;
+        }
+
+        .brand-mark.hidden {
+            display: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-inverse);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            color: var(--accent-light);
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 10px 8px;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 12px 6px;
+            font-family: var(--font-display);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 0;
+        }
+
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.5);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: var(--t-base);
+            position: relative;
+        }
+
+        .nav-list a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-inverse);
+        }
+
+        .nav-list a.active {
+            background: rgba(139, 122, 75, 0.12);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        .nav-list a.active i {
+            color: var(--accent-light);
+        }
+
+        .nav-list a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .nav-list a i {
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-badge {
+            margin-right: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(139, 122, 75, 0.18);
+            color: var(--accent-light);
+            border: 1px solid rgba(139, 122, 75, 0.15);
+            font-family: var(--font-display);
+        }
+
+        .sidebar-footer {
+            padding: 12px 16px 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.3);
+            transition: var(--t-base);
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: rgba(184, 74, 62, 0.12);
+            color: #e8a09a;
+        }
+
+        .logout-btn i {
+            font-size: 14px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1045;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
+        .main-content {
+            margin-right: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-right 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* ================================================================
+           NAVBAR
+           ================================================================ */
+        .navbar-custom {
+            background: var(--surface);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            border-bottom: 2px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--bg);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .navbar-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 4px;
+        }
+
+        .navbar-logo-img {
+            height: 28px;
+            width: 28px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+
+        .navbar-logo-img.visible {
+            display: block;
+        }
+
+        .navbar-logo-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text);
+            font-family: var(--font-display);
+            letter-spacing: -0.3px;
+        }
+
+        .navbar-logo-text span {
+            color: var(--accent);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            position: relative;
+            padding-right: 12px;
+            border-right: 2px solid var(--accent);
+        }
+
+        .page-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            margin-right: 6px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 16px;
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .nav-btn .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--danger);
+            border: 2px solid var(--surface);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 4px 4px 14px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--bg);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            font-family: var(--font-display);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* ================================================================
+           DASHBOARD CONTENT
+           ================================================================ */
+        .dashboard-content {
+            padding: 20px 24px 30px;
+            flex: 1;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           CLIENT SELECTOR
+           ================================================================ */
         .client-selector {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -82,9 +625,8 @@
         }
 
         .client-selector .select-wrapper::after {
-            content: '\f0d7';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
+            content: '\f282';
+            font-family: 'bootstrap-icons';
             position: absolute;
             left: 14px;
             top: 50%;
@@ -129,7 +671,57 @@
             flex-wrap: wrap;
         }
 
-        /* ===== ملخص العميل ===== */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 12px;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+            font-family: var(--font-display);
+            white-space: nowrap;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-action i {
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--text-inverse);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline-accent {
+            background: transparent;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-outline-accent:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text-inverse);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* ================================================================
+           CLIENT SUMMARY
+           ================================================================ */
         .client-summary {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -186,7 +778,9 @@
             color: var(--info);
         }
 
-        /* ===== الجدول ===== */
+        /* ================================================================
+           PANEL
+           ================================================================ */
         .panel {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -234,6 +828,9 @@
             font-size: 13px;
         }
 
+        /* ================================================================
+           TABLE
+           ================================================================ */
         .table-wrap {
             overflow-x: auto;
         }
@@ -310,192 +907,178 @@
             color: var(--warning);
         }
 
-        /* ===== أزرار ===== */
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 20px;
+        /* ================================================================
+           TOAST
+           ================================================================ */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
             border-radius: var(--radius-sm);
-            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
+            z-index: 9999;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
+        }
+
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
+           ================================================================ */
+        .footer-custom {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 12px 24px;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            margin-top: auto;
+        }
+
+        .footer-custom .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-custom .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-size: 12px;
-            transition: var(--t-base);
-            border: 1px solid transparent;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-brand {
             font-family: var(--font-display);
-            white-space: nowrap;
-            text-decoration: none;
-            cursor: pointer;
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
         }
 
-        .btn-action i {
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: var(--text-inverse);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-light);
-            border-color: var(--primary-light);
-            color: var(--text-inverse);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-outline-accent {
-            background: transparent;
-            border-color: var(--accent);
+        .footer-custom .footer-brand span {
             color: var(--accent);
         }
 
-        .btn-outline-accent:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--text-inverse);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .footer-custom .footer-copy {
+            font-size: 12px;
         }
 
-        /* ===== عناصر الطباعة ===== */
-        .print-header {
-            display: none;
+        .footer-custom .footer-copy strong {
+            color: var(--accent-dark);
+            font-weight: 700;
         }
 
-        .print-client-info {
-            display: none;
+        .footer-custom .footer-divider {
+            color: var(--border);
+            font-size: 14px;
         }
 
-        .print-footer {
-            display: none;
+        .footer-custom .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
         }
 
-        /* ===== الوضع المظلم ===== */
-        body.dark-mode .client-selector {
-            background: var(--primary);
-            border-color: rgba(255, 255, 255, 0.06);
+        .footer-custom .footer-version {
+            font-family: var(--font-display);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
         }
 
-        body.dark-mode .client-selector select {
-            background: var(--primary-light);
-            color: #e0dcd2;
-            border-color: rgba(255, 255, 255, 0.08);
+        .footer-custom .footer-link {
+            color: var(--text-tertiary);
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
         }
 
-        body.dark-mode .client-selector select:focus {
-            border-color: var(--accent);
+        .footer-custom .footer-link:hover {
+            color: var(--accent);
         }
 
-        body.dark-mode .client-selector label {
-            color: rgba(232, 228, 220, 0.7);
-        }
-
-        body.dark-mode .client-selector .select-wrapper::after {
-            color: rgba(232, 228, 220, 0.4);
-        }
-
-        body.dark-mode .summary-item {
-            background: var(--primary);
-        }
-
-        body.dark-mode .summary-item .summary-value {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .panel {
-            background: var(--primary);
-            border-color: rgba(255, 255, 255, 0.06);
-        }
-
-        body.dark-mode .panel-header {
-            border-bottom-color: rgba(255, 255, 255, 0.06);
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .table-custom thead {
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .table-custom th {
-            color: rgba(232, 228, 220, 0.4);
-            border-bottom-color: rgba(255, 255, 255, 0.06);
-        }
-
-        body.dark-mode .table-custom td {
-            border-bottom-color: rgba(255, 255, 255, 0.04);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .table-custom tr:hover td {
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .badge-service {
-            background: rgba(58, 107, 143, 0.2);
-            color: #8ab4d4;
-        }
-
-        body.dark-mode .badge-payment {
-            background: rgba(30, 122, 85, 0.2);
-            color: #7bc4a0;
-        }
-
-        body.dark-mode .badge-opening {
-            background: rgba(184, 148, 58, 0.2);
-            color: #d4b87a;
-        }
-
-        body.dark-mode .summary-item.summary-income .summary-value {
-            color: #7bc4a0;
-        }
-
-        body.dark-mode .summary-item.summary-expense .summary-value {
-            color: #dba09a;
-        }
-
-        body.dark-mode .summary-item.summary-balance .summary-value {
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .summary-item.summary-count .summary-value {
-            color: #8ab4d4;
-        }
-
-        body.dark-mode #clientNameDisplay {
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .btn-outline-accent {
-            border-color: var(--accent-light);
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .btn-outline-accent:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--text);
-        }
-
-        body.dark-mode .btn-primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--text);
-        }
-
-        body.dark-mode .btn-primary:hover {
-            background: var(--accent-light);
-            border-color: var(--accent-light);
-            color: var(--text);
-        }
-
-        body.dark-mode .shimmer {
-            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
-        }
-
-        /* ===== استجابة ===== */
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
         @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(calc(var(--sidebar-width) + 20px));
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
             .client-summary {
                 grid-template-columns: 1fr 1fr;
             }
@@ -505,6 +1088,21 @@
         }
 
         @media (max-width: 992px) {
+            .dashboard-content {
+                padding: 16px 18px;
+            }
+            .navbar-custom {
+                padding: 0 16px;
+            }
+            .user-info {
+                display: none;
+            }
+            .page-header .ph-right {
+                display: none;
+            }
+            .navbar-logo-text {
+                display: none;
+            }
             .client-selector {
                 flex-direction: column;
                 align-items: stretch;
@@ -529,6 +1127,27 @@
         }
 
         @media (max-width: 768px) {
+            .navbar-right .nav-btn:not(:first-child) {
+                display: none;
+            }
+            .navbar-custom {
+                height: 54px;
+                padding: 0 12px;
+            }
+            .page-title {
+                font-size: 13px;
+            }
+            .sidebar-toggle {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            .dashboard-content {
+                padding: 12px 12px;
+            }
+            .page-header h2 {
+                font-size: 16px;
+            }
             .client-summary {
                 grid-template-columns: 1fr 1fr;
             }
@@ -541,6 +1160,10 @@
             .table-custom th,
             .table-custom td {
                 padding: 6px 8px;
+            }
+            .navbar-logo-img {
+                height: 24px;
+                width: 24px;
             }
             .client-selector {
                 padding: 14px 14px;
@@ -580,6 +1203,9 @@
         }
 
         @media (max-width: 576px) {
+            .dashboard-content {
+                padding: 10px 10px;
+            }
             .client-summary {
                 grid-template-columns: 1fr 1fr;
                 gap: 0;
@@ -603,6 +1229,9 @@
                 width: 100%;
                 justify-content: center;
             }
+            .page-header .ph-left h2 {
+                font-size: 15px;
+            }
             .panel-header {
                 padding: 8px 12px;
             }
@@ -616,6 +1245,242 @@
                 font-size: 10px;
                 padding: 1px 8px;
             }
+        }
+
+        /* ================================================================
+           DARK MODE
+           ================================================================ */
+        body.dark-mode {
+            background: var(--primary-dark);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .navbar-custom {
+            background: var(--primary);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .navbar-logo-text {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .page-title {
+            border-right-color: var(--accent-light);
+        }
+
+        body.dark-mode .client-selector {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .client-selector select {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .client-selector select:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .client-selector label {
+            color: rgba(232,228,220,0.7);
+        }
+
+        body.dark-mode .client-selector .select-wrapper::after {
+            color: rgba(232,228,220,0.4);
+        }
+
+        body.dark-mode .summary-item {
+            background: var(--primary);
+        }
+
+        body.dark-mode .summary-item .summary-value {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .panel {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .panel-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .table-custom thead {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .table-custom th {
+            color: rgba(232,228,220,0.4);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .table-custom td {
+            border-bottom-color: rgba(255,255,255,0.04);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .table-custom tr:hover td {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .page-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header .ph-left h2 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .page-header .ph-left p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .btn-outline-accent {
+            border-color: var(--accent-light);
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .btn-outline-accent:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .sidebar-toggle {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .sidebar-toggle:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.15);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .nav-btn {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .nav-btn:hover {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .user-profile:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .user-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .toast-notification {
+            background: var(--primary);
+            color: #e0dcd2;
+            border-right-color: var(--accent);
+        }
+
+        body.dark-mode .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        body.dark-mode .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        body.dark-mode .badge-service {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .badge-payment {
+            background: rgba(30, 122, 85, 0.2);
+            color: #7bc4a0;
+        }
+
+        body.dark-mode .badge-opening {
+            background: rgba(184, 148, 58, 0.2);
+            color: #d4b87a;
+        }
+
+        body.dark-mode .summary-item.summary-income .summary-value {
+            color: #7bc4a0;
+        }
+
+        body.dark-mode .summary-item.summary-expense .summary-value {
+            color: #dba09a;
+        }
+
+        body.dark-mode .summary-item.summary-balance .summary-value {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .summary-item.summary-count .summary-value {
+            color: #8ab4d4;
+        }
+
+        body.dark-mode #clientNameDisplay {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .shimmer {
+            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        body.dark-mode .user-avatar {
+            background: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
         }
 
         /* ================================================================
@@ -926,6 +1791,21 @@
         }
 
         /* ================================================================
+           عناصر الطباعة - مخفية افتراضياً
+           ================================================================ */
+        .print-header {
+            display: none;
+        }
+
+        .print-client-info {
+            display: none;
+        }
+
+        .print-footer {
+            display: none;
+        }
+
+        /* ================================================================
            تحسينات إضافية للطباعة
            ================================================================ */
         @media print and (orientation: portrait) {
@@ -961,209 +1841,256 @@
 <body>
 
     <!-- ================================================================ -->
-    <!-- SIDEBAR - قائمة جانبية موحدة -->
+    <!-- SIDEBAR -->
     <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
-        <div class="logo-area">
-            <h1 data-brand>🕋 حراء للسياحة</h1>
-            <span>نظام إدارة الرحلات</span>
+        <div class="sidebar-brand">
+            <div class="brand-row">
+                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
+                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
+                <div class="brand-text" id="sidebarBrandText">
+                    حراء <span>للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
+                </div>
+            </div>
         </div>
-        <nav>
+
+        <nav class="sidebar-nav">
             <div class="nav-section-title">القائمة الرئيسية</div>
-            <a href="index.html" class="nav-link"><i class="fas fa-house"></i> الرئيسية</a>
+            <ul class="nav-list">
+                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
+            </ul>
 
             <div class="nav-section-title">الإدارة المالية</div>
-            <a href="treasury.html" class="nav-link"><i class="fas fa-wallet"></i> الخزينة</a>
-            <a href="trips.html" class="nav-link"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
-            <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء <span class="badge" id="badge-clients">0</span></a>
-            <a href="banks.html" class="nav-link"><i class="fas fa-building-columns"></i> البنوك <span class="badge" id="badge-banks">0</span></a>
-            <a href="bookings.html" class="nav-link"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
-            <a href="representatives.html" class="nav-link"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
+            <ul class="nav-list">
+                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
+                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
+                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+            </ul>
 
             <div class="nav-section-title">التقارير</div>
-            <a href="client_statement.html" class="nav-link active"><i class="fas fa-receipt"></i> كشف حساب العميل</a>
-            <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
+            <ul class="nav-list">
+                <li><a href="client_statement.html" class="active"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+            </ul>
 
             <div class="nav-section-title">الإدارة</div>
-            <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
-            <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
-            <a href="settings.html" class="nav-link"><i class="fas fa-gear"></i> الإعدادات</a>
+            <ul class="nav-list">
+                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+            </ul>
 
             <div class="nav-section-title">الدعم</div>
-            <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> الدعم والتواصل</a>
-
-            <hr />
-            <a href="#" class="nav-link logout-link" onclick="logout(); return false;"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</a>
+            <ul class="nav-list">
+                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+            </ul>
         </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i>
+                تسجيل الخروج
+            </a>
+        </div>
     </aside>
 
     <!-- ================================================================ -->
     <!-- SIDEBAR OVERLAY -->
     <!-- ================================================================ -->
-    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- ================================================================ -->
     <!-- MAIN CONTENT -->
     <!-- ================================================================ -->
-    <main class="main-content" id="main-content">
+    <main class="main-content" id="mainContent">
 
-        <!-- ===== زر القائمة للشاشات الصغيرة ===== -->
-        <div class="flex items-center gap-3 mb-6 menu-toggle">
-            <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة">
-                <i class="fas fa-bars" id="menu-toggle-icon"></i>
-            </button>
-            <h1 class="brand-mobile" data-brand>🕋 حراء للسياحة</h1>
-        </div>
-
-        <!-- ===== HEADER ===== -->
-        <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
-            <div>
-                <h1 class="page-title-main">كشف حساب العميل</h1>
-                <p class="text-gray-500 text-sm">عرض تفاصيل حسابات العملاء والحركات المالية</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
-                <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn">
-                    <i class="fas fa-arrow-rotate-right"></i>
+        <!-- ================================================================ -->
+        <!-- NAVBAR -->
+        <!-- ================================================================ -->
+        <nav class="navbar-custom">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
                 </button>
-            </div>
-        </div>
 
-        <!-- ===== محدد العميل ===== -->
-        <div class="client-selector">
-            <label for="clientSelect"><i class="fas fa-user"></i> اختر العميل:</label>
-            <div class="select-wrapper">
-                <select id="clientSelect" onchange="loadClientStatement()">
-                    <option value="">-- اختر عميل --</option>
-                </select>
+                <div class="navbar-logo-container">
+                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
+                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
+                </div>
+
+                <h4 class="page-title" id="pageTitleText">
+                    كشف حساب العميل
+                    <small>عرض تفاصيل حسابات العملاء</small>
+                </h4>
             </div>
-            <div class="btn-group">
-                <button class="btn-action btn-primary" onclick="loadClientStatement()">
-                    <i class="fas fa-search"></i> عرض
+
+            <div class="navbar-right">
+                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="notification-dot"></span>
                 </button>
-                <button class="btn-action btn-outline-accent" onclick="printStatement()">
-                    <i class="fas fa-print"></i> طباعة
-                </button>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-role" id="userRole">حراء للسياحة</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
             </div>
-        </div>
+        </nav>
 
-        <!-- ===== ملخص العميل ===== -->
-        <div class="client-summary" id="clientSummary" style="display:none;">
-            <div class="summary-item summary-income">
-                <div class="summary-label">إجمالي الخدمات</div>
-                <div class="summary-value" id="totalServices">0</div>
-            </div>
-            <div class="summary-item summary-expense">
-                <div class="summary-label">إجمالي المدفوعات</div>
-                <div class="summary-value" id="totalPayments">0</div>
-            </div>
-            <div class="summary-item summary-balance">
-                <div class="summary-label">الرصيد المتبقي</div>
-                <div class="summary-value" id="remainingBalance">0</div>
-            </div>
-            <div class="summary-item summary-count">
-                <div class="summary-label">عدد المعاملات</div>
-                <div class="summary-value" id="transactionCount">0</div>
-            </div>
-        </div>
+        <!-- ================================================================ -->
+        <!-- DASHBOARD CONTENT -->
+        <!-- ================================================================ -->
+        <div class="dashboard-content">
 
-        <!-- ===== جدول كشف الحساب ===== -->
-        <div class="panel">
-            <div class="panel-header">
-                <h5 class="panel-title"><i class="fas fa-receipt"></i> كشف الحساب</h5>
-                <span id="clientNameDisplay" class="record-count" style="font-weight:600;color:var(--accent);"></span>
-                <span id="recordCount" class="record-count">0 معاملة</span>
+            <!-- ===== PAGE HEADER ===== -->
+            <div class="page-header">
+                <div class="ph-left">
+                    <h2>كشف حساب العميل</h2>
+                    <p>عرض تفاصيل حسابات العملاء والحركات المالية</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">جاري التحميل...</span>
+                </div>
             </div>
-            <div class="table-wrap">
-                <table class="table-custom">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>التاريخ</th>
-                            <th>البيان</th>
-                            <th>النوع</th>
-                            <th>مدين</th>
-                            <th>دائن</th>
-                            <th>الرصيد</th>
-                        </tr>
-                    </thead>
-                    <tbody id="statementBody">
-                        <tr>
-                            <td colspan="7" style="text-align:center;padding:30px;color:var(--text-tertiary);">
-                                <i class="fas fa-user" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.35;"></i>
-                                اختر عميلاً لعرض كشف الحساب
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <!-- ===== CLIENT SELECTOR ===== -->
+            <div class="client-selector">
+                <label for="clientSelect"><i class="bi bi-person-fill"></i> اختر العميل:</label>
+                <div class="select-wrapper">
+                    <select id="clientSelect" onchange="loadClientStatement()">
+                        <option value="">-- اختر عميل --</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-action btn-primary" onclick="loadClientStatement()">
+                        <i class="bi bi-search"></i> عرض
+                    </button>
+                    <button class="btn-action btn-outline-accent" onclick="printStatement()">
+                        <i class="bi bi-printer"></i> طباعة
+                    </button>
+                </div>
             </div>
+
+            <!-- ===== CLIENT SUMMARY ===== -->
+            <div class="client-summary" id="clientSummary" style="display:none;">
+                <div class="summary-item summary-income">
+                    <div class="summary-label">إجمالي الخدمات</div>
+                    <div class="summary-value" id="totalServices">0</div>
+                </div>
+                <div class="summary-item summary-expense">
+                    <div class="summary-label">إجمالي المدفوعات</div>
+                    <div class="summary-value" id="totalPayments">0</div>
+                </div>
+                <div class="summary-item summary-balance">
+                    <div class="summary-label">الرصيد المتبقي</div>
+                    <div class="summary-value" id="remainingBalance">0</div>
+                </div>
+                <div class="summary-item summary-count">
+                    <div class="summary-label">عدد المعاملات</div>
+                    <div class="summary-value" id="transactionCount">0</div>
+                </div>
+            </div>
+
+            <!-- ===== STATEMENT TABLE ===== -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-receipt"></i> كشف الحساب</h5>
+                    <span id="clientNameDisplay" class="record-count" style="font-weight:600;color:var(--accent);"></span>
+                    <span id="recordCount" class="record-count">0 معاملة</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>التاريخ</th>
+                                <th>البيان</th>
+                                <th>النوع</th>
+                                <th>مدين</th>
+                                <th>دائن</th>
+                                <th>الرصيد</th>
+                            </tr>
+                        </thead>
+                        <tbody id="statementBody">
+                            <tr>
+                                <td colspan="7" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                    <i class="bi bi-person" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.35;"></i>
+                                    اختر عميلاً لعرض كشف الحساب
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ================================================================ -->
+            <!-- عناصر الطباعة - مخفية افتراضياً وتظهر فقط عند الطباعة -->
+            <!-- ================================================================ -->
+            <div class="print-header">
+                <div class="print-logo-text">
+                    <span id="printSystemName">حراء للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
+                </div>
+                <div class="print-title">كشف حساب العميل</div>
+                <div class="print-date" id="printDate">—</div>
+            </div>
+
+            <div class="print-client-info">
+                <div class="pci-row">
+                    <div class="pci-item">
+                        <span class="label">اسم العميل:</span>
+                        <span class="value" id="printClientName">—</span>
+                    </div>
+                    <div class="pci-item">
+                        <span class="label">رقم العميل:</span>
+                        <span class="value" id="printClientId">—</span>
+                    </div>
+                    <div class="pci-item">
+                        <span class="label">تاريخ التقرير:</span>
+                        <span class="value" id="printReportDate">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="print-footer">
+                تم إنشاء هذا التقرير بواسطة نظام <span id="printFooterSystem">حراء للسياحة</span> المحاسبي المتكامل
+            </div>
+
         </div>
 
         <!-- ================================================================ -->
-        <!-- عناصر الطباعة - مخفية افتراضياً وتظهر فقط عند الطباعة -->
+        <!-- FOOTER - حقوق النشر -->
         <!-- ================================================================ -->
-        <div class="print-header">
-            <div class="print-logo-text">
-                <span id="printSystemName">حراء للسياحة</span>
-                <small>النظام المحاسبي المتكامل</small>
-            </div>
-            <div class="print-title">كشف حساب العميل</div>
-            <div class="print-date" id="printDate">—</div>
-        </div>
-
-        <div class="print-client-info">
-            <div class="pci-row">
-                <div class="pci-item">
-                    <span class="label">اسم العميل:</span>
-                    <span class="value" id="printClientName">—</span>
+        <footer class="footer-custom">
+            <div class="footer-content">
+                <div class="footer-right">
+                    <span class="footer-brand">حراء <span>للسياحة</span></span>
+                    <span class="footer-divider">|</span>
+                    <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
                 </div>
-                <div class="pci-item">
-                    <span class="label">رقم العميل:</span>
-                    <span class="value" id="printClientId">—</span>
-                </div>
-                <div class="pci-item">
-                    <span class="label">تاريخ التقرير:</span>
-                    <span class="value" id="printReportDate">—</span>
+                <div class="footer-left">
+                    <span class="footer-version">الإصدار 3.0.1</span>
+                    <span class="footer-divider">|</span>
+                    <a href="support.html" class="footer-link">
+                        <i class="bi bi-headset"></i> الدعم الفني
+                    </a>
                 </div>
             </div>
-        </div>
-
-        <div class="print-footer">
-            تم إنشاء هذا التقرير بواسطة نظام <span id="printFooterSystem">حراء للسياحة</span> المحاسبي المتكامل
-        </div>
-
+        </footer>
     </main>
-
-    <!-- ================================================================ -->
-    <!-- FOOTER - تذييل الصفحة -->
-    <!-- ================================================================ -->
-    <footer class="footer-custom" style="margin-top: auto;">
-        <div class="footer-content">
-            <div class="footer-right">
-                <span class="footer-brand">حراء <span>للسياحة</span></span>
-                <span class="footer-divider">|</span>
-                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
-            </div>
-            <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
-                <span class="footer-divider">|</span>
-                <a href="support.html" class="footer-link">
-                    <i class="fas fa-headset"></i> الدعم الفني
-                </a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ================================================================ -->
-    <!-- TOAST CONTAINER -->
-    <!-- ================================================================ -->
-    <div id="toastContainer"></div>
 
     <!-- ================================================================ -->
     <!-- JAVASCRIPT -->
     <!-- ================================================================ -->
-    <script src="supabase.js"></script>
-    <script src="layout.js"></script>
     <script>
         // ================================================================
         // STATE
@@ -1182,58 +2109,35 @@
         // DOM READY
         // ================================================================
         document.addEventListener('DOMContentLoaded', async function() {
-            try {
-                // تهيئة النظام
-                if (!Supabase.initSystem()) {
-                    console.warn('⚠️ فشل تهيئة النظام');
-                    return;
-                }
+            if (!Supabase.initSystem()) return;
 
-                // جلب الإعدادات
+            try {
                 var settings = await Supabase.getSystemSettings();
                 systemCurrency = settings.currency || 'SAR';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
                 console.log('💰 العملة المستخدمة:', systemCurrency, currencySymbol);
-
-                // حفظ العملة في localStorage
-                localStorage.setItem('systemCurrency', systemCurrency);
-
-                // جلب المستخدم الحالي
-                currentUser = Supabase.getCurrentUser();
-                if (currentUser) {
-                    updateUserUI();
-                }
-
-                // تطبيق اسم النظام والشعار
-                applySystemName();
-                Supabase.applySystemLogo();
-
-                // تهيئة القائمة الجانبية والوضع المظلم
-                initSidebar();
-                initDarkMode();
-                initRefresh();
-                initNotifications();
-                initKeyboardShortcuts();
-                updateDate();
-
-                // تحميل البيانات
-                await loadData();
-
-                // تحديث تلقائي كل 60 ثانية
-                setInterval(loadData, 60000);
-
-                // التحقق من صلاحيات المستخدم
-                checkUserPermissions();
-
-                console.log('📋 كشف حساب العميل - حراء للسياحة');
-                console.log('💰 العملة:', systemCurrency, currencySymbol);
-                console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي) | Ctrl+P (طباعة)');
-                console.log('✅ النظام جاهز للعمل');
-
             } catch (error) {
-                console.error('❌ خطأ في تهيئة الصفحة:', error);
-                showToast('⚠️ فشل تهيئة الصفحة: ' + error.message, 'warning');
+                console.error('❌ خطأ في جلب الإعدادات:', error);
             }
+
+            currentUser = Supabase.getCurrentUser();
+            if (currentUser) {
+                updateUserUI();
+            }
+
+            applySystemName();
+            Supabase.applySystemLogo();
+
+            initSidebar();
+            initDarkMode();
+            initRefresh();
+            initNotifications();
+            initKeyboardShortcuts();
+            updateDate();
+            loadData();
+
+            setInterval(loadData, 60000);
+            checkUserPermissions();
         });
 
         // ================================================================
@@ -1243,14 +2147,19 @@
             var systemName = Supabase.getSystemName();
             document.title = 'كشف حساب العميل - ' + systemName;
 
-            var brandText = document.querySelector('.sidebar .logo-area h1');
+            var brandText = document.getElementById('sidebarBrandText');
             if (brandText) {
-                brandText.innerHTML = '🕋 ' + systemName;
+                brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
             }
 
-            var brandMobile = document.querySelector('.brand-mobile');
-            if (brandMobile) {
-                brandMobile.innerHTML = '🕋 ' + systemName;
+            var navbarText = document.getElementById('navbarBrandText');
+            if (navbarText) {
+                navbarText.innerHTML = systemName;
+            }
+
+            var userRole = document.getElementById('userRole');
+            if (userRole) {
+                userRole.textContent = systemName;
             }
 
             // تحديث عناصر الطباعة
@@ -1263,10 +2172,9 @@
         // ================================================================
         function updateUserUI() {
             if (!currentUser) return;
-
-            var userName = document.querySelector('.user-name');
-            var userRole = document.querySelector('.user-role');
-            var userAvatar = document.querySelector('.user-avatar');
+            var userName = document.getElementById('userName');
+            var userRole = document.getElementById('userRole');
+            var userAvatar = document.getElementById('userAvatar');
 
             if (userName) {
                 userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
@@ -1284,7 +2192,7 @@
         // CHECK USER PERMISSIONS
         // ================================================================
         function checkUserPermissions() {
-            var usersMenu = document.querySelector('#usersMenu');
+            var usersMenu = document.getElementById('usersMenu');
             if (!usersMenu) return;
             var isAdmin = currentUser && (currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com');
             if (!isAdmin) {
@@ -1298,7 +2206,7 @@
         function updateDate() {
             var now = new Date();
             var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-            var dateElement = document.querySelector('.page-header .ph-right span');
+            var dateElement = document.getElementById('headerDate');
             if (dateElement) {
                 dateElement.textContent = now.toLocaleDateString('ar-SA', options);
             }
@@ -1330,8 +2238,6 @@
                 if (currentClientId) {
                     loadClientStatement();
                 }
-
-                updateLastRefreshed();
 
             } catch (error) {
                 console.error('❌ خطأ في جلب البيانات:', error);
@@ -1374,7 +2280,7 @@
                 document.getElementById('statementBody').innerHTML = `
                     <tr>
                         <td colspan="7" style="text-align:center;padding:30px;color:var(--text-tertiary);">
-                            <i class="fas fa-user" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.35;"></i>
+                            <i class="bi bi-person" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.35;"></i>
                             اختر عميلاً لعرض كشف الحساب
                         </td>
                     </tr>
@@ -1449,8 +2355,8 @@
             var openingBalance = parseFloat(client['debt'] || 0);
             if (openingBalance > 0) {
                 statementData.push({
-                    date: client['created_at'] ? new Date(client['created_at']).toISOString().split('T')[0] : new Date().toISOString()
-                        .split('T')[0],
+                    date: client['created_at'] ? new Date(client['created_at']).toISOString().split('T')[0] : new Date().toISOString().split(
+                        'T')[0],
                     description: 'رصيد افتتاحي',
                     type: 'opening',
                     typeLabel: 'افتتاحي',
@@ -1490,7 +2396,7 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="7" style="text-align:center;padding:20px;color:var(--text-tertiary);">
-                            <i class="fas fa-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
+                            <i class="bi bi-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
                             لا توجد حركات لهذا العميل
                         </td>
                     </tr>
@@ -1627,37 +2533,46 @@
         function initSidebar() {
             var sidebar = document.getElementById('sidebar');
             var toggle = document.getElementById('sidebarToggle');
-            var main = document.getElementById('main-content');
-            var overlay = document.getElementById('sidebar-overlay');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
 
-            if (!sidebar || !toggle) return;
-
-            var MOBILE_BREAKPOINT = 768;
+            var MOBILE_BREAKPOINT = 1200;
 
             toggle.addEventListener('click', function() {
                 if (window.innerWidth <= MOBILE_BREAKPOINT) {
-                    sidebar.classList.toggle('open');
-                    overlay.classList.toggle('show');
+                    var isOpen = sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = isOpen ? 'hidden' : '';
                 } else {
-                    sidebar.classList.toggle('closed');
-                    main.classList.toggle('full');
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
                 }
             });
 
-            if (overlay) {
-                overlay.addEventListener('click', function() {
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('show');
-                });
-            }
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
 
             window.addEventListener('resize', function() {
                 if (window.innerWidth > MOBILE_BREAKPOINT) {
                     sidebar.classList.remove('open');
-                    if (overlay) overlay.classList.remove('show');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
                 } else {
-                    sidebar.classList.remove('closed');
-                    main.classList.remove('full');
+                    sidebar.classList.remove('collapsed');
+                    main.classList.remove('expanded');
                 }
             });
         }
@@ -1667,26 +2582,21 @@
         // ================================================================
         function initDarkMode() {
             var toggle = document.getElementById('darkModeToggle');
-            if (!toggle) return;
-
             var icon = toggle.querySelector('i');
+            var savedMode = localStorage.getItem('darkMode');
 
-            var isDark = Supabase.isDarkModeEnabled();
-            Supabase.applyTheme(isDark);
-
-            if (icon) {
-                icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            if (savedMode === 'true') {
+                document.body.classList.add('dark-mode');
+                if (icon) icon.className = 'bi bi-sun-fill';
             }
 
             toggle.addEventListener('click', function() {
-                var currentState = document.body.classList.contains('dark-mode');
-                var newState = !currentState;
-
-                Supabase.toggleTheme(newState).then(function() {
-                    if (icon) {
-                        icon.className = newState ? 'fas fa-sun' : 'fas fa-moon';
-                    }
-                });
+                document.body.classList.toggle('dark-mode');
+                var isDarkMode = document.body.classList.contains('dark-mode');
+                if (icon) {
+                    icon.className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                }
+                localStorage.setItem('darkMode', isDarkMode);
             });
         }
 
@@ -1694,13 +2604,20 @@
         // REFRESH BUTTON
         // ================================================================
         function initRefresh() {
-            var refreshBtn = document.getElementById('refreshBtn');
-            if (!refreshBtn) return;
-
-            refreshBtn.addEventListener('click', function() {
+            document.getElementById('refreshBtn').addEventListener('click', function() {
                 loadData();
                 showToast('🔄 جاري تحديث البيانات...', 'info');
             });
+        }
+
+        // ================================================================
+        // LOGOUT
+        // ================================================================
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('darkMode');
+            window.location.href = 'login.html';
         }
 
         // ================================================================
@@ -1710,7 +2627,7 @@
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 'b') {
                     e.preventDefault();
-                    var toggle = document.querySelector('.menu-toggle-btn');
+                    var toggle = document.getElementById('sidebarToggle');
                     if (toggle) toggle.click();
                 }
                 if (e.ctrlKey && e.key === 'r') {
@@ -1735,24 +2652,52 @@
         }
 
         // ================================================================
-        // LOGOUT
+        // TOAST
         // ================================================================
-        function logout() {
-            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
-            localStorage.removeItem('supabase_session');
-            localStorage.removeItem('darkMode');
-            window.location.href = 'login.html';
-        }
+        function showToast(message, type) {
+            var existingToasts = document.querySelectorAll('.toast-notification');
+            for (var i = 0; i < existingToasts.length; i++) {
+                existingToasts[i].remove();
+            }
 
-        // ================================================================
-        // MANUAL REFRESH
-        // ================================================================
-        async function manualRefresh() {
-            var icon = document.querySelector('#refreshBtn i');
-            if (icon) icon.classList.add('fa-spin');
-            await loadData();
-            if (icon) icon.classList.remove('fa-spin');
-            showToast('✅ تم تحديث البيانات', 'success');
+            var toast = document.createElement('div');
+            toast.className = 'toast-notification';
+
+            var iconClass = 'bi-info-circle-fill';
+            var toastClass = '';
+
+            if (type === 'success') {
+                iconClass = 'bi-check-circle-fill';
+                toastClass = 'toast-success';
+            } else if (type === 'error') {
+                iconClass = 'bi-x-circle-fill';
+                toastClass = 'toast-error';
+            } else if (type === 'warning') {
+                iconClass = 'bi-exclamation-triangle-fill';
+                toastClass = 'toast-warning';
+            }
+
+            toast.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
+                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
+                </div>
+            `;
+
+            if (toastClass) {
+                toast.classList.add(toastClass);
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(function() {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
         }
 
         // ================================================================
@@ -1761,13 +2706,14 @@
         window.loadClientStatement = loadClientStatement;
         window.printStatement = printStatement;
         window.logout = logout;
+        window.showToast = showToast;
         window.loadData = loadData;
-        window.manualRefresh = manualRefresh;
 
-        console.log('✅ تم تحميل client_statement.html بنجاح');
-        console.log('📌 اختر عميلاً لعرض كشف حسابه');
-        console.log('📌 يمكنك طباعة كشف الحساب بتنسيق احترافي');
-        console.log('📌 يتم تحديث البيانات تلقائياً كل 60 ثانية');
+        console.log('📋 كشف حساب العميل - حراء للسياحة');
+        console.log('💰 العملة:', systemCurrency, currencySymbol);
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي) | Ctrl+P (طباعة)');
+        console.log('✅ النظام جاهز للعمل');
+        console.log('📌 تم تحسين تصميم الطباعة بإخفاء جميع عناصر التحكم');
     </script>
 
 </body>

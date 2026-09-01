@@ -3,1289 +3,334 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
     <title id="pageTitle">الحجوزات - حراء للسياحة</title>
-
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.rel='stylesheet'" />
-
-    <!-- Theme CSS الموحد -->
     <link rel="stylesheet" href="theme.css" />
-
-    <!-- ============================================================ -->
-    <!-- SUPABASE.JS - الملف المركزي -->
-    <!-- ============================================================ -->
-    <script src="supabase.js"></script>
-
-    <style>
-        /* ================================================================
-           STYLES الخاصة بصفحة الحجوزات - مكملة لـ theme.css
-           ================================================================ */
-
-        /* ===== تنسيق الحالة في الجدول ===== */
-        .status-badge {
-            padding: 3px 12px;
-            border-radius: var(--radius-full);
-            font-size: 10.5px;
-            font-weight: 600;
-            white-space: nowrap;
-            display: inline-block;
-        }
-
-        .status-active {
-            background: var(--info-bg);
-            color: var(--info);
-        }
-
-        .status-pending {
-            background: var(--warning-bg);
-            color: var(--warning);
-        }
-
-        .status-completed {
-            background: var(--success-bg);
-            color: var(--success);
-        }
-
-        .status-cancelled {
-            background: var(--danger-bg);
-            color: var(--danger);
-        }
-
-        /* ===== إحصائيات ===== */
-        .stat-card {
-            background: var(--surface);
-            border-radius: var(--radius-md);
-            padding: var(--space-4) var(--space-5);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-            transition: all 0.25s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .stat-card .icon {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 17px;
-            flex-shrink: 0;
-            opacity: 0.9;
-        }
-
-        .stat-card .number {
-            font-size: var(--text-xl);
-            font-weight: 800;
-            color: var(--text);
-            line-height: 1.2;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: -0.01em;
-        }
-
-        .stat-card .label {
-            font-size: var(--text-xs);
-            color: var(--text-tertiary);
-            font-weight: 500;
-        }
-
-        /* ===== الجدول ===== */
-        .table-card {
-            background: var(--surface);
-            border-radius: var(--radius-md);
-            padding: var(--space-4) var(--space-5);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-        }
-
-        .table-card table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: var(--text-sm);
-        }
-
-        .table-card th {
-            text-align: right;
-            padding: 10px 8px;
-            font-weight: 700;
-            font-size: 10px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: var(--text-tertiary);
-            border-bottom: 1px solid var(--border);
-            background: var(--surface);
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        .table-card td {
-            padding: 11px 8px;
-            border-bottom: 1px solid var(--border-light);
-            font-size: var(--text-sm);
-            color: var(--text);
-            transition: background var(--t-fast);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .table-card tr:last-child td {
-            border-bottom: none;
-        }
-
-        .table-card tr:hover td {
-            background: var(--surface-alt);
-        }
-
-        .table-card .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 28px 0;
-            color: var(--text-tertiary);
-        }
-
-        .table-card .empty-state i {
-            font-size: 20px;
-        }
-
-        /* ===== المودال ===== */
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(14, 28, 46, 0.45);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            padding: var(--space-4);
-            backdrop-filter: blur(3px);
-        }
-
-        .modal-backdrop.active {
-            display: flex;
-        }
-
-        .modal-box {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: var(--space-6) var(--space-6);
-            width: 100%;
-            max-width: 480px;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: modalPop 0.2s ease;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-light);
-        }
-
-        @keyframes modalPop {
-            from {
-                opacity: 0;
-                transform: scale(0.96);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .modal-box h3 {
-            font-size: var(--text-md);
-            color: var(--text);
-            font-weight: 700;
-        }
-
-        .modal-box h3 i {
-            color: var(--accent);
-        }
-
-        .form-field {
-            margin-bottom: var(--space-4);
-        }
-
-        .form-field label {
-            display: block;
-            font-size: var(--text-xs);
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-
-        .form-field input,
-        .form-field select,
-        .form-field textarea {
-            width: 100%;
-            padding: 9px 12px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            font-size: var(--text-base);
-            font-family: var(--font-body);
-            transition: var(--t-base);
-            background: var(--surface);
-            color: var(--text);
-        }
-
-        .form-field input:focus,
-        .form-field select:focus,
-        .form-field textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: var(--shadow-focus);
-        }
-
-        .form-field input::placeholder,
-        .form-field textarea::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        /* ===== باقي المحتوى ===== */
-        .section-title {
-            font-size: var(--text-md);
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .last-updated {
-            font-size: var(--text-xs);
-            color: var(--text-tertiary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .last-updated i {
-            font-size: 10.5px;
-        }
-
-        .icon-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: var(--radius-sm);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-tertiary);
-            background: var(--surface-alt);
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: var(--t-base);
-            font-size: 12px;
-        }
-
-        .icon-btn:hover {
-            background: var(--info-bg);
-            color: var(--info);
-            border-color: var(--border);
-        }
-
-        .icon-btn.danger:hover {
-            background: var(--danger-bg);
-            color: var(--danger);
-            border-color: var(--border);
-        }
-
-        .btn-primary-solid {
-            background: var(--primary);
-            color: var(--text-inverse);
-            font-weight: 600;
-            font-size: var(--text-sm);
-            padding: 9px 18px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--primary);
-            cursor: pointer;
-            transition: var(--t-base);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary-solid:hover {
-            background: var(--primary-light);
-            border-color: var(--primary-light);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-primary-solid:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .btn-outline-soft {
-            background: var(--surface);
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: var(--text-sm);
-            padding: 9px 18px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: var(--t-base);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-outline-soft:hover {
-            border-color: var(--accent);
-            color: var(--accent-dark);
-            background: var(--accent-tint);
-        }
-
-        .skeleton {
-            background: linear-gradient(90deg, var(--border-light) 25%, var(--border) 37%, var(--border-light) 63%);
-            background-size: 400% 100%;
-            animation: shimmer 1.4s ease infinite;
-            border-radius: var(--radius-sm);
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0 50%;
-            }
-        }
-
-        /* ===== الوضع المظلم ===== */
-        body.dark-mode .stat-card {
-            background: var(--primary);
-            border-color: rgba(255, 255, 255, 0.06);
-        }
-
-        body.dark-mode .stat-card .number {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .table-card {
-            background: var(--primary);
-            border-color: rgba(255, 255, 255, 0.06);
-        }
-
-        body.dark-mode .table-card th {
-            color: rgba(232, 228, 220, 0.4);
-            border-bottom-color: rgba(255, 255, 255, 0.06);
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .table-card td {
-            border-bottom-color: rgba(255, 255, 255, 0.04);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .table-card tr:hover td {
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .modal-box {
-            background: var(--primary);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .modal-box h3 {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .form-field input,
-        body.dark-mode .form-field select,
-        body.dark-mode .form-field textarea {
-            background: var(--primary-light);
-            color: #e0dcd2;
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        body.dark-mode .form-field input:focus,
-        body.dark-mode .form-field select:focus,
-        body.dark-mode .form-field textarea:focus {
-            border-color: var(--accent);
-        }
-
-        body.dark-mode .status-active {
-            background: rgba(58, 107, 143, 0.2);
-            color: #8ab4d4;
-        }
-
-        body.dark-mode .status-pending {
-            background: rgba(184, 148, 58, 0.2);
-            color: #d4b87a;
-        }
-
-        body.dark-mode .status-completed {
-            background: rgba(30, 122, 85, 0.2);
-            color: #7bc4a0;
-        }
-
-        body.dark-mode .status-cancelled {
-            background: rgba(184, 74, 62, 0.2);
-            color: #dba09a;
-        }
-
-        body.dark-mode .icon-btn {
-            background: var(--primary-light);
-            border-color: rgba(255, 255, 255, 0.06);
-            color: rgba(232, 228, 220, 0.5);
-        }
-
-        body.dark-mode .icon-btn:hover {
-            background: rgba(58, 107, 143, 0.2);
-            color: #8ab4d4;
-        }
-
-        body.dark-mode .icon-btn.danger:hover {
-            background: rgba(184, 74, 62, 0.2);
-            color: #dba09a;
-        }
-
-        body.dark-mode .skeleton {
-            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
-        }
-
-        body.dark-mode .btn-outline-soft {
-            border-color: rgba(255, 255, 255, 0.08);
-            color: rgba(232, 228, 220, 0.6);
-        }
-
-        body.dark-mode .btn-outline-soft:hover {
-            border-color: var(--accent);
-            color: var(--accent-light);
-            background: rgba(156, 122, 60, 0.1);
-        }
-
-        body.dark-mode .btn-primary-solid {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--text);
-        }
-
-        body.dark-mode .btn-primary-solid:hover {
-            background: var(--accent-light);
-            border-color: var(--accent-light);
-            color: var(--text);
-        }
-
-        /* ===== استجابة ===== */
-        @media (max-width: 768px) {
-            .table-card {
-                padding: var(--space-3);
-            }
-
-            .table-card table {
-                font-size: 11px;
-            }
-
-            .table-card th,
-            .table-card td {
-                padding: 6px 4px;
-            }
-
-            .stat-card .number {
-                font-size: 16px;
-            }
-
-            .modal-box {
-                padding: var(--space-4);
-                max-width: 95%;
-            }
-
-            .modal-box .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .main-content {
-                padding: var(--space-3);
-            }
-
-            .page-title-main {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .stats-grid {
-                grid-template-columns: 1fr 1fr !important;
-            }
-
-            .stat-card {
-                padding: var(--space-3);
-            }
-
-            .stat-card .number {
-                font-size: 14px;
-            }
-
-            .stat-card .icon {
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-            }
-
-            .table-card th,
-            .table-card td {
-                font-size: 10px;
-                padding: 4px 3px;
-            }
-
-            .btn-primary-solid,
-            .btn-outline-soft {
-                font-size: 11px;
-                padding: 6px 12px;
-            }
-
-            .modal-box h3 {
-                font-size: 15px;
-            }
-        }
-
-        /* ===== مودال التأكيد - إضافة للتوافق ===== */
-        .modal-confirm .modal-box {
-            max-width: 420px;
-        }
-
-        .modal-confirm .modal-box h3 i {
-            color: var(--danger);
-        }
-
-        .modal-confirm .modal-box p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-        }
-    </style>
 </head>
 <body>
 
-    <!-- ================================================================ -->
-    <!-- SIDEBAR - قائمة جانبية موحدة -->
-    <!-- ================================================================ -->
-    <aside class="sidebar" id="sidebar">
-        <div class="logo-area">
-            <h1 data-brand>🕋 حراء للسياحة</h1>
-            <span>نظام إدارة الرحلات</span>
+<aside class="sidebar" id="sidebar">
+    <div class="logo-area">
+        <h1 data-brand>🕋 حراء للسياحة</h1>
+        <span>نظام إدارة الرحلات</span>
+    </div>
+    <nav>
+        <div class="nav-section-title">القائمة الرئيسية</div>
+        <a href="index.html" class="nav-link"><i class="fas fa-house"></i> الرئيسية</a>
+        <div class="nav-section-title">الإدارة المالية</div>
+        <a href="treasury.html" class="nav-link"><i class="fas fa-wallet"></i> الخزينة</a>
+        <a href="trips.html" class="nav-link"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
+        <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء <span class="badge" id="badge-clients">0</span></a>
+        <a href="banks.html" class="nav-link"><i class="fas fa-building-columns"></i> البنوك</a>
+        <a href="bookings.html" class="nav-link active"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
+        <a href="representatives.html" class="nav-link"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
+        <div class="nav-section-title">التقارير</div>
+        <a href="client_statement.html" class="nav-link"><i class="fas fa-receipt"></i> كشف حساب العميل</a>
+        <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
+        <div class="nav-section-title">الإدارة</div>
+        <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
+        <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
+        <a href="settings.html" class="nav-link"><i class="fas fa-gear"></i> الإعدادات</a>
+        <div class="nav-section-title">الدعم</div>
+        <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> الدعم والتواصل</a>
+        <hr />
+        <a href="#" class="nav-link logout-link" onclick="logout(); return false;"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</a>
+    </nav>
+</aside>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<main class="main-content" id="main-content">
+    <div class="flex items-center gap-3 mb-6 menu-toggle">
+        <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة"><i class="fas fa-bars" id="menu-toggle-icon"></i></button>
+        <h1 class="brand-mobile" data-brand>🕋 حراء للسياحة</h1>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
+        <div>
+            <h1 class="page-title-main">إدارة الحجوزات</h1>
+            <p class="text-gray-500 text-sm">تسجيل ومتابعة حجوزات العملاء / المعتمرين على الرحلات</p>
         </div>
-        <nav>
-            <div class="nav-section-title">القائمة الرئيسية</div>
-            <a href="index.html" class="nav-link"><i class="fas fa-house"></i> الرئيسية</a>
-
-            <div class="nav-section-title">الإدارة المالية</div>
-            <a href="treasury.html" class="nav-link"><i class="fas fa-wallet"></i> الخزينة</a>
-            <a href="trips.html" class="nav-link"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
-            <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء <span class="badge" id="badge-clients">0</span></a>
-            <a href="banks.html" class="nav-link"><i class="fas fa-building-columns"></i> البنوك <span class="badge" id="badge-banks">0</span></a>
-            <a href="bookings.html" class="nav-link active"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
-            <a href="representatives.html" class="nav-link"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
-
-            <div class="nav-section-title">التقارير</div>
-            <a href="client_statement.html" class="nav-link"><i class="fas fa-receipt"></i> كشف حساب العميل</a>
-            <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
-
-            <div class="nav-section-title">الإدارة</div>
-            <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
-            <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
-            <a href="settings.html" class="nav-link"><i class="fas fa-gear"></i> الإعدادات</a>
-
-            <div class="nav-section-title">الدعم</div>
-            <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> الدعم والتواصل</a>
-
-            <hr />
-            <a href="#" class="nav-link logout-link" onclick="logout(); return false;"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</a>
-        </nav>
-    </aside>
-
-    <!-- ================================================================ -->
-    <!-- SIDEBAR OVERLAY -->
-    <!-- ================================================================ -->
-    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-    <!-- ================================================================ -->
-    <!-- MAIN CONTENT -->
-    <!-- ================================================================ -->
-    <main class="main-content" id="main-content">
-
-        <!-- ===== زر القائمة للشاشات الصغيرة ===== -->
-        <div class="flex items-center gap-3 mb-6 menu-toggle">
-            <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة">
-                <i class="fas fa-bars" id="menu-toggle-icon"></i>
-            </button>
-            <h1 class="brand-mobile" data-brand>🕋 حراء للسياحة</h1>
-        </div>
-
-        <!-- ===== HEADER ===== -->
-        <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
-            <div>
-                <h1 class="page-title-main">إدارة الحجوزات</h1>
-                <p class="text-gray-500 text-sm">تسجيل ومتابعة حجوزات العملاء / المعتمرين على الرحلات</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
-                <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn">
-                    <i class="fas fa-arrow-rotate-right"></i>
-                </button>
-                <button onclick="openBookingModal()" class="btn-primary-solid">
-                    <i class="fas fa-plus"></i> حجز جديد
-                </button>
-            </div>
-        </div>
-
-        <!-- ===== الإحصائيات ===== -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8 stats-grid" id="stats-container">
-            <div class="stat-card flex items-center gap-4">
-                <div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div>
-                <div class="flex-1">
-                    <div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div>
-                    <div class="skeleton" style="width:40%;height:12px;"></div>
-                </div>
-            </div>
-            <div class="stat-card flex items-center gap-4">
-                <div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div>
-                <div class="flex-1">
-                    <div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div>
-                    <div class="skeleton" style="width:40%;height:12px;"></div>
-                </div>
-            </div>
-            <div class="stat-card flex items-center gap-4">
-                <div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div>
-                <div class="flex-1">
-                    <div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div>
-                    <div class="skeleton" style="width:40%;height:12px;"></div>
-                </div>
-            </div>
-            <div class="stat-card flex items-center gap-4">
-                <div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div>
-                <div class="flex-1">
-                    <div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div>
-                    <div class="skeleton" style="width:40%;height:12px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== جدول الحجوزات ===== -->
-        <div class="table-card">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="section-title"><i class="fas fa-ticket text-[#9c7a3c] ml-2"></i>قائمة الحجوزات</h3>
-                <span class="text-sm text-gray-400" id="recordCount">0 سجل</span>
-            </div>
-            <div style="max-height: 560px; overflow-y: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>كود الحجز</th>
-                            <th>التاريخ</th>
-                            <th>العميل</th>
-                            <th>الرحلة</th>
-                            <th>قيمة الحجز</th>
-                            <th>المدفوع</th>
-                            <th>المتبقي</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bookingsBody">
-                        <tr>
-                            <td colspan="10" class="text-center text-gray-400 py-8">
-                                <i class="fas fa-spinner fa-spin ml-2"></i>جاري تحميل الحجوزات...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- ================================================================ -->
-    <!-- FOOTER - تذييل الصفحة -->
-    <!-- ================================================================ -->
-    <footer class="footer-custom" style="margin-top: auto;">
-        <div class="footer-content">
-            <div class="footer-right">
-                <span class="footer-brand">حراء <span>للسياحة</span></span>
-                <span class="footer-divider">|</span>
-                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
-            </div>
-            <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
-                <span class="footer-divider">|</span>
-                <a href="support.html" class="footer-link">
-                    <i class="fas fa-headset"></i> الدعم الفني
-                </a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ================================================================ -->
-    <!-- MODAL - إضافة حجز جديد -->
-    <!-- ================================================================ -->
-    <div class="modal-backdrop" id="bookingModal">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold mb-1"><i class="fas fa-ticket text-[#9c7a3c] ml-2"></i>إضافة حجز جديد</h3>
-            <p class="text-sm text-gray-400 mb-5">اختر العميل والرحلة وأدخل قيمة الحجز</p>
-            <form id="bookingForm" onsubmit="handleBookingSubmit(event)" class="space-y-4">
-                <div class="form-field">
-                    <label>العميل / المعتمر <span style="color:var(--danger);">*</span></label>
-                    <select id="bookingClient" required>
-                        <option value="">-- اختر عميل --</option>
-                    </select>
-                </div>
-                <div class="form-field">
-                    <label>الرحلة <span style="color:var(--danger);">*</span></label>
-                    <select id="bookingTrip" required>
-                        <option value="">-- اختر رحلة --</option>
-                    </select>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="form-field">
-                        <label>قيمة الحجز <span style="color:var(--danger);">*</span></label>
-                        <input type="number" id="bookingValue" step="0.01" min="0.01" placeholder="0" required oninput="updateRemainingPreview()" />
-                    </div>
-                    <div class="form-field">
-                        <label>المدفوع مقدمًا</label>
-                        <input type="number" id="bookingPaid" step="0.01" min="0" value="0" placeholder="0" oninput="updateRemainingPreview()" />
-                    </div>
-                </div>
-                <div class="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3 text-sm">
-                    <span class="text-gray-500 font-medium">المتبقي</span>
-                    <span class="font-bold text-rose-600" id="remainingPreview">0</span>
-                </div>
-                <div class="form-field">
-                    <label>حالة الحجز</label>
-                    <select id="bookingStatus">
-                        <option value="مبدئي">مبدئي</option>
-                        <option value="مؤكد">مؤكد</option>
-                        <option value="مكتمل">مكتمل</option>
-                        <option value="ملغي">ملغي</option>
-                    </select>
-                </div>
-                <div class="form-field">
-                    <label>ملاحظات (اختياري)</label>
-                    <input type="text" id="bookingNotes" placeholder="ملاحظات إضافية" />
-                </div>
-                <div class="flex gap-3 justify-end pt-2">
-                    <button type="button" class="btn-outline-soft" onclick="closeModalById('bookingModal')">إلغاء</button>
-                    <button type="submit" class="btn-primary-solid" id="saveBookingBtn">حفظ</button>
-                </div>
-            </form>
+        <div class="flex items-center gap-3">
+            <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
+            <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn"><i class="fas fa-arrow-rotate-right"></i></button>
+            <button onclick="openBookingModal()" class="btn-primary-solid"><i class="fas fa-plus"></i> حجز جديد</button>
         </div>
     </div>
 
-    <!-- ================================================================ -->
-    <!-- MODAL - تأكيد الحذف -->
-    <!-- ================================================================ -->
-    <div class="modal-backdrop modal-confirm" id="confirmModalOverlay">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold mb-1"><i class="fas fa-triangle-exclamation text-rose-600 ml-2"></i>تأكيد الحذف</h3>
-            <p id="confirmModalMessage" class="text-sm text-gray-500 mb-5">هل أنت متأكد من حذف هذا الحجز؟</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8" id="stats-container">
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
+    </div>
+
+    <div class="table-card">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="section-title"><i class="fas fa-ticket text-[#9c7a3c] ml-2"></i>قائمة الحجوزات</h3>
+            <span class="text-sm text-gray-400" id="recordCount">0 سجل</span>
+        </div>
+        <div style="max-height: 560px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th><th>كود الحجز</th><th>التاريخ</th><th>العميل</th><th>الرحلة</th>
+                        <th>قيمة الحجز</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th><th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsBody">
+                    <tr><td colspan="10" class="text-center text-gray-400 py-8"><i class="fas fa-spinner fa-spin ml-2"></i>جاري تحميل الحجوزات...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- ===== مودال حجز جديد ===== -->
+<div class="modal-backdrop" id="bookingModal">
+    <div class="modal-box">
+        <h3 class="text-lg font-bold mb-1"><i class="fas fa-ticket text-[#9c7a3c] ml-2"></i>إضافة حجز جديد</h3>
+        <p class="text-sm text-gray-400 mb-5">اختر العميل والرحلة وأدخل قيمة الحجز</p>
+        <form id="bookingForm" onsubmit="handleBookingSubmit(event)" class="space-y-4">
+            <div class="form-field">
+                <label>العميل / المعتمر</label>
+                <select id="bookingClient" required><option value="">-- اختر عميل --</option></select>
+            </div>
+            <div class="form-field">
+                <label>الرحلة</label>
+                <select id="bookingTrip" required><option value="">-- اختر رحلة --</option></select>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="form-field">
+                    <label>قيمة الحجز</label>
+                    <input type="number" id="bookingValue" step="0.01" min="0.01" placeholder="0" required oninput="updateRemainingPreview()" />
+                </div>
+                <div class="form-field">
+                    <label>المدفوع مقدمًا</label>
+                    <input type="number" id="bookingPaid" step="0.01" min="0" value="0" placeholder="0" oninput="updateRemainingPreview()" />
+                </div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3 text-sm">
+                <span class="text-gray-500 font-medium">المتبقي</span>
+                <span class="font-bold text-rose-600" id="remainingPreview">0</span>
+            </div>
+            <div class="form-field">
+                <label>حالة الحجز</label>
+                <select id="bookingStatus">
+                    <option value="مبدئي">مبدئي</option>
+                    <option value="مؤكد">مؤكد</option>
+                    <option value="مكتمل">مكتمل</option>
+                    <option value="ملغي">ملغي</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>ملاحظات (اختياري)</label>
+                <input type="text" id="bookingNotes" placeholder="ملاحظات إضافية" />
+            </div>
             <div class="flex gap-3 justify-end pt-2">
-                <button type="button" class="btn-outline-soft" onclick="closeConfirmModal()">إلغاء</button>
-                <button type="button" class="btn-primary-solid" style="background:var(--danger);border-color:var(--danger);" id="confirmModalBtn">تأكيد الحذف</button>
+                <button type="button" class="btn-outline-soft" onclick="closeModalById('bookingModal')">إلغاء</button>
+                <button type="submit" class="btn-primary-solid" id="saveBookingBtn">حفظ</button>
             </div>
-        </div>
+        </form>
     </div>
+</div>
 
-    <!-- ================================================================ -->
-    <!-- TOAST CONTAINER -->
-    <!-- ================================================================ -->
-    <div id="toastContainer"></div>
+<div id="toastContainer"></div>
 
-    <!-- ================================================================ -->
-    <!-- JAVASCRIPT -->
-    <!-- ================================================================ -->
-    <script src="supabase.js"></script>
-    <script src="layout.js"></script>
-    <script>
-        // ================================================================
-        // STATE
-        // ================================================================
-        var bookings = [];
-        var clients = [];
-        var trips = [];
-        var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+<script src="supabase.js"></script>
+<script src="layout.js"></script>
+<script>
 
-        // ================================================================
-        // CONFIRM MODAL - نافذة تأكيد مخصصة
-        // ================================================================
-        var confirmCallback = null;
+var bookings = [];
+var clients = [];
+var trips = [];
 
-        function openConfirmModal(title, message, confirmText, callback) {
-            document.getElementById('confirmModalMessage').textContent = message;
-            document.getElementById('confirmModalBtn').textContent = confirmText || 'تأكيد الحذف';
-            confirmCallback = callback;
-            document.getElementById('confirmModalOverlay').classList.add('active');
-        }
+// ================================================================
+// جلب البيانات
+// ================================================================
+async function loadData() {
+    try {
+        var results = await Promise.all([
+            Supabase.getBookings().catch(function() { return []; }),
+            Supabase.getClients().catch(function() { return []; }),
+            Supabase.getTrips().catch(function() { return []; })
+        ]);
+        bookings = results[0] || [];
+        clients = results[1] || [];
+        trips = results[2] || [];
+    } catch (error) {
+        console.error('❌ خطأ في جلب الحجوزات:', error);
+        showToast('⚠️ فشل تحميل الحجوزات', 'warning');
+        bookings = [];
+    }
 
-        function closeConfirmModal() {
-            document.getElementById('confirmModalOverlay').classList.remove('active');
-            confirmCallback = null;
-        }
+    renderStats();
+    renderTable();
+    populateSelects();
+    updateLastRefreshed();
 
-        function confirmAction() {
-            if (typeof confirmCallback === 'function') {
-                confirmCallback();
-            }
-            closeConfirmModal();
-        }
+    var badge = document.getElementById('badge-bookings');
+    if (badge) badge.textContent = bookings.length;
+}
 
-        // ================================================================
-        // DOM READY
-        // ================================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            try {
-                // تهيئة النظام
-                if (!Supabase.initSystem()) {
-                    console.warn('⚠️ فشل تهيئة النظام');
-                    return;
-                }
+function populateSelects() {
+    var clientSelect = document.getElementById('bookingClient');
+    var tripSelect = document.getElementById('bookingTrip');
 
-                // جلب الإعدادات
-                var settings = Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
-                currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
-                console.log('💰 العملة المستخدمة:', systemCurrency, currencySymbol);
+    clientSelect.innerHTML = '<option value="">-- اختر عميل --</option>' +
+        clients.map(function(c) { return '<option value="' + c['id'] + '">' + (c['name'] || '') + '</option>'; }).join('');
 
-                // حفظ العملة في localStorage
-                localStorage.setItem('systemCurrency', systemCurrency);
+    tripSelect.innerHTML = '<option value="">-- اختر رحلة --</option>' +
+        trips.map(function(t) { return '<option value="' + t['id'] + '">' + (t['trip_code'] || '') + ' — ' + (t['trip_name'] || '') + '</option>'; }).join('');
+}
 
-                // جلب المستخدم الحالي
-                currentUser = Supabase.getCurrentUser();
-                if (currentUser) {
-                    updateUserUI();
-                }
+function renderStats() {
+    var totalValue = 0, totalPaid = 0;
+    bookings.forEach(function(b) {
+        totalValue += parseFloat(b['booking_value'] || 0);
+        totalPaid += parseFloat(b['paid_amount'] || 0);
+    });
+    var totalRemaining = totalValue - totalPaid;
 
-                // تطبيق اسم النظام والشعار
-                applySystemName({ pageLabel: 'الحجوزات', welcome: false });
-                Supabase.applySystemLogo();
+    var stats = [
+        { icon: 'fa-ticket', color: 'bg-blue-50 text-blue-600', number: bookings.length, label: 'إجمالي الحجوزات' },
+        { icon: 'fa-coins', color: 'bg-emerald-50 text-emerald-600', number: Supabase.formatCurrency(totalValue), label: 'إجمالي قيمة الحجوزات' },
+        { icon: 'fa-hand-holding-dollar', color: 'bg-amber-50 text-amber-600', number: Supabase.formatCurrency(totalPaid), label: 'إجمالي المحصّل' },
+        { icon: 'fa-triangle-exclamation', color: 'bg-rose-50 text-rose-600', number: Supabase.formatCurrency(totalRemaining), label: 'إجمالي المتبقي' }
+    ];
 
-                // ربط زر تأكيد الحذف
-                var confirmBtn = document.getElementById('confirmModalBtn');
-                if (confirmBtn) {
-                    confirmBtn.addEventListener('click', confirmAction);
-                }
+    document.getElementById('stats-container').innerHTML = stats.map(function(s) {
+        return '<div class="stat-card flex items-center gap-4">' +
+            '<div class="icon ' + s.color + '"><i class="fas ' + s.icon + '"></i></div>' +
+            '<div><div class="number">' + s.number + '</div><div class="label">' + s.label + '</div></div></div>';
+    }).join('');
+}
 
-                // إغلاق المودالات عند الضغط على Esc
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') {
-                        closeConfirmModal();
-                        closeModalById('bookingModal');
-                    }
-                });
+var BOOKING_STATUS_CLASS = { 'مبدئي': 'status-pending', 'مؤكد': 'status-active', 'مكتمل': 'status-completed', 'ملغي': 'status-cancelled' };
 
-                // إغلاق مودال التأكيد عند الضغط على الخلفية
-                var overlay = document.getElementById('confirmModalOverlay');
-                if (overlay) {
-                    overlay.addEventListener('click', function(e) {
-                        if (e.target === this) {
-                            closeConfirmModal();
-                        }
-                    });
-                }
+function renderTable() {
+    var tbody = document.getElementById('bookingsBody');
+    var count = document.getElementById('recordCount');
 
-                // إغلاق مودال الحجز عند الضغط على الخلفية
-                var bookingOverlay = document.getElementById('bookingModal');
-                if (bookingOverlay) {
-                    bookingOverlay.addEventListener('click', function(e) {
-                        if (e.target === this) {
-                            closeModalById('bookingModal');
-                        }
-                    });
-                }
+    if (!bookings.length) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-gray-400 py-8"><i class="fas fa-inbox mb-2 block text-xl opacity-30"></i>لا توجد حجوزات مسجلة</td></tr>';
+        count.textContent = '0 سجل';
+        return;
+    }
 
-                // تحميل البيانات
-                loadData();
+    count.textContent = bookings.length + ' سجل';
 
-                // تحديث تلقائي كل 60 ثانية
-                startSmartAutoRefresh(loadData, 60000);
+    tbody.innerHTML = bookings.map(function(b, i) {
+        var client = clients.find(function(c) { return String(c['id']) === String(b['client_id']); });
+        var trip = trips.find(function(t) { return String(t['id']) === String(b['trip_id']); });
+        var value = parseFloat(b['booking_value'] || 0);
+        var paid = parseFloat(b['paid_amount'] || 0);
+        var remaining = value - paid;
+        var status = b['status'] || 'مبدئي';
+        var statusClass = BOOKING_STATUS_CLASS[status] || 'status-pending';
+        var dateObj = new Date(b['booking_date']);
+        var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-EG') : (b['booking_date'] || '—');
 
-                console.log('🎫 نظام الحجوزات - حراء للسياحة');
-                console.log('💰 العملة:', systemCurrency, currencySymbol);
-                console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
-                console.log('✅ النظام جاهز للعمل');
+        return '<tr>' +
+            '<td>' + (i + 1) + '</td>' +
+            '<td class="font-semibold">' + (b['booking_code'] || '—') + '</td>' +
+            '<td>' + formattedDate + '</td>' +
+            '<td>' + (client ? client['name'] : '—') + '</td>' +
+            '<td>' + (trip ? (trip['trip_code'] || trip['trip_name']) : '—') + '</td>' +
+            '<td>' + Supabase.formatCurrency(value) + '</td>' +
+            '<td class="text-emerald-600">' + Supabase.formatCurrency(paid) + '</td>' +
+            '<td class="text-rose-600">' + Supabase.formatCurrency(remaining) + '</td>' +
+            '<td><span class="status-badge ' + statusClass + '">' + status + '</span></td>' +
+            '<td><button class="icon-btn danger" title="حذف" onclick="deleteBooking(\'' + b['id'] + '\')"><i class="fas fa-trash"></i></button></td>' +
+            '</tr>';
+    }).join('');
+}
 
-            } catch (error) {
-                console.error('❌ خطأ في تهيئة الصفحة:', error);
-                showToast('⚠️ فشل تهيئة الصفحة: ' + error.message, 'warning');
-            }
+// ================================================================
+// المودال
+// ================================================================
+function openBookingModal() {
+    document.getElementById('bookingForm').reset();
+    document.getElementById('remainingPreview').textContent = Supabase.formatCurrency(0);
+    populateSelects();
+    openModalById('bookingModal');
+}
+
+function updateRemainingPreview() {
+    var value = parseFloat(document.getElementById('bookingValue').value) || 0;
+    var paid = parseFloat(document.getElementById('bookingPaid').value) || 0;
+    document.getElementById('remainingPreview').textContent = Supabase.formatCurrency(value - paid);
+}
+
+async function handleBookingSubmit(event) {
+    event.preventDefault();
+
+    var clientId = document.getElementById('bookingClient').value;
+    var tripId = document.getElementById('bookingTrip').value;
+    var value = parseFloat(document.getElementById('bookingValue').value);
+    var paid = parseFloat(document.getElementById('bookingPaid').value) || 0;
+    var status = document.getElementById('bookingStatus').value;
+    var notes = document.getElementById('bookingNotes').value.trim();
+
+    if (!clientId) { showToast('⚠️ الرجاء اختيار العميل', 'warning'); return; }
+    if (!tripId) { showToast('⚠️ الرجاء اختيار الرحلة', 'warning'); return; }
+    if (!value || value <= 0) { showToast('⚠️ الرجاء إدخال قيمة حجز صحيحة', 'warning'); return; }
+    if (paid > value) { showToast('⚠️ المدفوع لا يمكن أن يتجاوز قيمة الحجز', 'warning'); return; }
+
+    var btn = document.getElementById('saveBookingBtn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ...';
+
+    try {
+        await Supabase.addData('bookings', {
+            booking_code: 'BK-' + Date.now().toString().slice(-8),
+            client_id: clientId,
+            trip_id: tripId,
+            booking_value: value,
+            paid_amount: paid,
+            status: status,
+            notes: notes,
+            booking_date: new Date().toISOString().split('T')[0]
         });
+        closeModalById('bookingModal');
+        showToast('✅ تمت إضافة الحجز بنجاح', 'success');
+        loadData();
+    } catch (error) {
+        showToast('❌ فشل إضافة الحجز: ' + error.message, 'error');
+    }
 
-        // ================================================================
-        // UPDATE USER UI
-        // ================================================================
-        function updateUserUI() {
-            if (!currentUser) return;
+    btn.disabled = false;
+    btn.textContent = 'حفظ';
+}
 
-            var userName = document.querySelector('.user-name');
-            var userRole = document.querySelector('.user-role');
-            var userAvatar = document.querySelector('.user-avatar');
+function deleteBooking(id) {
+    if (!confirm('هل أنت متأكد من حذف هذا الحجز؟')) return;
+    Supabase.deleteData('bookings', id)
+        .then(function() {
+            showToast('✅ تم حذف الحجز بنجاح', 'success');
+            loadData();
+        })
+        .catch(function(error) {
+            showToast('❌ فشل حذف الحجز: ' + error.message, 'error');
+        });
+}
 
-            if (userName) {
-                userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
-            }
-            if (userRole) {
-                userRole.textContent = currentUser.user_metadata?.role || 'المالية';
-            }
-            if (userAvatar) {
-                var name = currentUser.user_metadata?.full_name || currentUser.email || 'م';
-                userAvatar.textContent = name.charAt(0).toUpperCase();
-            }
-        }
+async function manualRefresh() {
+    var icon = document.querySelector('#refreshBtn i');
+    icon.classList.add('fa-spin');
+    await loadData();
+    icon.classList.remove('fa-spin');
+}
 
-        // ================================================================
-        // LOAD DATA
-        // ================================================================
-        async function loadData() {
-            try {
-                var results = await Promise.all([
-                    Supabase.getBookings().catch(function() { return []; }),
-                    Supabase.getClients().catch(function() { return []; }),
-                    Supabase.getTrips().catch(function() { return []; })
-                ]);
+document.addEventListener('DOMContentLoaded', function() {
+    applySystemName({ pageLabel: 'الحجوزات', welcome: false });
+    loadData();
+    startSmartAutoRefresh(loadData, 60000);
+});
 
-                bookings = results[0] || [];
-                clients = results[1] || [];
-                trips = results[2] || [];
-
-                console.log('📡 تم جلب البيانات:',
-                    bookings.length + ' حجز',
-                    clients.length + ' عميل',
-                    trips.length + ' رحلة'
-                );
-
-            } catch (error) {
-                console.error('❌ خطأ في جلب الحجوزات:', error);
-                showToast('⚠️ فشل تحميل الحجوزات', 'warning');
-                bookings = [];
-            }
-
-            renderStats();
-            renderTable();
-            populateSelects();
-            updateLastRefreshed();
-
-            var badge = document.getElementById('badge-bookings');
-            if (badge) badge.textContent = bookings.length;
-        }
-
-        // ================================================================
-        // POPULATE SELECTS
-        // ================================================================
-        function populateSelects() {
-            var clientSelect = document.getElementById('bookingClient');
-            var tripSelect = document.getElementById('bookingTrip');
-
-            if (clientSelect) {
-                clientSelect.innerHTML = '<option value="">-- اختر عميل --</option>' +
-                    clients.map(function(c) {
-                        return '<option value="' + c['id'] + '">' + (c['name'] || '') + '</option>';
-                    }).join('');
-            }
-
-            if (tripSelect) {
-                tripSelect.innerHTML = '<option value="">-- اختر رحلة --</option>' +
-                    trips.map(function(t) {
-                        return '<option value="' + t['id'] + '">' +
-                            (t['trip_code'] || '') + ' — ' + (t['trip_name'] || '') +
-                            '</option>';
-                    }).join('');
-            }
-        }
-
-        // ================================================================
-        // RENDER STATS
-        // ================================================================
-        function renderStats() {
-            var totalValue = 0,
-                totalPaid = 0;
-
-            bookings.forEach(function(b) {
-                totalValue += parseFloat(b['booking_value'] || 0);
-                totalPaid += parseFloat(b['paid_amount'] || 0);
-            });
-
-            var totalRemaining = totalValue - totalPaid;
-
-            var stats = [{
-                icon: 'fa-ticket',
-                color: 'bg-blue-50 text-blue-600',
-                number: bookings.length,
-                label: 'إجمالي الحجوزات'
-            }, {
-                icon: 'fa-coins',
-                color: 'bg-emerald-50 text-emerald-600',
-                number: Supabase.formatCurrency(totalValue),
-                label: 'إجمالي قيمة الحجوزات'
-            }, {
-                icon: 'fa-hand-holding-dollar',
-                color: 'bg-amber-50 text-amber-600',
-                number: Supabase.formatCurrency(totalPaid),
-                label: 'إجمالي المحصّل'
-            }, {
-                icon: 'fa-triangle-exclamation',
-                color: 'bg-rose-50 text-rose-600',
-                number: Supabase.formatCurrency(totalRemaining),
-                label: 'إجمالي المتبقي'
-            }];
-
-            var container = document.getElementById('stats-container');
-            if (container) {
-                container.innerHTML = stats.map(function(s) {
-                    return '<div class="stat-card flex items-center gap-4">' +
-                        '<div class="icon ' + s.color + '"><i class="fas ' + s.icon + '"></i></div>' +
-                        '<div><div class="number">' + s.number + '</div><div class="label">' + s.label +
-                        '</div></div></div>';
-                }).join('');
-            }
-        }
-
-        // ================================================================
-        // RENDER TABLE
-        // ================================================================
-        var BOOKING_STATUS_CLASS = {
-            'مبدئي': 'status-pending',
-            'مؤكد': 'status-active',
-            'مكتمل': 'status-completed',
-            'ملغي': 'status-cancelled'
-        };
-
-        function renderTable() {
-            var tbody = document.getElementById('bookingsBody');
-            var count = document.getElementById('recordCount');
-
-            if (!tbody) return;
-
-            if (!bookings.length) {
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-gray-400 py-8">' +
-                    '<i class="fas fa-inbox mb-2 block text-xl opacity-30"></i>لا توجد حجوزات مسجلة' +
-                    '</td></tr>';
-                if (count) count.textContent = '0 سجل';
-                return;
-            }
-
-            if (count) count.textContent = bookings.length + ' سجل';
-
-            tbody.innerHTML = bookings.map(function(b, i) {
-                var client = clients.find(function(c) {
-                    return String(c['id']) === String(b['client_id']);
-                });
-                var trip = trips.find(function(t) {
-                    return String(t['id']) === String(b['trip_id']);
-                });
-
-                var value = parseFloat(b['booking_value'] || 0);
-                var paid = parseFloat(b['paid_amount'] || 0);
-                var remaining = value - paid;
-                var status = b['status'] || 'مبدئي';
-                var statusClass = BOOKING_STATUS_CLASS[status] || 'status-pending';
-
-                var dateObj = new Date(b['booking_date']);
-                var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-EG') : (b['booking_date'] || '—');
-
-                return '<tr>' +
-                    '<td>' + (i + 1) + '</td>' +
-                    '<td class="font-semibold">' + (b['booking_code'] || '—') + '</td>' +
-                    '<td>' + formattedDate + '</td>' +
-                    '<td>' + (client ? client['name'] : '—') + '</td>' +
-                    '<td>' + (trip ? (trip['trip_code'] || trip['trip_name']) : '—') + '</td>' +
-                    '<td>' + Supabase.formatCurrency(value) + '</td>' +
-                    '<td class="text-emerald-600">' + Supabase.formatCurrency(paid) + '</td>' +
-                    '<td class="text-rose-600">' + Supabase.formatCurrency(remaining) + '</td>' +
-                    '<td><span class="status-badge ' + statusClass + '">' + status + '</span></td>' +
-                    '<td><button class="icon-btn danger" title="حذف" onclick="deleteBooking(\'' + b['id'] +
-                    '\')"><i class="fas fa-trash"></i></button></td>' +
-                    '</tr>';
-            }).join('');
-        }
-
-        // ================================================================
-        // BOOKING MODAL
-        // ================================================================
-        function openBookingModal() {
-            var form = document.getElementById('bookingForm');
-            if (form) form.reset();
-
-            var preview = document.getElementById('remainingPreview');
-            if (preview) preview.textContent = Supabase.formatCurrency(0);
-
-            populateSelects();
-            openModalById('bookingModal');
-        }
-
-        function updateRemainingPreview() {
-            var value = parseFloat(document.getElementById('bookingValue').value) || 0;
-            var paid = parseFloat(document.getElementById('bookingPaid').value) || 0;
-            var preview = document.getElementById('remainingPreview');
-            if (preview) {
-                preview.textContent = Supabase.formatCurrency(value - paid);
-            }
-        }
-
-        // ================================================================
-        // HANDLE BOOKING SUBMIT
-        // ================================================================
-        async function handleBookingSubmit(event) {
-            event.preventDefault();
-
-            var clientId = document.getElementById('bookingClient').value;
-            var tripId = document.getElementById('bookingTrip').value;
-            var value = parseFloat(document.getElementById('bookingValue').value);
-            var paid = parseFloat(document.getElementById('bookingPaid').value) || 0;
-            var status = document.getElementById('bookingStatus').value;
-            var notes = document.getElementById('bookingNotes').value.trim();
-
-            if (!clientId) {
-                showToast('⚠️ الرجاء اختيار العميل', 'warning');
-                return;
-            }
-            if (!tripId) {
-                showToast('⚠️ الرجاء اختيار الرحلة', 'warning');
-                return;
-            }
-            if (!value || value <= 0) {
-                showToast('⚠️ الرجاء إدخال قيمة حجز صحيحة', 'warning');
-                return;
-            }
-            if (paid > value) {
-                showToast('⚠️ المدفوع لا يمكن أن يتجاوز قيمة الحجز', 'warning');
-                return;
-            }
-
-            var btn = document.getElementById('saveBookingBtn');
-            btn.disabled = true;
-            btn.textContent = 'جاري الحفظ...';
-
-            try {
-                var bookingCode = 'BK-' + Date.now().toString().slice(-8);
-
-                await Supabase.addData('bookings', {
-                    booking_code: bookingCode,
-                    client_id: clientId,
-                    trip_id: tripId,
-                    booking_value: value,
-                    paid_amount: paid,
-                    status: status,
-                    notes: notes,
-                    booking_date: new Date().toISOString().split('T')[0]
-                });
-
-                // تسجيل معاملة في الخزينة إذا كان هناك مبلغ مدفوع
-                if (paid > 0) {
-                    var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
-                    var clientName = client ? client['name'] : 'عميل';
-
-                    await Supabase.addData('transactions', {
-                        date: new Date().toISOString().split('T')[0],
-                        type: 'وارد',
-                        category: 'عميل',
-                        amount: paid,
-                        description: 'دفعة مقدم حجز - ' + clientName,
-                        reference: bookingCode,
-                        opening_balance: false
-                    });
-                }
-
-                closeModalById('bookingModal');
-                showToast('✅ تمت إضافة الحجز بنجاح', 'success');
-                loadData();
-
-            } catch (error) {
-                console.error('❌ خطأ في إضافة الحجز:', error);
-                showToast('❌ فشل إضافة الحجز: ' + error.message, 'error');
-            }
-
-            btn.disabled = false;
-            btn.textContent = 'حفظ';
-        }
-
-        // ================================================================
-        // DELETE BOOKING
-        // ================================================================
-        function deleteBooking(id) {
-            var booking = bookings.find(function(b) { return String(b['id']) === String(id); });
-            if (!booking) {
-                showToast('⚠️ الحجز غير موجود', 'warning');
-                return;
-            }
-
-            openConfirmModal(
-                'تأكيد حذف الحجز',
-                'هل أنت متأكد من حذف الحجز "' + (booking['booking_code'] || '') + '"؟',
-                'حذف الحجز',
-                function() {
-                    showToast('⏳ جاري حذف الحجز...', 'info');
-
-                    Supabase.deleteData('bookings', id)
-                        .then(function() {
-                            showToast('✅ تم حذف الحجز بنجاح', 'success');
-                            loadData();
-                        })
-                        .catch(function(error) {
-                            showToast('❌ فشل حذف الحجز: ' + error.message, 'error');
-                        });
-                }
-            );
-        }
-
-        // ================================================================
-        // MANUAL REFRESH
-        // ================================================================
-        async function manualRefresh() {
-            var icon = document.querySelector('#refreshBtn i');
-            if (icon) icon.classList.add('fa-spin');
-            await loadData();
-            if (icon) icon.classList.remove('fa-spin');
-            showToast('✅ تم تحديث البيانات', 'success');
-        }
-
-        // ================================================================
-        // LOGOUT
-        // ================================================================
-        function logout() {
-            openConfirmModal(
-                'تأكيد تسجيل الخروج',
-                'هل أنت متأكد من تسجيل الخروج؟',
-                'تسجيل الخروج',
-                function() {
-                    localStorage.removeItem('supabase_session');
-                    localStorage.removeItem('darkMode');
-                    window.location.href = 'login.html';
-                }
-            );
-        }
-
-        // ================================================================
-        // EXPOSE
-        // ================================================================
-        window.openBookingModal = openBookingModal;
-        window.updateRemainingPreview = updateRemainingPreview;
-        window.handleBookingSubmit = handleBookingSubmit;
-        window.deleteBooking = deleteBooking;
-        window.manualRefresh = manualRefresh;
-        window.logout = logout;
-        window.loadData = loadData;
-        window.openConfirmModal = openConfirmModal;
-        window.closeConfirmModal = closeConfirmModal;
-
-        console.log('✅ تم تحميل bookings.html بنجاح');
-        console.log('📌 يمكنك إضافة حجوزات جديدة من زر "حجز جديد"');
-        console.log('📌 المدفوع المقدم يسجل تلقائياً في الخزينة');
-        console.log('📌 يتم تحديث الإحصائيات تلقائياً');
-    </script>
-
+</script>
 </body>
 </html>

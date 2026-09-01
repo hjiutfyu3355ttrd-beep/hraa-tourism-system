@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
     <title id="pageTitle">البنوك - حراء للسياحة</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.rel='stylesheet'" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <!-- Theme CSS الموحد -->
-    <link rel="stylesheet" href="theme.css" />
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     <!-- ============================================================ -->
     <!-- SUPABASE.JS - الملف المركزي -->
@@ -24,10 +23,753 @@
 
     <style>
         /* ================================================================
-           STYLES الخاصة بصفحة البنوك - مكملة لـ theme.css
+           DESIGN SYSTEM - مطابق للصفحة الرئيسية
            ================================================================ */
+        :root {
+            --primary: #0e1c2e;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
+            --accent-tint: rgba(156, 122, 60, 0.08);
+            --success: #1c7a4e;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
+            --surface: #ffffff;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-full: 9999px;
+            --t-base: 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
+        }
 
-        /* ===== بطاقات البنوك ===== */
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ================================================================
+           SIDEBAR
+           ================================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary);
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(calc(var(--sidebar-width) + 20px));
+        }
+
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            display: none;
+        }
+
+        .brand-logo-img.visible {
+            display: block;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-inverse);
+            flex-shrink: 0;
+        }
+
+        .brand-mark.hidden {
+            display: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-inverse);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            color: var(--accent-light);
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 10px 8px;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 12px 6px;
+            font-family: var(--font-display);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 0;
+        }
+
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.5);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: var(--t-base);
+            position: relative;
+        }
+
+        .nav-list a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-inverse);
+        }
+
+        .nav-list a.active {
+            background: rgba(139, 122, 75, 0.12);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        .nav-list a.active i {
+            color: var(--accent-light);
+        }
+
+        .nav-list a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .nav-list a i {
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-badge {
+            margin-right: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(139, 122, 75, 0.18);
+            color: var(--accent-light);
+            border: 1px solid rgba(139, 122, 75, 0.15);
+            font-family: var(--font-display);
+        }
+
+        .sidebar-footer {
+            padding: 12px 16px 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.3);
+            transition: var(--t-base);
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: rgba(184, 74, 62, 0.12);
+            color: #e8a09a;
+        }
+
+        .logout-btn i {
+            font-size: 14px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1045;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
+        .main-content {
+            margin-right: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-right 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* ================================================================
+           NAVBAR
+           ================================================================ */
+        .navbar-custom {
+            background: var(--bg);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--surface);
+            border-color: var(--text-tertiary);
+        }
+
+        .navbar-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 4px;
+        }
+
+        .navbar-logo-img {
+            height: 28px;
+            width: 28px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+
+        .navbar-logo-img.visible {
+            display: block;
+        }
+
+        .navbar-logo-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--font-display);
+        }
+
+        .navbar-logo-text span {
+            color: var(--accent);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            margin-right: 6px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .nav-btn .notification-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--danger);
+            border: 1.5px solid var(--bg);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 4px 3px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: var(--font-display);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* ================================================================
+           DASHBOARD CONTENT
+           ================================================================ */
+        .dashboard-content {
+            padding: 20px 24px 30px;
+            flex: 1;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           STAT CARDS
+           ================================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            transition: var(--t-base);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+
+        .stat-card .stat-number {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .stat-card .stat-icon {
+            float: left;
+            font-size: 18px;
+            color: var(--accent-light);
+            opacity: 0.5;
+        }
+
+        .stat-blue .stat-number {
+            color: var(--info);
+        }
+        .stat-green .stat-number {
+            color: var(--success);
+        }
+        .stat-gold .stat-number {
+            color: var(--accent);
+        }
+        .stat-red .stat-number {
+            color: var(--danger);
+        }
+
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 12px;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+            font-family: var(--font-display);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--text-inverse);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #166a4a;
+            border-color: #166a4a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a03d32;
+            border-color: #a03d32;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: var(--accent-tint);
+        }
+
+        .btn-sm {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            font-size: 12px;
+            transition: var(--t-base);
+        }
+
+        .btn-icon-edit {
+            background: var(--info-bg);
+            color: var(--info);
+            border-color: var(--border);
+        }
+
+        .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-icon-delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: var(--border);
+        }
+
+        .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ================================================================
+           PANEL
+           ================================================================ */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+        }
+
+        .panel-title i {
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .record-count {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* ================================================================
+           BANK CARDS
+           ================================================================ */
         .banks-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -38,29 +780,28 @@
         .bank-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 18px 20px;
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
             transition: var(--t-base);
             position: relative;
             overflow: hidden;
             cursor: pointer;
-            box-shadow: var(--shadow-sm);
         }
 
         .bank-card:hover {
             border-color: var(--accent);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
         }
 
         .bank-card .bank-icon {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 10px;
             background: var(--accent-tint);
             color: var(--accent);
@@ -131,80 +872,25 @@
             font-size: 12px;
         }
 
-        /* ===== الإحصائيات ===== */
-        .stats-grid-custom {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 18px;
-        }
-
-        .stat-card-custom {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 14px 16px;
-            transition: var(--t-base);
-            cursor: pointer;
-        }
-
-        .stat-card-custom:hover {
-            border-color: var(--accent);
-            box-shadow: var(--shadow-sm);
-            transform: translateY(-1px);
-        }
-
-        .stat-card-custom .stat-number {
-            font-family: var(--font-display);
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--text);
-            line-height: 1.2;
-        }
-
-        .stat-card-custom .stat-label {
-            font-size: 10px;
-            color: var(--text-tertiary);
-            margin-top: 2px;
-        }
-
-        .stat-card-custom .stat-icon {
-            float: left;
-            font-size: 18px;
-            color: var(--accent-light);
-            opacity: 0.5;
-        }
-
-        .stat-blue .stat-number {
-            color: var(--info);
-        }
-        .stat-green .stat-number {
-            color: var(--success);
-        }
-        .stat-gold .stat-number {
-            color: var(--accent);
-        }
-        .stat-red .stat-number {
-            color: var(--danger);
-        }
-
-        /* ===== المودالات ===== */
-        .modal-overlay-custom {
+        /* ================================================================
+           MODAL - إضافة / تعديل بنك
+           ================================================================ */
+        .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0,0,0,0.4);
             z-index: 1060;
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(4px);
         }
 
-        .modal-overlay-custom.active {
+        .modal-overlay.active {
             display: flex;
         }
 
-        .modal-box-custom {
+        .modal-box {
             background: var(--surface);
             border-radius: var(--radius-lg);
             padding: 28px 32px;
@@ -227,7 +913,7 @@
             }
         }
 
-        .modal-box-custom h3 {
+        .modal-box h3 {
             font-family: var(--font-display);
             font-size: 17px;
             font-weight: 800;
@@ -235,12 +921,12 @@
             margin-bottom: 16px;
         }
 
-        .modal-box-custom h3 i {
+        .modal-box h3 i {
             color: var(--accent);
             margin-left: 8px;
         }
 
-        .modal-box-custom label {
+        .modal-box label {
             display: block;
             font-size: 12px;
             font-weight: 600;
@@ -248,8 +934,8 @@
             margin-bottom: 4px;
         }
 
-        .modal-box-custom select,
-        .modal-box-custom input {
+        .modal-box select,
+        .modal-box input {
             width: 100%;
             padding: 8px 12px;
             border: 1px solid var(--border);
@@ -262,27 +948,51 @@
             color: var(--text);
         }
 
-        .modal-box-custom select:focus,
-        .modal-box-custom input:focus {
+        .modal-box select:focus,
+        .modal-box input:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(156, 122, 60, 0.08);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
         }
 
-        .modal-box-custom .modal-actions {
+        .modal-actions {
             display: flex;
             gap: 10px;
             margin-top: 16px;
             justify-content: flex-end;
         }
 
-        /* ===== مودال حركات البنك (كبير) ===== */
-        .modal-transactions-custom {
-            max-width: 820px;
+        /* ================================================================
+           MODAL - تأكيد الحذف (مخصص) - مع Z-Index أعلى
+           ================================================================ */
+        #confirmModalOverlay {
+            z-index: 1070 !important;
+        }
+
+        #confirmModalOverlay .modal-box {
+            z-index: 1071;
+            position: relative;
+        }
+
+        #confirmModalOverlay .modal-box h3 i {
+            color: var(--danger);
+        }
+
+        #confirmModalOverlay .modal-box p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* ================================================================
+           MODAL - حركات البنك (نافذة كبيرة)
+           ================================================================ */
+        .modal-transactions {
+            max-width: 800px;
             width: 95%;
         }
 
-        .modal-transactions-custom .bank-header {
+        .modal-transactions .bank-header {
             display: flex;
             align-items: center;
             gap: 16px;
@@ -292,7 +1002,7 @@
             flex-wrap: wrap;
         }
 
-        .modal-transactions-custom .bank-header .bank-icon-large {
+        .modal-transactions .bank-header .bank-icon-large {
             width: 48px;
             height: 48px;
             border-radius: var(--radius-sm);
@@ -305,7 +1015,7 @@
             flex-shrink: 0;
         }
 
-        .modal-transactions-custom .bank-header .bank-info h4 {
+        .modal-transactions .bank-header .bank-info h4 {
             font-family: var(--font-display);
             font-size: 18px;
             font-weight: 700;
@@ -313,50 +1023,50 @@
             margin: 0;
         }
 
-        .modal-transactions-custom .bank-header .bank-info p {
+        .modal-transactions .bank-header .bank-info p {
             font-size: 12px;
             color: var(--text-tertiary);
             margin: 0;
         }
 
-        .modal-transactions-custom .bank-header .bank-balance-large {
+        .modal-transactions .bank-header .bank-balance-large {
             margin-right: auto;
             text-align: left;
         }
 
-        .modal-transactions-custom .bank-header .bank-balance-large .label {
+        .modal-transactions .bank-header .bank-balance-large .label {
             font-size: 10px;
             color: var(--text-tertiary);
             text-transform: uppercase;
         }
 
-        .modal-transactions-custom .bank-header .bank-balance-large .amount {
+        .modal-transactions .bank-header .bank-balance-large .amount {
             font-size: 24px;
             font-weight: 800;
             color: var(--accent);
             font-family: var(--font-display);
         }
 
-        .modal-transactions-custom .transactions-table-wrap {
+        .modal-transactions .transactions-table-wrap {
             overflow-x: auto;
-            max-height: 420px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
-        .modal-transactions-custom .transactions-table-wrap table {
+        .modal-transactions .transactions-table-wrap table {
             width: 100%;
             border-collapse: collapse;
             font-size: 12.5px;
         }
 
-        .modal-transactions-custom .transactions-table-wrap table thead {
+        .modal-transactions .transactions-table-wrap table thead {
             background: var(--bg);
             position: sticky;
             top: 0;
             z-index: 5;
         }
 
-        .modal-transactions-custom .transactions-table-wrap table th {
+        .modal-transactions .transactions-table-wrap table th {
             padding: 8px 12px;
             text-align: right;
             font-weight: 600;
@@ -369,35 +1079,35 @@
             white-space: nowrap;
         }
 
-        .modal-transactions-custom .transactions-table-wrap table td {
+        .modal-transactions .transactions-table-wrap table td {
             padding: 8px 12px;
             border-bottom: 1px solid var(--border-light);
             vertical-align: middle;
             color: var(--text);
         }
 
-        .modal-transactions-custom .transactions-table-wrap table tr:last-child td {
+        .modal-transactions .transactions-table-wrap table tr:last-child td {
             border-bottom: none;
         }
 
-        .modal-transactions-custom .transactions-table-wrap table tr:hover td {
+        .modal-transactions .transactions-table-wrap table tr:hover td {
             background: var(--surface-alt);
         }
 
-        .modal-transactions-custom .empty-transactions {
+        .modal-transactions .empty-transactions {
             text-align: center;
             padding: 40px 20px;
             color: var(--text-tertiary);
         }
 
-        .modal-transactions-custom .empty-transactions i {
+        .modal-transactions .empty-transactions i {
             font-size: 2.5rem;
             display: block;
             margin-bottom: 10px;
             opacity: 0.3;
         }
 
-        .modal-transactions-custom .modal-actions-custom {
+        .modal-transactions .modal-actions-custom {
             display: flex;
             gap: 10px;
             margin-top: 16px;
@@ -406,7 +1116,9 @@
             padding-top: 16px;
         }
 
-        /* ===== البادجات ===== */
+        /* ================================================================
+           BADGE
+           ================================================================ */
         .badge-custom {
             padding: 1px 8px;
             border-radius: var(--radius-full);
@@ -426,16 +1138,6 @@
             color: var(--danger);
         }
 
-        .badge-transfer {
-            background: var(--info-bg);
-            color: var(--info);
-        }
-
-        .badge-opening {
-            background: var(--warning-bg);
-            color: var(--warning);
-        }
-
         .amount-income {
             color: var(--success);
             font-weight: 600;
@@ -446,62 +1148,244 @@
             font-weight: 600;
         }
 
-        /* ===== مودال تأكيد الحذف ===== */
-        #confirmModalOverlay {
-            z-index: 1070 !important;
-        }
-
-        #confirmModalOverlay .modal-box-custom {
-            z-index: 1071;
-            position: relative;
-            max-width: 420px;
-        }
-
-        #confirmModalOverlay .modal-box-custom h3 i {
-            color: var(--danger);
-        }
-
-        #confirmModalOverlay .modal-box-custom p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-        }
-
-        /* ===== معلومات الحركة ===== */
-        .transaction-bank-info {
-            background: var(--surface-alt);
-            padding: 10px 14px;
+        /* ================================================================
+           TOAST
+           ================================================================ */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
             border-radius: var(--radius-sm);
-            margin-bottom: 12px;
-            font-size: 13px;
-            border: 1px solid var(--border-light);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
+            z-index: 9999;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
         }
 
-        .transaction-bank-info strong {
-            color: var(--text-secondary);
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
         }
 
-        .transaction-bank-info .treasury-effect {
-            color: var(--info);
-            font-weight: 600;
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
         }
 
-        /* ===== استجابة ===== */
-        @media (max-width: 992px) {
-            .banks-grid {
-                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-            .modal-transactions-custom {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
+           ================================================================ */
+        .footer-custom {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 12px 24px;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            margin-top: auto;
+        }
+
+        .footer-custom .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-custom .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .footer-custom .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-custom .footer-copy {
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-copy strong {
+            color: var(--accent-dark);
+            font-weight: 700;
+        }
+
+        .footer-custom .footer-divider {
+            color: var(--border);
+            font-size: 14px;
+        }
+
+        .footer-custom .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-version {
+            font-family: var(--font-display);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .footer-custom .footer-link {
+            color: var(--text-tertiary);
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(calc(var(--sidebar-width) + 20px));
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .banks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-content {
+                padding: 16px 18px;
+            }
+            .navbar-custom {
+                padding: 0 16px;
+            }
+            .user-info {
+                display: none;
+            }
+            .page-header .ph-right {
+                display: none;
+            }
+            .banks-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            .modal-transactions {
                 max-width: 95%;
+            }
+            .footer-custom .footer-divider {
+                display: none;
             }
         }
 
         @media (max-width: 768px) {
+            .navbar-right .nav-btn:not(:first-child) {
+                display: none;
+            }
+            .navbar-custom {
+                height: 54px;
+                padding: 0 12px;
+            }
+            .page-title {
+                font-size: 14px;
+            }
+            .page-title small {
+                display: none;
+            }
+            .sidebar-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            .dashboard-content {
+                padding: 12px 12px;
+            }
+            .page-header h2 {
+                font-size: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card .stat-number {
+                font-size: 16px;
+            }
             .banks-grid {
                 grid-template-columns: 1fr;
             }
             .bank-card {
-                padding: 14px 16px;
+                padding: 12px 14px;
             }
             .bank-card .bank-balance {
                 font-size: 18px;
@@ -509,17 +1393,69 @@
             .bank-card .bank-name {
                 font-size: 14px;
             }
-            .modal-box-custom {
+            .modal-box {
                 padding: 20px;
             }
-            .modal-transactions-custom .bank-header {
+            .modal-transactions .bank-header {
                 flex-direction: column;
                 align-items: stretch;
                 text-align: center;
             }
-            .modal-transactions-custom .bank-header .bank-balance-large {
+            .modal-transactions .bank-header .bank-balance-large {
                 margin-right: 0;
                 text-align: center;
+            }
+            .footer-custom {
+                padding: 8px 14px;
+            }
+            .footer-custom .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .footer-custom .footer-right {
+                flex-wrap: wrap;
+                justify-content: center;
+                font-size: 11px;
+            }
+            .footer-custom .footer-left {
+                font-size: 11px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-content {
+                padding: 10px 10px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 12px;
+            }
+            .stat-card .stat-number {
+                font-size: 14px;
+            }
+            .stat-card .stat-label {
+                font-size: 9px;
+            }
+            .stat-card .stat-icon {
+                font-size: 14px;
+            }
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            .modal-box {
+                padding: 16px;
+            }
+            .modal-box h3 {
+                font-size: 15px;
             }
             .bank-card .bank-actions {
                 flex-direction: column;
@@ -528,53 +1464,56 @@
                 width: 100%;
                 justify-content: center;
             }
-            .stats-grid-custom {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
+            .footer-custom .footer-copy {
+                font-size: 10px;
             }
-            .stat-card-custom .stat-number {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .stats-grid-custom {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
-            .stat-card-custom {
-                padding: 10px 12px;
-            }
-            .stat-card-custom .stat-number {
-                font-size: 14px;
-            }
-            .stat-card-custom .stat-label {
-                font-size: 9px;
-            }
-            .stat-card-custom .stat-icon {
-                font-size: 14px;
-            }
-            .modal-box-custom {
-                padding: 16px;
-            }
-            .modal-box-custom h3 {
-                font-size: 15px;
+            .footer-custom .footer-version {
+                font-size: 10px;
+                padding: 1px 8px;
             }
         }
 
-        /* ===== الوضع المظلم - يتم التعامل معه عبر theme.css ===== */
+        /* ================================================================
+           DARK MODE
+           ================================================================ */
+        body.dark-mode {
+            background: var(--primary-dark);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .navbar-custom {
+            background: var(--primary-dark);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .navbar-logo-text {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .stat-card .stat-number {
+            color: #e0dcd2;
+        }
+
         body.dark-mode .bank-card {
             background: var(--primary);
-            border-color: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255,255,255,0.06);
         }
 
         body.dark-mode .bank-card .bank-name {
             color: #e0dcd2;
         }
 
-        body.dark-mode .bank-card .bank-account,
+        body.dark-mode .bank-card .bank-account {
+            color: rgba(232,228,220,0.5);
+        }
+
         body.dark-mode .bank-card .bank-branch {
-            color: rgba(232, 228, 220, 0.5);
+            color: rgba(232,228,220,0.5);
         }
 
         body.dark-mode .bank-card .bank-balance {
@@ -582,101 +1521,133 @@
         }
 
         body.dark-mode .bank-card .bank-icon {
-            background: rgba(156, 122, 60, 0.15);
+            background: rgba(139, 122, 75, 0.15);
         }
 
-        body.dark-mode .bank-card .bank-stats {
-            border-top-color: rgba(255, 255, 255, 0.06);
-        }
-
-        body.dark-mode .stat-card-custom {
+        body.dark-mode .panel {
             background: var(--primary);
-            border-color: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .stat-card-custom .stat-number {
+        body.dark-mode .panel-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header .ph-left h2 {
             color: #e0dcd2;
         }
 
-        body.dark-mode .modal-box-custom {
+        body.dark-mode .page-header .ph-left p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .btn-outline {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: rgba(139, 122, 75, 0.1);
+        }
+
+        body.dark-mode .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-success {
+            background: #166a4a;
+            border-color: #166a4a;
+        }
+
+        body.dark-mode .btn-danger {
+            background: #a03d32;
+            border-color: #a03d32;
+        }
+
+        body.dark-mode .sidebar-toggle {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .sidebar-toggle:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.15);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .nav-btn {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .nav-btn:hover {
             background: var(--primary);
             color: #e0dcd2;
         }
 
-        body.dark-mode .modal-box-custom h3 {
+        body.dark-mode .user-profile:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .user-name {
             color: #e0dcd2;
         }
 
-        body.dark-mode .modal-box-custom select,
-        body.dark-mode .modal-box-custom input {
+        body.dark-mode .toast-notification {
+            background: var(--primary);
+            color: #e0dcd2;
+            border-right-color: var(--accent);
+        }
+
+        body.dark-mode .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        body.dark-mode .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        body.dark-mode .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box h3 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box select,
+        body.dark-mode .modal-box input {
             background: var(--primary-light);
             color: #e0dcd2;
-            border-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255,255,255,0.08);
         }
 
-        body.dark-mode .modal-box-custom select:focus,
-        body.dark-mode .modal-box-custom input:focus {
+        body.dark-mode .modal-box select:focus,
+        body.dark-mode .modal-box input:focus {
             border-color: var(--accent);
         }
 
-        body.dark-mode .transaction-bank-info {
-            background: var(--primary-light);
-            border-color: rgba(255, 255, 255, 0.06);
-        }
-
-        body.dark-mode .modal-transactions-custom .bank-header {
-            border-bottom-color: rgba(255, 255, 255, 0.06);
-        }
-
-        body.dark-mode .modal-transactions-custom .transactions-table-wrap table thead {
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .modal-transactions-custom .transactions-table-wrap table th {
-            color: rgba(232, 228, 220, 0.4);
-            border-bottom-color: rgba(255, 255, 255, 0.06);
-        }
-
-        body.dark-mode .modal-transactions-custom .transactions-table-wrap table td {
-            border-bottom-color: rgba(255, 255, 255, 0.04);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .modal-transactions-custom .transactions-table-wrap table tr:hover td {
-            background: var(--primary-light);
-        }
-
-        body.dark-mode .modal-transactions-custom .modal-actions-custom {
-            border-top-color: rgba(255, 255, 255, 0.06);
-        }
-
-        body.dark-mode #confirmModalOverlay .modal-box-custom {
-            background: var(--primary);
-            color: #e0dcd2;
-        }
-
-        body.dark-mode #confirmModalOverlay .modal-box-custom p {
-            color: rgba(232, 228, 220, 0.7);
-        }
-
-        body.dark-mode .badge-income {
-            background: rgba(30, 122, 85, 0.2);
-            color: #7bc4a0;
-        }
-
-        body.dark-mode .badge-expense {
-            background: rgba(184, 74, 62, 0.2);
-            color: #dba09a;
-        }
-
-        body.dark-mode .badge-transfer {
-            background: rgba(58, 107, 143, 0.2);
-            color: #8ab4d4;
-        }
-
-        body.dark-mode .badge-opening {
-            background: rgba(184, 148, 58, 0.2);
-            color: #d4b87a;
+        body.dark-mode .bank-card .bank-stats {
+            border-top-color: rgba(255,255,255,0.06);
         }
 
         body.dark-mode .btn-icon-edit {
@@ -699,155 +1670,271 @@
             color: white;
         }
 
+        body.dark-mode .modal-transactions .bank-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .modal-transactions .transactions-table-wrap table thead {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .modal-transactions .transactions-table-wrap table th {
+            color: rgba(232,228,220,0.4);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .modal-transactions .transactions-table-wrap table td {
+            border-bottom-color: rgba(255,255,255,0.04);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-transactions .transactions-table-wrap table tr:hover td {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .modal-transactions .modal-actions-custom {
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode #confirmModalOverlay .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode #confirmModalOverlay .modal-box p {
+            color: rgba(232,228,220,0.7);
+        }
+
         body.dark-mode .shimmer {
             background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
         }
     </style>
 </head>
 <body>
 
     <!-- ================================================================ -->
-    <!-- SIDEBAR - قائمة جانبية موحدة مع index.html -->
+    <!-- SIDEBAR -->
     <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
-        <div class="logo-area">
-            <h1 data-brand>🕋 حراء للسياحة</h1>
-            <span>نظام إدارة الرحلات</span>
+        <div class="sidebar-brand">
+            <div class="brand-row">
+                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
+                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
+                <div class="brand-text" id="sidebarBrandText">
+                    حراء <span>للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
+                </div>
+            </div>
         </div>
-        <nav>
+
+        <nav class="sidebar-nav">
             <div class="nav-section-title">القائمة الرئيسية</div>
-            <a href="index.html" class="nav-link"><i class="fas fa-house"></i> الرئيسية</a>
+            <ul class="nav-list">
+                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
+            </ul>
 
             <div class="nav-section-title">الإدارة المالية</div>
-            <a href="treasury.html" class="nav-link"><i class="fas fa-wallet"></i> الخزينة</a>
-            <a href="trips.html" class="nav-link"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
-            <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء <span class="badge" id="badge-clients">0</span></a>
-            <a href="banks.html" class="nav-link active"><i class="fas fa-building-columns"></i> البنوك <span class="badge" id="badge-banks">0</span></a>
-            <a href="bookings.html" class="nav-link"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
-            <a href="representatives.html" class="nav-link"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
+            <ul class="nav-list">
+                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
+                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="banks.html" class="active"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
+                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+            </ul>
 
             <div class="nav-section-title">التقارير</div>
-            <a href="client_statement.html" class="nav-link"><i class="fas fa-receipt"></i> كشف حساب العميل</a>
-            <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
+            <ul class="nav-list">
+                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+            </ul>
 
             <div class="nav-section-title">الإدارة</div>
-            <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
-            <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
-            <a href="settings.html" class="nav-link"><i class="fas fa-gear"></i> الإعدادات</a>
+            <ul class="nav-list">
+                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+            </ul>
 
             <div class="nav-section-title">الدعم</div>
-            <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> الدعم والتواصل</a>
-
-            <hr />
-            <a href="#" class="nav-link logout-link" onclick="logout(); return false;"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</a>
+            <ul class="nav-list">
+                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+            </ul>
         </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i>
+                تسجيل الخروج
+            </a>
+        </div>
     </aside>
 
     <!-- ================================================================ -->
-    <!-- SIDEBAR OVERLAY - للشاشات الصغيرة -->
+    <!-- SIDEBAR OVERLAY -->
     <!-- ================================================================ -->
-    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- ================================================================ -->
     <!-- MAIN CONTENT -->
     <!-- ================================================================ -->
-    <main class="main-content" id="main-content">
+    <main class="main-content" id="mainContent">
 
-        <!-- ===== زر القائمة للشاشات الصغيرة ===== -->
-        <div class="flex items-center gap-3 mb-6 menu-toggle">
-            <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة">
-                <i class="fas fa-bars" id="menu-toggle-icon"></i>
-            </button>
-            <h1 class="brand-mobile" data-brand>🕋 حراء للسياحة</h1>
-        </div>
-
-        <!-- ===== HEADER ===== -->
-        <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
-            <div>
-                <h1 class="page-title-main">إدارة الحسابات البنكية</h1>
-                <p class="text-gray-500 text-sm">تسجيل ومتابعة أرصدة البنوك والحركات المرتبطة بها</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
-                <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn">
-                    <i class="fas fa-arrow-rotate-right"></i>
+        <!-- ================================================================ -->
+        <!-- NAVBAR -->
+        <!-- ================================================================ -->
+        <nav class="navbar-custom">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
                 </button>
-                <button onclick="openBankModal()" class="btn-primary-solid">
-                    <i class="fas fa-plus"></i> بنك جديد
+
+                <div class="navbar-logo-container">
+                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
+                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
+                </div>
+
+                <h4 class="page-title" id="pageTitleText">
+                    البنوك
+                    <small>إدارة الحسابات البنكية والحركات</small>
+                </h4>
+            </div>
+
+            <div class="navbar-right">
+                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-role" id="userRole">المالية</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ================================================================ -->
+        <!-- DASHBOARD CONTENT -->
+        <!-- ================================================================ -->
+        <div class="dashboard-content">
+
+            <!-- ===== PAGE HEADER ===== -->
+            <div class="page-header">
+                <div class="ph-left">
+                    <h2>إدارة الحسابات البنكية</h2>
+                    <p>تسجيل ومتابعة أرصدة البنوك والحركات المرتبطة بها</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">جاري التحميل...</span>
+                </div>
+            </div>
+
+            <!-- ===== STATS ===== -->
+            <div class="stats-grid">
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-bank"></i></span>
+                    <div class="stat-number" id="totalBanks">0</div>
+                    <div class="stat-label">إجمالي البنوك</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-wallet-fill"></i></span>
+                    <div class="stat-number" id="totalBalance">0</div>
+                    <div class="stat-label">إجمالي الأرصدة</div>
+                </div>
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-arrow-left-right"></i></span>
+                    <div class="stat-number" id="lastUpdate">—</div>
+                    <div class="stat-label">آخر تحديث</div>
+                </div>
+            </div>
+
+            <!-- ===== TOOLBAR ===== -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <button class="btn-action btn-success" onclick="openBankModal()">
+                    <i class="bi bi-plus-circle-fill"></i> إضافة بنك جديد
+                </button>
+                <button class="btn-action btn-primary" onclick="loadData()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
                 </button>
             </div>
+
+            <!-- ===== BANKS GRID ===== -->
+            <div class="banks-grid" id="banksContainer">
+                <div class="bank-card" style="text-align:center;padding:40px 20px;border-color:transparent;cursor:default;">
+                    <div class="shimmer" style="height:40px;max-width:160px;margin:0 auto 12px;"></div>
+                    <div class="shimmer" style="height:20px;max-width:120px;margin:0 auto;"></div>
+                    <span style="display:block;margin-top:8px;font-size:12px;color:var(--text-tertiary);">جاري تحميل البنوك...</span>
+                </div>
+            </div>
+
         </div>
 
-        <!-- ===== الإحصائيات ===== -->
-        <div class="stats-grid-custom" id="stats-container">
-            <div class="stat-card-custom stat-blue">
-                <span class="stat-icon"><i class="fas fa-building-columns"></i></span>
-                <div class="stat-number" id="totalBanks">0</div>
-                <div class="stat-label">إجمالي البنوك</div>
+        <!-- ================================================================ -->
+        <!-- FOOTER - حقوق النشر -->
+        <!-- ================================================================ -->
+        <footer class="footer-custom">
+            <div class="footer-content">
+                <div class="footer-right">
+                    <span class="footer-brand">حراء <span>للسياحة</span></span>
+                    <span class="footer-divider">|</span>
+                    <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+                </div>
+                <div class="footer-left">
+                    <span class="footer-version">الإصدار 3.0.1</span>
+                    <span class="footer-divider">|</span>
+                    <a href="support.html" class="footer-link">
+                        <i class="bi bi-headset"></i> الدعم الفني
+                    </a>
+                </div>
             </div>
-            <div class="stat-card-custom stat-green">
-                <span class="stat-icon"><i class="fas fa-wallet"></i></span>
-                <div class="stat-number" id="totalBalance">0</div>
-                <div class="stat-label">إجمالي الأرصدة</div>
-            </div>
-            <div class="stat-card-custom stat-gold">
-                <span class="stat-icon"><i class="fas fa-arrow-left-right"></i></span>
-                <div class="stat-number" id="lastUpdate">—</div>
-                <div class="stat-label">آخر تحديث</div>
-            </div>
-        </div>
-
-        <!-- ===== شريط الأدوات ===== -->
-        <div class="flex flex-wrap gap-2 mb-3">
-            <button class="btn-primary-solid" onclick="openBankModal()">
-                <i class="fas fa-plus-circle"></i> إضافة بنك جديد
-            </button>
-            <button class="btn-outline-soft" onclick="loadData()">
-                <i class="fas fa-arrow-rotate-right"></i> تحديث البيانات
-            </button>
-        </div>
-
-        <!-- ===== بطاقات البنوك ===== -->
-        <div class="banks-grid" id="banksContainer">
-            <div class="bank-card" style="text-align:center;padding:40px 20px;border-color:transparent;cursor:default;">
-                <div class="shimmer" style="height:40px;max-width:160px;margin:0 auto 12px;"></div>
-                <div class="shimmer" style="height:20px;max-width:120px;margin:0 auto;"></div>
-                <span style="display:block;margin-top:8px;font-size:12px;color:var(--text-tertiary);">جاري تحميل البنوك...</span>
-            </div>
-        </div>
-
+        </footer>
     </main>
-
-    <!-- ================================================================ -->
-    <!-- FOOTER - تذييل الصفحة -->
-    <!-- ================================================================ -->
-    <footer class="footer-custom" style="margin-top: auto;">
-        <div class="footer-content">
-            <div class="footer-right">
-                <span class="footer-brand">حراء <span>للسياحة</span></span>
-                <span class="footer-divider">|</span>
-                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
-            </div>
-            <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
-                <span class="footer-divider">|</span>
-                <a href="support.html" class="footer-link">
-                    <i class="fas fa-headset"></i> الدعم الفني
-                </a>
-            </div>
-        </div>
-    </footer>
 
     <!-- ================================================================ -->
     <!-- MODAL - إضافة / تعديل بنك -->
     <!-- ================================================================ -->
-    <div class="modal-overlay-custom" id="bankModalOverlay">
-        <div class="modal-box-custom">
-            <h3 id="bankModalTitle"><i class="fas fa-plus-circle"></i> إضافة بنك جديد</h3>
+    <div class="modal-overlay" id="bankModalOverlay">
+        <div class="modal-box">
+            <h3 id="bankModalTitle"><i class="bi bi-plus-circle-fill"></i> إضافة بنك جديد</h3>
             <form id="bankForm" onsubmit="handleBankSubmit(event)">
                 <input type="hidden" id="editBankId" />
 
-                <label for="bankName">اسم البنك <span style="color:var(--danger);">*</span></label>
+                <label for="bankName">اسم البنك</label>
                 <input type="text" id="bankName" placeholder="اسم البنك" required />
 
                 <label for="bankAccount">رقم الحساب</label>
@@ -860,8 +1947,8 @@
                 <input type="number" id="bankBalance" placeholder="الرصيد" value="0" step="0.01" min="0" />
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-outline-soft" onclick="closeBankModal()">إلغاء</button>
-                    <button type="submit" class="btn-primary-solid" id="saveBankBtn">حفظ</button>
+                    <button type="button" class="btn-action btn-outline" onclick="closeBankModal()">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveBankBtn">حفظ</button>
                 </div>
             </form>
         </div>
@@ -870,43 +1957,45 @@
     <!-- ================================================================ -->
     <!-- MODAL - إيداع / سحب -->
     <!-- ================================================================ -->
-    <div class="modal-overlay-custom" id="transactionModalOverlay">
-        <div class="modal-box-custom">
-            <h3 id="transactionModalTitle"><i class="fas fa-plus-circle"></i> إيداع في البنك</h3>
+    <div class="modal-overlay" id="transactionModalOverlay">
+        <div class="modal-box">
+            <h3 id="transactionModalTitle"><i class="bi bi-plus-circle-fill"></i> إيداع في البنك</h3>
             <form id="transactionForm" onsubmit="handleTransactionSubmit(event)">
                 <input type="hidden" id="transactionBankId" />
                 <input type="hidden" id="transactionType" />
 
-                <div class="transaction-bank-info">
+                <div id="transactionBankInfo" style="background:var(--surface-alt);padding:10px 14px;border-radius:var(--radius-sm);margin-bottom:12px;font-size:13px;">
                     <strong>البنك:</strong> <span id="transactionBankName">—</span><br />
                     <strong>الرصيد الحالي:</strong> <span id="transactionCurrentBalance">0</span><br />
-                    <span class="treasury-effect">تأثير على الخزينة: <span id="treasuryEffect">—</span></span>
+                    <strong style="color:var(--info);">تأثير على الخزينة:</strong> <span id="treasuryEffect">—</span>
                 </div>
 
-                <label for="transactionAmount">المبلغ <span style="color:var(--danger);">*</span></label>
+                <label for="transactionAmount">المبلغ</label>
                 <input type="number" id="transactionAmount" placeholder="المبلغ" required step="0.01" min="0.01" />
 
                 <label for="transactionDescription">البيان</label>
                 <input type="text" id="transactionDescription" placeholder="وصف الحركة" />
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-outline-soft" onclick="closeTransactionModal()">إلغاء</button>
-                    <button type="submit" class="btn-primary-solid" id="saveTransactionBtn">تنفيذ</button>
+                    <button type="button" class="btn-action btn-outline" onclick="closeTransactionModal()">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveTransactionBtn">تنفيذ</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- ================================================================ -->
-    <!-- MODAL - تأكيد الحذف (مخصص) -->
+    <!-- MODAL - تأكيد الحذف (مخصص) - مع Z-Index أعلى -->
     <!-- ================================================================ -->
-    <div class="modal-overlay-custom" id="confirmModalOverlay">
-        <div class="modal-box-custom">
-            <h3 id="confirmModalTitle"><i class="fas fa-triangle-exclamation" style="color:var(--danger);"></i> تأكيد الحذف</h3>
-            <p id="confirmModalMessage">هل أنت متأكد من حذف هذا العنصر؟</p>
+    <div class="modal-overlay" id="confirmModalOverlay" style="z-index: 1070;">
+        <div class="modal-box" style="max-width:420px;">
+            <h3 id="confirmModalTitle"><i class="bi bi-exclamation-triangle-fill" style="color:var(--danger);"></i> تأكيد الحذف</h3>
+            <p id="confirmModalMessage" style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+                هل أنت متأكد من حذف هذا العنصر؟
+            </p>
             <div class="modal-actions">
-                <button type="button" class="btn-outline-soft" onclick="closeConfirmModal()">إلغاء</button>
-                <button type="button" class="btn-primary-solid" style="background:var(--danger);border-color:var(--danger);" id="confirmModalBtn">تأكيد الحذف</button>
+                <button type="button" class="btn-action btn-outline" onclick="closeConfirmModal()">إلغاء</button>
+                <button type="button" class="btn-action btn-danger" id="confirmModalBtn">تأكيد الحذف</button>
             </div>
         </div>
     </div>
@@ -914,11 +2003,11 @@
     <!-- ================================================================ -->
     <!-- MODAL - حركات البنك (نافذة كبيرة) -->
     <!-- ================================================================ -->
-    <div class="modal-overlay-custom" id="bankTransactionsModalOverlay">
-        <div class="modal-box-custom modal-transactions-custom">
+    <div class="modal-overlay" id="bankTransactionsModalOverlay">
+        <div class="modal-box modal-transactions">
             <div class="bank-header">
                 <div class="bank-icon-large">
-                    <i class="fas fa-building-columns"></i>
+                    <i class="bi bi-bank"></i>
                 </div>
                 <div class="bank-info">
                     <h4 id="bankTransactionsName">اسم البنك</h4>
@@ -931,35 +2020,28 @@
             </div>
 
             <h5 style="font-family:var(--font-display);font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text-secondary);">
-                <i class="fas fa-clock-rotate-left" style="color:var(--accent);"></i> سجل حركات البنك
+                <i class="bi bi-clock-history" style="color:var(--accent);"></i> سجل حركات البنك
             </h5>
 
             <div class="transactions-table-wrap" id="bankTransactionsContainer">
-                <div class="empty-transactions">
-                    <i class="fas fa-hourglass-half"></i>
+                <div style="text-align:center;padding:40px 20px;color:var(--text-tertiary);">
+                    <i class="bi bi-hourglass-split" style="font-size:1.5rem;display:block;margin-bottom:10px;opacity:0.35;"></i>
                     جاري تحميل الحركات...
                 </div>
             </div>
 
             <div class="modal-actions-custom">
-                <button type="button" class="btn-outline-soft" onclick="closeBankTransactionsModal()">إغلاق</button>
-                <button type="button" class="btn-primary-solid" style="background:var(--success);border-color:var(--success);" onclick="refreshBankTransactions()">
-                    <i class="fas fa-arrow-rotate-right"></i> تحديث
+                <button type="button" class="btn-action btn-outline" onclick="closeBankTransactionsModal()">إغلاق</button>
+                <button type="button" class="btn-action btn-success btn-sm" onclick="refreshBankTransactions()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث
                 </button>
             </div>
         </div>
     </div>
 
     <!-- ================================================================ -->
-    <!-- TOAST CONTAINER -->
-    <!-- ================================================================ -->
-    <div id="toastContainer"></div>
-
-    <!-- ================================================================ -->
     <!-- JAVASCRIPT -->
     <!-- ================================================================ -->
-    <script src="supabase.js"></script>
-    <script src="layout.js"></script>
     <script>
         // ================================================================
         // STATE
@@ -974,7 +2056,7 @@
         var currentBankId = null;
 
         // ================================================================
-        // CONFIRM MODAL - نافذة تأكيد مخصصة
+        // CONFIRM MODAL - نافذة تأكيد مخصصة مع إغلاق النوافذ الأخرى
         // ================================================================
         var confirmCallback = null;
         var confirmSource = null;
@@ -988,7 +2070,7 @@
                 }
             }
 
-            document.getElementById('confirmModalTitle').innerHTML = '<i class="fas fa-triangle-exclamation" style="color:var(--danger);"></i> ' + title;
+            document.getElementById('confirmModalTitle').innerHTML = '<i class="bi bi-exclamation-triangle-fill" style="color:var(--danger);"></i> ' + title;
             document.getElementById('confirmModalMessage').textContent = message;
             document.getElementById('confirmModalBtn').textContent = confirmText || 'تأكيد';
             confirmCallback = callback;
@@ -1020,80 +2102,64 @@
         // DOM READY
         // ================================================================
         document.addEventListener('DOMContentLoaded', async function() {
-            try {
-                // تهيئة النظام
-                if (!Supabase.initSystem()) {
-                    console.warn('⚠️ فشل تهيئة النظام');
-                    return;
-                }
+            if (!Supabase.initSystem()) return;
 
-                // جلب الإعدادات
+            try {
                 var settings = await Supabase.getSystemSettings();
                 systemCurrency = settings.currency || 'SAR';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
                 console.log('💰 العملة المستخدمة:', systemCurrency, currencySymbol);
-
-                // حفظ العملة في localStorage
-                localStorage.setItem('systemCurrency', systemCurrency);
-
-                // جلب المستخدم الحالي
-                currentUser = Supabase.getCurrentUser();
-                if (currentUser) {
-                    updateUserUI();
+                console.log('📋 الإعدادات:', settings);
+            } catch (error) {
+                console.error('❌ خطأ في جلب الإعدادات:', error);
+                var savedCurrency = localStorage.getItem('systemCurrency');
+                if (savedCurrency) {
+                    systemCurrency = savedCurrency;
+                    currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
                 }
+            }
 
-                // تطبيق اسم النظام والشعار
-                await applySystemName();
-                Supabase.applySystemLogo();
+            localStorage.setItem('systemCurrency', systemCurrency);
 
-                // ربط زر تأكيد الحذف
-                var confirmBtn = document.getElementById('confirmModalBtn');
-                if (confirmBtn) {
-                    confirmBtn.addEventListener('click', confirmAction);
+            currentUser = Supabase.getCurrentUser();
+            if (currentUser) {
+                updateUserUI();
+            }
+
+            await applySystemName();
+            Supabase.applySystemLogo();
+
+            var confirmBtn = document.getElementById('confirmModalBtn');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', confirmAction);
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeConfirmModal();
+                    closeBankModal();
+                    closeTransactionModal();
+                    closeBankTransactionsModal();
                 }
+            });
 
-                // إغلاق المودالات عند الضغط على Esc
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') {
+            var overlay = document.getElementById('confirmModalOverlay');
+            if (overlay) {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
                         closeConfirmModal();
-                        closeBankModal();
-                        closeTransactionModal();
-                        closeBankTransactionsModal();
                     }
                 });
-
-                // إغلاق مودال التأكيد عند الضغط على الخلفية
-                var overlay = document.getElementById('confirmModalOverlay');
-                if (overlay) {
-                    overlay.addEventListener('click', function(e) {
-                        if (e.target === this) {
-                            closeConfirmModal();
-                        }
-                    });
-                }
-
-                // تهيئة القائمة الجانبية والوضع المظلم
-                initSidebar();
-                initDarkMode();
-                initRefresh();
-                initKeyboardShortcuts();
-                updateDate();
-
-                // تحميل البيانات
-                await loadData();
-
-                // تحديث تلقائي كل 60 ثانية
-                setInterval(loadData, 60000);
-
-                console.log('🏦 نظام البنوك - حراء للسياحة');
-                console.log('💰 العملة:', systemCurrency, currencySymbol);
-                console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
-                console.log('✅ النظام جاهز للعمل');
-
-            } catch (error) {
-                console.error('❌ خطأ في تهيئة الصفحة:', error);
-                showToast('⚠️ فشل تهيئة الصفحة: ' + error.message, 'warning');
             }
+
+            initSidebar();
+            initDarkMode();
+            initRefresh();
+            initNotifications();
+            initKeyboardShortcuts();
+            updateDate();
+            loadData();
+            setInterval(loadData, 60000);
         });
 
         // ================================================================
@@ -1104,14 +2170,9 @@
                 var systemName = await Supabase.getSystemName();
                 document.title = 'البنوك - ' + systemName;
 
-                var brandText = document.querySelector('.sidebar .logo-area h1');
+                var brandText = document.getElementById('sidebarBrandText');
                 if (brandText) {
-                    brandText.innerHTML = '🕋 ' + systemName;
-                }
-
-                var brandMobile = document.querySelector('.brand-mobile');
-                if (brandMobile) {
-                    brandMobile.innerHTML = '🕋 ' + systemName;
+                    brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
                 }
             } catch (error) {
                 console.warn('⚠️ فشل تطبيق اسم النظام:', error);
@@ -1123,10 +2184,9 @@
         // ================================================================
         function updateUserUI() {
             if (!currentUser) return;
-
-            var userName = document.querySelector('#userName');
-            var userRole = document.querySelector('#userRole');
-            var userAvatar = document.querySelector('#userAvatar');
+            var userName = document.getElementById('userName');
+            var userRole = document.getElementById('userRole');
+            var userAvatar = document.getElementById('userAvatar');
 
             if (userName) {
                 userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
@@ -1146,7 +2206,7 @@
         function updateDate() {
             var now = new Date();
             var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-            var dateElement = document.querySelector('#headerDate');
+            var dateElement = document.getElementById('headerDate');
             if (dateElement) {
                 dateElement.textContent = now.toLocaleDateString('ar-SA', options);
             }
@@ -1165,7 +2225,7 @@
                     <div class="bank-card" style="text-align:center;padding:40px 20px;border-color:transparent;cursor:default;">
                         <div class="shimmer" style="height:40px;max-width:160px;margin:0 auto 12px;"></div>
                         <div class="shimmer" style="height:20px;max-width:120px;margin:0 auto;"></div>
-                        <span style="display:block;margin-top:8px;font-size:12px;color:var(--text-tertiary);">جاري تحميل البنوك...</span>
+                        <span style="display:block;margin-top:8px;font-size:12px;color:var(--text-tertiary);;">جاري تحميل البنوك...</span>
                     </div>
                 `;
             }
@@ -1181,11 +2241,6 @@
 
                 renderBanks();
                 renderStats();
-                updateLastRefreshed();
-
-                // تحديث البادج في القائمة الجانبية
-                var badge = document.getElementById('badge-banks');
-                if (badge) badge.textContent = banks.length;
 
             } catch (error) {
                 console.error('❌ خطأ في جلب البيانات:', error);
@@ -1209,10 +2264,10 @@
             if (!banks || banks.length === 0) {
                 container.innerHTML = `
                     <div class="bank-card" style="text-align:center;padding:40px 20px;border-color:transparent;cursor:default;">
-                        <i class="fas fa-building-columns" style="font-size:2.5rem;display:block;margin-bottom:10px;opacity:0.3;color:var(--text-tertiary);"></i>
+                        <i class="bi bi-bank" style="font-size:2.5rem;display:block;margin-bottom:10px;opacity:0.3;color:var(--text-tertiary);"></i>
                         <span style="display:block;font-size:14px;color:var(--text-tertiary);">لا توجد بنوك مسجلة</span>
-                        <button class="btn-primary-solid" style="margin-top:12px;" onclick="openBankModal()">
-                            <i class="fas fa-plus-circle"></i> إضافة بنك جديد
+                        <button class="btn-action btn-success" style="margin-top:12px;" onclick="openBankModal()">
+                            <i class="bi bi-plus-circle-fill"></i> إضافة بنك جديد
                         </button>
                     </div>
                 `;
@@ -1258,34 +2313,34 @@
                 }
 
                 html += `
-                    <div class="bank-card" style="border-right: 3px solid ${color.border};" onclick="openBankTransactionsModal('${bankId}')">
+                    <div class="bank-card" style="border-right-color: ${color.border};" onclick="openBankTransactionsModal('${bankId}')">
                         <div class="bank-icon" style="background: ${color.bg}; color: ${color.border};">
-                            <i class="fas fa-building-columns"></i>
+                            <i class="bi bi-bank"></i>
                         </div>
                         <div class="bank-name">${b['name'] || '—'}</div>
                         <div class="bank-account">رقم الحساب: ${accountNumber}</div>
                         <div class="bank-branch">الفرع: ${branch}</div>
                         <div class="bank-balance">${Supabase.formatCurrency(balance)}</div>
                         <div class="bank-stats">
-                            <span class="income"><i class="fas fa-arrow-down"></i> ${Supabase.formatCurrency(totalIncome)}</span>
-                            <span class="expense"><i class="fas fa-arrow-up"></i> ${Supabase.formatCurrency(totalExpense)}</span>
+                            <span class="income"><i class="bi bi-arrow-down-circle-fill"></i> ${Supabase.formatCurrency(totalIncome)}</span>
+                            <span class="expense"><i class="bi bi-arrow-up-circle-fill"></i> ${Supabase.formatCurrency(totalExpense)}</span>
                         </div>
                         <div class="bank-actions" onclick="event.stopPropagation();">
-                            <button class="btn-primary-solid" style="background:var(--success);border-color:var(--success);font-size:11px;padding:4px 12px;" onclick="openTransactionModal('${bankId}', 'deposit')">
-                                <i class="fas fa-plus-circle"></i> إيداع
+                            <button class="btn-action btn-success btn-sm" onclick="openTransactionModal('${bankId}', 'deposit')">
+                                <i class="bi bi-plus-circle-fill"></i> إيداع
                             </button>
-                            <button class="btn-primary-solid" style="background:var(--danger);border-color:var(--danger);font-size:11px;padding:4px 12px;" onclick="openTransactionModal('${bankId}', 'withdraw')">
-                                <i class="fas fa-minus-circle"></i> سحب
+                            <button class="btn-action btn-danger btn-sm" onclick="openTransactionModal('${bankId}', 'withdraw')">
+                                <i class="bi bi-dash-circle-fill"></i> سحب
                             </button>
-                            <button class="btn-outline-soft" style="font-size:11px;padding:4px 12px;" onclick="editBank('${bankId}')">
-                                <i class="fas fa-pen"></i>
+                            <button class="btn-action btn-outline btn-sm" onclick="editBank('${bankId}')">
+                                <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn-primary-solid" style="background:var(--danger);border-color:var(--danger);font-size:11px;padding:4px 12px;" onclick="deleteBank('${bankId}')">
-                                <i class="fas fa-trash"></i>
+                            <button class="btn-action btn-danger btn-sm" onclick="deleteBank('${bankId}')">
+                                <i class="bi bi-trash"></i>
                             </button>
                         </div>
                         <div class="click-hint">
-                            <i class="fas fa-eye"></i> اضغط لعرض الحركات
+                            <i class="bi bi-eye"></i> اضغط لعرض الحركات
                         </div>
                     </div>
                 `;
@@ -1378,7 +2433,7 @@
         // BANK MODAL
         // ================================================================
         function openBankModal() {
-            document.getElementById('bankModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> إضافة بنك جديد';
+            document.getElementById('bankModalTitle').innerHTML = '<i class="bi bi-plus-circle-fill"></i> إضافة بنك جديد';
             document.getElementById('editBankId').value = '';
             document.getElementById('bankName').value = '';
             document.getElementById('bankAccount').value = '';
@@ -1393,7 +2448,7 @@
             var bank = banks.find(function(b) { return String(b['id']) === String(id); });
             if (!bank) return;
 
-            document.getElementById('bankModalTitle').innerHTML = '<i class="fas fa-pen"></i> تعديل البنك';
+            document.getElementById('bankModalTitle').innerHTML = '<i class="bi bi-pencil-fill"></i> تعديل البنك';
             document.getElementById('editBankId').value = id;
             document.getElementById('bankName').value = bank['name'] || '';
             document.getElementById('bankAccount').value = bank['account_number'] || '';
@@ -1467,19 +2522,15 @@
 
             var effectElement = document.getElementById('treasuryEffect');
             if (type === 'deposit') {
-                title.innerHTML = '<i class="fas fa-plus-circle"></i> إيداع في البنك';
+                title.innerHTML = '<i class="bi bi-plus-circle-fill"></i> إيداع في البنك';
                 saveBtn.textContent = 'إيداع';
-                saveBtn.className = 'btn-primary-solid';
-                saveBtn.style.background = 'var(--success)';
-                saveBtn.style.borderColor = 'var(--success)';
+                saveBtn.className = 'btn-action btn-success';
                 effectElement.textContent = '🔴 نقص (صادر من الخزينة)';
                 effectElement.style.color = 'var(--danger)';
             } else {
-                title.innerHTML = '<i class="fas fa-minus-circle"></i> سحب من البنك';
+                title.innerHTML = '<i class="bi bi-dash-circle-fill"></i> سحب من البنك';
                 saveBtn.textContent = 'سحب';
-                saveBtn.className = 'btn-primary-solid';
-                saveBtn.style.background = 'var(--danger)';
-                saveBtn.style.borderColor = 'var(--danger)';
+                saveBtn.className = 'btn-action btn-danger';
                 effectElement.textContent = '🟢 زيادة (وارد للخزينة)';
                 effectElement.style.color = 'var(--success)';
             }
@@ -1502,8 +2553,7 @@
             var bankId = document.getElementById('transactionBankId').value;
             var type = document.getElementById('transactionType').value;
             var amount = parseFloat(document.getElementById('transactionAmount').value);
-            var description = document.getElementById('transactionDescription').value || (type === 'deposit' ? 'إيداع في البنك' :
-                'سحب من البنك');
+            var description = document.getElementById('transactionDescription').value || (type === 'deposit' ? 'إيداع في البنك' : 'سحب من البنك');
 
             if (!amount || amount <= 0) {
                 showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning');
@@ -1534,8 +2584,8 @@
                 var today = new Date().toISOString().split('T')[0];
 
                 var treasuryType = (type === 'deposit') ? 'صادر' : 'وارد';
-                var treasuryDescription = (type === 'deposit') ?
-                    'تحويل إلى البنك (' + bank['name'] + ')' :
+                var treasuryDescription = (type === 'deposit') ? 
+                    'تحويل إلى البنك (' + bank['name'] + ')' : 
                     'سحب من البنك (' + bank['name'] + ')';
 
                 if (isEdit) {
@@ -1650,8 +2700,8 @@
 
             var container = document.getElementById('bankTransactionsContainer');
             container.innerHTML = `
-                <div class="empty-transactions">
-                    <i class="fas fa-hourglass-half"></i>
+                <div style="text-align:center;padding:40px 20px;color:var(--text-tertiary);">
+                    <i class="bi bi-hourglass-split" style="font-size:1.5rem;display:block;margin-bottom:10px;opacity:0.35;"></i>
                     جاري تحميل الحركات...
                 </div>
             `;
@@ -1666,7 +2716,7 @@
                 if (!bankTransactions || bankTransactions.length === 0) {
                     container.innerHTML = `
                         <div class="empty-transactions">
-                            <i class="fas fa-inbox"></i>
+                            <i class="bi bi-inbox"></i>
                             <span>لا توجد حركات لهذا البنك</span>
                         </div>
                     `;
@@ -1717,11 +2767,11 @@
                             <td><span class="badge-custom ${badgeClass}">${bankDisplayType}</span></td>
                             <td class="${amountClass}">${sign} ${Supabase.formatCurrency(amount)}</td>
                             <td style="text-align:center;white-space:nowrap;">
-                                <button class="btn-outline-soft" style="padding:4px 8px;font-size:11px;" onclick="editBankTransaction('${id}')" title="تعديل">
-                                    <i class="fas fa-pen"></i>
+                                <button class="btn-icon btn-icon-edit" onclick="editBankTransaction('${id}')" title="تعديل">
+                                    <i class="bi bi-pencil-fill"></i>
                                 </button>
-                                <button class="btn-primary-solid" style="background:var(--danger);border-color:var(--danger);padding:4px 8px;font-size:11px;" onclick="deleteBankTransaction('${id}')" title="حذف">
-                                    <i class="fas fa-trash"></i>
+                                <button class="btn-icon btn-icon-delete" onclick="deleteBankTransaction('${id}')" title="حذف">
+                                    <i class="bi bi-trash-fill"></i>
                                 </button>
                             </td>
                         </tr>
@@ -1739,7 +2789,7 @@
                 console.error('❌ خطأ في جلب حركات البنك:', error);
                 container.innerHTML = `
                     <div class="empty-transactions">
-                        <i class="fas fa-triangle-exclamation" style="color:var(--danger);"></i>
+                        <i class="bi bi-exclamation-triangle-fill" style="color:var(--danger);"></i>
                         <span style="color:var(--danger);">فشل تحميل الحركات</span>
                     </div>
                 `;
@@ -1827,19 +2877,15 @@
 
             var effectElement = document.getElementById('treasuryEffect');
             if (type === 'deposit') {
-                title.innerHTML = '<i class="fas fa-pen"></i> تعديل إيداع';
+                title.innerHTML = '<i class="bi bi-pencil-fill"></i> تعديل إيداع';
                 saveBtn.textContent = 'تحديث الإيداع';
-                saveBtn.className = 'btn-primary-solid';
-                saveBtn.style.background = 'var(--success)';
-                saveBtn.style.borderColor = 'var(--success)';
+                saveBtn.className = 'btn-action btn-success';
                 effectElement.textContent = '🔴 نقص (صادر من الخزينة)';
                 effectElement.style.color = 'var(--danger)';
             } else {
-                title.innerHTML = '<i class="fas fa-pen"></i> تعديل سحب';
+                title.innerHTML = '<i class="bi bi-pencil-fill"></i> تعديل سحب';
                 saveBtn.textContent = 'تحديث السحب';
-                saveBtn.className = 'btn-primary-solid';
-                saveBtn.style.background = 'var(--danger)';
-                saveBtn.style.borderColor = 'var(--danger)';
+                saveBtn.className = 'btn-action btn-danger';
                 effectElement.textContent = '🟢 زيادة (وارد للخزينة)';
                 effectElement.style.color = 'var(--success)';
             }
@@ -1882,11 +2928,9 @@
                             return recalculateBankBalance(bank['id']);
                         })
                         .then(function() {
-                            var updatedBank = banks.find(function(b) { return String(b['id']) === String(bank[
-                                'id']); });
+                            var updatedBank = banks.find(function(b) { return String(b['id']) === String(bank['id']); });
                             if (updatedBank) {
-                                document.getElementById('bankTransactionsBalance').textContent = Supabase
-                                    .formatCurrency(updatedBank['balance'] || 0);
+                                document.getElementById('bankTransactionsBalance').textContent = Supabase.formatCurrency(updatedBank['balance'] || 0);
                             }
                             showToast('✅ تم حذف الحركة وتحديث الرصيد بنجاح', 'success');
                             currentBankTransactions = currentBankTransactions.filter(function(t) {
@@ -1925,42 +2969,55 @@
         }
 
         // ================================================================
-        // SIDEBAR TOGGLE - يتم التعامل معها عبر layout.js
+        // SIDEBAR TOGGLE
         // ================================================================
         function initSidebar() {
             var sidebar = document.getElementById('sidebar');
             var toggle = document.getElementById('sidebarToggle');
-            var main = document.getElementById('main-content');
-            var overlay = document.getElementById('sidebar-overlay');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
 
-            if (!sidebar || !toggle) return;
-
-            var MOBILE_BREAKPOINT = 768;
+            var MOBILE_BREAKPOINT = 1200;
 
             toggle.addEventListener('click', function() {
                 if (window.innerWidth <= MOBILE_BREAKPOINT) {
-                    sidebar.classList.toggle('open');
-                    overlay.classList.toggle('show');
+                    var isOpen = sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = isOpen ? 'hidden' : '';
                 } else {
-                    sidebar.classList.toggle('closed');
-                    main.classList.toggle('full');
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
                 }
             });
 
-            if (overlay) {
-                overlay.addEventListener('click', function() {
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('show');
-                });
-            }
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeBankModal();
+                    closeTransactionModal();
+                    closeBankTransactionsModal();
+                    closeConfirmModal();
+                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
 
             window.addEventListener('resize', function() {
                 if (window.innerWidth > MOBILE_BREAKPOINT) {
                     sidebar.classList.remove('open');
-                    if (overlay) overlay.classList.remove('show');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
                 } else {
-                    sidebar.classList.remove('closed');
-                    main.classList.remove('full');
+                    sidebar.classList.remove('collapsed');
+                    main.classList.remove('expanded');
                 }
             });
         }
@@ -1974,11 +3031,12 @@
 
             var icon = toggle.querySelector('i');
 
+            // تطبيق الثيم من الإعدادات المركزية
             var isDark = Supabase.isDarkModeEnabled();
             Supabase.applyTheme(isDark);
 
             if (icon) {
-                icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
             }
 
             toggle.addEventListener('click', function() {
@@ -1987,7 +3045,7 @@
 
                 Supabase.toggleTheme(newState).then(function() {
                     if (icon) {
-                        icon.className = newState ? 'fas fa-sun' : 'fas fa-moon';
+                        icon.className = newState ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
                     }
                 });
             });
@@ -1997,13 +3055,30 @@
         // REFRESH BUTTON
         // ================================================================
         function initRefresh() {
-            var refreshBtn = document.getElementById('refreshBtn');
-            if (!refreshBtn) return;
-
-            refreshBtn.addEventListener('click', function() {
+            document.getElementById('refreshBtn').addEventListener('click', function() {
                 loadData();
                 showToast('🔄 جاري تحديث البيانات...', 'info');
             });
+        }
+
+        // ================================================================
+        // NOTIFICATIONS
+        // ================================================================
+        function initNotifications() {
+            var notifBtn = document.getElementById('notifBtn');
+            if (notifBtn) {
+                notifBtn.addEventListener('click', function() {
+                    var messages = [
+                        '🏦 تم تحديث أرصدة الحسابات البنكية',
+                        '💳 تمت إضافة حركة بنكية جديدة',
+                        '📊 تقرير الحسابات البنكية جاهز للعرض',
+                        '✅ تم تسوية حساب بنكي بنجاح',
+                        '⚠️ تنبيه: تحقق من رصيد أحد الحسابات'
+                    ];
+                    var random = messages[Math.floor(Math.random() * messages.length)];
+                    showToast(random, 'info');
+                });
+            }
         }
 
         // ================================================================
@@ -2013,8 +3088,7 @@
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 'b') {
                     e.preventDefault();
-                    var toggle = document.querySelector('.menu-toggle-btn');
-                    if (toggle) toggle.click();
+                    document.getElementById('sidebarToggle').click();
                 }
                 if (e.ctrlKey && e.key === 'r') {
                     e.preventDefault();
@@ -2023,8 +3097,7 @@
                 }
                 if (e.ctrlKey && e.key === 'd') {
                     e.preventDefault();
-                    var toggle = document.getElementById('darkModeToggle');
-                    if (toggle) toggle.click();
+                    document.getElementById('darkModeToggle').click();
                 }
                 if (e.ctrlKey && e.key === 'l') {
                     e.preventDefault();
@@ -2034,20 +3107,53 @@
         }
 
         // ================================================================
-        // MANUAL REFRESH
+        // TOAST
         // ================================================================
-        async function manualRefresh() {
-            var icon = document.querySelector('#refreshBtn i');
-            if (icon) icon.classList.add('fa-spin');
-            await loadData();
-            if (icon) icon.classList.remove('fa-spin');
-            showToast('✅ تم تحديث البيانات', 'success');
-        }
+        function showToast(message, type) {
+            var existingToasts = document.querySelectorAll('.toast-notification');
+            for (var i = 0; i < existingToasts.length; i++) {
+                existingToasts[i].remove();
+            }
 
-        // ================================================================
-        // TOAST - يتم التعامل معها عبر layout.js
-        // ================================================================
-        // showToast متوفرة في layout.js
+            var toast = document.createElement('div');
+            toast.className = 'toast-notification';
+
+            var iconClass = 'bi-info-circle-fill';
+            var toastClass = '';
+
+            if (type === 'success') {
+                iconClass = 'bi-check-circle-fill';
+                toastClass = 'toast-success';
+            } else if (type === 'error') {
+                iconClass = 'bi-x-circle-fill';
+                toastClass = 'toast-error';
+            } else if (type === 'warning') {
+                iconClass = 'bi-exclamation-triangle-fill';
+                toastClass = 'toast-warning';
+            }
+
+            toast.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
+                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
+                </div>
+            `;
+
+            if (toastClass) {
+                toast.classList.add(toastClass);
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(function() {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
 
         // ================================================================
         // EXPOSE
@@ -2062,17 +3168,25 @@
         window.closeBankTransactionsModal = closeBankTransactionsModal;
         window.refreshBankTransactions = refreshBankTransactions;
         window.logout = logout;
+        window.showToast = showToast;
         window.loadData = loadData;
-        window.manualRefresh = manualRefresh;
         window.editBankTransaction = editBankTransaction;
         window.deleteBankTransaction = deleteBankTransaction;
         window.openConfirmModal = openConfirmModal;
         window.closeConfirmModal = closeConfirmModal;
 
-        console.log('✅ تم تحميل banks.html بنجاح');
+        console.log('🏦 نظام البنوك - حراء للسياحة');
+        console.log('📡 Supabase URL:', SUPABASE_CONFIG.URL);
+        console.log('💰 العملة:', systemCurrency, currencySymbol);
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
+        console.log('✅ النظام جاهز للعمل');
         console.log('📌 اضغط على أي بنك لعرض حركاته');
         console.log('📌 الإيداع في البنك = صادر من الخزينة، السحب من البنك = وارد للخزينة');
         console.log('📌 عند حذف أو تعديل حركة، يتم إعادة حساب رصيد البنك تلقائياً');
+        console.log('📌 حركات البنك تظهر معكوسة (صادر ← وارد، وارد ← صادر) لعكس العلاقة مع الخزينة');
+        console.log('📌 يتم تحديث الرصيد في نافذة الحركات فوراً بعد أي تعديل أو حذف');
+        console.log('📌 نافذة تأكيد مخصصة بدلاً من confirm()');
+        console.log('📌 العملة يتم جلبها من Supabase عند تحميل الصفحة');
     </script>
 
 </body>

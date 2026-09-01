@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
     <title id="pageTitle">الخزينة - حراء للسياحة</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.rel='stylesheet'" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <!-- Theme CSS الموحد -->
-    <link rel="stylesheet" href="theme.css" />
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     <!-- ============================================================ -->
     <!-- SUPABASE.JS - الملف المركزي -->
@@ -24,18 +23,556 @@
 
     <style>
         /* ================================================================
-           STYLES الخاصة بصفحة الخزينة - مكملة لـ theme.css
+           DESIGN SYSTEM - Corporate Accounting (مطابق لـ index.html)
            ================================================================ */
+        :root {
+            --primary: #0e1c2e;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
+            --accent-tint: rgba(156, 122, 60, 0.08);
+            --success: #1c7a4e;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
+            --surface: #ffffff;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-full: 9999px;
+            --t-base: 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
+        }
 
-        /* ===== إحصائيات ===== */
-        .stats-grid-custom {
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ================================================================
+           SIDEBAR (مطابق تماماً لـ index.html)
+           ================================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary);
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(calc(var(--sidebar-width) + 20px));
+        }
+
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            display: none;
+        }
+
+        .brand-logo-img.visible {
+            display: block;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-inverse);
+            flex-shrink: 0;
+        }
+
+        .brand-mark.hidden {
+            display: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-inverse);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            color: var(--accent-light);
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 10px 8px;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 12px 6px;
+            font-family: var(--font-display);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 0;
+        }
+
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.5);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: var(--t-base);
+            position: relative;
+        }
+
+        .nav-list a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-inverse);
+        }
+
+        .nav-list a.active {
+            background: rgba(139, 122, 75, 0.12);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        .nav-list a.active i {
+            color: var(--accent-light);
+        }
+
+        .nav-list a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .nav-list a i {
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-badge {
+            margin-right: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(139, 122, 75, 0.18);
+            color: var(--accent-light);
+            border: 1px solid rgba(139, 122, 75, 0.15);
+            font-family: var(--font-display);
+        }
+
+        .sidebar-footer {
+            padding: 12px 16px 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.3);
+            transition: var(--t-base);
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: rgba(184, 74, 62, 0.12);
+            color: #e8a09a;
+        }
+
+        .logout-btn i {
+            font-size: 14px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1045;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
+        .main-content {
+            margin-right: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-right 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* ================================================================
+           NAVBAR (مطابق لـ index.html)
+           ================================================================ */
+        .navbar-custom {
+            background: var(--bg);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--surface);
+            border-color: var(--text-tertiary);
+        }
+
+        .navbar-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 4px;
+        }
+
+        .navbar-logo-img {
+            height: 28px;
+            width: 28px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+
+        .navbar-logo-img.visible {
+            display: block;
+        }
+
+        .navbar-logo-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--font-display);
+        }
+
+        .navbar-logo-text span {
+            color: var(--accent);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            margin-right: 6px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .nav-btn .notification-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--danger);
+            border: 1.5px solid var(--bg);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 4px 3px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: var(--font-display);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* ================================================================
+           DASHBOARD CONTENT
+           ================================================================ */
+        .dashboard-content {
+            padding: 20px 24px 30px;
+            flex: 1;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           STAT CARDS
+           ================================================================ */
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 12px;
             margin-bottom: 18px;
         }
 
-        .stat-card-custom {
+        .stat-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
@@ -44,13 +581,13 @@
             cursor: pointer;
         }
 
-        .stat-card-custom:hover {
+        .stat-card:hover {
             border-color: var(--accent);
             box-shadow: var(--shadow-sm);
             transform: translateY(-1px);
         }
 
-        .stat-card-custom .stat-number {
+        .stat-card .stat-number {
             font-family: var(--font-display);
             font-size: 20px;
             font-weight: 800;
@@ -58,22 +595,19 @@
             line-height: 1.2;
         }
 
-        .stat-card-custom .stat-label {
+        .stat-card .stat-label {
             font-size: 10px;
             color: var(--text-tertiary);
             margin-top: 2px;
         }
 
-        .stat-card-custom .stat-icon {
+        .stat-card .stat-icon {
             float: left;
             font-size: 18px;
             color: var(--accent-light);
             opacity: 0.5;
         }
 
-        .stat-gold .stat-number {
-            color: var(--accent);
-        }
         .stat-green .stat-number {
             color: var(--success);
         }
@@ -83,267 +617,13 @@
         .stat-blue .stat-number {
             color: var(--info);
         }
-
-        /* ===== الجدول ===== */
-        .panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .panel-header {
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .panel-title {
-            font-family: var(--font-display);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin: 0;
-        }
-
-        .panel-title i {
+        .stat-gold .stat-number {
             color: var(--accent);
-            font-size: 13px;
         }
 
-        .record-count {
-            font-size: 11px;
-            color: var(--text-tertiary);
-            font-weight: 500;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        .table-custom {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12.5px;
-        }
-
-        .table-custom thead {
-            background: var(--bg);
-        }
-
-        .table-custom th {
-            padding: 8px 12px;
-            text-align: right;
-            font-weight: 600;
-            color: var(--text-tertiary);
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            border-bottom: 1px solid var(--border);
-            font-family: var(--font-display);
-            white-space: nowrap;
-        }
-
-        .table-custom td {
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--border-light);
-            vertical-align: middle;
-            color: var(--text);
-        }
-
-        .table-custom tr:last-child td {
-            border-bottom: none;
-        }
-
-        .table-custom tr:hover td {
-            background: var(--surface-alt);
-        }
-
-        /* ===== البادجات ===== */
-        .badge-custom {
-            padding: 1px 8px;
-            border-radius: var(--radius-full);
-            font-size: 9px;
-            font-weight: 600;
-            display: inline-block;
-            font-family: var(--font-display);
-        }
-
-        .badge-income {
-            background: var(--success-bg);
-            color: var(--success);
-        }
-
-        .badge-expense {
-            background: var(--danger-bg);
-            color: var(--danger);
-        }
-
-        .badge-transfer {
-            background: var(--info-bg);
-            color: var(--info);
-        }
-
-        .badge-opening {
-            background: var(--warning-bg);
-            color: var(--warning);
-        }
-
-        .amount-income {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .amount-expense {
-            color: var(--danger);
-            font-weight: 600;
-        }
-
-        /* ===== المودالات ===== */
-        .modal-overlay-custom {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 1060;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal-overlay-custom.active {
-            display: flex;
-        }
-
-        .modal-box-custom {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 28px 32px;
-            max-width: 540px;
-            width: 92%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-lg);
-            animation: modalFadeIn 0.3s ease;
-        }
-
-        @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .modal-box-custom h3 {
-            font-family: var(--font-display);
-            font-size: 17px;
-            font-weight: 800;
-            color: var(--text);
-            margin-bottom: 16px;
-        }
-
-        .modal-box-custom h3 i {
-            color: var(--accent);
-            margin-left: 8px;
-        }
-
-        .modal-box-custom label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .modal-box-custom select,
-        .modal-box-custom input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
-            font-size: 13px;
-            margin-bottom: 12px;
-            transition: var(--t-base);
-            background: var(--surface);
-            color: var(--text);
-        }
-
-        .modal-box-custom select:focus,
-        .modal-box-custom input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(156, 122, 60, 0.08);
-        }
-
-        .modal-box-custom .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-            justify-content: flex-end;
-        }
-
-        .modal-box-custom .client-group {
-            display: none;
-            margin-bottom: 12px;
-        }
-
-        .modal-box-custom .client-group.show {
-            display: block;
-        }
-
-        /* ===== مودال الرصيد الافتتاحي ===== */
-        .modal-opening {
-            max-width: 420px;
-        }
-
-        .modal-opening .opening-info {
-            background: var(--warning-bg);
-            padding: 12px 16px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 16px;
-            border-right: 3px solid var(--warning);
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .modal-opening .opening-info i {
-            color: var(--warning);
-            margin-left: 6px;
-        }
-
-        /* ===== معلومات الحركة ===== */
-        .transaction-info {
-            background: var(--surface-alt);
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 12px;
-            font-size: 13px;
-            border: 1px solid var(--border-light);
-        }
-
-        .transaction-info strong {
-            color: var(--text-secondary);
-        }
-
-        .transaction-info .effect {
-            color: var(--info);
-            font-weight: 600;
-        }
-
-        /* ===== الأزرار ===== */
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
         .btn-action {
             display: inline-flex;
             align-items: center;
@@ -355,7 +635,6 @@
             transition: var(--t-base);
             border: 1px solid transparent;
             font-family: var(--font-display);
-            cursor: pointer;
         }
 
         .btn-primary {
@@ -406,7 +685,7 @@
             background: var(--accent-tint);
         }
 
-        .btn-icon-edit {
+        .btn-icon {
             width: 28px;
             height: 28px;
             padding: 0;
@@ -417,10 +696,12 @@
             border: 1px solid transparent;
             font-size: 12px;
             transition: var(--t-base);
+        }
+
+        .btn-icon-edit {
             background: var(--info-bg);
             color: var(--info);
             border-color: var(--border);
-            cursor: pointer;
         }
 
         .btn-icon-edit:hover {
@@ -429,20 +710,9 @@
         }
 
         .btn-icon-delete {
-            width: 28px;
-            height: 28px;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-sm);
-            border: 1px solid transparent;
-            font-size: 12px;
-            transition: var(--t-base);
             background: var(--danger-bg);
             color: var(--danger);
             border-color: var(--border);
-            cursor: pointer;
         }
 
         .btn-icon-delete:hover {
@@ -450,44 +720,582 @@
             color: white;
         }
 
-        /* ===== مودال تأكيد الحذف ===== */
-        #confirmModalOverlay {
-            z-index: 1070 !important;
+        /* ================================================================
+           PANEL
+           ================================================================ */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
         }
 
-        #confirmModalOverlay .modal-box-custom {
-            z-index: 1071;
-            position: relative;
-            max-width: 420px;
+        .panel-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
-        #confirmModalOverlay .modal-box-custom h3 i {
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+        }
+
+        .panel-title i {
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           TABLE
+           ================================================================ */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+
+        .table-custom thead {
+            background: var(--bg);
+        }
+
+        .table-custom th {
+            padding: 8px 12px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        .table-custom td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom tr:hover td {
+            background: var(--surface-alt);
+        }
+
+        .amount-income {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .amount-expense {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .badge-custom {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+
+        .badge-income {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-expense {
+            background: var(--danger-bg);
             color: var(--danger);
         }
 
-        #confirmModalOverlay .modal-box-custom p {
-            font-size: 13px;
-            color: var(--text-secondary);
+        .badge-transfer {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .badge-opening {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        /* ================================================================
+           MODAL
+           ================================================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1060;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            max-width: 540px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-box h3 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text);
             margin-bottom: 16px;
         }
 
-        /* ===== الوضع المظلم ===== */
-        body.dark-mode .stat-card-custom {
-            background: var(--primary);
-            border-color: rgba(255, 255, 255, 0.06);
+        .modal-box h3 i {
+            color: var(--accent);
+            margin-left: 8px;
         }
 
-        body.dark-mode .stat-card-custom .stat-number {
+        .modal-box label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .modal-box select,
+        .modal-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            margin-bottom: 12px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .modal-box select:focus,
+        .modal-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
+        }
+
+        .modal-box .client-group {
+            display: none;
+            margin-bottom: 12px;
+        }
+
+        .modal-box .client-group.show {
+            display: block;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* ================================================================
+           MODAL - الرصيد الافتتاحي
+           ================================================================ */
+        .modal-opening {
+            max-width: 420px;
+        }
+
+        .modal-opening .opening-info {
+            background: var(--warning-bg);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            border-right: 3px solid var(--warning);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .modal-opening .opening-info i {
+            color: var(--warning);
+            margin-left: 6px;
+        }
+
+        /* ================================================================
+           TOAST
+           ================================================================ */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
+            z-index: 9999;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
+        }
+
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
+           ================================================================ */
+        .footer-custom {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 12px 24px;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            margin-top: auto;
+        }
+
+        .footer-custom .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-custom .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .footer-custom .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-custom .footer-copy {
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-copy strong {
+            color: var(--accent-dark);
+            font-weight: 700;
+        }
+
+        .footer-custom .footer-divider {
+            color: var(--border);
+            font-size: 14px;
+        }
+
+        .footer-custom .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-version {
+            font-family: var(--font-display);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .footer-custom .footer-link {
+            color: var(--text-tertiary);
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(calc(var(--sidebar-width) + 20px));
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-content {
+                padding: 16px 18px;
+            }
+            .navbar-custom {
+                padding: 0 16px;
+            }
+            .user-info {
+                display: none;
+            }
+            .page-header .ph-right {
+                display: none;
+            }
+            .navbar-logo-text {
+                display: none;
+            }
+            .footer-custom .footer-divider {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-right .nav-btn:not(:first-child) {
+                display: none;
+            }
+            .navbar-custom {
+                height: 54px;
+                padding: 0 12px;
+            }
+            .page-title {
+                font-size: 14px;
+            }
+            .page-title small {
+                display: none;
+            }
+            .sidebar-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            .dashboard-content {
+                padding: 12px 12px;
+            }
+            .page-header h2 {
+                font-size: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card .stat-number {
+                font-size: 16px;
+            }
+            .table-custom {
+                font-size: 11px;
+            }
+            .table-custom th,
+            .table-custom td {
+                padding: 6px 8px;
+            }
+            .modal-box {
+                padding: 20px;
+            }
+            .navbar-logo-img {
+                height: 24px;
+                width: 24px;
+            }
+            .footer-custom {
+                padding: 8px 14px;
+            }
+            .footer-custom .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .footer-custom .footer-right {
+                flex-wrap: wrap;
+                justify-content: center;
+                font-size: 11px;
+            }
+            .footer-custom .footer-left {
+                font-size: 11px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-content {
+                padding: 10px 10px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 12px;
+            }
+            .stat-card .stat-number {
+                font-size: 14px;
+            }
+            .stat-card .stat-label {
+                font-size: 9px;
+            }
+            .stat-card .stat-icon {
+                font-size: 14px;
+            }
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            .modal-box {
+                padding: 16px;
+            }
+            .modal-box h3 {
+                font-size: 15px;
+            }
+            .footer-custom .footer-copy {
+                font-size: 10px;
+            }
+            .footer-custom .footer-version {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
+        }
+
+        /* ================================================================
+           DARK MODE (مطابق تماماً لـ index.html)
+           ================================================================ */
+        body.dark-mode {
+            background: var(--primary-dark);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .navbar-custom {
+            background: var(--primary-dark);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .navbar-logo-text {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .stat-card .stat-number {
             color: #e0dcd2;
         }
 
         body.dark-mode .panel {
             background: var(--primary);
-            border-color: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255,255,255,0.06);
         }
 
         body.dark-mode .panel-header {
-            border-bottom-color: rgba(255, 255, 255, 0.06);
+            border-bottom-color: rgba(255,255,255,0.06);
         }
 
         body.dark-mode .table-custom thead {
@@ -495,12 +1303,12 @@
         }
 
         body.dark-mode .table-custom th {
-            color: rgba(232, 228, 220, 0.4);
-            border-bottom-color: rgba(255, 255, 255, 0.06);
+            color: rgba(232,228,220,0.4);
+            border-bottom-color: rgba(255,255,255,0.06);
         }
 
         body.dark-mode .table-custom td {
-            border-bottom-color: rgba(255, 255, 255, 0.04);
+            border-bottom-color: rgba(255,255,255,0.04);
             color: #e0dcd2;
         }
 
@@ -508,36 +1316,117 @@
             background: var(--primary-light);
         }
 
-        body.dark-mode .modal-box-custom {
+        body.dark-mode .page-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header .ph-left h2 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .page-header .ph-left p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .btn-outline {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: rgba(139, 122, 75, 0.1);
+        }
+
+        body.dark-mode .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-success {
+            background: #166a4a;
+            border-color: #166a4a;
+        }
+
+        body.dark-mode .btn-danger {
+            background: #a03d32;
+            border-color: #a03d32;
+        }
+
+        body.dark-mode .sidebar-toggle {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .sidebar-toggle:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.15);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .nav-btn {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .nav-btn:hover {
             background: var(--primary);
             color: #e0dcd2;
         }
 
-        body.dark-mode .modal-box-custom h3 {
+        body.dark-mode .user-profile:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .user-name {
             color: #e0dcd2;
         }
 
-        body.dark-mode .modal-box-custom select,
-        body.dark-mode .modal-box-custom input {
-            background: var(--primary-light);
+        body.dark-mode .toast-notification {
+            background: var(--primary);
             color: #e0dcd2;
-            border-color: rgba(255, 255, 255, 0.08);
+            border-right-color: var(--accent);
         }
 
-        body.dark-mode .modal-box-custom select:focus,
-        body.dark-mode .modal-box-custom input:focus {
-            border-color: var(--accent);
+        body.dark-mode .toast-notification.toast-success {
+            border-right-color: var(--success);
         }
 
-        body.dark-mode .modal-opening .opening-info {
-            background: rgba(184, 148, 58, 0.15);
-            color: #d4b87a;
+        body.dark-mode .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .toast-notification.toast-warning {
             border-right-color: var(--warning);
         }
 
-        body.dark-mode .transaction-info {
+        body.dark-mode .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box h3 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box select,
+        body.dark-mode .modal-box input {
             background: var(--primary-light);
-            border-color: rgba(255, 255, 255, 0.06);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .modal-box select:focus,
+        body.dark-mode .modal-box input:focus {
+            border-color: var(--accent);
         }
 
         body.dark-mode .badge-income {
@@ -558,6 +1447,12 @@
         body.dark-mode .badge-opening {
             background: rgba(184, 148, 58, 0.2);
             color: #d4b87a;
+        }
+
+        body.dark-mode .modal-opening .opening-info {
+            background: rgba(184, 148, 58, 0.15);
+            color: #d4b87a;
+            border-right-color: var(--warning);
         }
 
         body.dark-mode .btn-icon-edit {
@@ -584,244 +1479,255 @@
             background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
         }
 
-        /* ===== استجابة ===== */
-        @media (max-width: 768px) {
-            .stats-grid-custom {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-            .stat-card-custom .stat-number {
-                font-size: 16px;
-            }
-            .table-custom {
-                font-size: 11px;
-            }
-            .table-custom th,
-            .table-custom td {
-                padding: 6px 8px;
-            }
-            .modal-box-custom {
-                padding: 20px;
-            }
-            .main-content {
-                padding: var(--space-3);
-            }
-            .page-title-main {
-                font-size: 16px;
-            }
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
         }
 
-        @media (max-width: 576px) {
-            .stats-grid-custom {
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
-            .stat-card-custom {
-                padding: 10px 12px;
-            }
-            .stat-card-custom .stat-number {
-                font-size: 14px;
-            }
-            .stat-card-custom .stat-label {
-                font-size: 9px;
-            }
-            .stat-card-custom .stat-icon {
-                font-size: 14px;
-            }
-            .modal-box-custom {
-                padding: 16px;
-            }
-            .modal-box-custom h3 {
-                font-size: 15px;
-            }
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
         }
     </style>
 </head>
 <body>
 
     <!-- ================================================================ -->
-    <!-- SIDEBAR - قائمة جانبية موحدة -->
+    <!-- SIDEBAR - مطابق تماماً لـ index.html -->
     <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
-        <div class="logo-area">
-            <h1 data-brand>🕋 حراء للسياحة</h1>
-            <span>نظام إدارة الرحلات</span>
+        <div class="sidebar-brand">
+            <div class="brand-row">
+                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
+                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
+                <div class="brand-text" id="sidebarBrandText">
+                    حراء <span>للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
+                </div>
+            </div>
         </div>
-        <nav>
+
+        <nav class="sidebar-nav">
             <div class="nav-section-title">القائمة الرئيسية</div>
-            <a href="index.html" class="nav-link"><i class="fas fa-house"></i> الرئيسية</a>
+            <ul class="nav-list">
+                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
+            </ul>
 
             <div class="nav-section-title">الإدارة المالية</div>
-            <a href="treasury.html" class="nav-link active"><i class="fas fa-wallet"></i> الخزينة <span class="badge">رئيسي</span></a>
-            <a href="trips.html" class="nav-link"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
-            <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء <span class="badge" id="badge-clients">0</span></a>
-            <a href="banks.html" class="nav-link"><i class="fas fa-building-columns"></i> البنوك <span class="badge" id="badge-banks">0</span></a>
-            <a href="bookings.html" class="nav-link"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
-            <a href="services.html" class="nav-link"><i class="fas fa-tools"></i> الخدمات <span class="badge" id="badge-services">0</span></a>
-            <a href="representatives.html" class="nav-link"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
+            <ul class="nav-list">
+                <li><a href="treasury.html" class="active"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
+                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
+                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+            </ul>
 
             <div class="nav-section-title">التقارير</div>
-            <a href="client_statement.html" class="nav-link"><i class="fas fa-receipt"></i> كشف حساب العميل</a>
-            <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
+            <ul class="nav-list">
+                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+            </ul>
 
             <div class="nav-section-title">الإدارة</div>
-            <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
-            <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
-            <a href="settings.html" class="nav-link"><i class="fas fa-gear"></i> الإعدادات</a>
+            <ul class="nav-list">
+                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+            </ul>
 
             <div class="nav-section-title">الدعم</div>
-            <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> الدعم والتواصل</a>
-
-            <hr />
-            <a href="#" class="nav-link logout-link" onclick="logout(); return false;"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</a>
+            <ul class="nav-list">
+                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+            </ul>
         </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i>
+                تسجيل الخروج
+            </a>
+        </div>
     </aside>
 
     <!-- ================================================================ -->
     <!-- SIDEBAR OVERLAY -->
     <!-- ================================================================ -->
-    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- ================================================================ -->
     <!-- MAIN CONTENT -->
     <!-- ================================================================ -->
-    <main class="main-content" id="main-content">
+    <main class="main-content" id="mainContent">
 
-        <!-- ===== زر القائمة للشاشات الصغيرة ===== -->
-        <div class="flex items-center gap-3 mb-6 menu-toggle">
-            <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة">
-                <i class="fas fa-bars" id="menu-toggle-icon"></i>
-            </button>
-            <h1 class="brand-mobile" data-brand>🕋 حراء للسياحة</h1>
-        </div>
+        <!-- ================================================================ -->
+        <!-- NAVBAR - مطابق لـ index.html -->
+        <!-- ================================================================ -->
+        <nav class="navbar-custom">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
 
-        <!-- ===== HEADER ===== -->
-        <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
-            <div>
-                <h1 class="page-title-main">إدارة الخزينة</h1>
-                <p class="text-gray-500 text-sm">تسجيل ومتابعة الواردات والمصروفات والتحويلات البنكية</p>
+                <div class="navbar-logo-container">
+                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
+                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
+                </div>
+
+                <h4 class="page-title" id="pageTitleText">
+                    الخزينة
+                    <small>إدارة الواردات والمصروفات والتحويلات</small>
+                </h4>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
-                <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn">
-                    <i class="fas fa-arrow-rotate-right"></i>
+
+            <div class="navbar-right">
+                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-role" id="userRole">حراء للسياحة</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ================================================================ -->
+        <!-- DASHBOARD CONTENT -->
+        <!-- ================================================================ -->
+        <div class="dashboard-content">
+
+            <!-- ===== PAGE HEADER ===== -->
+            <div class="page-header">
+                <div class="ph-left">
+                    <h2>إدارة الخزينة</h2>
+                    <p>تسجيل ومتابعة الواردات والمصروفات والتحويلات البنكية</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">جاري التحميل...</span>
+                </div>
+            </div>
+
+            <!-- ===== STATS ===== -->
+            <div class="stats-grid">
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-wallet-fill"></i></span>
+                    <div class="stat-number" id="treasuryBalance">0</div>
+                    <div class="stat-label">رصيد الخزينة</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-arrow-down-circle-fill"></i></span>
+                    <div class="stat-number" id="totalIncome">0</div>
+                    <div class="stat-label">إجمالي الواردات</div>
+                </div>
+                <div class="stat-card stat-red">
+                    <span class="stat-icon"><i class="bi bi-arrow-up-circle-fill"></i></span>
+                    <div class="stat-number" id="totalExpense">0</div>
+                    <div class="stat-label">إجمالي المصروفات</div>
+                </div>
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-arrow-left-right"></i></span>
+                    <div class="stat-number" id="netProfit">0</div>
+                    <div class="stat-label">صافي الربح</div>
+                </div>
+            </div>
+
+            <!-- ===== TOOLBAR ===== -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <button class="btn-action btn-success" onclick="openModal('add', 'income')">
+                    <i class="bi bi-plus-circle-fill"></i> وارد جديد
+                </button>
+                <button class="btn-action btn-danger" onclick="openModal('add', 'expense')">
+                    <i class="bi bi-dash-circle-fill"></i> مصروف جديد
+                </button>
+                <button class="btn-action btn-primary" onclick="openOpeningBalanceModal()">
+                    <i class="bi bi-coin"></i> رصيد افتتاحي
+                </button>
+                <button class="btn-action btn-outline" onclick="openTransferModal()">
+                    <i class="bi bi-arrow-left-right"></i> تحويل إلى بنك
+                </button>
+                <button class="btn-action btn-outline" onclick="loadData()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث
                 </button>
             </div>
-        </div>
 
-        <!-- ===== الإحصائيات ===== -->
-        <div class="stats-grid-custom" id="stats-container">
-            <div class="stat-card-custom stat-gold">
-                <span class="stat-icon"><i class="fas fa-wallet"></i></span>
-                <div class="stat-number" id="treasuryBalance">0</div>
-                <div class="stat-label">رصيد الخزينة</div>
+            <!-- ===== TRANSACTIONS TABLE ===== -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-clock-history"></i> سجل المعاملات</h5>
+                    <span id="recordCount" style="font-size:11px;color:var(--text-tertiary);">0 سجل</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>التاريخ</th>
+                                <th>البيان</th>
+                                <th>النوع</th>
+                                <th>الفئة</th>
+                                <th>العميل</th>
+                                <th>المبلغ</th>
+                                <th style="text-align:center;">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody">
+                            <tr>
+                                <td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                    <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
+                                    جاري تحميل المعاملات...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="stat-card-custom stat-green">
-                <span class="stat-icon"><i class="fas fa-arrow-down"></i></span>
-                <div class="stat-number" id="totalIncome">0</div>
-                <div class="stat-label">إجمالي الواردات</div>
-            </div>
-            <div class="stat-card-custom stat-red">
-                <span class="stat-icon"><i class="fas fa-arrow-up"></i></span>
-                <div class="stat-number" id="totalExpense">0</div>
-                <div class="stat-label">إجمالي المصروفات</div>
-            </div>
-            <div class="stat-card-custom stat-blue">
-                <span class="stat-icon"><i class="fas fa-arrow-left-right"></i></span>
-                <div class="stat-number" id="netProfit">0</div>
-                <div class="stat-label">صافي الربح</div>
-            </div>
-        </div>
 
-        <!-- ===== شريط الأدوات ===== -->
-        <div class="flex flex-wrap gap-2 mb-3">
-            <button class="btn-action btn-success" onclick="openModal('add', 'income')">
-                <i class="fas fa-plus-circle"></i> وارد جديد
-            </button>
-            <button class="btn-action btn-danger" onclick="openModal('add', 'expense')">
-                <i class="fas fa-minus-circle"></i> مصروف جديد
-            </button>
-            <button class="btn-action btn-primary" onclick="openOpeningBalanceModal()">
-                <i class="fas fa-coins"></i> رصيد افتتاحي
-            </button>
-            <button class="btn-action btn-outline" onclick="openTransferModal()">
-                <i class="fas fa-arrow-left-right"></i> تحويل إلى بنك
-            </button>
-            <button class="btn-action btn-outline" onclick="loadData()">
-                <i class="fas fa-arrow-rotate-right"></i> تحديث
-            </button>
         </div>
-
-        <!-- ===== جدول المعاملات ===== -->
-        <div class="panel">
-            <div class="panel-header">
-                <h5 class="panel-title"><i class="fas fa-clock-rotate-left"></i> سجل المعاملات</h5>
-                <span id="recordCount" class="record-count">0 سجل</span>
-            </div>
-            <div class="table-wrap">
-                <table class="table-custom">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>التاريخ</th>
-                            <th>البيان</th>
-                            <th>النوع</th>
-                            <th>الفئة</th>
-                            <th>العميل</th>
-                            <th>المبلغ</th>
-                            <th style="text-align:center;">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactionsBody">
-                        <tr>
-                            <td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);">
-                                <i class="fas fa-hourglass-half" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
-                                جاري تحميل المعاملات...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </main>
-
-    <!-- ================================================================ -->
-    <!-- FOOTER - تذييل الصفحة -->
-    <!-- ================================================================ -->
-    <footer class="footer-custom" style="margin-top: auto;">
-        <div class="footer-content">
-            <div class="footer-right">
-                <span class="footer-brand">حراء <span>للسياحة</span></span>
-                <span class="footer-divider">|</span>
-                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
-            </div>
-            <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
-                <span class="footer-divider">|</span>
-                <a href="support.html" class="footer-link">
-                    <i class="fas fa-headset"></i> الدعم الفني
-                </a>
-            </div>
-        </div>
-    </footer>
 
     <!-- ================================================================ -->
     <!-- MODAL - إضافة وارد / صادر -->
     <!-- ================================================================ -->
-    <div class="modal-overlay-custom" id="modalOverlay">
-        <div class="modal-box-custom">
-            <h3 id="modalTitle"><i class="fas fa-plus-circle"></i> معاملة جديدة</h3>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <h3 id="modalTitle"><i class="bi bi-plus-circle-fill"></i> معاملة جديدة</h3>
             <form id="modalForm" onsubmit="handleModalSubmit(event)">
                 <input type="hidden" id="modalId" value="" />
                 <input type="hidden" id="modalMode" value="add" />
                 <input type="hidden" id="modalType" value="income" />
                 <input type="hidden" id="modalIsOpening" value="false" />
 
-                <label for="modalAmount">المبلغ <span style="color:var(--danger);">*</span></label>
+                <label for="modalAmount">المبلغ</label>
                 <input type="number" id="modalAmount" placeholder="المبلغ" required step="0.01" min="0.01" />
 
-                <label for="modalCategory">الفئة <span style="color:var(--danger);">*</span></label>
+                <label for="modalCategory">الفئة</label>
                 <select id="modalCategory" onchange="toggleClientField()">
                     <option value="سيارة">سيارة</option>
                     <option value="شركة">شركة</option>
@@ -843,7 +1749,7 @@
                 <input type="text" id="modalReference" placeholder="رقم السيارة / رقم العملية" />
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-outline" onclick="closeModal()">إلغاء</button>
+                    <button type="button" class="btn-action btn-outline" onclick="closeModal()">إلغاء</button>
                     <button type="submit" class="btn-action btn-primary" id="saveBtn">حفظ</button>
                 </div>
             </form>
@@ -853,22 +1759,22 @@
     <!-- ================================================================ -->
     <!-- MODAL - الرصيد الافتتاحي -->
     <!-- ================================================================ -->
-    <div class="modal-overlay-custom" id="openingModalOverlay">
-        <div class="modal-box-custom modal-opening">
-            <h3><i class="fas fa-coins"></i> رصيد افتتاحي للخزينة</h3>
+    <div class="modal-overlay" id="openingModalOverlay">
+        <div class="modal-box modal-opening">
+            <h3><i class="bi bi-coin"></i> رصيد افتتاحي للخزينة</h3>
             <div class="opening-info">
-                <i class="fas fa-circle-info"></i>
+                <i class="bi bi-info-circle"></i>
                 هذا الرصيد سيضاف إلى رصيد الخزينة كرصيد أولي. يمكنك إدخال رصيد افتتاحي واحد فقط، ويمكنك تعديله أو حذفه لاحقاً من جدول المعاملات.
             </div>
             <form id="openingForm" onsubmit="handleOpeningBalanceSubmit(event)">
-                <label for="openingAmount">المبلغ <span style="color:var(--danger);">*</span></label>
+                <label for="openingAmount">المبلغ</label>
                 <input type="number" id="openingAmount" placeholder="أدخل الرصيد الافتتاحي" required step="0.01" min="0.01" />
 
                 <label for="openingDescription">البيان (اختياري)</label>
                 <input type="text" id="openingDescription" placeholder="وصف الرصيد الافتتاحي" />
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-outline" onclick="closeOpeningBalanceModal()">إلغاء</button>
+                    <button type="button" class="btn-action btn-outline" onclick="closeOpeningBalanceModal()">إلغاء</button>
                     <button type="submit" class="btn-action btn-primary" id="openingBtn">إضافة الرصيد</button>
                 </div>
             </form>
@@ -878,23 +1784,23 @@
     <!-- ================================================================ -->
     <!-- MODAL - تحويل إلى بنك -->
     <!-- ================================================================ -->
-    <div class="modal-overlay-custom" id="transferModalOverlay">
-        <div class="modal-box-custom">
-            <h3><i class="fas fa-arrow-left-right"></i> تحويل إلى بنك</h3>
+    <div class="modal-overlay" id="transferModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-arrow-left-right"></i> تحويل إلى بنك</h3>
             <form id="transferForm" onsubmit="handleTransferSubmit(event)">
-                <label for="transferBank">اختر البنك <span style="color:var(--danger);">*</span></label>
+                <label for="transferBank">اختر البنك</label>
                 <select id="transferBank" required>
                     <option value="">-- اختر بنك --</option>
                 </select>
 
-                <label for="transferAmount">المبلغ <span style="color:var(--danger);">*</span></label>
+                <label for="transferAmount">المبلغ</label>
                 <input type="number" id="transferAmount" placeholder="المبلغ" required step="0.01" min="0.01" />
 
                 <label for="transferDescription">البيان</label>
                 <input type="text" id="transferDescription" placeholder="وصف التحويل" />
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-outline" onclick="closeTransferModal()">إلغاء</button>
+                    <button type="button" class="btn-action btn-outline" onclick="closeTransferModal()">إلغاء</button>
                     <button type="submit" class="btn-action btn-primary" id="transferBtn">تحويل</button>
                 </div>
             </form>
@@ -902,29 +1808,28 @@
     </div>
 
     <!-- ================================================================ -->
-    <!-- MODAL - تأكيد الحذف -->
+    <!-- FOOTER - حقوق النشر -->
     <!-- ================================================================ -->
-    <div class="modal-overlay-custom" id="confirmModalOverlay">
-        <div class="modal-box-custom">
-            <h3 id="confirmModalTitle"><i class="fas fa-triangle-exclamation" style="color:var(--danger);"></i> تأكيد الحذف</h3>
-            <p id="confirmModalMessage">هل أنت متأكد من حذف هذا العنصر؟</p>
-            <div class="modal-actions">
-                <button type="button" class="btn-outline" onclick="closeConfirmModal()">إلغاء</button>
-                <button type="button" class="btn-action btn-danger" id="confirmModalBtn">تأكيد الحذف</button>
+    <footer class="footer-custom">
+        <div class="footer-content">
+            <div class="footer-right">
+                <span class="footer-brand">حراء <span>للسياحة</span></span>
+                <span class="footer-divider">|</span>
+                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+            </div>
+            <div class="footer-left">
+                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-divider">|</span>
+                <a href="support.html" class="footer-link">
+                    <i class="bi bi-headset"></i> الدعم الفني
+                </a>
             </div>
         </div>
-    </div>
-
-    <!-- ================================================================ -->
-    <!-- TOAST CONTAINER -->
-    <!-- ================================================================ -->
-    <div id="toastContainer"></div>
+    </footer>
 
     <!-- ================================================================ -->
     <!-- JAVASCRIPT -->
     <!-- ================================================================ -->
-    <script src="supabase.js"></script>
-    <script src="layout.js"></script>
     <script>
         // ================================================================
         // STATE
@@ -940,139 +1845,65 @@
         var hasOpeningBalance = false;
 
         // ================================================================
-        // CONFIRM MODAL - نافذة تأكيد مخصصة
-        // ================================================================
-        var confirmCallback = null;
-        var confirmSource = null;
-
-        function openConfirmModal(title, message, confirmText, callback, sourceModalId) {
-            if (sourceModalId) {
-                confirmSource = sourceModalId;
-                var sourceModal = document.getElementById(sourceModalId);
-                if (sourceModal) {
-                    sourceModal.classList.remove('active');
-                }
-            }
-
-            document.getElementById('confirmModalTitle').innerHTML = '<i class="fas fa-triangle-exclamation" style="color:var(--danger);"></i> ' + title;
-            document.getElementById('confirmModalMessage').textContent = message;
-            document.getElementById('confirmModalBtn').textContent = confirmText || 'تأكيد';
-            confirmCallback = callback;
-            document.getElementById('confirmModalOverlay').classList.add('active');
-        }
-
-        function closeConfirmModal() {
-            document.getElementById('confirmModalOverlay').classList.remove('active');
-
-            if (confirmSource) {
-                var sourceModal = document.getElementById(confirmSource);
-                if (sourceModal) {
-                    sourceModal.classList.add('active');
-                }
-                confirmSource = null;
-            }
-
-            confirmCallback = null;
-        }
-
-        function confirmAction() {
-            if (typeof confirmCallback === 'function') {
-                confirmCallback();
-            }
-            closeConfirmModal();
-        }
-
-        // ================================================================
         // DOM READY
         // ================================================================
-        document.addEventListener('DOMContentLoaded', async function() {
-            try {
-                // تهيئة النظام
-                if (!Supabase.initSystem()) {
-                    console.warn('⚠️ فشل تهيئة النظام');
-                    return;
-                }
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!Supabase.initSystem()) return;
 
-                // جلب الإعدادات
-                var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
-                currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+            var settings = Supabase.getSystemSettings();
+            systemCurrency = settings.currency || 'SAR';
+            currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
-                // حفظ العملة في localStorage
-                localStorage.setItem('systemCurrency', systemCurrency);
-
-                // جلب المستخدم الحالي
-                currentUser = Supabase.getCurrentUser();
-                if (currentUser) {
-                    updateUserUI();
-                }
-
-                // تطبيق اسم النظام والشعار
-                applySystemName({ pageLabel: 'الخزينة', welcome: false });
-                Supabase.applySystemLogo();
-
-                // ربط زر تأكيد الحذف
-                var confirmBtn = document.getElementById('confirmModalBtn');
-                if (confirmBtn) {
-                    confirmBtn.addEventListener('click', confirmAction);
-                }
-
-                // إغلاق المودالات عند الضغط على Esc
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') {
-                        closeConfirmModal();
-                        closeModal();
-                        closeOpeningBalanceModal();
-                        closeTransferModal();
-                    }
-                });
-
-                // إغلاق مودال التأكيد عند الضغط على الخلفية
-                var overlay = document.getElementById('confirmModalOverlay');
-                if (overlay) {
-                    overlay.addEventListener('click', function(e) {
-                        if (e.target === this) {
-                            closeConfirmModal();
-                        }
-                    });
-                }
-
-                // تهيئة القائمة الجانبية والوضع المظلم
-                initSidebar();
-                initDarkMode();
-                initRefresh();
-                initKeyboardShortcuts();
-                updateDate();
-
-                // تحميل البيانات
-                await loadData();
-
-                // تحديث تلقائي كل 60 ثانية
-                setInterval(loadData, 60000);
-
-                // التحقق من صلاحيات المستخدم
-                checkUserPermissions();
-
-                console.log('💰 نظام الخزينة - حراء للسياحة');
-                console.log('💰 العملة:', systemCurrency, currencySymbol);
-                console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+I (وارد) | Ctrl+E (مصروف) | Ctrl+O (رصيد افتتاحي) | Ctrl+T (تحويل)');
-                console.log('✅ النظام جاهز للعمل');
-
-            } catch (error) {
-                console.error('❌ خطأ في تهيئة الصفحة:', error);
-                showToast('⚠️ فشل تهيئة الصفحة: ' + error.message, 'warning');
+            currentUser = Supabase.getCurrentUser();
+            if (currentUser) {
+                updateUserUI();
             }
+
+            applySystemName();
+            Supabase.applySystemLogo();
+
+            initSidebar();
+            initDarkMode();
+            initRefresh();
+            initNotifications();
+            initKeyboardShortcuts();
+            updateDate();
+            loadData();
+            setInterval(loadData, 60000);
+            checkUserPermissions();
         });
+
+        // ================================================================
+        // APPLY SYSTEM NAME
+        // ================================================================
+        function applySystemName() {
+            var systemName = Supabase.getSystemName();
+            document.title = 'الخزينة - ' + systemName;
+
+            var brandText = document.getElementById('sidebarBrandText');
+            if (brandText) {
+                brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+            }
+
+            var navbarText = document.getElementById('navbarBrandText');
+            if (navbarText) {
+                navbarText.innerHTML = systemName;
+            }
+
+            var userRole = document.getElementById('userRole');
+            if (userRole) {
+                userRole.textContent = systemName;
+            }
+        }
 
         // ================================================================
         // UPDATE USER UI
         // ================================================================
         function updateUserUI() {
             if (!currentUser) return;
-
-            var userName = document.querySelector('.user-name');
-            var userRole = document.querySelector('.user-role');
-            var userAvatar = document.querySelector('.user-avatar');
+            var userName = document.getElementById('userName');
+            var userRole = document.getElementById('userRole');
+            var userAvatar = document.getElementById('userAvatar');
 
             if (userName) {
                 userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
@@ -1090,7 +1921,7 @@
         // CHECK USER PERMISSIONS
         // ================================================================
         function checkUserPermissions() {
-            var usersMenu = document.querySelector('#usersMenu');
+            var usersMenu = document.getElementById('usersMenu');
             if (!usersMenu) return;
             var isAdmin = currentUser && (currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com');
             if (!isAdmin) {
@@ -1104,7 +1935,7 @@
         function updateDate() {
             var now = new Date();
             var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-            var dateElement = document.querySelector('.page-header .ph-right span');
+            var dateElement = document.getElementById('headerDate');
             if (dateElement) {
                 dateElement.textContent = now.toLocaleDateString('ar-SA', options);
             }
@@ -1147,7 +1978,6 @@
                 renderStats();
                 populateBankSelect();
                 populateClientSelect();
-                updateLastRefreshed();
 
             } catch (error) {
                 console.error('❌ خطأ في جلب البيانات:', error);
@@ -1218,7 +2048,7 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="8" style="text-align:center;padding:20px;color:var(--text-tertiary);">
-                            <i class="fas fa-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
+                            <i class="bi bi-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
                             لا توجد معاملات مسجلة
                         </td>
                     </tr>
@@ -1277,11 +2107,11 @@
                         <td>${clientName}</td>
                         <td class="${amountClass}">${sign} ${Supabase.formatCurrency(amount)}</td>
                         <td style="text-align:center;white-space:nowrap;">
-                            <button class="btn-icon-edit" onclick="openModal('edit', '${type}', '${id}')" title="تعديل">
-                                <i class="fas fa-pen"></i>
+                            <button class="btn-icon btn-icon-edit" onclick="openModal('edit', '${type}', '${id}')" title="تعديل">
+                                <i class="bi bi-pencil-fill"></i>
                             </button>
-                            <button class="btn-icon-delete" onclick="deleteTransaction('${id}')" title="حذف">
-                                <i class="fas fa-trash"></i>
+                            <button class="btn-icon btn-icon-delete" onclick="deleteTransaction('${id}')" title="حذف">
+                                <i class="bi bi-trash-fill"></i>
                             </button>
                         </td>
                     </tr>
@@ -1389,7 +2219,7 @@
         function deleteTransaction(id) {
             var transaction = transactions.find(function(t) { return t['id'] === id; });
             var isOpening = transaction && transaction['opening_balance'];
-            var confirmMessage = isOpening ?
+            var confirmMessage = isOpening ? 
                 '⚠️ هذا رصيد افتتاحي. هل أنت متأكد من حذفه؟ سيتم حذف الرصيد الافتتاحي من الخزينة.' :
                 'هل أنت متأكد من حذف هذه المعاملة؟';
             if (!confirm(confirmMessage)) return;
@@ -1422,10 +2252,10 @@
             if (mode === 'add') {
                 currentModalType = type || 'income';
                 if (type === 'income') {
-                    title.innerHTML = '<i class="fas fa-plus-circle"></i> وارد جديد';
+                    title.innerHTML = '<i class="bi bi-plus-circle-fill"></i> وارد جديد';
                     saveBtn.textContent = 'إضافة وارد';
                 } else {
-                    title.innerHTML = '<i class="fas fa-minus-circle"></i> مصروف جديد';
+                    title.innerHTML = '<i class="bi bi-dash-circle-fill"></i> مصروف جديد';
                     saveBtn.textContent = 'إضافة مصروف';
                 }
                 document.getElementById('modalAmount').value = '';
@@ -1444,10 +2274,10 @@
                 document.getElementById('modalIsOpening').value = isOpening ? 'true' : 'false';
 
                 if (isOpening) {
-                    title.innerHTML = '<i class="fas fa-coins"></i> تعديل الرصيد الافتتاحي';
+                    title.innerHTML = '<i class="bi bi-coin"></i> تعديل الرصيد الافتتاحي';
                     saveBtn.textContent = 'تحديث الرصيد';
                 } else {
-                    title.innerHTML = '<i class="fas fa-pen"></i> تعديل المعاملة';
+                    title.innerHTML = '<i class="bi bi-pencil-fill"></i> تعديل المعاملة';
                     saveBtn.textContent = 'تحديث';
                 }
 
@@ -1457,7 +2287,7 @@
                 document.getElementById('modalReference').value = transaction['reference'] || '';
                 document.getElementById('modalClient').value = transaction['client_id'] || '';
                 currentModalType = (transaction['type'] === 'وارد') ? 'income' : 'expense';
-
+                
                 if (transaction['category'] === 'عميل') {
                     document.getElementById('clientGroup').classList.add('show');
                     populateClientSelect();
@@ -1645,37 +2475,49 @@
         function initSidebar() {
             var sidebar = document.getElementById('sidebar');
             var toggle = document.getElementById('sidebarToggle');
-            var main = document.getElementById('main-content');
-            var overlay = document.getElementById('sidebar-overlay');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
 
-            if (!sidebar || !toggle) return;
-
-            var MOBILE_BREAKPOINT = 768;
+            var MOBILE_BREAKPOINT = 1200;
 
             toggle.addEventListener('click', function() {
                 if (window.innerWidth <= MOBILE_BREAKPOINT) {
-                    sidebar.classList.toggle('open');
-                    overlay.classList.toggle('show');
+                    var isOpen = sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = isOpen ? 'hidden' : '';
                 } else {
-                    sidebar.classList.toggle('closed');
-                    main.classList.toggle('full');
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
                 }
             });
 
-            if (overlay) {
-                overlay.addEventListener('click', function() {
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('show');
-                });
-            }
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    closeOpeningBalanceModal();
+                    closeTransferModal();
+                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
 
             window.addEventListener('resize', function() {
                 if (window.innerWidth > MOBILE_BREAKPOINT) {
                     sidebar.classList.remove('open');
-                    if (overlay) overlay.classList.remove('show');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
                 } else {
-                    sidebar.classList.remove('closed');
-                    main.classList.remove('full');
+                    sidebar.classList.remove('collapsed');
+                    main.classList.remove('expanded');
                 }
             });
         }
@@ -1689,11 +2531,12 @@
 
             var icon = toggle.querySelector('i');
 
+            // تطبيق الثيم من الإعدادات المركزية
             var isDark = Supabase.isDarkModeEnabled();
             Supabase.applyTheme(isDark);
 
             if (icon) {
-                icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
             }
 
             toggle.addEventListener('click', function() {
@@ -1702,7 +2545,7 @@
 
                 Supabase.toggleTheme(newState).then(function() {
                     if (icon) {
-                        icon.className = newState ? 'fas fa-sun' : 'fas fa-moon';
+                        icon.className = newState ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
                     }
                 });
             });
@@ -1712,14 +2555,31 @@
         // REFRESH BUTTON
         // ================================================================
         function initRefresh() {
-            var refreshBtn = document.getElementById('refreshBtn');
-            if (!refreshBtn) return;
-
-            refreshBtn.addEventListener('click', function() {
+            document.getElementById('refreshBtn').addEventListener('click', function() {
                 loadData();
                 Supabase.applySystemLogo();
                 showToast('🔄 جاري تحديث البيانات...', 'info');
             });
+        }
+
+        // ================================================================
+        // NOTIFICATIONS
+        // ================================================================
+        function initNotifications() {
+            var notifBtn = document.getElementById('notifBtn');
+            if (notifBtn) {
+                notifBtn.addEventListener('click', function() {
+                    var messages = [
+                        '📊 تم تحديث التقرير المالي اليومي',
+                        '💰 تم إضافة معاملة جديدة بقيمة ' + Supabase.formatCurrency(3200),
+                        '⚠️ تنبيه: رصيد الخزينة منخفض',
+                        '✅ تم تسديد مديونية العميل أحمد السيد',
+                        '📈 تقرير الشهر جاهز للعرض'
+                    ];
+                    var random = messages[Math.floor(Math.random() * messages.length)];
+                    showToast(random, 'info');
+                });
+            }
         }
 
         // ================================================================
@@ -1729,7 +2589,7 @@
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 'b') {
                     e.preventDefault();
-                    var toggle = document.querySelector('.menu-toggle-btn');
+                    var toggle = document.getElementById('sidebarToggle');
                     if (toggle) toggle.click();
                 }
                 if (e.ctrlKey && e.key === 'i') {
@@ -1776,14 +2636,52 @@
         }
 
         // ================================================================
-        // MANUAL REFRESH
+        // TOAST
         // ================================================================
-        async function manualRefresh() {
-            var icon = document.querySelector('#refreshBtn i');
-            if (icon) icon.classList.add('fa-spin');
-            await loadData();
-            if (icon) icon.classList.remove('fa-spin');
-            showToast('✅ تم تحديث البيانات', 'success');
+        function showToast(message, type) {
+            var existingToasts = document.querySelectorAll('.toast-notification');
+            for (var i = 0; i < existingToasts.length; i++) {
+                existingToasts[i].remove();
+            }
+
+            var toast = document.createElement('div');
+            toast.className = 'toast-notification';
+
+            var iconClass = 'bi-info-circle-fill';
+            var toastClass = '';
+
+            if (type === 'success') {
+                iconClass = 'bi-check-circle-fill';
+                toastClass = 'toast-success';
+            } else if (type === 'error') {
+                iconClass = 'bi-x-circle-fill';
+                toastClass = 'toast-error';
+            } else if (type === 'warning') {
+                iconClass = 'bi-exclamation-triangle-fill';
+                toastClass = 'toast-warning';
+            }
+
+            toast.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
+                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
+                </div>
+            `;
+
+            if (toastClass) {
+                toast.classList.add(toastClass);
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(function() {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
         }
 
         // ================================================================
@@ -1798,14 +2696,12 @@
         window.closeTransferModal = closeTransferModal;
         window.deleteTransaction = deleteTransaction;
         window.logout = logout;
-        window.manualRefresh = manualRefresh;
+        window.showToast = showToast;
         window.toggleClientField = toggleClientField;
 
-        console.log('✅ تم تحميل treasury.html بنجاح');
-        console.log('📌 يمكنك إضافة واردات ومصروفات جديدة');
-        console.log('📌 يمكنك إضافة رصيد افتتاحي للخزينة');
-        console.log('📌 يمكنك تحويل الأموال من الخزينة إلى البنوك');
-        console.log('📌 يتم تحديث الرصيد تلقائياً بعد كل عملية');
+        console.log('💰 نظام الخزينة - حراء للسياحة');
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+I (وارد) | Ctrl+E (مصروف) | Ctrl+O (رصيد افتتاحي) | Ctrl+T (تحويل)');
+        console.log('✅ النظام جاهز للعمل');
     </script>
 
 </body>

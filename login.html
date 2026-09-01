@@ -3,76 +3,66 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
     <title>تسجيل الدخول - حراء للسياحة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="theme.css" />
+    <script src="supabase.js"></script>
     <style>
         body {
-            background:
-                radial-gradient(circle at 15% 15%, rgba(156,122,60,0.16), transparent 40%),
-                linear-gradient(135deg, #0e1c2e 0%, #14263b 55%, #1a2e46 100%);
+            background: radial-gradient(circle at 20% 20%, #16283f 0%, #0e1c2e 55%, #08131f 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: var(--space-5);
+            padding: 20px;
         }
-        .auth-card {
+        .login-card {
             background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: var(--space-7) var(--space-6);
+            border-radius: 16px;
+            padding: 38px 34px;
             width: 100%;
-            max-width: 420px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-light);
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(8,19,31,0.35);
+            border: 1px solid var(--border);
             animation: modalPop 0.25s ease;
         }
         .brand-icon {
-            width: 60px; height: 60px; border-radius: var(--radius-md);
+            width: 56px; height: 56px; border-radius: 12px;
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             display: flex; align-items: center; justify-content: center;
-            font-size: 26px; margin: 0 auto var(--space-4);
-            box-shadow: var(--shadow-md);
-            color: var(--accent-light);
+            font-size: 24px; margin: 0 auto 14px;
+            border: 1px solid var(--accent);
         }
-        .auth-title { font-size: var(--text-xl); font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
-        .auth-title .accent { color: var(--accent-dark); }
-        .auth-subtitle { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: 4px; }
-
-        .form-note {
+        .error-message, .success-message {
             display: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            margin-bottom: 14px;
             align-items: center;
             gap: 8px;
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: var(--text-sm);
-            margin-bottom: var(--space-4);
-            border: 1px solid transparent;
         }
-        .form-note.show { display: flex; }
-        .form-note.error { background: var(--danger-bg); color: var(--danger); border-color: rgba(173,63,57,0.15); }
-        .form-note.success { background: var(--success-bg); color: var(--success); border-color: rgba(28,122,78,0.15); }
-
-        .auth-footer-link { font-size: var(--text-sm); color: var(--text-tertiary); }
-        .auth-footer-link a { color: var(--accent-dark); font-weight: 600; }
-        .auth-footer-link a:hover { text-decoration: underline; }
+        .error-message.show, .success-message.show { display: flex; }
+        .error-message { background: var(--danger-bg); color: var(--danger); }
+        .success-message { background: var(--success-bg); color: var(--success); }
     </style>
 </head>
 <body>
 
-<div class="auth-card">
+<div class="login-card">
     <div class="text-center mb-6">
-        <div class="brand-icon"><i class="fas fa-building-columns"></i></div>
-        <h1 class="auth-title">حراء <span class="accent">للسياحة</span></h1>
-        <p class="auth-subtitle">النظام المحاسبي المتكامل لإدارة الرحلات</p>
+        <div class="brand-icon"><i class="fas fa-coins" style="color:var(--accent-light);"></i></div>
+        <h1 class="page-title-main" style="font-size:19px;">🕋 حراء <span style="color:var(--accent-dark);">للسياحة</span></h1>
+        <p class="text-gray-400" style="font-size:11.5px;" >النظام المحاسبي المتكامل</p>
     </div>
 
     <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
         <div class="form-field">
             <label>البريد الإلكتروني</label>
-            <input type="email" id="email" placeholder="name@company.com" required autofocus />
+            <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required autofocus />
         </div>
 
         <div class="form-field">
@@ -80,20 +70,20 @@
             <input type="password" id="password" placeholder="أدخل كلمة المرور" required />
         </div>
 
-        <div class="flex items-center justify-between text-sm mb-4">
-            <label class="flex items-center gap-2" style="color: var(--text-tertiary);">
+        <div class="flex items-center justify-between" style="font-size:12.5px;">
+            <label class="flex items-center gap-2 text-gray-500">
                 <input type="checkbox" id="rememberMe" class="rounded" /> تذكرني
             </label>
-            <a href="#" style="color: var(--accent-dark); font-weight: 600;" class="hover:underline">نسيت كلمة المرور؟</a>
+            <a href="#" style="color:var(--accent-dark);" class="hover:underline">نسيت كلمة المرور؟</a>
         </div>
 
-        <div id="errorMessage" class="form-note error">
+        <div id="errorMessage" class="error-message">
             <i class="fas fa-circle-exclamation"></i>
-            <span id="errorText">تعذّر التحقق من البريد الإلكتروني أو كلمة المرور</span>
+            <span id="errorText">خطأ في البريد الإلكتروني أو كلمة المرور</span>
         </div>
-        <div id="successMessage" class="form-note success">
+        <div id="successMessage" class="success-message">
             <i class="fas fa-circle-check"></i>
-            <span>تم تسجيل الدخول بنجاح، جاري تحويلك إلى لوحة التحكم</span>
+            <span>تم تسجيل الدخول بنجاح... جاري التحويل</span>
         </div>
 
         <button type="submit" class="btn-primary-solid w-full justify-center py-3" id="loginBtn">
@@ -102,14 +92,15 @@
         </button>
     </form>
 
-    <div class="text-center auth-footer-link mt-6">
-        ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a>
+    <div class="text-center mt-6" style="font-size:12.5px;color:var(--text-tertiary);">
+        ليس لديك حساب؟ <a href="register.html" style="color:var(--accent-dark);" class="font-semibold hover:underline">إنشاء حساب جديد</a>
     </div>
 </div>
 
+
 <script>
-var SUPABASE_URL = 'https://exalyiwznoadnugtkyne.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_ySucS0qeduwnGooAgMrPEw_coMeDbno';
+var SUPABASE_URL = SUPABASE_CONFIG.URL;
+var SUPABASE_KEY = SUPABASE_CONFIG.KEY;
 
 document.addEventListener('DOMContentLoaded', function() {
     var session = localStorage.getItem('supabase_session');
@@ -175,7 +166,7 @@ async function handleLogin(event) {
         var data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error_description || data.message || 'تعذّر تسجيل الدخول');
+            throw new Error(data.error_description || data.message || 'فشل تسجيل الدخول');
         }
 
         var sessionData = {
@@ -197,8 +188,8 @@ async function handleLogin(event) {
         setTimeout(function() { window.location.href = 'index.html'; }, 1200);
 
     } catch (error) {
-        console.error('خطأ في تسجيل الدخول:', error);
-        errorText.textContent = error.message || 'تعذّر تسجيل الدخول. تحقق من البريد الإلكتروني وكلمة المرور';
+        console.error('❌ خطأ في تسجيل الدخول:', error);
+        errorText.textContent = error.message || 'فشل تسجيل الدخول. تحقق من البريد الإلكتروني وكلمة المرور';
         errorMessage.classList.add('show');
     }
 
