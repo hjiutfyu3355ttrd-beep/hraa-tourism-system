@@ -262,13 +262,17 @@ async function handleRegister(event) {
 
         var userId = data.id || (data.user && data.user.id);
         var userEmail = data.email || (data.user && data.user.email);
+        var accessToken = data.access_token;
 
         if (!userId || !userEmail) {
             throw new Error('لم يتم استلام بيانات المستخدم بشكل صحيح');
         }
+        if (!accessToken) {
+            throw new Error('تم إنشاء الحساب لكن لم يتم تفعيل الجلسة تلقائيًا. يرجى تسجيل الدخول يدويًا لإكمال الملف الشخصي.');
+        }
 
         var role = isFirstUser ? 'admin' : 'user';
-        await addUserToDatabase(userId, fullName, userEmail, role, companyName);
+        await addUserToDatabase(userId, fullName, userEmail, role, companyName, accessToken);
 
         var successMsg = isFirstUser ?
             '✅ تم إنشاء حساب المدير بنجاح! سيتم تحويلك إلى صفحة تسجيل الدخول.' :
@@ -290,12 +294,12 @@ async function handleRegister(event) {
     registerSpinner.style.display = 'none';
 }
 
-async function addUserToDatabase(userId, fullName, email, role, companyName) {
+async function addUserToDatabase(userId, fullName, email, role, companyName, accessToken) {
     try {
         var response = await fetch(SUPABASE_URL + '/rest/v1/users', {
             method: 'POST',
             headers: {
-                'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + accessToken,
                 'Content-Type': 'application/json', 'Prefer': 'return=representation'
             },
             body: JSON.stringify({
