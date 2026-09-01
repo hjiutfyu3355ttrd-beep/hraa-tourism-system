@@ -247,12 +247,13 @@ async function handleRegister(event) {
         });
 
         var data = await response.json();
+        console.log('📩 رد Supabase الكامل على signup:', JSON.stringify(data));
 
         if (response.status === 429) {
             throw new Error('⚠️ تم تجاوز معدل الطلبات. يرجى الانتظار دقيقة ثم المحاولة مرة أخرى.');
         }
         if (!response.ok) {
-            var errorMsg = data.error_description || data.message || 'فشل إنشاء الحساب';
+            var errorMsg = data.error_description || data.message || data.msg || data.error || 'فشل إنشاء الحساب';
             if (errorMsg.includes('already registered')) {
                 errorMsg = 'هذا البريد الإلكتروني مسجل بالفعل. يرجى استخدام بريد آخر.';
             }
