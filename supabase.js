@@ -143,11 +143,33 @@ function logoutUser() {
 
 /**
  * التحقق من الصلاحية (هل المستخدم مدير؟)
+ * ملاحظة أمان: لا يجب الاعتماد على user_metadata من التوكن لأن
+ * المستخدم نفسه يقدر يعدّلها عبر Auth API مباشرة. المصدر الموثوق
+ * الوحيد هو عمود role في جدول public.users (محمي بـ RLS: كل مستخدم
+ * يقرأ صفّه فقط)، لذلك الدالة async وبتستعلم القيمة من القاعدة كل مرة.
  */
-function isAdmin() {
+async function isAdmin() {
+    var session = getSession();
     var user = getCurrentUser();
-    if (!user) return false;
-    return user.user_metadata?.role === 'admin' || user.email === 'admin@qasr.com';
+    if (!user || !session || !session.access_token) return false;
+
+    try {
+        var response = await fetch(
+            SUPABASE_CONFIG.URL + '/rest/v1/users?id=eq.' + user.id + '&select=role',
+            {
+                headers: {
+                    'apikey': SUPABASE_CONFIG.KEY,
+                    'Authorization': 'Bearer ' + session.access_token
+                }
+            }
+        );
+        if (!response.ok) return false;
+        var rows = await response.json();
+        return !!(rows && rows[0] && rows[0].role === 'admin');
+    } catch (e) {
+        console.error('❌ خطأ في التحقق من صلاحية المدير:', e);
+        return false;
+    }
 }
 
 /**
@@ -1196,7 +1218,8 @@ function initSystem() {
         console.warn('⚠️ التوكن غير صالح، محاولة التحديث...');
         refreshToken().then(function(success) {
             if (!success) {
-                console.warn('⚠️ فشل تحديث التوكن، قد تحتاج لتسجيل الدخول مرة أخرى');
+                console.warn('⚠️ فشل تحديث التوكن، سيتم تسجيل الخروج تلقائيًا');
+                logoutUser();
             }
         });
     }
@@ -1326,3 +1349,21 @@ console.log('💰 العملات المتاحة: SAR, AED, EGP, USD, EUR');
 console.log('⚙️ الإعدادات محفوظة في جدول user_settings (بدون RPC)');
 console.log('💰 العملة الحالية:', currentCurrency, currentCurrencySymbol);
 console.log('🎨 الوضع المظلم:', isDarkModeEnabled() ? 'مفعل ✅' : 'غير مفعل ❌');
+
+// ================================================================
+// 13. حارس الدخول التلقائي (Auth Guard)
+// يشتغل فور تحميل هذا الملف في أي صفحة، قبل تحميل أي بيانات من
+// الصفحة نفسها. أي صفحة غير login.html/register.html بدون جلسة
+// صالحة يتم تحويلها فورًا لصفحة تسجيل الدخول.
+// ================================================================
+(function requireAuthGuard() {
+    var PUBLIC_PAGES = ['login.html', 'register.html'];
+    var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+    if (PUBLIC_PAGES.indexOf(currentPage) !== -1) return;
+
+    if (!isLoggedIn()) {
+        console.warn('⚠️ لا توجد جلسة نشطة، جاري التحويل لصفحة تسجيل الدخول');
+        window.location.href = 'login.html';
+    }
+})();

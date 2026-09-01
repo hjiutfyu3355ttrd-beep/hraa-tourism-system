@@ -1710,7 +1710,7 @@
         // ================================================================
         // DOM READY
         // ================================================================
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             if (!Supabase.initSystem()) return;
 
             var settings = Supabase.getSystemSettings();
@@ -1733,7 +1733,7 @@
             updateDate();
             loadData();
             setInterval(loadData, 60000);
-            checkUserPermissions();
+            await checkUserPermissions();
         });
 
         // ================================================================
@@ -1783,10 +1783,10 @@
         // ================================================================
         // CHECK USER PERMISSIONS
         // ================================================================
-        function checkUserPermissions() {
+        async function checkUserPermissions() {
             var usersMenu = document.getElementById('usersMenu');
             if (!usersMenu) return;
-            var isAdmin = currentUser && (currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com');
+            var isAdmin = currentUser && await Supabase.isAdmin();
             if (!isAdmin) {
                 usersMenu.style.display = 'none';
             }

@@ -1428,7 +1428,7 @@
                 <div class="profile-card">
                     <div class="profile-avatar-large" id="profileAvatarLarge">م</div>
                     <div class="profile-name" id="profileDisplayName">مدير النظام</div>
-                    <div class="profile-email" id="profileDisplayEmail">admin@qasr.com</div>
+                    <div class="profile-email" id="profileDisplayEmail">—</div>
                     <div class="profile-role" id="profileDisplayRole">مدير</div>
 
                     <div class="profile-meta">
@@ -1553,7 +1553,7 @@
         // ================================================================
         // DOM READY
         // ================================================================
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             if (!Supabase.initSystem()) return;
 
             var settings = Supabase.getSystemSettings();
@@ -1577,7 +1577,7 @@
             initKeyboardShortcuts();
             updateDate();
             loadProfile();
-            checkUserPermissions();
+            await checkUserPermissions();
         });
 
         // ================================================================
@@ -1632,10 +1632,10 @@
         // ================================================================
         // CHECK USER PERMISSIONS
         // ================================================================
-        function checkUserPermissions() {
+        async function checkUserPermissions() {
             var usersMenu = document.getElementById('usersMenu');
             if (!usersMenu) return;
-            var isAdmin = currentUser && (currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com');
+            var isAdmin = currentUser && await Supabase.isAdmin();
             if (!isAdmin) {
                 usersMenu.style.display = 'none';
             }

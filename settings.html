@@ -1925,7 +1925,7 @@
         // ================================================================
         // DOM READY
         // ================================================================
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             if (!Supabase.initSystem()) return;
 
             settings = Supabase.getSystemSettings();
@@ -1938,8 +1938,8 @@
                 return;
             }
 
-            // التحقق من صلاحية المدير
-            var isAdmin = currentUser.user_metadata?.role === 'admin' || currentUser.email === 'admin@qasr.com';
+            // التحقق من صلاحية المدير (من عمود role في public.users، محمي بـ RLS)
+            var isAdmin = await Supabase.isAdmin();
             if (!isAdmin) {
                 showToast('⛔ غير مصرح لك بالوصول إلى هذه الصفحة', 'error');
                 window.location.href = 'index.html';
