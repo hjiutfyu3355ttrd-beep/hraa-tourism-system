@@ -103,15 +103,9 @@ var SUPABASE_URL = SUPABASE_CONFIG.URL;
 var SUPABASE_KEY = SUPABASE_CONFIG.KEY;
 
 document.addEventListener('DOMContentLoaded', function() {
-    var session = localStorage.getItem('supabase_session');
-    if (session) {
-        try {
-            var sessionData = JSON.parse(session);
-            if (sessionData && sessionData.user) {
-                window.location.href = 'index.html';
-                return;
-            }
-        } catch (e) {}
+    if (Supabase.isLoggedIn()) {
+        window.location.href = 'index.html';
+        return;
     }
 
     var remembered = localStorage.getItem('remembered_email');
