@@ -993,6 +993,227 @@ async function getAgents() {
 }
 
 // ================================================================
+// 6ب) المحرك المحاسبي — دليل الحسابات / القيود / السندات / القوائم المالية
+// ================================================================
+
+/** جلب كل الحسابات (دليل الحسابات) */
+async function getAccounts() {
+    return await fetchData('chart_of_accounts', { order: 'code' });
+}
+
+/** إضافة حساب جديد لدليل الحسابات */
+async function addAccount(data) {
+    var result = await addData('chart_of_accounts', data);
+    return result[0] || result;
+}
+
+/** توليد رقم سند تلقائي متسلسل حسب نوع السند */
+async function generateVoucherNo(voucherType) {
+    try {
+        var all = await fetchData('vouchers', { order: 'created_at', limit: 500 });
+        var sameType = all.filter(function(v) { return v.voucher_type === voucherType; });
+        var prefix = (voucherType === 'قبض') ? 'RV' : (voucherType === 'صرف') ? 'PV' : 'V';
+        return prefix + '-' + String(sameType.length + 1).padStart(5, '0');
+    } catch (e) {
+        return 'V-' + Date.now();
+    }
+}
+
+/**
+ * إنشاء قيد يومية كامل (رأس + بنود مدين/دائن)
+ * lines: [{ account_id, debit, credit, description }, ...]
+ * شرط أساسي: مجموع المدين = مجموع الدائن (توازن القيد)
+ */
+async function addJournalEntry(entryHeader, lines) {
+    var totalDebit = lines.reduce(function(s, l) { return s + (parseFloat(l.debit) || 0); }, 0);
+    var totalCredit = lines.reduce(function(s, l) { return s + (parseFloat(l.credit) || 0); }, 0);
+
+    if (Math.abs(totalDebit - totalCredit) > 0.01) {
+        throw new Error('القيد غير متوازن: المدين (' + totalDebit + ') لا يساوي الدائن (' + totalCredit + ')');
+    }
+
+    var entryResult = await addData('journal_entries', entryHeader);
+    var entry = entryResult[0] || entryResult;
+
+    var linesWithEntry = lines.map(function(l) {
+        return {
+            entry_id: entry.id,
+            account_id: l.account_id,
+            debit: parseFloat(l.debit) || 0,
+            credit: parseFloat(l.credit) || 0,
+            description: l.description || entryHeader.description || ''
+        };
+    });
+
+    await addData('journal_entry_lines', linesWithEntry);
+    return entry;
+}
+
+/** جلب قيود اليومية (اختياريًا بحدود تاريخ) */
+async function getJournalEntries(dateFrom, dateTo) {
+    var opts = { order: 'entry_date', limit: 1000 };
+    var entries = await fetchData('journal_entries', opts);
+    if (dateFrom) entries = entries.filter(function(e) { return e.entry_date >= dateFrom; });
+    if (dateTo) entries = entries.filter(function(e) { return e.entry_date <= dateTo; });
+    return entries;
+}
+
+/** جلب كل بنود القيود (تُستخدم لحساب ميزان المراجعة والقوائم المالية) */
+async function getJournalEntryLines() {
+    return await fetchData('journal_entry_lines', { limit: 5000 });
+}
+
+/** جلب كل السندات (اختياريًا بحدود تاريخ ونوع) */
+async function getVouchers(options) {
+    var vouchers = await fetchData('vouchers', { order: 'voucher_date', limit: 1000 });
+    if (options) {
+        if (options.dateFrom) vouchers = vouchers.filter(function(v) { return v.voucher_date >= options.dateFrom; });
+        if (options.dateTo) vouchers = vouchers.filter(function(v) { return v.voucher_date <= options.dateTo; });
+        if (options.type && options.type !== 'all') vouchers = vouchers.filter(function(v) { return v.voucher_type === options.type; });
+    }
+    return vouchers;
+}
+
+/**
+ * إضافة سند (قبض أو صرف) — ينشئ تلقائيًا القيد المحاسبي المزدوج المرتبط به.
+ * سند قبض: مدين = حساب الصندوق/البنك ، دائن = الحساب المقابل (عميل/إيراد/مندوب)
+ * سند صرف: مدين = الحساب المقابل (مصروف/مورد/مندوب) ، دائن = حساب الصندوق/البنك
+ */
+async function addVoucher(v) {
+    if (!v.voucher_no) {
+        v.voucher_no = await generateVoucherNo(v.voucher_type);
+    }
+
+    var lines;
+    if (v.voucher_type === 'قبض') {
+        lines = [
+            { account_id: v.cash_account_id, debit: v.amount, credit: 0 },
+            { account_id: v.counter_account_id, debit: 0, credit: v.amount }
+        ];
+    } else {
+        lines = [
+            { account_id: v.counter_account_id, debit: v.amount, credit: 0 },
+            { account_id: v.cash_account_id, debit: 0, credit: v.amount }
+        ];
+    }
+
+    var entry = await addJournalEntry({
+        entry_no: v.voucher_no,
+        entry_date: v.voucher_date,
+        description: 'سند ' + v.voucher_type + ' رقم ' + v.voucher_no + (v.description ? ' — ' + v.description : ''),
+        source_type: 'voucher'
+    }, lines);
+
+    var voucherResult = await addData('vouchers', {
+        voucher_no: v.voucher_no,
+        voucher_type: v.voucher_type,
+        voucher_date: v.voucher_date,
+        cash_account_id: v.cash_account_id,
+        counter_account_id: v.counter_account_id,
+        party_type: v.party_type || null,
+        party_id: v.party_id || null,
+        party_name: v.party_name || null,
+        amount: v.amount,
+        description: v.description || null,
+        journal_entry_id: entry.id
+    });
+
+    return voucherResult[0] || voucherResult;
+}
+
+/** حذف سند + القيد المرتبط به (البنود تُحذف تلقائيًا عبر cascade) */
+async function deleteVoucher(voucher) {
+    if (voucher.journal_entry_id) {
+        try { await deleteData('journal_entries', voucher.journal_entry_id); } catch (e) { console.warn(e); }
+    }
+    return await deleteData('vouchers', voucher.id);
+}
+
+/**
+ * حساب ميزان المراجعة: لكل حساب — إجمالي مدين، إجمالي دائن، الرصيد
+ * (فلترة اختيارية بفترة زمنية عبر ربط entry_id بتاريخ journal_entries)
+ */
+async function getTrialBalance(dateFrom, dateTo) {
+    var accounts = await getAccounts();
+    var entries = await getJournalEntries(dateFrom, dateTo);
+    var entryIds = {};
+    entries.forEach(function(e) { entryIds[e.id] = true; });
+
+    var lines = await getJournalEntryLines();
+    if (dateFrom || dateTo) {
+        lines = lines.filter(function(l) { return entryIds[l.entry_id]; });
+    }
+
+    var totals = {};
+    lines.forEach(function(l) {
+        if (!totals[l.account_id]) totals[l.account_id] = { debit: 0, credit: 0 };
+        totals[l.account_id].debit += parseFloat(l.debit) || 0;
+        totals[l.account_id].credit += parseFloat(l.credit) || 0;
+    });
+
+    return accounts.map(function(a) {
+        var t = totals[a.id] || { debit: 0, credit: 0 };
+        return {
+            code: a.code,
+            name: a.name,
+            account_type: a.account_type,
+            debit: t.debit,
+            credit: t.credit,
+            balance: t.debit - t.credit
+        };
+    }).filter(function(row) { return row.debit !== 0 || row.credit !== 0; });
+}
+
+/** حساب قائمة الأرباح والخسائر لفترة معينة */
+async function getIncomeStatement(dateFrom, dateTo) {
+    var trialBalance = await getTrialBalance(dateFrom, dateTo);
+    var revenues = trialBalance.filter(function(r) { return r.account_type === 'revenue'; })
+        .map(function(r) { return { code: r.code, name: r.name, amount: r.credit - r.debit }; });
+    var expenses = trialBalance.filter(function(r) { return r.account_type === 'expense'; })
+        .map(function(r) { return { code: r.code, name: r.name, amount: r.debit - r.credit }; });
+
+    var totalRevenue = revenues.reduce(function(s, r) { return s + r.amount; }, 0);
+    var totalExpense = expenses.reduce(function(s, e) { return s + e.amount; }, 0);
+
+    return {
+        revenues: revenues,
+        expenses: expenses,
+        totalRevenue: totalRevenue,
+        totalExpense: totalExpense,
+        netProfit: totalRevenue - totalExpense
+    };
+}
+
+/** حساب قائمة المركز المالي (الميزانية) كما في تاريخ معين */
+async function getBalanceSheet(asOfDate) {
+    var trialBalance = await getTrialBalance(null, asOfDate);
+    var income = await getIncomeStatement(null, asOfDate);
+
+    var assets = trialBalance.filter(function(r) { return r.account_type === 'asset'; })
+        .map(function(r) { return { code: r.code, name: r.name, amount: r.debit - r.credit }; });
+    var liabilities = trialBalance.filter(function(r) { return r.account_type === 'liability'; })
+        .map(function(r) { return { code: r.code, name: r.name, amount: r.credit - r.debit }; });
+    var equity = trialBalance.filter(function(r) { return r.account_type === 'equity'; })
+        .map(function(r) { return { code: r.code, name: r.name, amount: r.credit - r.debit }; });
+
+    equity.push({ code: '3900', name: 'صافي أرباح الفترة الحالية', amount: income.netProfit });
+
+    var totalAssets = assets.reduce(function(s, a) { return s + a.amount; }, 0);
+    var totalLiabilities = liabilities.reduce(function(s, l) { return s + l.amount; }, 0);
+    var totalEquity = equity.reduce(function(s, e) { return s + e.amount; }, 0);
+
+    return {
+        assets: assets,
+        liabilities: liabilities,
+        equity: equity,
+        totalAssets: totalAssets,
+        totalLiabilities: totalLiabilities,
+        totalEquity: totalEquity,
+        isBalanced: Math.abs(totalAssets - (totalLiabilities + totalEquity)) < 0.5
+    };
+}
+
+// ================================================================
 // 7. دوال خاصة بالشعار
 // ================================================================
 
@@ -1326,7 +1547,21 @@ window.Supabase = {
     getClients: getClients,
     getUsers: getUsers,
     getServices: getServices,
-    
+
+    // المحرك المحاسبي (دليل حسابات / قيود / سندات / قوائم مالية)
+    getAccounts: getAccounts,
+    addAccount: addAccount,
+    generateVoucherNo: generateVoucherNo,
+    addJournalEntry: addJournalEntry,
+    getJournalEntries: getJournalEntries,
+    getJournalEntryLines: getJournalEntryLines,
+    getVouchers: getVouchers,
+    addVoucher: addVoucher,
+    deleteVoucher: deleteVoucher,
+    getTrialBalance: getTrialBalance,
+    getIncomeStatement: getIncomeStatement,
+    getBalanceSheet: getBalanceSheet,
+
     // النظام
     initSystem: initSystem,
     updateUserUI: updateUserUI,

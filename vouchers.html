@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
-    <title id="pageTitle">العملاء - حراء للسياحة</title>
+    <title id="pageTitle">السندات - حراء للسياحة</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +23,7 @@
 
     <style>
         /* ================================================================
-           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           DESIGN SYSTEM - Corporate Accounting (مطابق لـ index.html)
            ================================================================ */
         :root {
             --primary: #0e1c2e;
@@ -111,7 +111,7 @@
         }
 
         /* ================================================================
-           SIDEBAR
+           SIDEBAR (مطابق تماماً لـ index.html)
            ================================================================ */
         .sidebar {
             position: fixed;
@@ -346,7 +346,7 @@
         }
 
         /* ================================================================
-           NAVBAR
+           NAVBAR (مطابق لـ index.html)
            ================================================================ */
         .navbar-custom {
             background: var(--bg);
@@ -456,6 +456,17 @@
             color: var(--text);
         }
 
+        .nav-btn .notification-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--danger);
+            border: 1.5px solid var(--bg);
+        }
+
         .user-profile {
             display: flex;
             align-items: center;
@@ -513,6 +524,58 @@
         /* ================================================================
            PAGE HEADER
            ================================================================ */
+        .filter-bar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+        .filter-bar .filter-label {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-bar .filter-label i { color: var(--accent); }
+        .filter-bar select,
+        .filter-bar input {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 12px;
+            background: var(--surface);
+            color: var(--text);
+        }
+        .filter-bar .date-group { display: flex; align-items: center; gap: 6px; }
+        .filter-bar .date-group input { width: 130px; }
+        .status-badge {
+            padding: 2px 10px; border-radius: var(--radius-full); font-size: 10px;
+            font-weight: 700; display: inline-flex; align-items:center; gap:4px;
+        }
+        .status-active { background: var(--success-bg); color: var(--success); }
+        .status-cancelled { background: var(--danger-bg); color: var(--danger); }
+        .voucher-type-toggle { display:flex; gap:8px; margin-bottom:14px; }
+        .voucher-type-toggle button {
+            flex:1; padding:10px; border-radius: var(--radius-sm); border:1px solid var(--border);
+            background: var(--surface); font-weight:700; cursor:pointer; transition: var(--t-base);
+        }
+        .voucher-type-toggle button.active-receipt { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+        .voucher-type-toggle button.active-payment { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); }
+        @media print {
+            body * { visibility: hidden; }
+            #printVoucherArea, #printVoucherArea * { visibility: visible; }
+            #printVoucherArea { position: absolute; top: 0; left: 0; width: 100%; display: block !important; }
+        }
+
         .page-header {
             display: flex;
             align-items: flex-end;
@@ -597,17 +660,17 @@
             opacity: 0.5;
         }
 
-        .stat-blue .stat-number {
-            color: var(--info);
-        }
         .stat-green .stat-number {
             color: var(--success);
         }
-        .stat-gold .stat-number {
-            color: var(--accent);
-        }
         .stat-red .stat-number {
             color: var(--danger);
+        }
+        .stat-blue .stat-number {
+            color: var(--info);
+        }
+        .stat-gold .stat-number {
+            color: var(--accent);
         }
 
         /* ================================================================
@@ -672,11 +735,6 @@
             border-color: var(--accent);
             color: var(--accent-dark);
             background: var(--accent-tint);
-        }
-
-        .btn-sm {
-            font-size: 10px;
-            padding: 4px 10px;
         }
 
         .btn-icon {
@@ -750,12 +808,6 @@
             font-size: 13px;
         }
 
-        .record-count {
-            font-size: 11px;
-            color: var(--text-tertiary);
-            font-weight: 500;
-        }
-
         /* ================================================================
            TABLE
            ================================================================ */
@@ -801,6 +853,16 @@
             background: var(--surface-alt);
         }
 
+        .amount-income {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .amount-expense {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
         .badge-custom {
             padding: 1px 8px;
             border-radius: var(--radius-full);
@@ -810,17 +872,22 @@
             font-family: var(--font-display);
         }
 
-        .badge-admin {
-            background: var(--info-bg);
-            color: var(--info);
-        }
-
-        .badge-finance {
+        .badge-income {
             background: var(--success-bg);
             color: var(--success);
         }
 
-        .badge-user {
+        .badge-expense {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .badge-transfer {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .badge-opening {
             background: var(--warning-bg);
             color: var(--warning);
         }
@@ -847,7 +914,7 @@
             background: var(--surface);
             border-radius: var(--radius-lg);
             padding: 28px 32px;
-            max-width: 520px;
+            max-width: 540px;
             width: 92%;
             max-height: 90vh;
             overflow-y: auto;
@@ -908,11 +975,42 @@
             box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
         }
 
+        .modal-box .client-group {
+            display: none;
+            margin-bottom: 12px;
+        }
+
+        .modal-box .client-group.show {
+            display: block;
+        }
+
         .modal-actions {
             display: flex;
             gap: 10px;
             margin-top: 16px;
             justify-content: flex-end;
+        }
+
+        /* ================================================================
+           MODAL - الرصيد الافتتاحي
+           ================================================================ */
+        .modal-opening {
+            max-width: 420px;
+        }
+
+        .modal-opening .opening-info {
+            background: var(--warning-bg);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            border-right: 3px solid var(--warning);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .modal-opening .opening-info i {
+            color: var(--warning);
+            margin-left: 6px;
         }
 
         /* ================================================================
@@ -1218,7 +1316,7 @@
         }
 
         /* ================================================================
-           DARK MODE
+           DARK MODE (مطابق تماماً لـ index.html)
            ================================================================ */
         body.dark-mode {
             background: var(--primary-dark);
@@ -1383,19 +1481,30 @@
             border-color: var(--accent);
         }
 
-        body.dark-mode .badge-admin {
-            background: rgba(58, 107, 143, 0.2);
-            color: #8ab4d4;
-        }
-
-        body.dark-mode .badge-finance {
+        body.dark-mode .badge-income {
             background: rgba(30, 122, 85, 0.2);
             color: #7bc4a0;
         }
 
-        body.dark-mode .badge-user {
+        body.dark-mode .badge-expense {
+            background: rgba(184, 74, 62, 0.2);
+            color: #dba09a;
+        }
+
+        body.dark-mode .badge-transfer {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .badge-opening {
             background: rgba(184, 148, 58, 0.2);
             color: #d4b87a;
+        }
+
+        body.dark-mode .modal-opening .opening-info {
+            background: rgba(184, 148, 58, 0.15);
+            color: #d4b87a;
+            border-right-color: var(--warning);
         }
 
         body.dark-mode .btn-icon-edit {
@@ -1451,28 +1560,13 @@
         body.dark-mode .footer-custom .footer-link:hover {
             color: var(--accent-light);
         }
-    
-        /* ================================================================
-           STATUS BADGES (إضافي)
-           ================================================================ */
-        .status-badge {
-            padding: 1px 8px;
-            border-radius: var(--radius-full);
-            font-size: 9px;
-            font-weight: 600;
-            display: inline-block;
-            font-family: var(--font-display);
-        }
-        .status-active { background: var(--success-bg); color: var(--success); }
-        .status-pending { background: var(--warning-bg); color: var(--warning); }
-        .status-completed { background: var(--info-bg); color: var(--info); }
-        .status-cancelled { background: var(--danger-bg); color: var(--danger); }
-        .status-info { background: var(--info-bg); color: var(--info); }
-
     </style>
 </head>
 <body>
 
+    <!-- ================================================================ -->
+    <!-- SIDEBAR - مطابق تماماً لـ index.html -->
+    <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <div class="brand-row">
@@ -1495,11 +1589,11 @@
             <ul class="nav-list">
                 <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
                 <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
-                <li><a href="clients.html" class="active"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
                 <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
-                <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="vouchers.html" class="active"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
             <div class="nav-section-title">التقارير</div>
@@ -1511,7 +1605,7 @@
             <div class="nav-section-title">الإدارة</div>
             <ul class="nav-list">
                 <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
-                <li><a href="users.html"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
                 <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
             </ul>
 
@@ -1529,10 +1623,19 @@
         </div>
     </aside>
 
+    <!-- ================================================================ -->
+    <!-- SIDEBAR OVERLAY -->
+    <!-- ================================================================ -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+    <!-- ================================================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ================================================================ -->
     <main class="main-content" id="mainContent">
 
+        <!-- ================================================================ -->
+        <!-- NAVBAR - مطابق لـ index.html -->
+        <!-- ================================================================ -->
         <nav class="navbar-custom">
             <div class="navbar-left">
                 <button class="sidebar-toggle" id="sidebarToggle">
@@ -1545,8 +1648,8 @@
                 </div>
 
                 <h4 class="page-title" id="pageTitleText">
-                    العملاء
-                    <small>إدارة العملاء والمديونيات والزيارات</small>
+                    السندات
+                    <small>سندات القبض والصرف والإذون + الترحيل التلقائي للقيود</small>
                 </h4>
             </div>
 
@@ -1567,13 +1670,16 @@
             </div>
         </nav>
 
+        <!-- ================================================================ -->
+        <!-- DASHBOARD CONTENT -->
+        <!-- ================================================================ -->
         <div class="dashboard-content">
 
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>إدارة العملاء / المعتمرين</h2>
-                    <p>متابعة بيانات العملاء والمديونيات والزيارات</p>
+                    <h2>السندات والإذون</h2>
+                    <p>سند القبض/الصرف يُنشئ تلقائيًا قيد يومية مزدوج يرحّل فورًا لميزان المراجعة والقوائم المالية</p>
                 </div>
                 <div class="ph-right">
                     <strong>اليوم</strong>
@@ -1582,59 +1688,83 @@
             </div>
 
             <!-- ===== STATS ===== -->
-            <div class="stats-grid" id="stats-container">
-                <div class="stat-card stat-blue">
-                    <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
-                    <div class="stat-number" id="statTotalClients">0</div>
-                    <div class="stat-label">إجمالي العملاء</div>
+            <div class="stats-grid">
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-arrow-down-circle-fill"></i></span>
+                    <div class="stat-number" id="totalReceipts">0</div>
+                    <div class="stat-label">إجمالي سندات القبض</div>
                 </div>
                 <div class="stat-card stat-red">
-                    <span class="stat-icon"><i class="bi bi-cash-stack"></i></span>
-                    <div class="stat-number" id="statTotalDebts">0</div>
-                    <div class="stat-label">إجمالي المديونيات</div>
+                    <span class="stat-icon"><i class="bi bi-arrow-up-circle-fill"></i></span>
+                    <div class="stat-number" id="totalPayments">0</div>
+                    <div class="stat-label">إجمالي سندات الصرف</div>
+                </div>
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-arrow-left-right"></i></span>
+                    <div class="stat-number" id="netVouchers">0</div>
+                    <div class="stat-label">الصافي</div>
                 </div>
                 <div class="stat-card stat-gold">
-                    <span class="stat-icon"><i class="bi bi-arrow-repeat"></i></span>
-                    <div class="stat-number" id="statTotalVisits">0</div>
-                    <div class="stat-label">إجمالي الزيارات</div>
-                </div>
-                <div class="stat-card stat-green">
-                    <span class="stat-icon"><i class="bi bi-check-circle-fill"></i></span>
-                    <div class="stat-number" id="statPaidCount">0</div>
-                    <div class="stat-label">عملاء مسددون</div>
+                    <span class="stat-icon"><i class="bi bi-receipt-cutoff"></i></span>
+                    <div class="stat-number" id="totalVouchersCount">0</div>
+                    <div class="stat-label">عدد السندات</div>
                 </div>
             </div>
 
             <!-- ===== TOOLBAR ===== -->
             <div class="d-flex flex-wrap gap-2 mb-3">
-                <button class="btn-action btn-success" onclick="openModalById('clientModal')">
-                    <i class="bi bi-person-plus-fill"></i> عميل جديد
+                <button class="btn-action btn-success" onclick="openModal('قبض')">
+                    <i class="bi bi-plus-circle-fill"></i> سند قبض جديد
                 </button>
-                <button class="btn-action btn-primary" onclick="loadData()">
-                    <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
+                <button class="btn-action btn-danger" onclick="openModal('صرف')">
+                    <i class="bi bi-dash-circle-fill"></i> سند صرف جديد
+                </button>
+                <button class="btn-action btn-outline" onclick="loadData()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث
                 </button>
             </div>
 
-            <!-- ===== CLIENTS TABLE ===== -->
+            <!-- ===== FILTER BAR ===== -->
+            <div class="filter-bar">
+                <span class="filter-label"><i class="bi bi-funnel-fill"></i> تصفية</span>
+                <select id="filterVoucherType" onchange="applyFilters()">
+                    <option value="all">كل السندات</option>
+                    <option value="قبض">قبض فقط</option>
+                    <option value="صرف">صرف فقط</option>
+                </select>
+                <div class="date-group">
+                    <span>من</span>
+                    <input type="date" id="filterDateFrom" onchange="applyFilters()" />
+                    <span>إلى</span>
+                    <input type="date" id="filterDateTo" onchange="applyFilters()" />
+                </div>
+            </div>
+
+            <!-- ===== VOUCHERS TABLE ===== -->
             <div class="panel">
                 <div class="panel-header">
-                    <h5 class="panel-title"><i class="bi bi-people-fill"></i> سجل العملاء</h5>
-                    <span id="recordCount" class="record-count">0 سجل</span>
+                    <h5 class="panel-title"><i class="bi bi-clock-history"></i> سجل السندات</h5>
+                    <span id="recordCount" style="font-size:11px;color:var(--text-tertiary);">0 سجل</span>
                 </div>
                 <div class="table-wrap">
                     <table class="table-custom">
                         <thead>
                             <tr>
-                                <th>#</th><th>الاسم</th><th>الهاتف</th><th>المديونية</th>
-                                <th>الزيارات</th><th>آخر زيارة</th><th>الحالة</th>
+                                <th>رقم السند</th>
+                                <th>النوع</th>
+                                <th>التاريخ</th>
+                                <th>الحساب النقدي</th>
+                                <th>الجهة / الحساب المقابل</th>
+                                <th>البيان</th>
+                                <th>المبلغ</th>
                                 <th style="text-align:center;">الإجراءات</th>
                             </tr>
                         </thead>
-                        <tbody id="clientsBody">
+                        <tbody id="vouchersBody">
                             <tr>
                                 <td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);">
                                     <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
-                                    جاري تحميل العملاء...
+                                    جاري تحميل السندات...
                                 </td>
                             </tr>
                         </tbody>
@@ -1643,59 +1773,85 @@
             </div>
 
         </div>
-
     </main>
 
     <!-- ================================================================ -->
-    <!-- MODAL - إضافة عميل جديد -->
+    <!-- PRINT AREA - قالب طباعة السند (مخفي، يظهر فقط عند الطباعة) -->
     <!-- ================================================================ -->
-    <div class="modal-overlay" id="clientModalOverlay">
+    <div id="printVoucherArea" style="display:none;">
+        <div style="padding:30px;font-family:'Cairo',sans-serif;direction:rtl;">
+            <h2 style="text-align:center;" id="printVoucherTitle">سند</h2>
+            <hr />
+            <table style="width:100%;font-size:16px;line-height:2;">
+                <tr><td><strong>رقم السند:</strong></td><td id="printVoucherNo"></td></tr>
+                <tr><td><strong>التاريخ:</strong></td><td id="printVoucherDate"></td></tr>
+                <tr><td><strong>الجهة:</strong></td><td id="printVoucherParty"></td></tr>
+                <tr><td><strong>المبلغ:</strong></td><td id="printVoucherAmount"></td></tr>
+                <tr><td><strong>البيان:</strong></td><td id="printVoucherDesc"></td></tr>
+            </table>
+            <br /><br />
+            <table style="width:100%;">
+                <tr>
+                    <td style="text-align:center;">توقيع المستلم/الصارف</td>
+                    <td style="text-align:center;">توقيع المحاسب</td>
+                    <td style="text-align:center;">توقيع المدير</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MODAL - سند قبض / صرف جديد -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box">
-            <h3><i class="bi bi-person-plus-fill"></i> إضافة عميل جديد</h3>
-            <form id="clientForm" onsubmit="handleClientSubmit(event)">
-                <label for="clientName">اسم العميل <span class="required">*</span></label>
-                <input type="text" id="clientName" placeholder="الاسم الكامل" required />
+            <h3 id="modalTitle"><i class="bi bi-receipt-cutoff"></i> سند جديد</h3>
 
-                <label for="clientPhone">رقم الهاتف</label>
-                <input type="text" id="clientPhone" placeholder="0100xxxxxxx" />
+            <div class="voucher-type-toggle">
+                <button type="button" id="btnTypeReceipt" onclick="setVoucherType('قبض')">
+                    <i class="bi bi-arrow-down-circle-fill"></i> سند قبض
+                </button>
+                <button type="button" id="btnTypePayment" onclick="setVoucherType('صرف')">
+                    <i class="bi bi-arrow-up-circle-fill"></i> سند صرف
+                </button>
+            </div>
 
-                <label for="clientEmail">البريد الإلكتروني (اختياري)</label>
-                <input type="email" id="clientEmail" placeholder="example@mail.com" />
+            <form id="modalForm" onsubmit="handleModalSubmit(event)">
+                <input type="hidden" id="modalVoucherType" value="قبض" />
 
-                <label for="clientAddress">العنوان (اختياري)</label>
-                <input type="text" id="clientAddress" placeholder="العنوان" />
+                <label for="modalDate">التاريخ</label>
+                <input type="date" id="modalDate" required />
 
-                <label for="clientDebt">مديونية مبدئية</label>
-                <input type="number" id="clientDebt" min="0" step="0.01" value="0" />
+                <label for="modalCashAccount" id="modalCashAccountLabel">الحساب النقدي (الصندوق / البنك)</label>
+                <select id="modalCashAccount" required>
+                    <option value="">-- اختر حساب الصندوق أو البنك --</option>
+                </select>
+
+                <label for="modalCounterAccount" id="modalCounterAccountLabel">الجهة (الحساب المقابل)</label>
+                <select id="modalCounterAccount" required>
+                    <option value="">-- اختر الحساب المقابل --</option>
+                </select>
+
+                <label for="modalPartyName">اسم الجهة (اختياري، للعرض فقط)</label>
+                <input type="text" id="modalPartyName" placeholder="اسم العميل / المندوب / المورد" />
+
+                <label for="modalAmount">المبلغ</label>
+                <input type="number" id="modalAmount" placeholder="المبلغ" required step="0.01" min="0.01" />
+
+                <label for="modalDescription">البيان</label>
+                <input type="text" id="modalDescription" placeholder="وصف السند" />
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('clientModal')">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="saveClientBtn">حفظ</button>
+                    <button type="button" class="btn-action btn-outline" onclick="closeModal()">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveBtn">حفظ وترحيل القيد تلقائيًا</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- ================================================================ -->
-    <!-- MODAL - تسجيل تسديد -->
+    <!-- FOOTER - حقوق النشر -->
     <!-- ================================================================ -->
-    <div class="modal-overlay" id="paymentModalOverlay">
-        <div class="modal-box">
-            <h3><i class="bi bi-cash-coin"></i> تسجيل تسديد</h3>
-            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="paymentClientLabel">—</p>
-            <form id="paymentForm" onsubmit="handlePaymentSubmit(event)">
-                <input type="hidden" id="paymentClientId" />
-                <label for="paymentAmount">المبلغ المسدد <span class="required">*</span></label>
-                <input type="number" id="paymentAmount" min="0.01" step="0.01" required />
-
-                <div class="modal-actions">
-                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('paymentModal')">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="paymentBtn">تسديد</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <footer class="footer-custom">
         <div class="footer-content">
             <div class="footer-right">
@@ -1717,212 +1873,18 @@
     <!-- JAVASCRIPT -->
     <!-- ================================================================ -->
     <script>
-
         // ================================================================
         // STATE
         // ================================================================
+        var vouchers = [];
+        var accounts = [];
         var clients = [];
+        var representatives = [];
+        var isLoading = false;
+        var currentVoucherType = 'قبض';
         var currentUser = null;
         var systemCurrency = 'SAR';
         var currencySymbol = 'ر.س';
-        var isLoading = false;
-
-        // ================================================================
-        // LOAD DATA
-        // ================================================================
-        async function loadData() {
-            if (isLoading) return;
-            isLoading = true;
-
-            try {
-                clients = await Supabase.getClients() || [];
-            } catch (error) {
-                console.error('❌ خطأ في جلب العملاء:', error);
-                showToast('⚠️ فشل تحميل العملاء', 'warning');
-                clients = [];
-            }
-
-            renderStats();
-            renderTable();
-
-            isLoading = false;
-        }
-
-        function renderStats() {
-            var totalDebts = 0, totalVisits = 0, paidCount = 0;
-            clients.forEach(function(c) {
-                var debt = parseFloat(c['debt'] || 0);
-                totalDebts += debt;
-                totalVisits += parseInt(c['visits'] || 0);
-                if (debt === 0) paidCount++;
-            });
-
-            document.getElementById('statTotalClients').textContent = clients.length;
-            document.getElementById('statTotalDebts').textContent = Supabase.formatCurrency(totalDebts);
-            document.getElementById('statTotalVisits').textContent = totalVisits;
-            document.getElementById('statPaidCount').textContent = paidCount;
-        }
-
-        function renderTable() {
-            var tbody = document.getElementById('clientsBody');
-            var count = document.getElementById('recordCount');
-
-            if (!clients.length) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-person-x" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا يوجد عملاء مسجلين</td></tr>';
-                count.textContent = '0 سجل';
-                return;
-            }
-
-            count.textContent = clients.length + ' سجل';
-
-            var html = '';
-            for (var i = 0; i < clients.length; i++) {
-                var c = clients[i];
-                var debt = parseFloat(c['debt'] || 0);
-                var visits = parseInt(c['visits'] || 0);
-                var statusClass = debt > 0 ? 'status-pending' : 'status-active';
-                var statusText = debt > 0 ? 'عليه مديونية' : 'مسدد';
-                var dateObj = new Date(c['last_visit']);
-                var lastVisit = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-EG') : (c['last_visit'] || '—');
-
-                html += '<tr>' +
-                    '<td>' + (i + 1) + '</td>' +
-                    '<td><strong>' + (c['name'] || '—') + '</strong></td>' +
-                    '<td>' + (c['phone'] || '—') + '</td>' +
-                    '<td style="' + (debt > 0 ? 'color:var(--danger);' : '') + '">' + Supabase.formatCurrency(debt) + '</td>' +
-                    '<td>' + visits + '</td>' +
-                    '<td>' + lastVisit + '</td>' +
-                    '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>' +
-                    '<td style="text-align:center;white-space:nowrap;">' +
-                        '<button class="btn-icon btn-icon-edit" onclick="openPaymentModal(\'' + c['id'] + '\')" title="تسديد"><i class="bi bi-cash-coin"></i></button> ' +
-                        '<button class="btn-icon btn-icon-delete" onclick="deleteClient(\'' + c['id'] + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
-                    '</td>' +
-                    '</tr>';
-            }
-            tbody.innerHTML = html;
-        }
-
-        // ================================================================
-        // إضافة عميل
-        // ================================================================
-        async function handleClientSubmit(event) {
-            event.preventDefault();
-
-            var name = document.getElementById('clientName').value.trim();
-            var phone = document.getElementById('clientPhone').value.trim();
-            var email = document.getElementById('clientEmail').value.trim();
-            var address = document.getElementById('clientAddress').value.trim();
-            var debt = document.getElementById('clientDebt').value;
-
-            if (!name) { showToast('⚠️ الرجاء إدخال اسم العميل', 'warning'); return; }
-
-            var btn = document.getElementById('saveClientBtn');
-            btn.disabled = true;
-            btn.textContent = 'جاري الحفظ...';
-
-            try {
-                await Supabase.addData('clients', {
-                    name: name, phone: phone, email: email, address: address,
-                    debt: parseFloat(debt) || 0, visits: 0,
-                    last_visit: new Date().toISOString().split('T')[0]
-                });
-                closeModalById('clientModal');
-                document.getElementById('clientForm').reset();
-                showToast('✅ تمت إضافة العميل بنجاح', 'success');
-                loadData();
-            } catch (error) {
-                showToast('❌ فشل إضافة العميل: ' + error.message, 'error');
-            }
-
-            btn.disabled = false;
-            btn.textContent = 'حفظ';
-        }
-
-        function deleteClient(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا العميل؟')) return;
-            Supabase.deleteData('clients', id)
-                .then(function() {
-                    showToast('✅ تم حذف العميل بنجاح', 'success');
-                    loadData();
-                })
-                .catch(function(error) {
-                    showToast('❌ فشل حذف العميل: ' + error.message, 'error');
-                });
-        }
-
-        // ================================================================
-        // تسديد
-        // ================================================================
-        function openPaymentModal(clientId) {
-            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
-            if (!client) { showToast('⚠️ العميل غير موجود، حاول تحديث الصفحة', 'error'); return; }
-
-            var currentDebt = parseFloat(client['debt'] || 0);
-            document.getElementById('paymentClientId').value = clientId;
-            document.getElementById('paymentClientLabel').textContent = 'العميل: ' + client['name'] + ' — المديونية الحالية: ' + Supabase.formatCurrency(currentDebt);
-            document.getElementById('paymentAmount').value = currentDebt > 0 ? currentDebt : '';
-            document.getElementById('paymentAmount').max = currentDebt;
-            openModalById('paymentModal');
-        }
-
-        async function handlePaymentSubmit(event) {
-            event.preventDefault();
-
-            var clientId = document.getElementById('paymentClientId').value;
-            var amount = parseFloat(document.getElementById('paymentAmount').value);
-            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
-
-            if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
-            if (!client) { showToast('⚠️ العميل غير موجود', 'error'); return; }
-
-            var currentDebt = parseFloat(client['debt'] || 0);
-            if (amount > currentDebt) {
-                showToast('⚠️ المبلغ أكبر من المديونية الحالية (' + Supabase.formatCurrency(currentDebt) + ')', 'warning');
-                return;
-            }
-
-            var btn = document.getElementById('paymentBtn');
-            btn.disabled = true;
-            btn.textContent = 'جاري التسديد...';
-
-            try {
-                var newDebt = Math.max(0, currentDebt - amount);
-                var newVisits = parseInt(client['visits'] || 0) + 1;
-
-                await Supabase.updateData('clients', clientId, {
-                    debt: newDebt, visits: newVisits,
-                    last_visit: new Date().toISOString().split('T')[0]
-                });
-
-                await Supabase.addData('transactions', {
-                    date: new Date().toISOString().split('T')[0],
-                    type: 'وارد', category: 'عميل', amount: amount,
-                    description: 'تسديد من العميل ' + client['name'],
-                    reference: client['name']
-                });
-
-                closeModalById('paymentModal');
-                showToast('✅ تم تسجيل تسديد ' + Supabase.formatCurrency(amount) + ' من ' + client['name'], 'success');
-                loadData();
-            } catch (error) {
-                showToast('❌ فشل التسديد: ' + error.message, 'error');
-            }
-
-            btn.disabled = false;
-            btn.textContent = 'تسديد';
-        }
-
-        // ================================================================
-        // MODALS (نمط موحّد data-modal)
-        // ================================================================
-        function openModalById(id) {
-            var el = document.getElementById(id + 'Overlay');
-            if (el) el.classList.add('active');
-        }
-        function closeModalById(id) {
-            var el = document.getElementById(id + 'Overlay');
-            if (el) el.classList.remove('active');
-        }
 
         // ================================================================
         // DOM READY
@@ -1930,26 +1892,16 @@
         document.addEventListener('DOMContentLoaded', async function() {
             if (!Supabase.initSystem()) return;
 
-            try {
-                var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
-                currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
-            } catch (error) {
-                console.error('❌ خطأ في جلب الإعدادات:', error);
-                var savedCurrency = localStorage.getItem('systemCurrency');
-                if (savedCurrency) {
-                    systemCurrency = savedCurrency;
-                    currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
-                }
-            }
-            localStorage.setItem('systemCurrency', systemCurrency);
+            var settings = Supabase.getSystemSettings();
+            systemCurrency = settings.currency || 'SAR';
+            currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
             currentUser = Supabase.getCurrentUser();
             if (currentUser) {
                 updateUserUI();
             }
 
-            await applySystemName();
+            applySystemName();
             Supabase.applySystemLogo();
 
             initSidebar();
@@ -1958,25 +1910,31 @@
             initNotifications();
             initKeyboardShortcuts();
             updateDate();
-
             loadData();
             setInterval(loadData, 60000);
+            await checkUserPermissions();
         });
 
         // ================================================================
         // APPLY SYSTEM NAME
         // ================================================================
-        async function applySystemName() {
-            try {
-                var systemName = await Supabase.getSystemName();
-                document.title = 'العملاء' + ' - ' + systemName;
+        function applySystemName() {
+            var systemName = Supabase.getSystemName();
+            document.title = 'السندات - ' + systemName;
 
-                var brandText = document.getElementById('sidebarBrandText');
-                if (brandText) {
-                    brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
-                }
-            } catch (error) {
-                console.warn('⚠️ فشل تطبيق اسم النظام:', error);
+            var brandText = document.getElementById('sidebarBrandText');
+            if (brandText) {
+                brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+            }
+
+            var navbarText = document.getElementById('navbarBrandText');
+            if (navbarText) {
+                navbarText.innerHTML = systemName;
+            }
+
+            var userRole = document.getElementById('userRole');
+            if (userRole) {
+                userRole.textContent = systemName;
             }
         }
 
@@ -1993,11 +1951,23 @@
                 userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
             }
             if (userRole) {
-                userRole.textContent = currentUser.user_metadata?.role || 'حراء للسياحة';
+                userRole.textContent = currentUser.user_metadata?.role || 'المالية';
             }
             if (userAvatar) {
                 var name = currentUser.user_metadata?.full_name || currentUser.email || 'م';
                 userAvatar.textContent = name.charAt(0).toUpperCase();
+            }
+        }
+
+        // ================================================================
+        // CHECK USER PERMISSIONS
+        // ================================================================
+        async function checkUserPermissions() {
+            var usersMenu = document.getElementById('usersMenu');
+            if (!usersMenu) return;
+            var isAdmin = currentUser && await Supabase.isAdmin();
+            if (!isAdmin) {
+                usersMenu.style.display = 'none';
             }
         }
 
@@ -2014,13 +1984,246 @@
         }
 
         // ================================================================
-        // LOGOUT
+        // LOAD DATA
         // ================================================================
-        function logout() {
-            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
-            localStorage.removeItem('supabase_session');
-            localStorage.removeItem('darkMode');
-            window.location.href = 'login.html';
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+        async function loadData() {
+            if (isLoading) return;
+            isLoading = true;
+
+            var tbody = document.getElementById('vouchersBody');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align:center;padding:20px;color:var(--text-tertiary);">
+                            <div class="shimmer" style="height:28px;max-width:160px;margin:0 auto;"></div>
+                            <span style="display:block;margin-top:6px;font-size:12px;">جاري التحميل...</span>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            try {
+                vouchers = await Supabase.getVouchers();
+                accounts = await Supabase.getAccounts();
+                clients = await Supabase.getClients();
+                representatives = await Supabase.getRepresentatives();
+
+                populateAccountSelects();
+                renderTable();
+                renderStats();
+            } catch (error) {
+                console.error('❌ خطأ في تحميل السندات:', error);
+                showToast('❌ فشل تحميل البيانات: ' + error.message, 'error');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--danger);">تعذر تحميل البيانات، تأكد من تشغيل accounting_schema_step1.sql على قاعدة البيانات</td></tr>';
+                }
+            }
+
+            isLoading = false;
+        }
+
+        // ================================================================
+        // POPULATE ACCOUNT DROPDOWNS (من دليل الحسابات)
+        // ================================================================
+        function populateAccountSelects() {
+            var cashSelect = document.getElementById('modalCashAccount');
+            var counterSelect = document.getElementById('modalCounterAccount');
+            if (!cashSelect || !counterSelect) return;
+
+            // حسابات النقدية: الصندوق والبنوك (أكواد تبدأ بـ 11 أو 12)
+            var cashAccounts = accounts.filter(function(a) {
+                return a.code && (a.code.indexOf('11') === 0 || a.code.indexOf('12') === 0);
+            });
+
+            cashSelect.innerHTML = '<option value="">-- اختر حساب الصندوق أو البنك --</option>' +
+                cashAccounts.map(function(a) {
+                    return '<option value="' + a.id + '">' + a.code + ' — ' + a.name + '</option>';
+                }).join('');
+
+            // كل الحسابات الأخرى تصلح كحساب مقابل
+            counterSelect.innerHTML = '<option value="">-- اختر الحساب المقابل --</option>' +
+                accounts.map(function(a) {
+                    return '<option value="' + a.id + '">' + a.code + ' — ' + a.name + '</option>';
+                }).join('');
+        }
+
+        // ================================================================
+        // RENDER TABLE
+        // ================================================================
+        function renderTable() {
+            var tbody = document.getElementById('vouchersBody');
+            if (!tbody) return;
+
+            var typeFilter = document.getElementById('filterVoucherType') ? document.getElementById('filterVoucherType').value : 'all';
+            var dateFrom = document.getElementById('filterDateFrom') ? document.getElementById('filterDateFrom').value : '';
+            var dateTo = document.getElementById('filterDateTo') ? document.getElementById('filterDateTo').value : '';
+
+            var filtered = vouchers.filter(function(v) {
+                if (typeFilter !== 'all' && v.voucher_type !== typeFilter) return false;
+                if (dateFrom && v.voucher_date < dateFrom) return false;
+                if (dateTo && v.voucher_date > dateTo) return false;
+                return true;
+            });
+
+            document.getElementById('recordCount').textContent = filtered.length + ' سجل';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);">لا توجد سندات مسجلة</td></tr>';
+                return;
+            }
+
+            var accountsById = {};
+            accounts.forEach(function(a) { accountsById[a.id] = a; });
+
+            var html = filtered.map(function(v) {
+                var cashAcc = accountsById[v.cash_account_id];
+                var counterAcc = accountsById[v.counter_account_id];
+                var typeClass = v.voucher_type === 'قبض' ? 'success' : 'danger';
+                var typeIcon = v.voucher_type === 'قبض' ? 'bi-arrow-down-circle-fill' : 'bi-arrow-up-circle-fill';
+
+                return `
+                    <tr>
+                        <td><strong>${v.voucher_no || '-'}</strong></td>
+                        <td><span class="badge-status badge-${typeClass}"><i class="bi ${typeIcon}"></i> ${v.voucher_type}</span></td>
+                        <td>${v.voucher_date || '-'}</td>
+                        <td>${cashAcc ? cashAcc.name : '-'}</td>
+                        <td>${v.party_name || (counterAcc ? counterAcc.name : '-')}</td>
+                        <td>${v.description || '-'}</td>
+                        <td><strong>${Supabase.formatCurrency(v.amount, systemCurrency)}</strong></td>
+                        <td style="text-align:center;">
+                            <button class="btn-icon" onclick='printVoucher(${JSON.stringify(v)})' title="طباعة"><i class="bi bi-printer"></i></button>
+                            <button class="btn-icon btn-icon-danger" onclick="deleteVoucherRow('${v.id}')" title="حذف"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.innerHTML = html;
+        }
+
+        function applyFilters() {
+            renderTable();
+        }
+
+        // ================================================================
+        // RENDER STATS
+        // ================================================================
+        function renderStats() {
+            var totalReceipts = vouchers.filter(function(v) { return v.voucher_type === 'قبض'; })
+                .reduce(function(s, v) { return s + (parseFloat(v.amount) || 0); }, 0);
+            var totalPayments = vouchers.filter(function(v) { return v.voucher_type === 'صرف'; })
+                .reduce(function(s, v) { return s + (parseFloat(v.amount) || 0); }, 0);
+
+            document.getElementById('totalReceipts').textContent = Supabase.formatCurrency(totalReceipts, systemCurrency);
+            document.getElementById('totalPayments').textContent = Supabase.formatCurrency(totalPayments, systemCurrency);
+            document.getElementById('netVouchers').textContent = Supabase.formatCurrency(totalReceipts - totalPayments, systemCurrency);
+            document.getElementById('totalVouchersCount').textContent = vouchers.length;
+        }
+
+        // ================================================================
+        // DELETE VOUCHER
+        // ================================================================
+        async function deleteVoucherRow(id) {
+            var voucher = vouchers.find(function(v) { return v.id === id; });
+            if (!voucher) return;
+            if (!confirm('هل أنت متأكد من حذف السند رقم ' + voucher.voucher_no + '؟ سيتم حذف القيد المحاسبي المرتبط به أيضًا.')) return;
+
+            try {
+                await Supabase.deleteVoucher(voucher);
+                showToast('✅ تم حذف السند وترحيل الحذف للقيود', 'success');
+                loadData();
+            } catch (error) {
+                console.error('❌ خطأ في حذف السند:', error);
+                showToast('❌ فشل حذف السند: ' + error.message, 'error');
+            }
+        }
+
+        // ================================================================
+        // PRINT VOUCHER
+        // ================================================================
+        function printVoucher(v) {
+            document.getElementById('printVoucherTitle').textContent = 'سند ' + v.voucher_type;
+            document.getElementById('printVoucherNo').textContent = v.voucher_no || '-';
+            document.getElementById('printVoucherDate').textContent = v.voucher_date || '-';
+            document.getElementById('printVoucherParty').textContent = v.party_name || '-';
+            document.getElementById('printVoucherAmount').textContent = Supabase.formatCurrency(v.amount, systemCurrency);
+            document.getElementById('printVoucherDesc').textContent = v.description || '-';
+            document.getElementById('printVoucherArea').style.display = 'block';
+            window.print();
+            setTimeout(function() {
+                document.getElementById('printVoucherArea').style.display = 'none';
+            }, 500);
+        }
+
+        // ================================================================
+        // MODAL - سند جديد
+        // ================================================================
+        function setVoucherType(type) {
+            currentVoucherType = type;
+            document.getElementById('modalVoucherType').value = type;
+
+            var btnReceipt = document.getElementById('btnTypeReceipt');
+            var btnPayment = document.getElementById('btnTypePayment');
+            btnReceipt.classList.toggle('active-receipt', type === 'قبض');
+            btnPayment.classList.toggle('active-payment', type === 'صرف');
+
+            var counterLabel = document.getElementById('modalCounterAccountLabel');
+            counterLabel.textContent = type === 'قبض'
+                ? 'الجهة (من مين استلمنا المبلغ؟ عميل / إيراد آخر)'
+                : 'الجهة (لمين اتصرف المبلغ؟ مصروف / مورد / مندوب)';
+        }
+
+        function openModal(type) {
+            setVoucherType(type || 'قبض');
+            document.getElementById('modalTitle').innerHTML = '<i class="bi bi-receipt-cutoff"></i> سند ' + (type || 'قبض') + ' جديد';
+            document.getElementById('modalDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modalAmount').value = '';
+            document.getElementById('modalDescription').value = '';
+            document.getElementById('modalPartyName').value = '';
+            document.getElementById('modalCashAccount').value = '';
+            document.getElementById('modalCounterAccount').value = '';
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        async function handleModalSubmit(event) {
+            event.preventDefault();
+            var saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'جاري الحفظ والترحيل...';
+
+            try {
+                var voucherData = {
+                    voucher_type: document.getElementById('modalVoucherType').value,
+                    voucher_date: document.getElementById('modalDate').value,
+                    cash_account_id: document.getElementById('modalCashAccount').value,
+                    counter_account_id: document.getElementById('modalCounterAccount').value,
+                    party_name: document.getElementById('modalPartyName').value || null,
+                    amount: parseFloat(document.getElementById('modalAmount').value),
+                    description: document.getElementById('modalDescription').value || null
+                };
+
+                if (!voucherData.cash_account_id || !voucherData.counter_account_id) {
+                    throw new Error('من فضلك اختر الحساب النقدي والحساب المقابل');
+                }
+
+                await Supabase.addVoucher(voucherData);
+                showToast('✅ تم حفظ السند وترحيل القيد تلقائيًا لميزان المراجعة', 'success');
+                closeModal();
+                loadData();
+            } catch (error) {
+                console.error('❌ خطأ في حفظ السند:', error);
+                showToast('❌ فشل حفظ السند: ' + error.message, 'error');
+            }
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'حفظ وترحيل القيد تلقائيًا';
         }
 
         // ================================================================
@@ -2051,6 +2254,17 @@
                 document.body.style.overflow = '';
             });
 
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+
             window.addEventListener('resize', function() {
                 if (window.innerWidth > MOBILE_BREAKPOINT) {
                     sidebar.classList.remove('open');
@@ -2071,6 +2285,8 @@
             if (!toggle) return;
 
             var icon = toggle.querySelector('i');
+
+            // تطبيق الثيم من الإعدادات المركزية
             var isDark = Supabase.isDarkModeEnabled();
             Supabase.applyTheme(isDark);
 
@@ -2094,10 +2310,9 @@
         // REFRESH BUTTON
         // ================================================================
         function initRefresh() {
-            var btn = document.getElementById('refreshBtn');
-            if (!btn) return;
-            btn.addEventListener('click', function() {
+            document.getElementById('refreshBtn').addEventListener('click', function() {
                 loadData();
+                Supabase.applySystemLogo();
                 showToast('🔄 جاري تحديث البيانات...', 'info');
             });
         }
@@ -2110,10 +2325,11 @@
             if (notifBtn) {
                 notifBtn.addEventListener('click', function() {
                     var messages = [
-                        '👥 تم تحديث بيانات العملاء',
-                        '💰 تم تسجيل تسديد جديد من أحد العملاء',
-                        '📊 عدد العملاء المسجلين: يمكنك مراجعة الجدول',
-                        '⚠️ تنبيه: راجع العملاء أصحاب المديونيات المرتفعة'
+                        '📊 تم تحديث التقرير المالي اليومي',
+                        '💰 تم إضافة معاملة جديدة بقيمة ' + Supabase.formatCurrency(3200),
+                        '⚠️ تنبيه: رصيد الخزينة منخفض',
+                        '✅ تم تسديد مديونية العميل أحمد السيد',
+                        '📈 تقرير الشهر جاهز للعرض'
                     ];
                     var random = messages[Math.floor(Math.random() * messages.length)];
                     showToast(random, 'info');
@@ -2128,7 +2344,16 @@
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 'b') {
                     e.preventDefault();
-                    document.getElementById('sidebarToggle').click();
+                    var toggle = document.getElementById('sidebarToggle');
+                    if (toggle) toggle.click();
+                }
+                if (e.ctrlKey && e.key === 'i') {
+                    e.preventDefault();
+                    openModal('قبض');
+                }
+                if (e.ctrlKey && e.key === 'e') {
+                    e.preventDefault();
+                    openModal('صرف');
                 }
                 if (e.ctrlKey && e.key === 'r') {
                     e.preventDefault();
@@ -2137,13 +2362,24 @@
                 }
                 if (e.ctrlKey && e.key === 'd') {
                     e.preventDefault();
-                    document.getElementById('darkModeToggle').click();
+                    var toggle = document.getElementById('darkModeToggle');
+                    if (toggle) toggle.click();
                 }
                 if (e.ctrlKey && e.key === 'l') {
                     e.preventDefault();
                     logout();
                 }
             });
+        }
+
+        // ================================================================
+        // LOGOUT
+        // ================================================================
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('darkMode');
+            window.location.href = 'login.html';
         }
 
         // ================================================================
@@ -2195,26 +2431,22 @@
             }, 3000);
         }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModalById('clientModal');
-                closeModalById('paymentModal');
-            }
-        });
-
         // ================================================================
         // EXPOSE
         // ================================================================
-        window.openModalById = openModalById;
-        window.closeModalById = closeModalById;
-        window.openPaymentModal = openPaymentModal;
-        window.deleteClient = deleteClient;
+        window.loadData = loadData;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.setVoucherType = setVoucherType;
+        window.deleteVoucherRow = deleteVoucherRow;
+        window.printVoucher = printVoucher;
+        window.applyFilters = applyFilters;
         window.logout = logout;
         window.showToast = showToast;
-        window.loadData = loadData;
 
-        console.log('👥 نظام العملاء - حراء للسياحة');
-        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
+        console.log('🧾 نظام السندات - حراء للسياحة');
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+I (سند قبض) | Ctrl+E (سند صرف) | Ctrl+R (تحديث)');
+        console.log('✅ النظام جاهز للعمل');
     </script>
 
 </body>

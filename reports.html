@@ -620,6 +620,19 @@
         /* ================================================================
            FILTER BAR
            ================================================================ */
+        .report-tabs {
+            display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+            border-bottom: 1px solid var(--border); padding-bottom: 0;
+        }
+        .report-tab {
+            padding: 10px 18px; border: none; background: transparent; cursor: pointer;
+            font-family: var(--font-body); font-size: 13px; font-weight: 700;
+            color: var(--text-secondary); border-bottom: 3px solid transparent; transition: var(--t-base);
+        }
+        .report-tab:hover { color: var(--accent); }
+        .report-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .report-tab-panel table tfoot td { border-top: 2px solid var(--border); }
+
         .filter-bar {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -1528,6 +1541,7 @@
                 <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+                <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
             <div class="nav-section-title">التقارير</div>
@@ -1645,6 +1659,24 @@
                 </div>
             </div>
 
+            <!-- ===== REPORT TABS ===== -->
+            <div class="report-tabs">
+                <button class="report-tab active" id="tabBtnOverview" onclick="switchReportTab('overview')">
+                    <i class="bi bi-graph-up"></i> نظرة عامة
+                </button>
+                <button class="report-tab" id="tabBtnTrialBalance" onclick="switchReportTab('trialBalance')">
+                    <i class="bi bi-journal-check"></i> ميزان المراجعة
+                </button>
+                <button class="report-tab" id="tabBtnIncomeStatement" onclick="switchReportTab('incomeStatement')">
+                    <i class="bi bi-cash-coin"></i> الأرباح والخسائر
+                </button>
+                <button class="report-tab" id="tabBtnBalanceSheet" onclick="switchReportTab('balanceSheet')">
+                    <i class="bi bi-bank2"></i> المركز المالي
+                </button>
+            </div>
+
+            <div id="tabOverview">
+
             <!-- ===== FILTER BAR ===== -->
             <div class="filter-bar">
                 <span class="filter-label"><i class="bi bi-funnel-fill"></i> تصفية</span>
@@ -1730,6 +1762,126 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            </div><!-- /tabOverview -->
+
+            <!-- ===== TAB: ميزان المراجعة ===== -->
+            <div id="tabTrialBalance" class="report-tab-panel" style="display:none;">
+                <div class="filter-bar">
+                    <span class="filter-label"><i class="bi bi-funnel-fill"></i> الفترة</span>
+                    <div class="date-group">
+                        <span>من</span>
+                        <input type="date" id="tbDateFrom" />
+                        <span>إلى</span>
+                        <input type="date" id="tbDateTo" />
+                    </div>
+                    <button class="btn-action btn-primary" onclick="loadTrialBalance()">
+                        <i class="bi bi-search"></i> عرض
+                    </button>
+                    <div class="export-group">
+                        <button class="btn-export btn-export-print" onclick="window.print()">
+                            <i class="bi bi-printer"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-journal-check"></i> ميزان المراجعة</h5>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>الكود</th>
+                                    <th>الحساب</th>
+                                    <th>مدين</th>
+                                    <th>دائن</th>
+                                    <th>الرصيد</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trialBalanceBody">
+                                <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-tertiary);">اضغط "عرض" لحساب ميزان المراجعة</td></tr>
+                            </tbody>
+                            <tfoot>
+                                <tr style="font-weight:800;">
+                                    <td colspan="2">الإجمالي</td>
+                                    <td id="tbTotalDebit">0</td>
+                                    <td id="tbTotalCredit">0</td>
+                                    <td id="tbBalanceCheck">-</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB: الأرباح والخسائر ===== -->
+            <div id="tabIncomeStatement" class="report-tab-panel" style="display:none;">
+                <div class="filter-bar">
+                    <span class="filter-label"><i class="bi bi-funnel-fill"></i> الفترة</span>
+                    <div class="date-group">
+                        <span>من</span>
+                        <input type="date" id="isDateFrom" />
+                        <span>إلى</span>
+                        <input type="date" id="isDateTo" />
+                    </div>
+                    <button class="btn-action btn-primary" onclick="loadIncomeStatement()">
+                        <i class="bi bi-search"></i> عرض
+                    </button>
+                    <div class="export-group">
+                        <button class="btn-export btn-export-print" onclick="window.print()">
+                            <i class="bi bi-printer"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-cash-coin"></i> قائمة الأرباح والخسائر</h5>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead>
+                                <tr><th>البند</th><th>المبلغ</th></tr>
+                            </thead>
+                            <tbody id="incomeStatementBody">
+                                <tr><td colspan="2" style="text-align:center;padding:30px;color:var(--text-tertiary);">اضغط "عرض" لحساب قائمة الدخل</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB: المركز المالي ===== -->
+            <div id="tabBalanceSheet" class="report-tab-panel" style="display:none;">
+                <div class="filter-bar">
+                    <span class="filter-label"><i class="bi bi-funnel-fill"></i> كما في تاريخ</span>
+                    <input type="date" id="bsAsOfDate" />
+                    <button class="btn-action btn-primary" onclick="loadBalanceSheet()">
+                        <i class="bi bi-search"></i> عرض
+                    </button>
+                    <div class="export-group">
+                        <button class="btn-export btn-export-print" onclick="window.print()">
+                            <i class="bi bi-printer"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-bank2"></i> قائمة المركز المالي</h5>
+                        <span id="bsBalanceStatus" style="font-size:11px;"></span>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead>
+                                <tr><th>البند</th><th>المبلغ</th></tr>
+                            </thead>
+                            <tbody id="balanceSheetBody">
+                                <tr><td colspan="2" style="text-align:center;padding:30px;color:var(--text-tertiary);">اضغط "عرض" لحساب المركز المالي</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -1951,6 +2103,148 @@
 
                 return true;
             });
+        }
+
+        // ================================================================
+        // REPORT TABS - القوائم المالية (ميزان مراجعة / أرباح وخسائر / مركز مالي)
+        // ================================================================
+        function switchReportTab(tab) {
+            var tabs = ['overview', 'trialBalance', 'incomeStatement', 'balanceSheet'];
+            tabs.forEach(function(t) {
+                var panel = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+                var btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
+                if (btn) btn.classList.toggle('active', t === tab);
+            });
+
+            var now = new Date().toISOString().split('T')[0];
+            var firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+
+            if (tab === 'trialBalance' && !document.getElementById('tbDateFrom').value) {
+                document.getElementById('tbDateFrom').value = firstDay;
+                document.getElementById('tbDateTo').value = now;
+                loadTrialBalance();
+            }
+            if (tab === 'incomeStatement' && !document.getElementById('isDateFrom').value) {
+                document.getElementById('isDateFrom').value = firstDay;
+                document.getElementById('isDateTo').value = now;
+                loadIncomeStatement();
+            }
+            if (tab === 'balanceSheet' && !document.getElementById('bsAsOfDate').value) {
+                document.getElementById('bsAsOfDate').value = now;
+                loadBalanceSheet();
+            }
+        }
+
+        async function loadTrialBalance() {
+            var tbody = document.getElementById('trialBalanceBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;">جاري الحساب...</td></tr>';
+            try {
+                var dateFrom = document.getElementById('tbDateFrom').value;
+                var dateTo = document.getElementById('tbDateTo').value;
+                var rows = await Supabase.getTrialBalance(dateFrom, dateTo);
+
+                if (rows.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-tertiary);">لا توجد قيود مسجلة في هذه الفترة (سجّل سندات من شاشة السندات أولًا)</td></tr>';
+                    document.getElementById('tbTotalDebit').textContent = '0';
+                    document.getElementById('tbTotalCredit').textContent = '0';
+                    document.getElementById('tbBalanceCheck').textContent = '-';
+                    return;
+                }
+
+                var totalDebit = 0, totalCredit = 0;
+                tbody.innerHTML = rows.map(function(r) {
+                    totalDebit += r.debit;
+                    totalCredit += r.credit;
+                    return '<tr><td>' + r.code + '</td><td>' + r.name + '</td><td>' +
+                        Supabase.formatCurrency(r.debit, systemCurrency) + '</td><td>' +
+                        Supabase.formatCurrency(r.credit, systemCurrency) + '</td><td>' +
+                        Supabase.formatCurrency(Math.abs(r.balance), systemCurrency) + (r.balance >= 0 ? ' مدين' : ' دائن') + '</td></tr>';
+                }).join('');
+
+                document.getElementById('tbTotalDebit').textContent = Supabase.formatCurrency(totalDebit, systemCurrency);
+                document.getElementById('tbTotalCredit').textContent = Supabase.formatCurrency(totalCredit, systemCurrency);
+                var isBalanced = Math.abs(totalDebit - totalCredit) < 0.5;
+                document.getElementById('tbBalanceCheck').textContent = isBalanced ? '✅ متوازن' : '⚠️ غير متوازن';
+            } catch (error) {
+                console.error('❌ خطأ في ميزان المراجعة:', error);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--danger);">تعذر الحساب — تأكد من تشغيل accounting_schema_step1.sql</td></tr>';
+            }
+        }
+
+        async function loadIncomeStatement() {
+            var tbody = document.getElementById('incomeStatementBody');
+            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:20px;">جاري الحساب...</td></tr>';
+            try {
+                var dateFrom = document.getElementById('isDateFrom').value;
+                var dateTo = document.getElementById('isDateTo').value;
+                var stmt = await Supabase.getIncomeStatement(dateFrom, dateTo);
+
+                var html = '<tr style="background:var(--surface-alt);"><td colspan="2"><strong>الإيرادات</strong></td></tr>';
+                if (stmt.revenues.length === 0) {
+                    html += '<tr><td colspan="2" style="color:var(--text-tertiary);">لا توجد إيرادات مسجلة</td></tr>';
+                } else {
+                    stmt.revenues.forEach(function(r) {
+                        html += '<tr><td>' + r.name + '</td><td>' + Supabase.formatCurrency(r.amount, systemCurrency) + '</td></tr>';
+                    });
+                }
+                html += '<tr style="font-weight:700;"><td>إجمالي الإيرادات</td><td>' + Supabase.formatCurrency(stmt.totalRevenue, systemCurrency) + '</td></tr>';
+
+                html += '<tr style="background:var(--surface-alt);"><td colspan="2"><strong>المصروفات</strong></td></tr>';
+                if (stmt.expenses.length === 0) {
+                    html += '<tr><td colspan="2" style="color:var(--text-tertiary);">لا توجد مصروفات مسجلة</td></tr>';
+                } else {
+                    stmt.expenses.forEach(function(e) {
+                        html += '<tr><td>' + e.name + '</td><td>' + Supabase.formatCurrency(e.amount, systemCurrency) + '</td></tr>';
+                    });
+                }
+                html += '<tr style="font-weight:700;"><td>إجمالي المصروفات</td><td>' + Supabase.formatCurrency(stmt.totalExpense, systemCurrency) + '</td></tr>';
+
+                var profitColor = stmt.netProfit >= 0 ? 'var(--success)' : 'var(--danger)';
+                html += '<tr style="font-weight:900;font-size:14px;"><td>صافي ' + (stmt.netProfit >= 0 ? 'الربح' : 'الخسارة') + '</td><td style="color:' + profitColor + ';">' + Supabase.formatCurrency(Math.abs(stmt.netProfit), systemCurrency) + '</td></tr>';
+
+                tbody.innerHTML = html;
+            } catch (error) {
+                console.error('❌ خطأ في قائمة الدخل:', error);
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:30px;color:var(--danger);">تعذر الحساب — تأكد من تشغيل accounting_schema_step1.sql</td></tr>';
+            }
+        }
+
+        async function loadBalanceSheet() {
+            var tbody = document.getElementById('balanceSheetBody');
+            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:20px;">جاري الحساب...</td></tr>';
+            try {
+                var asOfDate = document.getElementById('bsAsOfDate').value;
+                var bs = await Supabase.getBalanceSheet(asOfDate);
+
+                var html = '<tr style="background:var(--surface-alt);"><td colspan="2"><strong>الأصول</strong></td></tr>';
+                bs.assets.forEach(function(a) {
+                    html += '<tr><td>' + a.name + '</td><td>' + Supabase.formatCurrency(a.amount, systemCurrency) + '</td></tr>';
+                });
+                html += '<tr style="font-weight:700;"><td>إجمالي الأصول</td><td>' + Supabase.formatCurrency(bs.totalAssets, systemCurrency) + '</td></tr>';
+
+                html += '<tr style="background:var(--surface-alt);"><td colspan="2"><strong>الخصوم</strong></td></tr>';
+                bs.liabilities.forEach(function(l) {
+                    html += '<tr><td>' + l.name + '</td><td>' + Supabase.formatCurrency(l.amount, systemCurrency) + '</td></tr>';
+                });
+                html += '<tr style="font-weight:700;"><td>إجمالي الخصوم</td><td>' + Supabase.formatCurrency(bs.totalLiabilities, systemCurrency) + '</td></tr>';
+
+                html += '<tr style="background:var(--surface-alt);"><td colspan="2"><strong>حقوق الملكية</strong></td></tr>';
+                bs.equity.forEach(function(e) {
+                    html += '<tr><td>' + e.name + '</td><td>' + Supabase.formatCurrency(e.amount, systemCurrency) + '</td></tr>';
+                });
+                html += '<tr style="font-weight:700;"><td>إجمالي حقوق الملكية</td><td>' + Supabase.formatCurrency(bs.totalEquity, systemCurrency) + '</td></tr>';
+
+                html += '<tr style="font-weight:900;font-size:14px;border-top:2px solid var(--border);"><td>إجمالي الخصوم + حقوق الملكية</td><td>' + Supabase.formatCurrency(bs.totalLiabilities + bs.totalEquity, systemCurrency) + '</td></tr>';
+
+                tbody.innerHTML = html;
+                var statusEl = document.getElementById('bsBalanceStatus');
+                statusEl.textContent = bs.isBalanced ? '✅ الميزانية متوازنة' : '⚠️ غير متوازنة — راجع القيود';
+                statusEl.style.color = bs.isBalanced ? 'var(--success)' : 'var(--danger)';
+            } catch (error) {
+                console.error('❌ خطأ في المركز المالي:', error);
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:30px;color:var(--danger);">تعذر الحساب — تأكد من تشغيل accounting_schema_step1.sql</td></tr>';
+            }
         }
 
         // ================================================================
