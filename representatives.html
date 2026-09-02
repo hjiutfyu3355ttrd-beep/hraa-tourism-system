@@ -5,352 +5,2194 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
     <title id="pageTitle">المناديب - حراء للسياحة</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="preload" as="style" onload="this.rel='stylesheet'" />
-    <link rel="stylesheet" href="theme.css" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- ============================================================ -->
+    <!-- SUPABASE.JS - الملف المركزي -->
+    <!-- ============================================================ -->
+    <script src="supabase.js"></script>
+
+    <style>
+        /* ================================================================
+           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           ================================================================ */
+        :root {
+            --primary: #0e1c2e;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
+            --accent-tint: rgba(156, 122, 60, 0.08);
+            --success: #1c7a4e;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
+            --surface: #ffffff;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-full: 9999px;
+            --t-base: 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
+        }
+
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ================================================================
+           SIDEBAR
+           ================================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary);
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(calc(var(--sidebar-width) + 20px));
+        }
+
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            display: none;
+        }
+
+        .brand-logo-img.visible {
+            display: block;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-inverse);
+            flex-shrink: 0;
+        }
+
+        .brand-mark.hidden {
+            display: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-inverse);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            color: var(--accent-light);
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 10px 8px;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 12px 6px;
+            font-family: var(--font-display);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 0;
+        }
+
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.5);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: var(--t-base);
+            position: relative;
+        }
+
+        .nav-list a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-inverse);
+        }
+
+        .nav-list a.active {
+            background: rgba(139, 122, 75, 0.12);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        .nav-list a.active i {
+            color: var(--accent-light);
+        }
+
+        .nav-list a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .nav-list a i {
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-badge {
+            margin-right: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(139, 122, 75, 0.18);
+            color: var(--accent-light);
+            border: 1px solid rgba(139, 122, 75, 0.15);
+            font-family: var(--font-display);
+        }
+
+        .sidebar-footer {
+            padding: 12px 16px 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.3);
+            transition: var(--t-base);
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: rgba(184, 74, 62, 0.12);
+            color: #e8a09a;
+        }
+
+        .logout-btn i {
+            font-size: 14px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1045;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
+        .main-content {
+            margin-right: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-right 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* ================================================================
+           NAVBAR
+           ================================================================ */
+        .navbar-custom {
+            background: var(--bg);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--surface);
+            border-color: var(--text-tertiary);
+        }
+
+        .navbar-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 4px;
+        }
+
+        .navbar-logo-img {
+            height: 28px;
+            width: 28px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+
+        .navbar-logo-img.visible {
+            display: block;
+        }
+
+        .navbar-logo-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--font-display);
+        }
+
+        .navbar-logo-text span {
+            color: var(--accent);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            margin-right: 6px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 4px 3px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: var(--font-display);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* ================================================================
+           DASHBOARD CONTENT
+           ================================================================ */
+        .dashboard-content {
+            padding: 20px 24px 30px;
+            flex: 1;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           STAT CARDS
+           ================================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            transition: var(--t-base);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+
+        .stat-card .stat-number {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .stat-card .stat-icon {
+            float: left;
+            font-size: 18px;
+            color: var(--accent-light);
+            opacity: 0.5;
+        }
+
+        .stat-blue .stat-number {
+            color: var(--info);
+        }
+        .stat-green .stat-number {
+            color: var(--success);
+        }
+        .stat-gold .stat-number {
+            color: var(--accent);
+        }
+        .stat-red .stat-number {
+            color: var(--danger);
+        }
+
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 12px;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+            font-family: var(--font-display);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--text-inverse);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #166a4a;
+            border-color: #166a4a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a03d32;
+            border-color: #a03d32;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: var(--accent-tint);
+        }
+
+        .btn-sm {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            font-size: 12px;
+            transition: var(--t-base);
+        }
+
+        .btn-icon-edit {
+            background: var(--info-bg);
+            color: var(--info);
+            border-color: var(--border);
+        }
+
+        .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-icon-delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: var(--border);
+        }
+
+        .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ================================================================
+           PANEL
+           ================================================================ */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+        }
+
+        .panel-title i {
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .record-count {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* ================================================================
+           TABLE
+           ================================================================ */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+
+        .table-custom thead {
+            background: var(--bg);
+        }
+
+        .table-custom th {
+            padding: 8px 12px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        .table-custom td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom tr:hover td {
+            background: var(--surface-alt);
+        }
+
+        .badge-custom {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+
+        .badge-admin {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .badge-finance {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-user {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        /* ================================================================
+           MODAL
+           ================================================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1060;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            max-width: 520px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-box h3 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .modal-box h3 i {
+            color: var(--accent);
+            margin-left: 8px;
+        }
+
+        .modal-box label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .modal-box select,
+        .modal-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            margin-bottom: 12px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .modal-box select:focus,
+        .modal-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* ================================================================
+           TOAST
+           ================================================================ */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
+            z-index: 9999;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
+        }
+
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
+           ================================================================ */
+        .footer-custom {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 12px 24px;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            margin-top: auto;
+        }
+
+        .footer-custom .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-custom .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .footer-custom .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-custom .footer-copy {
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-copy strong {
+            color: var(--accent-dark);
+            font-weight: 700;
+        }
+
+        .footer-custom .footer-divider {
+            color: var(--border);
+            font-size: 14px;
+        }
+
+        .footer-custom .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-version {
+            font-family: var(--font-display);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .footer-custom .footer-link {
+            color: var(--text-tertiary);
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(calc(var(--sidebar-width) + 20px));
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-content {
+                padding: 16px 18px;
+            }
+            .navbar-custom {
+                padding: 0 16px;
+            }
+            .user-info {
+                display: none;
+            }
+            .page-header .ph-right {
+                display: none;
+            }
+            .navbar-logo-text {
+                display: none;
+            }
+            .footer-custom .footer-divider {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-right .nav-btn:not(:first-child) {
+                display: none;
+            }
+            .navbar-custom {
+                height: 54px;
+                padding: 0 12px;
+            }
+            .page-title {
+                font-size: 14px;
+            }
+            .page-title small {
+                display: none;
+            }
+            .sidebar-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            .dashboard-content {
+                padding: 12px 12px;
+            }
+            .page-header h2 {
+                font-size: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card .stat-number {
+                font-size: 16px;
+            }
+            .table-custom {
+                font-size: 11px;
+            }
+            .table-custom th,
+            .table-custom td {
+                padding: 6px 8px;
+            }
+            .modal-box {
+                padding: 20px;
+            }
+            .navbar-logo-img {
+                height: 24px;
+                width: 24px;
+            }
+            .footer-custom {
+                padding: 8px 14px;
+            }
+            .footer-custom .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .footer-custom .footer-right {
+                flex-wrap: wrap;
+                justify-content: center;
+                font-size: 11px;
+            }
+            .footer-custom .footer-left {
+                font-size: 11px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-content {
+                padding: 10px 10px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 12px;
+            }
+            .stat-card .stat-number {
+                font-size: 14px;
+            }
+            .stat-card .stat-label {
+                font-size: 9px;
+            }
+            .stat-card .stat-icon {
+                font-size: 14px;
+            }
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            .modal-box {
+                padding: 16px;
+            }
+            .modal-box h3 {
+                font-size: 15px;
+            }
+            .footer-custom .footer-copy {
+                font-size: 10px;
+            }
+            .footer-custom .footer-version {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
+        }
+
+        /* ================================================================
+           DARK MODE
+           ================================================================ */
+        body.dark-mode {
+            background: var(--primary-dark);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .navbar-custom {
+            background: var(--primary-dark);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .navbar-logo-text {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .stat-card .stat-number {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .panel {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .panel-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .table-custom thead {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .table-custom th {
+            color: rgba(232,228,220,0.4);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .table-custom td {
+            border-bottom-color: rgba(255,255,255,0.04);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .table-custom tr:hover td {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .page-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header .ph-left h2 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .page-header .ph-left p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .btn-outline {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: rgba(139, 122, 75, 0.1);
+        }
+
+        body.dark-mode .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-success {
+            background: #166a4a;
+            border-color: #166a4a;
+        }
+
+        body.dark-mode .btn-danger {
+            background: #a03d32;
+            border-color: #a03d32;
+        }
+
+        body.dark-mode .sidebar-toggle {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .sidebar-toggle:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.15);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .nav-btn {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .nav-btn:hover {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .user-profile:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .user-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .toast-notification {
+            background: var(--primary);
+            color: #e0dcd2;
+            border-right-color: var(--accent);
+        }
+
+        body.dark-mode .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        body.dark-mode .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        body.dark-mode .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box h3 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box select,
+        body.dark-mode .modal-box input {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .modal-box select:focus,
+        body.dark-mode .modal-box input:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .badge-admin {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .badge-finance {
+            background: rgba(30, 122, 85, 0.2);
+            color: #7bc4a0;
+        }
+
+        body.dark-mode .badge-user {
+            background: rgba(184, 148, 58, 0.2);
+            color: #d4b87a;
+        }
+
+        body.dark-mode .btn-icon-edit {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        body.dark-mode .btn-icon-delete {
+            background: rgba(184, 74, 62, 0.2);
+            color: #dba09a;
+        }
+
+        body.dark-mode .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        body.dark-mode .shimmer {
+            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
+        }
+    </style>
 </head>
 <body>
 
-<aside class="sidebar" id="sidebar">
-    <div class="logo-area">
-        <h1 data-brand>🕋 حراء للسياحة</h1>
-        <span>نظام إدارة الرحلات</span>
-    </div>
-    <nav>
-        <div class="nav-section-title">القائمة الرئيسية</div>
-        <a href="index.html" class="nav-link"><i class="fas fa-house"></i> الرئيسية</a>
-        <div class="nav-section-title">الإدارة المالية</div>
-        <a href="treasury.html" class="nav-link"><i class="fas fa-wallet"></i> الخزينة</a>
-        <a href="trips.html" class="nav-link"><i class="fas fa-plane"></i> الرحلات <span class="badge" id="badge-trips">0</span></a>
-        <a href="clients.html" class="nav-link"><i class="fas fa-users"></i> العملاء <span class="badge" id="badge-clients">0</span></a>
-        <a href="banks.html" class="nav-link"><i class="fas fa-building-columns"></i> البنوك</a>
-        <a href="bookings.html" class="nav-link"><i class="fas fa-ticket"></i> الحجوزات <span class="badge" id="badge-bookings">0</span></a>
-        <a href="representatives.html" class="nav-link active"><i class="fas fa-user-tie"></i> المناديب <span class="badge" id="badge-reps">0</span></a>
-        <div class="nav-section-title">التقارير</div>
-        <a href="client_statement.html" class="nav-link"><i class="fas fa-receipt"></i> كشف حساب العميل</a>
-        <a href="reports.html" class="nav-link"><i class="fas fa-chart-bar"></i> التقارير</a>
-        <div class="nav-section-title">الإدارة</div>
-        <a href="profile.html" class="nav-link"><i class="fas fa-id-badge"></i> الملف الشخصي</a>
-        <a href="users.html" class="nav-link"><i class="fas fa-user-shield"></i> المستخدمون</a>
-        <a href="settings.html" class="nav-link"><i class="fas fa-gear"></i> الإعدادات</a>
-        <div class="nav-section-title">الدعم</div>
-        <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> الدعم والتواصل</a>
-        <hr />
-        <a href="#" class="nav-link logout-link" onclick="logout(); return false;"><i class="fas fa-arrow-right-from-bracket"></i> تسجيل الخروج</a>
-    </nav>
-</aside>
-
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-<main class="main-content" id="main-content">
-    <div class="flex items-center gap-3 mb-6 menu-toggle">
-        <button onclick="toggleSidebar()" class="menu-toggle-btn" aria-label="فتح/إغلاق القائمة"><i class="fas fa-bars" id="menu-toggle-icon"></i></button>
-        <h1 class="brand-mobile" data-brand>🕋 حراء للسياحة</h1>
-    </div>
-
-    <div class="flex flex-wrap items-center justify-between mb-8 gap-3">
-        <div>
-            <h1 class="page-title-main">إدارة المناديب</h1>
-            <p class="text-gray-500 text-sm">متابعة مبيعات وتحصيل كل مندوب من عملائه ورحلاته</p>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-row">
+                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
+                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
+                <div class="brand-text" id="sidebarBrandText">
+                    حراء <span>للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
+                </div>
+            </div>
         </div>
-        <div class="flex items-center gap-3">
-            <span class="last-updated" id="lastUpdated"><i class="fas fa-clock"></i> جاري التحميل...</span>
-            <button onclick="manualRefresh()" class="icon-btn" title="تحديث" id="refreshBtn"><i class="fas fa-arrow-rotate-right"></i></button>
-            <button onclick="openModalById('repModal')" class="btn-primary-solid"><i class="fas fa-plus"></i> مندوب جديد</button>
-        </div>
-    </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8" id="stats-container">
-        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
-        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
-        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
-        <div class="stat-card flex items-center gap-4"><div class="skeleton" style="width:40px;height:40px;border-radius:6px;"></div><div class="flex-1"><div class="skeleton" style="width:60%;height:20px;margin-bottom:8px;"></div><div class="skeleton" style="width:40%;height:12px;"></div></div></div>
-    </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">القائمة الرئيسية</div>
+            <ul class="nav-list">
+                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
+            </ul>
 
-    <div class="table-card">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="section-title"><i class="fas fa-user-tie text-[#9c7a3c] ml-2"></i>سجل المناديب</h3>
-            <span class="text-sm text-gray-400" id="recordCount">0 سجل</span>
-        </div>
-        <div style="max-height: 560px; overflow-y: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th><th>اسم المندوب</th><th>الهاتف</th><th>عدد الحجوزات</th>
-                        <th>إجمالي المستحق</th><th>المحصّل</th><th>المتبقي</th><th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="repsBody">
-                    <tr><td colspan="8" class="text-center text-gray-400 py-8"><i class="fas fa-spinner fa-spin ml-2"></i>جاري تحميل المناديب...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</main>
+            <div class="nav-section-title">الإدارة المالية</div>
+            <ul class="nav-list">
+                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
+                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
+                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="representatives.html" class="active"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+            </ul>
 
-<!-- ===== مودال إضافة مندوب ===== -->
-<div class="modal-backdrop" id="repModal">
-    <div class="modal-box">
-        <h3 class="text-lg font-bold mb-1"><i class="fas fa-user-tie text-[#9c7a3c] ml-2"></i>إضافة مندوب جديد</h3>
-        <p class="text-sm text-gray-400 mb-5">أدخل بيانات المندوب لإضافته إلى السجل</p>
-        <form id="repForm" onsubmit="handleRepSubmit(event)" class="space-y-4">
-            <div class="form-field">
-                <label>اسم المندوب</label>
+            <div class="nav-section-title">التقارير</div>
+            <ul class="nav-list">
+                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+            </ul>
+
+            <div class="nav-section-title">الإدارة</div>
+            <ul class="nav-list">
+                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+            </ul>
+
+            <div class="nav-section-title">الدعم</div>
+            <ul class="nav-list">
+                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i>
+                تسجيل الخروج
+            </a>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main-content" id="mainContent">
+
+        <nav class="navbar-custom">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+
+                <div class="navbar-logo-container">
+                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
+                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
+                </div>
+
+                <h4 class="page-title" id="pageTitleText">
+                    المناديب
+                    <small>متابعة مبيعات وتحصيل كل مندوب</small>
+                </h4>
+            </div>
+
+            <div class="navbar-right">
+                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-role" id="userRole">حراء للسياحة</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-content">
+
+            <!-- ===== PAGE HEADER ===== -->
+            <div class="page-header">
+                <div class="ph-left">
+                    <h2>إدارة المناديب</h2>
+                    <p>متابعة مبيعات وتحصيل كل مندوب من عملائه ورحلاته</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">جاري التحميل...</span>
+                </div>
+            </div>
+
+            <!-- ===== STATS ===== -->
+            <div class="stats-grid" id="stats-container">
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-person-badge-fill"></i></span>
+                    <div class="stat-number" id="statTotalReps">0</div>
+                    <div class="stat-label">إجمالي المناديب</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon"><i class="bi bi-ticket-perforated-fill"></i></span>
+                    <div class="stat-number" id="statRepBookings">0</div>
+                    <div class="stat-label">إجمالي حجوزاتهم</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-hand-thumbs-up-fill"></i></span>
+                    <div class="stat-number" id="statTotalCollected">0</div>
+                    <div class="stat-label">إجمالي المحصّل</div>
+                </div>
+                <div class="stat-card stat-red">
+                    <span class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
+                    <div class="stat-number" id="statTotalRemaining">0</div>
+                    <div class="stat-label">إجمالي المتبقي</div>
+                </div>
+            </div>
+
+            <!-- ===== TOOLBAR ===== -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <button class="btn-action btn-success" onclick="openModalById('repModal')">
+                    <i class="bi bi-person-plus-fill"></i> مندوب جديد
+                </button>
+                <button class="btn-action btn-primary" onclick="loadData()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
+                </button>
+            </div>
+
+            <!-- ===== REPS TABLE ===== -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-person-badge-fill"></i> سجل المناديب</h5>
+                    <span id="recordCount" class="record-count">0 سجل</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>#</th><th>اسم المندوب</th><th>الهاتف</th><th>عدد الحجوزات</th>
+                                <th>إجمالي المستحق</th><th>المحصّل</th><th>المتبقي</th>
+                                <th style="text-align:center;">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repsBody">
+                            <tr>
+                                <td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                    <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
+                                    جاري تحميل المناديب...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- MODAL - مندوب جديد -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="repModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-person-badge-fill"></i> إضافة مندوب جديد</h3>
+            <form id="repForm" onsubmit="handleRepSubmit(event)">
+                <label for="repName">اسم المندوب <span class="required">*</span></label>
                 <input type="text" id="repName" placeholder="مثال: رزق صابر" required />
-            </div>
-            <div class="form-field">
-                <label>رقم الهاتف</label>
+
+                <label for="repPhone">رقم الهاتف</label>
                 <input type="text" id="repPhone" placeholder="مثال: 0100xxxxxxx" />
-            </div>
-            <div class="form-field">
-                <label>نسبة العمولة % (اختياري)</label>
+
+                <label for="repCommission">نسبة العمولة % (اختياري)</label>
                 <input type="number" id="repCommission" min="0" step="0.01" placeholder="0" />
-            </div>
-            <div class="flex gap-3 justify-end pt-2">
-                <button type="button" class="btn-outline-soft" onclick="closeModalById('repModal')">إلغاء</button>
-                <button type="submit" class="btn-primary-solid" id="saveRepBtn">حفظ</button>
-            </div>
-        </form>
-    </div>
-</div>
 
-<!-- ===== مودال تسجيل تحصيل ===== -->
-<div class="modal-backdrop" id="collectModal">
-    <div class="modal-box">
-        <h3 class="text-lg font-bold mb-1"><i class="fas fa-hand-holding-dollar text-[#9c7a3c] ml-2"></i>تسجيل تحصيل من مندوب</h3>
-        <p class="text-sm text-gray-400 mb-5" id="collectRepLabel">—</p>
-        <form id="collectForm" onsubmit="handleCollectSubmit(event)" class="space-y-4">
-            <input type="hidden" id="collectRepId" />
-            <div class="form-field">
-                <label>المبلغ المحصّل</label>
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('repModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveRepBtn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MODAL - تسجيل تحصيل -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="collectModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-cash-coin"></i> تسجيل تحصيل من مندوب</h3>
+            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="collectRepLabel">—</p>
+            <form id="collectForm" onsubmit="handleCollectSubmit(event)">
+                <input type="hidden" id="collectRepId" />
+                <label for="collectAmount">المبلغ المحصّل <span class="required">*</span></label>
                 <input type="number" id="collectAmount" step="0.01" min="0.01" required placeholder="0" />
-            </div>
-            <div class="form-field">
-                <label>التاريخ</label>
+
+                <label for="collectDate">التاريخ <span class="required">*</span></label>
                 <input type="date" id="collectDate" required />
-            </div>
-            <div class="form-field">
-                <label>البيان</label>
+
+                <label for="collectDesc">البيان</label>
                 <input type="text" id="collectDesc" placeholder="مثال: توريد كاش يد بيد من الحج" />
-            </div>
-            <div class="flex gap-3 justify-end pt-2">
-                <button type="button" class="btn-outline-soft" onclick="closeModalById('collectModal')">إلغاء</button>
-                <button type="submit" class="btn-primary-solid" id="saveCollectBtn">حفظ</button>
-            </div>
-        </form>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('collectModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveCollectBtn">حفظ</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div id="toastContainer"></div>
+    <footer class="footer-custom">
+        <div class="footer-content">
+            <div class="footer-right">
+                <span class="footer-brand">حراء <span>للسياحة</span></span>
+                <span class="footer-divider">|</span>
+                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+            </div>
+            <div class="footer-left">
+                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-divider">|</span>
+                <a href="support.html" class="footer-link">
+                    <i class="bi bi-headset"></i> الدعم الفني
+                </a>
+            </div>
+        </div>
+    </footer>
 
-<script src="supabase.js"></script>
-<script src="layout.js"></script>
-<script>
+    <!-- ================================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ================================================================ -->
+    <script>
 
-var reps = [];
-var repTransactions = [];
-var bookings = [];
+        // ================================================================
+        // STATE
+        // ================================================================
+        var reps = [];
+        var repTransactions = [];
+        var bookings = [];
+        var currentUser = null;
+        var systemCurrency = 'SAR';
+        var currencySymbol = 'ر.س';
+        var isLoading = false;
 
-// ================================================================
-// جلب البيانات
-// ================================================================
-async function loadData() {
-    try {
-        var results = await Promise.all([
-            Supabase.getRepresentatives().catch(function() { return []; }),
-            Supabase.getRepTransactions().catch(function() { return []; }),
-            Supabase.getBookings().catch(function() { return []; })
-        ]);
-        reps = results[0] || [];
-        repTransactions = results[1] || [];
-        bookings = results[2] || [];
-    } catch (error) {
-        console.error('❌ خطأ في جلب المناديب:', error);
-        showToast('⚠️ فشل تحميل البيانات', 'warning');
-        reps = [];
-    }
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+        async function loadData() {
+            if (isLoading) return;
+            isLoading = true;
 
-    renderStats();
-    renderTable();
-    updateLastRefreshed();
+            try {
+                var results = await Promise.all([
+                    Supabase.getRepresentatives().catch(function() { return []; }),
+                    Supabase.getRepTransactions().catch(function() { return []; }),
+                    Supabase.getBookings().catch(function() { return []; })
+                ]);
+                reps = results[0] || [];
+                repTransactions = results[1] || [];
+                bookings = results[2] || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب المناديب:', error);
+                showToast('⚠️ فشل تحميل البيانات', 'warning');
+                reps = [];
+            }
 
-    var badge = document.getElementById('badge-reps');
-    if (badge) badge.textContent = reps.length;
-}
+            renderStats();
+            renderTable();
 
-function repBookings(repId) {
-    return bookings.filter(function(b) { return String(b['rep_id']) === String(repId); });
-}
-function repCollected(repId) {
-    return repTransactions
-        .filter(function(t) { return String(t['rep_id']) === String(repId); })
-        .reduce(function(sum, t) { return sum + parseFloat(t['amount'] || 0); }, 0);
-}
-
-function renderStats() {
-    var totalExpected = 0, totalCollected = 0, repBookingsCount = 0;
-
-    bookings.forEach(function(b) {
-        if (b['rep_id']) {
-            totalExpected += parseFloat(b['booking_value'] || 0);
-            repBookingsCount++;
+            isLoading = false;
         }
-    });
-    repTransactions.forEach(function(t) { totalCollected += parseFloat(t['amount'] || 0); });
 
-    var stats = [
-        { icon: 'fa-user-tie', color: 'bg-blue-50 text-blue-600', number: reps.length, label: 'إجمالي المناديب' },
-        { icon: 'fa-ticket', color: 'bg-purple-50 text-purple-600', number: repBookingsCount, label: 'إجمالي حجوزاتهم' },
-        { icon: 'fa-hand-holding-dollar', color: 'bg-emerald-50 text-emerald-600', number: Supabase.formatCurrency(totalCollected), label: 'إجمالي المحصّل' },
-        { icon: 'fa-triangle-exclamation', color: 'bg-rose-50 text-rose-600', number: Supabase.formatCurrency(totalExpected - totalCollected), label: 'إجمالي المتبقي' }
-    ];
+        function repBookings(repId) {
+            return bookings.filter(function(b) { return String(b['rep_id']) === String(repId); });
+        }
+        function repCollected(repId) {
+            return repTransactions
+                .filter(function(t) { return String(t['rep_id']) === String(repId); })
+                .reduce(function(sum, t) { return sum + parseFloat(t['amount'] || 0); }, 0);
+        }
 
-    document.getElementById('stats-container').innerHTML = stats.map(function(s) {
-        return '<div class="stat-card flex items-center gap-4">' +
-            '<div class="icon ' + s.color + '"><i class="fas ' + s.icon + '"></i></div>' +
-            '<div><div class="number">' + s.number + '</div><div class="label">' + s.label + '</div></div></div>';
-    }).join('');
-}
+        function renderStats() {
+            var totalExpected = 0, totalCollected = 0, repBookingsCount = 0;
 
-function renderTable() {
-    var tbody = document.getElementById('repsBody');
-    var count = document.getElementById('recordCount');
+            bookings.forEach(function(b) {
+                if (b['rep_id']) {
+                    totalExpected += parseFloat(b['booking_value'] || 0);
+                    repBookingsCount++;
+                }
+            });
+            repTransactions.forEach(function(t) { totalCollected += parseFloat(t['amount'] || 0); });
 
-    if (!reps.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-gray-400 py-8"><i class="fas fa-user-tie mb-2 block text-xl opacity-30"></i>لا يوجد مناديب مسجلون</td></tr>';
-        count.textContent = '0 سجل';
-        return;
-    }
+            document.getElementById('statTotalReps').textContent = reps.length;
+            document.getElementById('statRepBookings').textContent = repBookingsCount;
+            document.getElementById('statTotalCollected').textContent = Supabase.formatCurrency(totalCollected);
+            document.getElementById('statTotalRemaining').textContent = Supabase.formatCurrency(totalExpected - totalCollected);
+        }
 
-    count.textContent = reps.length + ' سجل';
+        function renderTable() {
+            var tbody = document.getElementById('repsBody');
+            var count = document.getElementById('recordCount');
 
-    tbody.innerHTML = reps.map(function(r, i) {
-        var rb = repBookings(r['id']);
-        var expected = rb.reduce(function(sum, b) { return sum + parseFloat(b['booking_value'] || 0); }, 0);
-        var collected = repCollected(r['id']);
-        var remaining = expected - collected;
-        var remColor = remaining > 0 ? 'text-rose-600' : 'text-emerald-600';
+            if (!reps.length) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-person-x" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا يوجد مناديب مسجلون</td></tr>';
+                count.textContent = '0 سجل';
+                return;
+            }
 
-        return '<tr>' +
-            '<td>' + (i + 1) + '</td>' +
-            '<td class="font-semibold">' + (r['rep_name'] || '—') + '</td>' +
-            '<td>' + (r['phone'] || '—') + '</td>' +
-            '<td>' + rb.length + '</td>' +
-            '<td>' + Supabase.formatCurrency(expected) + '</td>' +
-            '<td class="text-emerald-600">' + Supabase.formatCurrency(collected) + '</td>' +
-            '<td class="' + remColor + '">' + Supabase.formatCurrency(remaining) + '</td>' +
-            '<td class="whitespace-nowrap">' +
-                '<button class="icon-btn" title="تسجيل تحصيل" onclick="openCollectModal(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')"><i class="fas fa-hand-holding-dollar"></i></button> ' +
-                '<button class="icon-btn danger" title="حذف" onclick="deleteRep(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')"><i class="fas fa-trash"></i></button>' +
-            '</td>' +
-            '</tr>';
-    }).join('');
-}
+            count.textContent = reps.length + ' سجل';
 
-// ================================================================
-// إضافة / حذف مندوب
-// ================================================================
-async function handleRepSubmit(event) {
-    event.preventDefault();
+            var html = '';
+            for (var i = 0; i < reps.length; i++) {
+                var r = reps[i];
+                var rb = repBookings(r['id']);
+                var expected = rb.reduce(function(sum, b) { return sum + parseFloat(b['booking_value'] || 0); }, 0);
+                var collected = repCollected(r['id']);
+                var remaining = expected - collected;
+                var remColor = remaining > 0 ? 'color:var(--danger);' : 'color:var(--success);';
 
-    var repName = document.getElementById('repName').value.trim();
-    var repPhone = document.getElementById('repPhone').value.trim();
-    var repCommission = document.getElementById('repCommission').value;
+                html += '<tr>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td><strong>' + (r['rep_name'] || '—') + '</strong></td>' +
+                    '<td>' + (r['phone'] || '—') + '</td>' +
+                    '<td>' + rb.length + '</td>' +
+                    '<td>' + Supabase.formatCurrency(expected) + '</td>' +
+                    '<td style="color:var(--success);">' + Supabase.formatCurrency(collected) + '</td>' +
+                    '<td style="' + remColor + '">' + Supabase.formatCurrency(remaining) + '</td>' +
+                    '<td style="text-align:center;white-space:nowrap;">' +
+                        '<button class="btn-icon btn-icon-edit" onclick="openCollectModal(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')" title="تسجيل تحصيل"><i class="bi bi-cash-coin"></i></button> ' +
+                        '<button class="btn-icon btn-icon-delete" onclick="deleteRep(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
+                    '</td>' +
+                    '</tr>';
+            }
+            tbody.innerHTML = html;
+        }
 
-    if (!repName) { showToast('⚠️ الرجاء إدخال اسم المندوب', 'warning'); return; }
+        // ================================================================
+        // إضافة / حذف مندوب
+        // ================================================================
+        async function handleRepSubmit(event) {
+            event.preventDefault();
 
-    var btn = document.getElementById('saveRepBtn');
-    btn.disabled = true;
-    btn.textContent = 'جاري الحفظ...';
+            var repName = document.getElementById('repName').value.trim();
+            var repPhone = document.getElementById('repPhone').value.trim();
+            var repCommission = document.getElementById('repCommission').value;
 
-    try {
-        await Supabase.addData('representatives', {
-            rep_name: repName,
-            phone: repPhone,
-            commission_rate: repCommission ? parseFloat(repCommission) : 0
-        });
-        closeModalById('repModal');
-        document.getElementById('repForm').reset();
-        showToast('✅ تمت إضافة المندوب بنجاح', 'success');
-        loadData();
-    } catch (error) {
-        showToast('❌ فشل إضافة المندوب: ' + error.message, 'error');
-    }
+            if (!repName) { showToast('⚠️ الرجاء إدخال اسم المندوب', 'warning'); return; }
 
-    btn.disabled = false;
-    btn.textContent = 'حفظ';
-}
+            var btn = document.getElementById('saveRepBtn');
+            btn.disabled = true;
+            btn.textContent = 'جاري الحفظ...';
 
-function deleteRep(id, name) {
-    if (!confirm('هل أنت متأكد من حذف المندوب ' + name + '؟')) return;
-    Supabase.deleteData('representatives', id)
-        .then(function() {
-            showToast('✅ تم حذف المندوب بنجاح', 'success');
+            try {
+                await Supabase.addData('representatives', {
+                    rep_name: repName,
+                    phone: repPhone,
+                    commission_rate: repCommission ? parseFloat(repCommission) : 0
+                });
+                closeModalById('repModal');
+                document.getElementById('repForm').reset();
+                showToast('✅ تمت إضافة المندوب بنجاح', 'success');
+                loadData();
+            } catch (error) {
+                showToast('❌ فشل إضافة المندوب: ' + error.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'حفظ';
+        }
+
+        function deleteRep(id, name) {
+            if (!confirm('هل أنت متأكد من حذف المندوب ' + name + '؟')) return;
+            Supabase.deleteData('representatives', id)
+                .then(function() {
+                    showToast('✅ تم حذف المندوب بنجاح', 'success');
+                    loadData();
+                })
+                .catch(function(error) {
+                    showToast('❌ فشل حذف المندوب: ' + error.message, 'error');
+                });
+        }
+
+        // ================================================================
+        // تسجيل تحصيل
+        // ================================================================
+        function openCollectModal(repId, repName) {
+            document.getElementById('collectRepId').value = repId;
+            document.getElementById('collectRepLabel').textContent = 'المندوب: ' + repName;
+            document.getElementById('collectForm').reset();
+            document.getElementById('collectRepId').value = repId;
+            document.getElementById('collectDate').value = new Date().toISOString().slice(0, 10);
+            openModalById('collectModal');
+        }
+
+        async function handleCollectSubmit(event) {
+            event.preventDefault();
+
+            var repId = document.getElementById('collectRepId').value;
+            var amount = parseFloat(document.getElementById('collectAmount').value);
+            var txnDate = document.getElementById('collectDate').value;
+            var desc = document.getElementById('collectDesc').value.trim();
+
+            if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
+
+            var btn = document.getElementById('saveCollectBtn');
+            btn.disabled = true;
+            btn.textContent = 'جاري الحفظ...';
+
+            try {
+                await Supabase.addData('rep_transactions', {
+                    rep_id: repId,
+                    amount: amount,
+                    txn_date: txnDate,
+                    description: desc || 'تحصيل من العميل'
+                });
+                closeModalById('collectModal');
+                showToast('✅ تم تسجيل التحصيل بنجاح', 'success');
+                loadData();
+            } catch (error) {
+                showToast('❌ فشل تسجيل التحصيل: ' + error.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'حفظ';
+        }
+
+        // ================================================================
+        // MODALS
+        // ================================================================
+        function openModalById(id) {
+            var el = document.getElementById(id + 'Overlay');
+            if (el) el.classList.add('active');
+        }
+        function closeModalById(id) {
+            var el = document.getElementById(id + 'Overlay');
+            if (el) el.classList.remove('active');
+        }
+
+        // ================================================================
+        // DOM READY
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!Supabase.initSystem()) return;
+
+            try {
+                var settings = await Supabase.getSystemSettings();
+                systemCurrency = settings.currency || 'SAR';
+                currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+            } catch (error) {
+                console.error('❌ خطأ في جلب الإعدادات:', error);
+                var savedCurrency = localStorage.getItem('systemCurrency');
+                if (savedCurrency) {
+                    systemCurrency = savedCurrency;
+                    currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+                }
+            }
+            localStorage.setItem('systemCurrency', systemCurrency);
+
+            currentUser = Supabase.getCurrentUser();
+            if (currentUser) {
+                updateUserUI();
+            }
+
+            await applySystemName();
+            Supabase.applySystemLogo();
+
+            initSidebar();
+            initDarkMode();
+            initRefresh();
+            initNotifications();
+            initKeyboardShortcuts();
+            updateDate();
+
             loadData();
-        })
-        .catch(function(error) {
-            showToast('❌ فشل حذف المندوب: ' + error.message, 'error');
+            setInterval(loadData, 60000);
         });
-}
 
-// ================================================================
-// تسجيل تحصيل
-// ================================================================
-function openCollectModal(repId, repName) {
-    document.getElementById('collectRepId').value = repId;
-    document.getElementById('collectRepLabel').textContent = 'المندوب: ' + repName;
-    document.getElementById('collectForm').reset();
-    document.getElementById('collectRepId').value = repId;
-    document.getElementById('collectDate').value = new Date().toISOString().slice(0, 10);
-    openModalById('collectModal');
-}
+        // ================================================================
+        // APPLY SYSTEM NAME
+        // ================================================================
+        async function applySystemName() {
+            try {
+                var systemName = await Supabase.getSystemName();
+                document.title = 'المناديب' + ' - ' + systemName;
 
-async function handleCollectSubmit(event) {
-    event.preventDefault();
+                var brandText = document.getElementById('sidebarBrandText');
+                if (brandText) {
+                    brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+                }
+            } catch (error) {
+                console.warn('⚠️ فشل تطبيق اسم النظام:', error);
+            }
+        }
 
-    var repId = document.getElementById('collectRepId').value;
-    var amount = parseFloat(document.getElementById('collectAmount').value);
-    var txnDate = document.getElementById('collectDate').value;
-    var desc = document.getElementById('collectDesc').value.trim();
+        // ================================================================
+        // UPDATE USER UI
+        // ================================================================
+        function updateUserUI() {
+            if (!currentUser) return;
+            var userName = document.getElementById('userName');
+            var userRole = document.getElementById('userRole');
+            var userAvatar = document.getElementById('userAvatar');
 
-    if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
+            if (userName) {
+                userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
+            }
+            if (userRole) {
+                userRole.textContent = currentUser.user_metadata?.role || 'حراء للسياحة';
+            }
+            if (userAvatar) {
+                var name = currentUser.user_metadata?.full_name || currentUser.email || 'م';
+                userAvatar.textContent = name.charAt(0).toUpperCase();
+            }
+        }
 
-    var btn = document.getElementById('saveCollectBtn');
-    btn.disabled = true;
-    btn.textContent = 'جاري الحفظ...';
+        // ================================================================
+        // DATE DISPLAY
+        // ================================================================
+        function updateDate() {
+            var now = new Date();
+            var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            var dateElement = document.getElementById('headerDate');
+            if (dateElement) {
+                dateElement.textContent = now.toLocaleDateString('ar-SA', options);
+            }
+        }
 
-    try {
-        await Supabase.addData('rep_transactions', {
-            rep_id: repId,
-            amount: amount,
-            txn_date: txnDate,
-            description: desc || 'تحصيل من العميل'
+        // ================================================================
+        // LOGOUT
+        // ================================================================
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('darkMode');
+            window.location.href = 'login.html';
+        }
+
+        // ================================================================
+        // SIDEBAR TOGGLE
+        // ================================================================
+        function initSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var toggle = document.getElementById('sidebarToggle');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
+
+            var MOBILE_BREAKPOINT = 1200;
+
+            toggle.addEventListener('click', function() {
+                if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                    var isOpen = sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = isOpen ? 'hidden' : '';
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
+                }
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > MOBILE_BREAKPOINT) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    main.classList.remove('expanded');
+                }
+            });
+        }
+
+        // ================================================================
+        // DARK MODE
+        // ================================================================
+        function initDarkMode() {
+            var toggle = document.getElementById('darkModeToggle');
+            if (!toggle) return;
+
+            var icon = toggle.querySelector('i');
+            var isDark = Supabase.isDarkModeEnabled();
+            Supabase.applyTheme(isDark);
+
+            if (icon) {
+                icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+            }
+
+            toggle.addEventListener('click', function() {
+                var currentState = document.body.classList.contains('dark-mode');
+                var newState = !currentState;
+
+                Supabase.toggleTheme(newState).then(function() {
+                    if (icon) {
+                        icon.className = newState ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                    }
+                });
+            });
+        }
+
+        // ================================================================
+        // REFRESH BUTTON
+        // ================================================================
+        function initRefresh() {
+            var btn = document.getElementById('refreshBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function() {
+                loadData();
+                showToast('🔄 جاري تحديث البيانات...', 'info');
+            });
+        }
+
+        // ================================================================
+        // NOTIFICATIONS
+        // ================================================================
+        function initNotifications() {
+            var notifBtn = document.getElementById('notifBtn');
+            if (notifBtn) {
+                notifBtn.addEventListener('click', function() {
+                    var messages = [
+                        '🧑‍💼 تم تحديث بيانات المناديب',
+                        '💰 راجع المناديب أصحاب المبالغ المتبقية',
+                        '📊 يمكنك تسجيل تحصيل جديد من أي مندوب',
+                        '⚠️ تنبيه: راجع مستحقات المناديب دوريًا'
+                    ];
+                    var random = messages[Math.floor(Math.random() * messages.length)];
+                    showToast(random, 'info');
+                });
+            }
+        }
+
+        // ================================================================
+        // KEYBOARD SHORTCUTS
+        // ================================================================
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'b') {
+                    e.preventDefault();
+                    document.getElementById('sidebarToggle').click();
+                }
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    loadData();
+                    showToast('🔄 جاري تحديث البيانات...', 'info');
+                }
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    document.getElementById('darkModeToggle').click();
+                }
+                if (e.ctrlKey && e.key === 'l') {
+                    e.preventDefault();
+                    logout();
+                }
+            });
+        }
+
+        // ================================================================
+        // TOAST
+        // ================================================================
+        function showToast(message, type) {
+            var existingToasts = document.querySelectorAll('.toast-notification');
+            for (var i = 0; i < existingToasts.length; i++) {
+                existingToasts[i].remove();
+            }
+
+            var toast = document.createElement('div');
+            toast.className = 'toast-notification';
+
+            var iconClass = 'bi-info-circle-fill';
+            var toastClass = '';
+
+            if (type === 'success') {
+                iconClass = 'bi-check-circle-fill';
+                toastClass = 'toast-success';
+            } else if (type === 'error') {
+                iconClass = 'bi-x-circle-fill';
+                toastClass = 'toast-error';
+            } else if (type === 'warning') {
+                iconClass = 'bi-exclamation-triangle-fill';
+                toastClass = 'toast-warning';
+            }
+
+            toast.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
+                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
+                </div>
+            `;
+
+            if (toastClass) {
+                toast.classList.add(toastClass);
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(function() {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModalById('repModal');
+                closeModalById('collectModal');
+            }
         });
-        closeModalById('collectModal');
-        showToast('✅ تم تسجيل التحصيل بنجاح', 'success');
-        loadData();
-    } catch (error) {
-        showToast('❌ فشل تسجيل التحصيل: ' + error.message, 'error');
-    }
 
-    btn.disabled = false;
-    btn.textContent = 'حفظ';
-}
+        window.openModalById = openModalById;
+        window.closeModalById = closeModalById;
+        window.openCollectModal = openCollectModal;
+        window.deleteRep = deleteRep;
+        window.logout = logout;
+        window.showToast = showToast;
+        window.loadData = loadData;
 
-async function manualRefresh() {
-    var icon = document.querySelector('#refreshBtn i');
-    icon.classList.add('fa-spin');
-    await loadData();
-    icon.classList.remove('fa-spin');
-}
+        console.log('🧑‍💼 نظام المناديب - حراء للسياحة');
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
+    </script>
 
-document.addEventListener('DOMContentLoaded', function() {
-    applySystemName({ pageLabel: 'المناديب', welcome: false });
-    loadData();
-    startSmartAutoRefresh(loadData, 60000);
-});
-
-</script>
 </body>
 </html>
