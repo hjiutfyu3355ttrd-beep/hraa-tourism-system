@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
-    <title id="pageTitle">الملف الشخصي - حراء للسياحة</title>
+    <title id="pageTitle">الموردين - حراء للسياحة</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -552,185 +552,72 @@
         }
 
         /* ================================================================
-           PROFILE CARD
+           STAT CARDS
            ================================================================ */
-        .profile-grid {
+        .stats-grid {
             display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 18px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
         }
 
-        .profile-card {
+        .stat-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            text-align: center;
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            transition: var(--t-base);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
             box-shadow: var(--shadow-sm);
-            position: relative;
-            overflow: hidden;
+            transform: translateY(-1px);
         }
 
-        .profile-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--accent);
-        }
-
-        .profile-avatar-large {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: var(--text-inverse);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            font-weight: 800;
-            font-family: var(--font-display);
-            margin: 0 auto 12px;
-            border: 3px solid var(--border);
-            box-shadow: var(--shadow-md);
-        }
-
-        .profile-card .profile-name {
+        .stat-card .stat-number {
             font-family: var(--font-display);
             font-size: 20px;
             font-weight: 800;
             color: var(--text);
+            line-height: 1.2;
         }
 
-        .profile-card .profile-email {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .profile-card .profile-role {
-            font-size: 12px;
-            color: var(--accent);
-            font-weight: 600;
-            background: var(--accent-tint);
-            padding: 2px 14px;
-            border-radius: var(--radius-full);
-            display: inline-block;
-            margin-bottom: 16px;
-        }
-
-        .profile-card .profile-meta {
-            text-align: right;
-            border-top: 1px solid var(--border);
-            padding-top: 14px;
-            margin-top: 4px;
-        }
-
-        .profile-card .profile-meta .meta-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            font-size: 12px;
-        }
-
-        .profile-card .profile-meta .meta-item .label {
+        .stat-card .stat-label {
+            font-size: 10px;
             color: var(--text-tertiary);
+            margin-top: 2px;
         }
 
-        .profile-card .profile-meta .meta-item .value {
-            font-weight: 600;
-            color: var(--text);
+        .stat-card .stat-icon {
+            float: left;
+            font-size: 18px;
+            color: var(--accent-light);
+            opacity: 0.5;
         }
 
-        /* ================================================================
-           PROFILE FORM
-           ================================================================ */
-        .profile-form-section {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+        .stat-blue .stat-number {
+            color: var(--info);
         }
-
-        .profile-form-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 22px 26px;
-            box-shadow: var(--shadow-sm);
+        .stat-green .stat-number {
+            color: var(--success);
         }
-
-        .profile-form-card .card-title {
-            font-family: var(--font-display);
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .profile-form-card .card-title i {
+        .stat-gold .stat-number {
             color: var(--accent);
-            font-size: 16px;
         }
-
-        .profile-form-card .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .profile-form-card .form-group {
-            margin-bottom: 6px;
-        }
-
-        .profile-form-card label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .profile-form-card label .required {
+        .stat-red .stat-number {
             color: var(--danger);
         }
 
-        .profile-form-card input,
-        .profile-form-card select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
-            font-size: 13px;
-            transition: var(--t-base);
-            background: var(--surface);
-            color: var(--text);
-        }
-
-        .profile-form-card input:focus,
-        .profile-form-card select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
-        }
-
-        .profile-form-card input:disabled {
-            background: var(--bg);
-            color: var(--text-tertiary);
-            cursor: not-allowed;
-        }
-
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
         .btn-action {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: var(--radius-sm);
             font-weight: 600;
             font-size: 12px;
@@ -787,10 +674,244 @@
             background: var(--accent-tint);
         }
 
-        .form-actions {
+        .btn-sm {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            font-size: 12px;
+            transition: var(--t-base);
+        }
+
+        .btn-icon-edit {
+            background: var(--info-bg);
+            color: var(--info);
+            border-color: var(--border);
+        }
+
+        .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-icon-delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: var(--border);
+        }
+
+        .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ================================================================
+           PANEL
+           ================================================================ */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+        }
+
+        .panel-title i {
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .record-count {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* ================================================================
+           TABLE
+           ================================================================ */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+
+        .table-custom thead {
+            background: var(--bg);
+        }
+
+        .table-custom th {
+            padding: 8px 12px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        .table-custom td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom tr:hover td {
+            background: var(--surface-alt);
+        }
+
+        .badge-custom {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+
+        .badge-admin {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .badge-finance {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-user {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        /* ================================================================
+           MODAL
+           ================================================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1060;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            max-width: 520px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-box h3 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .modal-box h3 i {
+            color: var(--accent);
+            margin-left: 8px;
+        }
+
+        .modal-box label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .modal-box select,
+        .modal-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            margin-bottom: 12px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .modal-box select:focus,
+        .modal-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
+        }
+
+        .modal-actions {
             display: flex;
             gap: 10px;
-            margin-top: 12px;
+            margin-top: 16px;
             justify-content: flex-end;
         }
 
@@ -966,13 +1087,6 @@
             .sidebar-overlay.active {
                 display: block;
             }
-            .profile-grid {
-                grid-template-columns: 1fr;
-            }
-            .profile-card {
-                max-width: 400px;
-                margin: 0 auto;
-            }
         }
 
         @media (max-width: 992px) {
@@ -990,9 +1104,6 @@
             }
             .navbar-logo-text {
                 display: none;
-            }
-            .profile-form-card .form-row {
-                grid-template-columns: 1fr;
             }
             .footer-custom .footer-divider {
                 display: none;
@@ -1024,26 +1135,22 @@
             .page-header h2 {
                 font-size: 15px;
             }
-            .profile-card {
-                padding: 16px;
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
             }
-            .profile-avatar-large {
-                width: 80px;
-                height: 80px;
-                font-size: 32px;
+            .stat-card .stat-number {
+                font-size: 16px;
             }
-            .profile-form-card {
-                padding: 16px 18px;
+            .table-custom {
+                font-size: 11px;
             }
-            .profile-form-card .form-row {
-                grid-template-columns: 1fr;
+            .table-custom th,
+            .table-custom td {
+                padding: 6px 8px;
             }
-            .form-actions {
-                flex-direction: column;
-            }
-            .form-actions .btn-action {
-                width: 100%;
-                justify-content: center;
+            .modal-box {
+                padding: 20px;
             }
             .navbar-logo-img {
                 height: 24px;
@@ -1074,18 +1181,32 @@
             .dashboard-content {
                 padding: 10px 10px;
             }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 12px;
+            }
+            .stat-card .stat-number {
+                font-size: 14px;
+            }
+            .stat-card .stat-label {
+                font-size: 9px;
+            }
+            .stat-card .stat-icon {
+                font-size: 14px;
+            }
             .user-avatar {
                 width: 28px;
                 height: 28px;
                 font-size: 11px;
             }
-            .profile-avatar-large {
-                width: 64px;
-                height: 64px;
-                font-size: 26px;
+            .modal-box {
+                padding: 16px;
             }
-            .profile-card .profile-name {
-                font-size: 17px;
+            .modal-box h3 {
+                font-size: 15px;
             }
             .footer-custom .footer-copy {
                 font-size: 10px;
@@ -1113,56 +1234,40 @@
             color: #e0dcd2;
         }
 
-        body.dark-mode .profile-card {
+        body.dark-mode .stat-card {
             background: var(--primary);
             border-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .profile-card .profile-name {
+        body.dark-mode .stat-card .stat-number {
             color: #e0dcd2;
         }
 
-        body.dark-mode .profile-card .profile-email {
-            color: rgba(232,228,220,0.6);
-        }
-
-        body.dark-mode .profile-card .profile-role {
-            background: rgba(139, 122, 75, 0.15);
-            color: var(--accent-light);
-        }
-
-        body.dark-mode .profile-card .profile-meta {
-            border-top-color: rgba(255,255,255,0.06);
-        }
-
-        body.dark-mode .profile-card .profile-meta .meta-item .value {
-            color: #e0dcd2;
-        }
-
-        body.dark-mode .profile-form-card {
+        body.dark-mode .panel {
             background: var(--primary);
             border-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .profile-form-card input,
-        body.dark-mode .profile-form-card select {
+        body.dark-mode .panel-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .table-custom thead {
             background: var(--primary-light);
-            color: #e0dcd2;
-            border-color: rgba(255,255,255,0.08);
         }
 
-        body.dark-mode .profile-form-card input:focus,
-        body.dark-mode .profile-form-card select:focus {
-            border-color: var(--accent);
-        }
-
-        body.dark-mode .profile-form-card input:disabled {
-            background: var(--primary);
+        body.dark-mode .table-custom th {
             color: rgba(232,228,220,0.4);
+            border-bottom-color: rgba(255,255,255,0.06);
         }
 
-        body.dark-mode .profile-form-card label {
-            color: rgba(232,228,220,0.6);
+        body.dark-mode .table-custom td {
+            border-bottom-color: rgba(255,255,255,0.04);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .table-custom tr:hover td {
+            background: var(--primary-light);
         }
 
         body.dark-mode .page-header {
@@ -1257,9 +1362,60 @@
             border-right-color: var(--warning);
         }
 
-        body.dark-mode .user-avatar {
-            background: var(--accent-light);
-            color: var(--text);
+        body.dark-mode .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box h3 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box select,
+        body.dark-mode .modal-box input {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .modal-box select:focus,
+        body.dark-mode .modal-box input:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .badge-admin {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .badge-finance {
+            background: rgba(30, 122, 85, 0.2);
+            color: #7bc4a0;
+        }
+
+        body.dark-mode .badge-user {
+            background: rgba(184, 148, 58, 0.2);
+            color: #d4b87a;
+        }
+
+        body.dark-mode .btn-icon-edit {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        body.dark-mode .btn-icon-delete {
+            background: rgba(184, 74, 62, 0.2);
+            color: #dba09a;
+        }
+
+        body.dark-mode .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
         }
 
         body.dark-mode .shimmer {
@@ -1295,13 +1451,28 @@
         body.dark-mode .footer-custom .footer-link:hover {
             color: var(--accent-light);
         }
+    
+        /* ================================================================
+           STATUS BADGES (إضافي)
+           ================================================================ */
+        .status-badge {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+        .status-active { background: var(--success-bg); color: var(--success); }
+        .status-pending { background: var(--warning-bg); color: var(--warning); }
+        .status-completed { background: var(--info-bg); color: var(--info); }
+        .status-cancelled { background: var(--danger-bg); color: var(--danger); }
+        .status-info { background: var(--info-bg); color: var(--info); }
+
     </style>
 </head>
 <body>
 
-    <!-- ================================================================ -->
-    <!-- SIDEBAR -->
-    <!-- ================================================================ -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <div class="brand-row">
@@ -1325,7 +1496,7 @@
                 <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
                 <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
                 <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
-                <li><a href="suppliers.html"><i class="bi bi-truck"></i> الموردين <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="suppliers.html" class="active"><i class="bi bi-truck"></i> الموردين <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
@@ -1341,8 +1512,8 @@
 
             <div class="nav-section-title">الإدارة</div>
             <ul class="nav-list">
-                <li><a href="profile.html" class="active"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
-                <li><a href="users.html" id="usersMenu"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
                 <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
             </ul>
 
@@ -1360,19 +1531,10 @@
         </div>
     </aside>
 
-    <!-- ================================================================ -->
-    <!-- SIDEBAR OVERLAY -->
-    <!-- ================================================================ -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- ================================================================ -->
-    <!-- MAIN CONTENT -->
-    <!-- ================================================================ -->
     <main class="main-content" id="mainContent">
 
-        <!-- ================================================================ -->
-        <!-- NAVBAR -->
-        <!-- ================================================================ -->
         <nav class="navbar-custom">
             <div class="navbar-left">
                 <button class="sidebar-toggle" id="sidebarToggle">
@@ -1385,8 +1547,8 @@
                 </div>
 
                 <h4 class="page-title" id="pageTitleText">
-                    الملف الشخصي
-                    <small>إدارة بيانات الحساب</small>
+                    الموردين
+                    <small>إدارة الموردين والمستحقات</small>
                 </h4>
             </div>
 
@@ -1407,16 +1569,13 @@
             </div>
         </nav>
 
-        <!-- ================================================================ -->
-        <!-- DASHBOARD CONTENT -->
-        <!-- ================================================================ -->
         <div class="dashboard-content">
 
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>الملف الشخصي</h2>
-                    <p>إدارة بيانات الحساب والمعلومات الشخصية</p>
+                    <h2>إدارة الموردين</h2>
+                    <p>متابعة بيانات الموردين والمستحقات المالية عليهم</p>
                 </div>
                 <div class="ph-right">
                     <strong>اليوم</strong>
@@ -1424,134 +1583,364 @@
                 </div>
             </div>
 
-            <!-- ===== PROFILE GRID ===== -->
-            <div class="profile-grid">
-
-                <!-- ===== PROFILE CARD ===== -->
-                <div class="profile-card">
-                    <div class="profile-avatar-large" id="profileAvatarLarge">م</div>
-                    <div class="profile-name" id="profileDisplayName">مدير النظام</div>
-                    <div class="profile-email" id="profileDisplayEmail">—</div>
-                    <div class="profile-role" id="profileDisplayRole">مدير</div>
-
-                    <div class="profile-meta">
-                        <div class="meta-item">
-                            <span class="label">الحالة</span>
-                            <span class="value" style="color:var(--success);">نشط</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label">آخر تسجيل دخول</span>
-                            <span class="value" id="lastLogin">اليوم</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label">تاريخ الانضمام</span>
-                            <span class="value" id="joinDate">—</span>
-                        </div>
-                    </div>
+            <!-- ===== STATS ===== -->
+            <div class="stats-grid" id="stats-container">
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-truck"></i></span>
+                    <div class="stat-number" id="statTotalSuppliers">0</div>
+                    <div class="stat-label">إجمالي الموردين</div>
                 </div>
+                <div class="stat-card stat-red">
+                    <span class="stat-icon"><i class="bi bi-cash-stack"></i></span>
+                    <div class="stat-number" id="statTotalDebts">0</div>
+                    <div class="stat-label">إجمالي المستحقات عليهم</div>
+                </div>
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-exclamation-circle"></i></span>
+                    <div class="stat-number" id="statTotalVisits">0</div>
+                    <div class="stat-label">موردين عليهم مستحقات</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-check-circle-fill"></i></span>
+                    <div class="stat-number" id="statPaidCount">0</div>
+                    <div class="stat-label">موردين مسددون بالكامل</div>
+                </div>
+            </div>
 
-                <!-- ===== PROFILE FORMS ===== -->
-                <div class="profile-form-section">
+            <!-- ===== TOOLBAR ===== -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <button class="btn-action btn-success" onclick="openModalById('supplierModal')">
+                    <i class="bi bi-truck"></i> مورد جديد
+                </button>
+                <button class="btn-action btn-primary" onclick="loadData()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
+                </button>
+            </div>
 
-                    <!-- ===== المعلومات الشخصية ===== -->
-                    <div class="profile-form-card">
-                        <div class="card-title"><i class="bi bi-person-fill"></i> المعلومات الشخصية</div>
-                        <form id="profileForm" onsubmit="handleProfileUpdate(event)">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>الاسم الكامل <span class="required">*</span></label>
-                                    <input type="text" id="fullName" placeholder="الاسم الكامل" required />
-                                </div>
-                                <div class="form-group">
-                                    <label>البريد الإلكتروني <span class="required">*</span></label>
-                                    <input type="email" id="email" placeholder="البريد الإلكتروني" required disabled />
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>الدور</label>
-                                    <input type="text" id="role" placeholder="الدور" disabled />
-                                </div>
-                                <div class="form-group">
-                                    <label>رقم الهاتف</label>
-                                    <input type="tel" id="phone" placeholder="رقم الهاتف" />
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn-action btn-primary">
-                                    <i class="bi bi-check-lg"></i> تحديث الملف الشخصي
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- ===== تغيير كلمة المرور ===== -->
-                    <div class="profile-form-card">
-                        <div class="card-title"><i class="bi bi-shield-lock-fill"></i> تغيير كلمة المرور</div>
-                        <form id="passwordForm" onsubmit="handlePasswordChange(event)">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>كلمة المرور الحالية <span class="required">*</span></label>
-                                    <input type="password" id="currentPassword" placeholder="كلمة المرور الحالية" required />
-                                </div>
-                                <div class="form-group">
-                                    <label>كلمة المرور الجديدة <span class="required">*</span></label>
-                                    <input type="password" id="newPassword" placeholder="كلمة المرور الجديدة" required minlength="6" />
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>تأكيد كلمة المرور الجديدة <span class="required">*</span></label>
-                                    <input type="password" id="confirmPassword" placeholder="تأكيد كلمة المرور" required />
-                                </div>
-                                <div class="form-group">
-                                    <!-- فارغ للمحاذاة -->
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn-action btn-success">
-                                    <i class="bi bi-key-fill"></i> تغيير كلمة المرور
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
+            <!-- ===== SUPPLIERS TABLE ===== -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-truck"></i> سجل الموردين</h5>
+                    <span id="recordCount" class="record-count">0 سجل</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>#</th><th>الاسم</th><th>الهاتف</th><th>المستحق عليه</th>
+                                <th>ملاحظات</th><th>الحالة</th>
+                                <th style="text-align:center;">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="suppliersBody">
+                            <tr>
+                                <td colspan="7" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                    <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
+                                    جاري تحميل الموردين...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
         </div>
 
-        <!-- ================================================================ -->
-        <!-- FOOTER - حقوق النشر -->
-        <!-- ================================================================ -->
-        <footer class="footer-custom">
-            <div class="footer-content">
-                <div class="footer-right">
-                    <span class="footer-brand">حراء <span>للسياحة</span></span>
-                    <span class="footer-divider">|</span>
-                    <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
-                </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 3.0.1</span>
-                    <span class="footer-divider">|</span>
-                    <a href="support.html" class="footer-link">
-                        <i class="bi bi-headset"></i> الدعم الفني
-                    </a>
-                </div>
-            </div>
-        </footer>
     </main>
+
+    <!-- ================================================================ -->
+    <!-- MODAL - إضافة مورد جديد -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="supplierModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-truck"></i> إضافة مورد جديد</h3>
+            <form id="supplierForm" onsubmit="handleSupplierSubmit(event)">
+                <label for="supplierName">اسم المورد <span class="required">*</span></label>
+                <input type="text" id="supplierName" placeholder="اسم الشركة / المورد" required />
+
+                <label for="supplierPhone">رقم الهاتف</label>
+                <input type="text" id="supplierPhone" placeholder="0100xxxxxxx" />
+
+                <label for="supplierEmail">البريد الإلكتروني (اختياري)</label>
+                <input type="email" id="supplierEmail" placeholder="example@mail.com" />
+
+                <label for="supplierAddress">العنوان (اختياري)</label>
+                <input type="text" id="supplierAddress" placeholder="العنوان" />
+
+                <label for="supplierNotes">ملاحظات (اختياري)</label>
+                <input type="text" id="supplierNotes" placeholder="نوع التوريد، شروط الدفع..." />
+
+                <label for="supplierDebt">مستحق مبدئي (رصيد افتتاحي)</label>
+                <input type="number" id="supplierDebt" min="0" step="0.01" value="0" />
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('supplierModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveSupplierBtn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MODAL - سند صرف / تسديد لمورد -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="paymentModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-cash-coin"></i> تسجيل سداد للمورد</h3>
+            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="paymentSupplierLabel">—</p>
+            <form id="supplierPaymentForm" onsubmit="handleSupplierPaymentSubmit(event)">
+                <input type="hidden" id="paymentSupplierId" />
+                <label for="supplierPaymentAmount">المبلغ المسدد <span class="required">*</span></label>
+                <input type="number" id="supplierPaymentAmount" min="0.01" step="0.01" required />
+
+                <label for="supplierPaymentCashAccount">الدفع من <span class="required">*</span></label>
+                <select id="supplierPaymentCashAccount" required></select>
+                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-8px 0 14px;">سيتم إنشاء سند صرف تلقائيًا ويترحّل مباشرة لميزان المراجعة والقوائم المالية</p>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('paymentModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="supplierPaymentBtn">تسديد</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer-custom">
+        <div class="footer-content">
+            <div class="footer-right">
+                <span class="footer-brand">حراء <span>للسياحة</span></span>
+                <span class="footer-divider">|</span>
+                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+            </div>
+            <div class="footer-left">
+                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-divider">|</span>
+                <a href="support.html" class="footer-link">
+                    <i class="bi bi-headset"></i> الدعم الفني
+                </a>
+            </div>
+        </div>
+    </footer>
 
     <!-- ================================================================ -->
     <!-- JAVASCRIPT -->
     <!-- ================================================================ -->
     <script>
+
         // ================================================================
         // STATE
         // ================================================================
+        var suppliers = [];
+        var cashAccounts = [];
         var currentUser = null;
         var systemCurrency = 'SAR';
         var currencySymbol = 'ر.س';
+        var isLoading = false;
+
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+        async function loadData() {
+            if (isLoading) return;
+            isLoading = true;
+
+            try {
+                suppliers = await Supabase.getSuppliers() || [];
+                var allAccounts = await Supabase.getAccounts() || [];
+                cashAccounts = allAccounts.filter(function(a) { return a.code === '1100' || a.code === '1200'; });
+            } catch (error) {
+                console.error('❌ خطأ في جلب الموردين:', error);
+                showToast('⚠️ فشل تحميل الموردين', 'warning');
+                suppliers = [];
+            }
+
+            renderStats();
+            renderTable();
+
+            isLoading = false;
+        }
+
+        function renderStats() {
+            var totalDebts = 0, withDebtCount = 0, paidCount = 0;
+            suppliers.forEach(function(c) {
+                var debt = parseFloat(c['debt'] || 0);
+                totalDebts += debt;
+                if (debt > 0) withDebtCount++; else paidCount++;
+            });
+
+            document.getElementById('statTotalSuppliers').textContent = suppliers.length;
+            document.getElementById('statTotalDebts').textContent = Supabase.formatCurrency(totalDebts);
+            document.getElementById('statTotalVisits').textContent = withDebtCount;
+            document.getElementById('statPaidCount').textContent = paidCount;
+        }
+
+        function renderTable() {
+            var tbody = document.getElementById('suppliersBody');
+            var count = document.getElementById('recordCount');
+
+            if (!suppliers.length) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-truck" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا يوجد موردين مسجلين</td></tr>';
+                count.textContent = '0 سجل';
+                return;
+            }
+
+            count.textContent = suppliers.length + ' سجل';
+
+            var html = '';
+            for (var i = 0; i < suppliers.length; i++) {
+                var c = suppliers[i];
+                var debt = parseFloat(c['debt'] || 0);
+                var statusClass = debt > 0 ? 'status-pending' : 'status-active';
+                var statusText = debt > 0 ? 'عليه مستحقات' : 'مسدد';
+
+                html += '<tr>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td><strong>' + (c['name'] || '—') + '</strong></td>' +
+                    '<td>' + (c['phone'] || '—') + '</td>' +
+                    '<td style="' + (debt > 0 ? 'color:var(--danger);font-weight:700;' : '') + '">' + Supabase.formatCurrency(debt) + '</td>' +
+                    '<td>' + (c['notes'] || '—') + '</td>' +
+                    '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>' +
+                    '<td style="text-align:center;white-space:nowrap;">' +
+                        '<button class="btn-icon btn-icon-edit" onclick="location.href=\'supplier_statement.html?supplier_id=' + c['id'] + '\'" title="كشف الحساب"><i class="bi bi-receipt"></i></button> ' +
+                        '<button class="btn-icon btn-icon-edit" onclick="openSupplierPaymentModal(\'' + c['id'] + '\')" title="تسديد"><i class="bi bi-cash-coin"></i></button> ' +
+                        '<button class="btn-icon btn-icon-delete" onclick="deleteSupplierRow(\'' + c['id'] + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
+                    '</td>' +
+                    '</tr>';
+            }
+            tbody.innerHTML = html;
+        }
+
+        // ================================================================
+        // إضافة مورد
+        // ================================================================
+        async function handleSupplierSubmit(event) {
+            event.preventDefault();
+
+            var name = document.getElementById('supplierName').value.trim();
+            var phone = document.getElementById('supplierPhone').value.trim();
+            var email = document.getElementById('supplierEmail').value.trim();
+            var address = document.getElementById('supplierAddress').value.trim();
+            var notes = document.getElementById('supplierNotes').value.trim();
+            var debt = document.getElementById('supplierDebt').value;
+
+            if (!name) { showToast('⚠️ الرجاء إدخال اسم المورد', 'warning'); return; }
+
+            var btn = document.getElementById('saveSupplierBtn');
+            btn.disabled = true;
+            btn.textContent = 'جاري الحفظ...';
+
+            try {
+                await Supabase.addSupplier({
+                    name: name, phone: phone, email: email, address: address, notes: notes,
+                    debt: parseFloat(debt) || 0
+                });
+                closeModalById('supplierModal');
+                document.getElementById('supplierForm').reset();
+                showToast('✅ تمت إضافة المورد بنجاح', 'success');
+                loadData();
+            } catch (error) {
+                showToast('❌ فشل إضافة المورد: ' + error.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'حفظ';
+        }
+
+        function deleteSupplierRow(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا المورد؟')) return;
+            Supabase.deleteSupplier(id)
+                .then(function() {
+                    showToast('✅ تم حذف المورد بنجاح', 'success');
+                    loadData();
+                })
+                .catch(function(error) {
+                    showToast('❌ فشل حذف المورد: ' + error.message, 'error');
+                });
+        }
+
+        // ================================================================
+        // تسديد (سند صرف تلقائي لمورد)
+        // ================================================================
+        function openSupplierPaymentModal(supplierId) {
+            var supplier = suppliers.find(function(c) { return String(c['id']) === String(supplierId); });
+            if (!supplier) { showToast('⚠️ المورد غير موجود، حاول تحديث الصفحة', 'error'); return; }
+
+            var currentDebt = parseFloat(supplier['debt'] || 0);
+            document.getElementById('paymentSupplierId').value = supplierId;
+            document.getElementById('paymentSupplierLabel').textContent = 'المورد: ' + supplier['name'] + ' — المستحق عليه حاليًا: ' + Supabase.formatCurrency(currentDebt);
+            document.getElementById('supplierPaymentAmount').value = currentDebt > 0 ? currentDebt : '';
+            document.getElementById('supplierPaymentAmount').max = currentDebt;
+
+            var cashSelect = document.getElementById('supplierPaymentCashAccount');
+            cashSelect.innerHTML = cashAccounts.map(function(a) { return '<option value="' + a.id + '">' + a.name + '</option>'; }).join('');
+
+            openModalById('paymentModal');
+        }
+
+        async function handleSupplierPaymentSubmit(event) {
+            event.preventDefault();
+
+            var supplierId = document.getElementById('paymentSupplierId').value;
+            var amount = parseFloat(document.getElementById('supplierPaymentAmount').value);
+            var cashAccountId = document.getElementById('supplierPaymentCashAccount').value;
+            var supplier = suppliers.find(function(c) { return String(c['id']) === String(supplierId); });
+
+            if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
+            if (!supplier) { showToast('⚠️ المورد غير موجود', 'error'); return; }
+            if (!cashAccountId) { showToast('⚠️ الرجاء اختيار حساب الدفع', 'warning'); return; }
+
+            var currentDebt = parseFloat(supplier['debt'] || 0);
+            if (amount > currentDebt) {
+                showToast('⚠️ المبلغ أكبر من المستحق الحالي (' + Supabase.formatCurrency(currentDebt) + ')', 'warning');
+                return;
+            }
+
+            var btn = document.getElementById('supplierPaymentBtn');
+            btn.disabled = true;
+            btn.textContent = 'جاري التسديد...';
+
+            try {
+                var accounts = await Supabase.getAccounts();
+                var payableAccount = accounts.find(function(a) { return a.code === '2100'; }); // الموردون (دائنون)
+
+                // سند صرف تلقائي: مدين = حساب الموردون (تخفيض المستحق) ، دائن = الصندوق/البنك
+                await Supabase.addVoucher({
+                    voucher_type: 'صرف',
+                    voucher_date: new Date().toISOString().split('T')[0],
+                    cash_account_id: cashAccountId,
+                    counter_account_id: payableAccount.id,
+                    party_type: 'supplier',
+                    party_id: supplierId,
+                    party_name: supplier['name'],
+                    amount: amount,
+                    description: 'سداد لمورد ' + supplier['name']
+                });
+
+                var newDebt = Math.max(0, currentDebt - amount);
+                await Supabase.updateSupplier(supplierId, { debt: newDebt });
+
+                closeModalById('paymentModal');
+                showToast('✅ تم تسجيل سداد ' + Supabase.formatCurrency(amount) + ' لـ ' + supplier['name'], 'success');
+                loadData();
+            } catch (error) {
+                showToast('❌ فشل التسديد: ' + error.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'تسديد';
+        }
+
+        // ================================================================
+        // MODALS (نمط موحّد data-modal)
+        // ================================================================
+        function openModalById(id) {
+            var el = document.getElementById(id + 'Overlay');
+            if (el) el.classList.add('active');
+        }
+        function closeModalById(id) {
+            var el = document.getElementById(id + 'Overlay');
+            if (el) el.classList.remove('active');
+        }
 
         // ================================================================
         // DOM READY
@@ -1559,18 +1948,26 @@
         document.addEventListener('DOMContentLoaded', async function() {
             if (!Supabase.initSystem()) return;
 
-            var settings = Supabase.getSystemSettings();
-            systemCurrency = settings.currency || 'SAR';
-            currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+            try {
+                var settings = await Supabase.getSystemSettings();
+                systemCurrency = settings.currency || 'SAR';
+                currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+            } catch (error) {
+                console.error('❌ خطأ في جلب الإعدادات:', error);
+                var savedCurrency = localStorage.getItem('systemCurrency');
+                if (savedCurrency) {
+                    systemCurrency = savedCurrency;
+                    currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+                }
+            }
+            localStorage.setItem('systemCurrency', systemCurrency);
 
             currentUser = Supabase.getCurrentUser();
-            if (!currentUser) {
-                window.location.href = 'login.html';
-                return;
+            if (currentUser) {
+                updateUserUI();
             }
 
-            updateUserUI();
-            applySystemName();
+            await applySystemName();
             Supabase.applySystemLogo();
 
             initSidebar();
@@ -1579,30 +1976,25 @@
             initNotifications();
             initKeyboardShortcuts();
             updateDate();
-            loadProfile();
-            await checkUserPermissions();
+
+            loadData();
+            setInterval(loadData, 60000);
         });
 
         // ================================================================
         // APPLY SYSTEM NAME
         // ================================================================
-        function applySystemName() {
-            var systemName = Supabase.getSystemName();
-            document.title = 'الملف الشخصي - ' + systemName;
+        async function applySystemName() {
+            try {
+                var systemName = await Supabase.getSystemName();
+                document.title = 'الموردين' + ' - ' + systemName;
 
-            var brandText = document.getElementById('sidebarBrandText');
-            if (brandText) {
-                brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
-            }
-
-            var navbarText = document.getElementById('navbarBrandText');
-            if (navbarText) {
-                navbarText.innerHTML = systemName;
-            }
-
-            var userRole = document.getElementById('userRole');
-            if (userRole) {
-                userRole.textContent = systemName;
+                var brandText = document.getElementById('sidebarBrandText');
+                if (brandText) {
+                    brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+                }
+            } catch (error) {
+                console.warn('⚠️ فشل تطبيق اسم النظام:', error);
             }
         }
 
@@ -1611,36 +2003,19 @@
         // ================================================================
         function updateUserUI() {
             if (!currentUser) return;
+            var userName = document.getElementById('userName');
+            var userRole = document.getElementById('userRole');
+            var userAvatar = document.getElementById('userAvatar');
 
-            var fullName = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
-            var email = currentUser.email || '';
-            var role = currentUser.user_metadata?.role || 'المالية';
-            var initial = fullName.charAt(0).toUpperCase();
-
-            document.getElementById('userName').textContent = fullName;
-            document.getElementById('userAvatar').textContent = initial;
-            document.getElementById('userRole').textContent = Supabase.getSystemName();
-
-            document.getElementById('profileAvatarLarge').textContent = initial;
-            document.getElementById('profileDisplayName').textContent = fullName;
-            document.getElementById('profileDisplayEmail').textContent = email;
-            document.getElementById('profileDisplayRole').textContent = role;
-
-            document.getElementById('fullName').value = fullName;
-            document.getElementById('email').value = email;
-            document.getElementById('role').value = role;
-            document.getElementById('phone').value = currentUser.user_metadata?.phone || '';
-        }
-
-        // ================================================================
-        // CHECK USER PERMISSIONS
-        // ================================================================
-        async function checkUserPermissions() {
-            var usersMenu = document.getElementById('usersMenu');
-            if (!usersMenu) return;
-            var isAdmin = currentUser && await Supabase.isAdmin();
-            if (!isAdmin) {
-                usersMenu.style.display = 'none';
+            if (userName) {
+                userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
+            }
+            if (userRole) {
+                userRole.textContent = currentUser.user_metadata?.role || 'حراء للسياحة';
+            }
+            if (userAvatar) {
+                var name = currentUser.user_metadata?.full_name || currentUser.email || 'م';
+                userAvatar.textContent = name.charAt(0).toUpperCase();
             }
         }
 
@@ -1654,105 +2029,16 @@
             if (dateElement) {
                 dateElement.textContent = now.toLocaleDateString('ar-SA', options);
             }
-
-            document.getElementById('lastLogin').textContent = now.toLocaleDateString('ar-SA', options);
-            document.getElementById('joinDate').textContent = now.toLocaleDateString('ar-SA', options);
         }
 
         // ================================================================
-        // LOAD PROFILE
+        // LOGOUT
         // ================================================================
-        function loadProfile() {
-            if (!currentUser) return;
-            updateUserUI();
-        }
-
-        // ================================================================
-        // HANDLE PROFILE UPDATE
-        // ================================================================
-        async function handleProfileUpdate(event) {
-            event.preventDefault();
-
-            var fullName = document.getElementById('fullName').value.trim();
-            var phone = document.getElementById('phone').value.trim();
-
-            if (!fullName) {
-                showToast('⚠️ الرجاء إدخال الاسم الكامل', 'warning');
-                return;
-            }
-
-            var btn = event.target.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري التحديث...';
-
-            try {
-                var result = await Supabase.updateUserProfile(fullName, phone);
-
-                if (result && result.error) {
-                    throw new Error(result.error.message || 'فشل تحديث الملف الشخصي');
-                }
-
-                // تحديث البيانات المحلية
-                currentUser = Supabase.getCurrentUser();
-                updateUserUI();
-
-                showToast('✅ تم تحديث الملف الشخصي بنجاح', 'success');
-
-            } catch (error) {
-                console.error('❌ خطأ في تحديث الملف الشخصي:', error);
-                showToast('❌ ' + (error.message || 'فشل تحديث الملف الشخصي'), 'error');
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-check-lg"></i> تحديث الملف الشخصي';
-        }
-
-        // ================================================================
-        // HANDLE PASSWORD CHANGE
-        // ================================================================
-        async function handlePasswordChange(event) {
-            event.preventDefault();
-
-            var currentPassword = document.getElementById('currentPassword').value;
-            var newPassword = document.getElementById('newPassword').value;
-            var confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (!currentPassword) {
-                showToast('⚠️ الرجاء إدخال كلمة المرور الحالية', 'warning');
-                return;
-            }
-
-            if (!newPassword || newPassword.length < 6) {
-                showToast('⚠️ كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل', 'warning');
-                return;
-            }
-
-            if (newPassword !== confirmPassword) {
-                showToast('⚠️ كلمة المرور الجديدة وتأكيدها غير متطابقين', 'warning');
-                return;
-            }
-
-            var btn = event.target.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري التغيير...';
-
-            try {
-                var result = await Supabase.changePassword(currentPassword, newPassword);
-
-                if (result && result.error) {
-                    throw new Error(result.error.message || 'فشل تغيير كلمة المرور');
-                }
-
-                showToast('✅ تم تغيير كلمة المرور بنجاح', 'success');
-                document.getElementById('passwordForm').reset();
-
-            } catch (error) {
-                console.error('❌ خطأ في تغيير كلمة المرور:', error);
-                showToast('❌ ' + (error.message || 'فشل تغيير كلمة المرور'), 'error');
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-key-fill"></i> تغيير كلمة المرور';
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('darkMode');
+            window.location.href = 'login.html';
         }
 
         // ================================================================
@@ -1783,16 +2069,6 @@
                 document.body.style.overflow = '';
             });
 
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    if (window.innerWidth <= MOBILE_BREAKPOINT) {
-                        sidebar.classList.remove('open');
-                        overlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                }
-            });
-
             window.addEventListener('resize', function() {
                 if (window.innerWidth > MOBILE_BREAKPOINT) {
                     sidebar.classList.remove('open');
@@ -1810,21 +2086,25 @@
         // ================================================================
         function initDarkMode() {
             var toggle = document.getElementById('darkModeToggle');
-            var icon = toggle.querySelector('i');
-            var savedMode = localStorage.getItem('darkMode');
+            if (!toggle) return;
 
-            if (savedMode === 'true') {
-                document.body.classList.add('dark-mode');
-                if (icon) icon.className = 'bi bi-sun-fill';
+            var icon = toggle.querySelector('i');
+            var isDark = Supabase.isDarkModeEnabled();
+            Supabase.applyTheme(isDark);
+
+            if (icon) {
+                icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
             }
 
             toggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark-mode');
-                var isDarkMode = document.body.classList.contains('dark-mode');
-                if (icon) {
-                    icon.className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-                }
-                localStorage.setItem('darkMode', isDarkMode);
+                var currentState = document.body.classList.contains('dark-mode');
+                var newState = !currentState;
+
+                Supabase.toggleTheme(newState).then(function() {
+                    if (icon) {
+                        icon.className = newState ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                    }
+                });
             });
         }
 
@@ -1832,9 +2112,10 @@
         // REFRESH BUTTON
         // ================================================================
         function initRefresh() {
-            document.getElementById('refreshBtn').addEventListener('click', function() {
-                loadProfile();
-                Supabase.applySystemLogo();
+            var btn = document.getElementById('refreshBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function() {
+                loadData();
                 showToast('🔄 جاري تحديث البيانات...', 'info');
             });
         }
@@ -1847,11 +2128,10 @@
             if (notifBtn) {
                 notifBtn.addEventListener('click', function() {
                     var messages = [
-                        '👤 تم تحديث الملف الشخصي',
-                        '🔑 يمكنك تغيير كلمة المرور من هنا',
-                        '📧 تم تأكيد البريد الإلكتروني',
-                        '✅ جميع البيانات محدثة',
-                        '📱 قم بتحديث رقم الهاتف'
+                        '🚚 تم تحديث بيانات الموردين',
+                        '💰 تم تسجيل سداد جديد لأحد الموردين',
+                        '📊 عدد الموردين المسجلين: يمكنك مراجعة الجدول',
+                        '⚠️ تنبيه: راجع الموردين أصحاب المستحقات المرتفعة'
                     ];
                     var random = messages[Math.floor(Math.random() * messages.length)];
                     showToast(random, 'info');
@@ -1866,34 +2146,22 @@
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 'b') {
                     e.preventDefault();
-                    var toggle = document.getElementById('sidebarToggle');
-                    if (toggle) toggle.click();
+                    document.getElementById('sidebarToggle').click();
                 }
                 if (e.ctrlKey && e.key === 'r') {
                     e.preventDefault();
-                    loadProfile();
+                    loadData();
                     showToast('🔄 جاري تحديث البيانات...', 'info');
                 }
                 if (e.ctrlKey && e.key === 'd') {
                     e.preventDefault();
-                    var toggle = document.getElementById('darkModeToggle');
-                    if (toggle) toggle.click();
+                    document.getElementById('darkModeToggle').click();
                 }
                 if (e.ctrlKey && e.key === 'l') {
                     e.preventDefault();
                     logout();
                 }
             });
-        }
-
-        // ================================================================
-        // LOGOUT
-        // ================================================================
-        function logout() {
-            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
-            localStorage.removeItem('supabase_session');
-            localStorage.removeItem('darkMode');
-            window.location.href = 'login.html';
         }
 
         // ================================================================
@@ -1945,17 +2213,26 @@
             }, 3000);
         }
 
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModalById('supplierModal');
+                closeModalById('paymentModal');
+            }
+        });
+
         // ================================================================
         // EXPOSE
         // ================================================================
+        window.openModalById = openModalById;
+        window.closeModalById = closeModalById;
+        window.openSupplierPaymentModal = openSupplierPaymentModal;
+        window.deleteSupplierRow = deleteSupplierRow;
         window.logout = logout;
         window.showToast = showToast;
-        window.loadProfile = loadProfile;
+        window.loadData = loadData;
 
-        console.log('👤 الملف الشخصي - حراء للسياحة');
-        console.log('👤 المستخدم:', currentUser ? currentUser.email : 'غير مسجل');
+        console.log('👥 نظام الموردين - حراء للسياحة');
         console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
-        console.log('✅ النظام جاهز للعمل');
     </script>
 
 </body>

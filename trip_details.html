@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
-    <title id="pageTitle">العملاء - حراء للسياحة</title>
+    <title id="pageTitle">تفاصيل الرحلة - حراء للسياحة</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1469,6 +1469,38 @@
         .status-cancelled { background: var(--danger-bg); color: var(--danger); }
         .status-info { background: var(--info-bg); color: var(--info); }
 
+        /* ===== TRIP SELECTOR (صفحة تفاصيل الرحلة) ===== */
+        .client-selector {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px 18px;
+            margin-bottom: 18px;
+        }
+        .client-selector label {
+            font-weight: 600;
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .client-selector .select-wrapper {
+            flex: 1;
+            min-width: 220px;
+        }
+        .client-selector select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 13.5px;
+            background: var(--surface-alt);
+            color: var(--text);
+        }
     </style>
 </head>
 <body>
@@ -1494,8 +1526,8 @@
             <div class="nav-section-title">الإدارة المالية</div>
             <ul class="nav-list">
                 <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
-                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
-                <li><a href="clients.html" class="active"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="trips.html" class="active"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
                 <li><a href="suppliers.html"><i class="bi bi-truck"></i> الموردين <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
@@ -1547,8 +1579,8 @@
                 </div>
 
                 <h4 class="page-title" id="pageTitleText">
-                    العملاء
-                    <small>إدارة العملاء والمديونيات والزيارات</small>
+                    تفاصيل الرحلة
+                    <small>تكاليف الرحلة المُصنّفة والأرباح الفعلية</small>
                 </h4>
             </div>
 
@@ -1574,74 +1606,122 @@
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>إدارة العملاء / المعتمرين</h2>
-                    <p>متابعة بيانات العملاء والمديونيات والزيارات</p>
+                    <h2 id="tripTitleHeader">تفاصيل الرحلة</h2>
+                    <p id="tripSubHeader">اختر رحلة لعرض تفاصيلها</p>
                 </div>
                 <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">جاري التحميل...</span>
+                    <a href="trips.html" class="btn-action btn-outline"><i class="bi bi-arrow-right"></i> رجوع لكل الرحلات</a>
                 </div>
             </div>
 
-            <!-- ===== STATS ===== -->
-            <div class="stats-grid" id="stats-container">
-                <div class="stat-card stat-blue">
-                    <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
-                    <div class="stat-number" id="statTotalClients">0</div>
-                    <div class="stat-label">إجمالي العملاء</div>
-                </div>
-                <div class="stat-card stat-red">
-                    <span class="stat-icon"><i class="bi bi-cash-stack"></i></span>
-                    <div class="stat-number" id="statTotalDebts">0</div>
-                    <div class="stat-label">إجمالي المديونيات</div>
-                </div>
-                <div class="stat-card stat-gold">
-                    <span class="stat-icon"><i class="bi bi-arrow-repeat"></i></span>
-                    <div class="stat-number" id="statTotalVisits">0</div>
-                    <div class="stat-label">إجمالي الزيارات</div>
-                </div>
-                <div class="stat-card stat-green">
-                    <span class="stat-icon"><i class="bi bi-check-circle-fill"></i></span>
-                    <div class="stat-number" id="statPaidCount">0</div>
-                    <div class="stat-label">عملاء مسددون</div>
+            <!-- ===== TRIP SELECTOR (لو دخل الصفحة بدون trip_id) ===== -->
+            <div class="client-selector" id="tripSelectorWrap" style="display:none;">
+                <label for="tripSelect"><i class="bi bi-airplane-fill"></i> اختر الرحلة:</label>
+                <div class="select-wrapper">
+                    <select id="tripSelect" onchange="onTripSelected()">
+                        <option value="">-- اختر رحلة --</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- ===== TOOLBAR ===== -->
-            <div class="d-flex flex-wrap gap-2 mb-3">
-                <button class="btn-action btn-success" onclick="openModalById('clientModal')">
-                    <i class="bi bi-person-plus-fill"></i> عميل جديد
-                </button>
-                <button class="btn-action btn-primary" onclick="loadData()">
-                    <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
-                </button>
-            </div>
+            <div id="tripContent" style="display:none;">
 
-            <!-- ===== CLIENTS TABLE ===== -->
-            <div class="panel">
-                <div class="panel-header">
-                    <h5 class="panel-title"><i class="bi bi-people-fill"></i> سجل العملاء</h5>
-                    <span id="recordCount" class="record-count">0 سجل</span>
+                <!-- ===== STATS ===== -->
+                <div class="stats-grid" id="stats-container">
+                    <div class="stat-card stat-blue">
+                        <span class="stat-icon"><i class="bi bi-journal-check"></i></span>
+                        <div class="stat-number" id="statBookingValue">0</div>
+                        <div class="stat-label">إجمالي قيمة الحجوزات</div>
+                    </div>
+                    <div class="stat-card stat-green">
+                        <span class="stat-icon"><i class="bi bi-graph-up-arrow"></i></span>
+                        <div class="stat-number" id="statCollected">0</div>
+                        <div class="stat-label">المحصّل فعليًا (إيراد)</div>
+                    </div>
+                    <div class="stat-card stat-red">
+                        <span class="stat-icon"><i class="bi bi-graph-down-arrow"></i></span>
+                        <div class="stat-number" id="statTotalExpense">0</div>
+                        <div class="stat-label">إجمالي تكاليف الرحلة</div>
+                    </div>
+                    <div class="stat-card stat-gold">
+                        <span class="stat-icon"><i class="bi bi-cash-stack"></i></span>
+                        <div class="stat-number" id="statNetProfit">0</div>
+                        <div class="stat-label">صافي ربح الرحلة</div>
+                    </div>
                 </div>
-                <div class="table-wrap">
-                    <table class="table-custom">
-                        <thead>
-                            <tr>
-                                <th>#</th><th>الاسم</th><th>الهاتف</th><th>المديونية</th>
-                                <th>الزيارات</th><th>آخر زيارة</th><th>الحالة</th>
-                                <th style="text-align:center;">الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="clientsBody">
-                            <tr>
-                                <td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);">
-                                    <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
-                                    جاري تحميل العملاء...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <!-- ===== CATEGORIZED COST BREAKDOWN ===== -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-tags-fill"></i> تكاليف الرحلة حسب التصنيف</h5>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead>
+                                <tr><th>التصنيف</th><th>الإجمالي</th></tr>
+                            </thead>
+                            <tbody id="categoryBreakdownBody">
+                                <tr><td colspan="2" style="text-align:center;padding:20px;color:var(--text-tertiary);">لا توجد تكاليف مسجّلة بعد</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
+                <!-- ===== TOOLBAR ===== -->
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <button class="btn-action btn-success" onclick="openExpenseModal()">
+                        <i class="bi bi-plus-circle-fill"></i> إضافة تكلفة رحلة
+                    </button>
+                    <button class="btn-action btn-primary" onclick="loadTripDetails()">
+                        <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
+                    </button>
+                </div>
+
+                <!-- ===== EXPENSES TABLE ===== -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-receipt-cutoff"></i> سجل تكاليف الرحلة</h5>
+                        <span id="expenseCount" class="record-count">0 سجل</span>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>#</th><th>التاريخ</th><th>التصنيف</th><th>البيان</th>
+                                    <th>طريقة الدفع</th><th>المبلغ</th>
+                                    <th style="text-align:center;">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesBody">
+                                <tr>
+                                    <td colspan="7" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                        <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
+                                        جاري تحميل التكاليف...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== BOOKINGS FOR THIS TRIP ===== -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-people-fill"></i> حجوزات هذه الرحلة</h5>
+                        <span id="bookingCount" class="record-count">0 سجل</span>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead>
+                                <tr><th>#</th><th>العميل</th><th>قيمة الحجز</th><th>المحصّل</th><th>المتبقي</th></tr>
+                            </thead>
+                            <tbody id="bookingsBody">
+                                <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-tertiary);">لا توجد حجوزات مسجّلة على هذه الرحلة</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -1649,55 +1729,49 @@
     </main>
 
     <!-- ================================================================ -->
-    <!-- MODAL - إضافة عميل جديد -->
+    <!-- MODAL - إضافة تكلفة رحلة مُصنّفة -->
     <!-- ================================================================ -->
-    <div class="modal-overlay" id="clientModalOverlay">
+    <div class="modal-overlay" id="expenseModalOverlay">
         <div class="modal-box">
-            <h3><i class="bi bi-person-plus-fill"></i> إضافة عميل جديد</h3>
-            <form id="clientForm" onsubmit="handleClientSubmit(event)">
-                <label for="clientName">اسم العميل <span class="required">*</span></label>
-                <input type="text" id="clientName" placeholder="الاسم الكامل" required />
+            <h3><i class="bi bi-receipt-cutoff"></i> إضافة تكلفة رحلة</h3>
+            <form id="expenseForm" onsubmit="handleExpenseSubmit(event)">
+                <label for="expenseCategory">التصنيف <span class="required">*</span></label>
+                <select id="expenseCategory" required></select>
 
-                <label for="clientPhone">رقم الهاتف</label>
-                <input type="text" id="clientPhone" placeholder="0100xxxxxxx" />
+                <label for="expenseAmount">المبلغ <span class="required">*</span></label>
+                <input type="number" id="expenseAmount" min="0.01" step="0.01" required />
 
-                <label for="clientEmail">البريد الإلكتروني (اختياري)</label>
-                <input type="email" id="clientEmail" placeholder="example@mail.com" />
+                <label for="expenseDate">التاريخ <span class="required">*</span></label>
+                <input type="date" id="expenseDate" required />
 
-                <label for="clientAddress">العنوان (اختياري)</label>
-                <input type="text" id="clientAddress" placeholder="العنوان" />
+                <label for="expenseDescription">البيان (اختياري)</label>
+                <input type="text" id="expenseDescription" placeholder="تفاصيل التكلفة" />
 
-                <label for="clientDebt">مديونية مبدئية</label>
-                <input type="number" id="clientDebt" min="0" step="0.01" value="0" />
+                <label for="expensePaymentMethod">طريقة الدفع <span class="required">*</span></label>
+                <select id="expensePaymentMethod" onchange="onExpensePaymentMethodChange()" required>
+                    <option value="نقدي">نقدي / بنكي فوري</option>
+                    <option value="آجل">آجل — على حساب مورد</option>
+                </select>
+
+                <div id="expenseCashWrap">
+                    <label for="expenseCashAccount">الدفع من <span class="required">*</span></label>
+                    <select id="expenseCashAccount"></select>
+                </div>
+
+                <div id="expenseSupplierWrap" style="display:none;">
+                    <label for="expenseSupplier">المورد <span class="required">*</span></label>
+                    <select id="expenseSupplier"></select>
+                </div>
+
+                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-8px 0 14px;">سيتم إنشاء قيد يومية مزدوج تلقائيًا ويترحّل مباشرة لميزان المراجعة والقوائم المالية</p>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('clientModal')">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="saveClientBtn">حفظ</button>
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('expenseModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveExpenseBtn">حفظ</button>
                 </div>
             </form>
         </div>
     </div>
-
-    <!-- ================================================================ -->
-    <!-- MODAL - تسجيل تسديد -->
-    <!-- ================================================================ -->
-    <div class="modal-overlay" id="paymentModalOverlay">
-        <div class="modal-box">
-            <h3><i class="bi bi-cash-coin"></i> تسجيل تسديد</h3>
-            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="paymentClientLabel">—</p>
-            <form id="paymentForm" onsubmit="handlePaymentSubmit(event)">
-                <input type="hidden" id="paymentClientId" />
-                <label for="paymentAmount">المبلغ المسدد <span class="required">*</span></label>
-                <input type="number" id="paymentAmount" min="0.01" step="0.01" required />
-
-                <div class="modal-actions">
-                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('paymentModal')">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="paymentBtn">تسديد</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <footer class="footer-custom">
         <div class="footer-content">
             <div class="footer-right">
@@ -1723,11 +1797,26 @@
         // ================================================================
         // STATE
         // ================================================================
+        var currentTripId = null;
+        var trip = null;
+        var accounts = [];
+        var costCategoryAccounts = [];
+        var suppliers = [];
         var clients = [];
+        var cashAccounts = [];
+        var bookings = [];
+        var expenses = [];
         var currentUser = null;
         var systemCurrency = 'SAR';
         var currencySymbol = 'ر.س';
         var isLoading = false;
+
+        var COST_CATEGORY_CODES = ['5100', '5200', '5300', '5400', '5500', '5510', '5520'];
+
+        function getQueryParam(name) {
+            var params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
 
         // ================================================================
         // LOAD DATA
@@ -1737,185 +1826,272 @@
             isLoading = true;
 
             try {
-                clients = await Supabase.getClients() || [];
-            } catch (error) {
-                console.error('❌ خطأ في جلب العملاء:', error);
-                showToast('⚠️ فشل تحميل العملاء', 'warning');
-                clients = [];
-            }
+                var results = await Promise.all([
+                    Supabase.getTrips().catch(function() { return []; }),
+                    Supabase.getAccounts().catch(function() { return []; }),
+                    Supabase.getSuppliers().catch(function() { return []; }),
+                    Supabase.getClients().catch(function() { return []; })
+                ]);
+                var trips = results[0] || [];
+                accounts = results[1] || [];
+                suppliers = results[2] || [];
+                clients = results[3] || [];
 
-            renderStats();
-            renderTable();
+                costCategoryAccounts = accounts.filter(function(a) { return COST_CATEGORY_CODES.indexOf(a.code) !== -1; });
+                cashAccounts = accounts.filter(function(a) { return a.code === '1100' || a.code === '1200'; });
+
+                currentTripId = getQueryParam('trip_id');
+
+                if (!currentTripId) {
+                    document.getElementById('tripSelectorWrap').style.display = 'flex';
+                    var select = document.getElementById('tripSelect');
+                    select.innerHTML = '<option value="">-- اختر رحلة --</option>' + trips.map(function(t) {
+                        return '<option value="' + t.id + '">' + (t.trip_name || t.trip_code) + '</option>';
+                    }).join('');
+                    document.getElementById('tripContent').style.display = 'none';
+                    isLoading = false;
+                    return;
+                }
+
+                trip = trips.find(function(t) { return String(t.id) === String(currentTripId); });
+                if (!trip) {
+                    showToast('⚠️ الرحلة غير موجودة', 'error');
+                    isLoading = false;
+                    return;
+                }
+
+                document.getElementById('tripSelectorWrap').style.display = 'none';
+                document.getElementById('tripContent').style.display = 'block';
+                document.getElementById('tripTitleHeader').textContent = trip.trip_name || trip.trip_code;
+                document.getElementById('tripSubHeader').textContent = 'كود الرحلة: ' + (trip.trip_code || '—') + (trip.trip_type ? ' — ' + trip.trip_type : '');
+
+                await loadTripDetails();
+
+            } catch (error) {
+                console.error('❌ خطأ في جلب بيانات الرحلة:', error);
+                showToast('⚠️ فشل تحميل البيانات', 'warning');
+            }
 
             isLoading = false;
         }
 
-        function renderStats() {
-            var totalDebts = 0, totalVisits = 0, paidCount = 0;
-            clients.forEach(function(c) {
-                var debt = parseFloat(c['debt'] || 0);
-                totalDebts += debt;
-                totalVisits += parseInt(c['visits'] || 0);
-                if (debt === 0) paidCount++;
-            });
-
-            document.getElementById('statTotalClients').textContent = clients.length;
-            document.getElementById('statTotalDebts').textContent = Supabase.formatCurrency(totalDebts);
-            document.getElementById('statTotalVisits').textContent = totalVisits;
-            document.getElementById('statPaidCount').textContent = paidCount;
+        function onTripSelected() {
+            var select = document.getElementById('tripSelect');
+            var id = select.value;
+            if (!id) return;
+            window.location.href = 'trip_details.html?trip_id=' + id;
         }
 
-        function renderTable() {
-            var tbody = document.getElementById('clientsBody');
-            var count = document.getElementById('recordCount');
+        async function loadTripDetails() {
+            if (!trip) return;
+            try {
+                var financials = await Supabase.getTripFinancials(trip.id);
+                bookings = financials.bookings || [];
+                expenses = financials.expenses || [];
 
-            if (!clients.length) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-person-x" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا يوجد عملاء مسجلين</td></tr>';
+                document.getElementById('statBookingValue').textContent = Supabase.formatCurrency(financials.totalBookingValue);
+                document.getElementById('statCollected').textContent = Supabase.formatCurrency(financials.totalCollected);
+                document.getElementById('statTotalExpense').textContent = Supabase.formatCurrency(financials.totalExpense);
+                var profitEl = document.getElementById('statNetProfit');
+                profitEl.textContent = Supabase.formatCurrency(financials.netProfit);
+                profitEl.style.color = financials.netProfit >= 0 ? 'var(--success)' : 'var(--danger)';
+
+                renderCategoryBreakdown(financials.byCategory);
+                renderExpensesTable();
+                renderBookingsTable();
+            } catch (error) {
+                console.error('❌ خطأ في جلب تفاصيل الرحلة:', error);
+                showToast('⚠️ فشل تحميل تفاصيل الرحلة', 'warning');
+            }
+        }
+
+        function renderCategoryBreakdown(byCategory) {
+            var tbody = document.getElementById('categoryBreakdownBody');
+            var keys = Object.keys(byCategory || {});
+            if (!keys.length) {
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:20px;color:var(--text-tertiary);">لا توجد تكاليف مسجّلة بعد</td></tr>';
+                return;
+            }
+            var html = '';
+            keys.forEach(function(k) {
+                html += '<tr><td>' + k.replace('مصروفات الرحلات - ', '') + '</td><td style="color:var(--danger);font-weight:700;">' + Supabase.formatCurrency(byCategory[k]) + '</td></tr>';
+            });
+            tbody.innerHTML = html;
+        }
+
+        function renderExpensesTable() {
+            var tbody = document.getElementById('expensesBody');
+            var count = document.getElementById('expenseCount');
+
+            if (!expenses.length) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-receipt-cutoff" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا توجد تكاليف مسجّلة على هذه الرحلة</td></tr>';
                 count.textContent = '0 سجل';
                 return;
             }
-
-            count.textContent = clients.length + ' سجل';
+            count.textContent = expenses.length + ' سجل';
 
             var html = '';
-            for (var i = 0; i < clients.length; i++) {
-                var c = clients[i];
-                var debt = parseFloat(c['debt'] || 0);
-                var visits = parseInt(c['visits'] || 0);
-                var statusClass = debt > 0 ? 'status-pending' : 'status-active';
-                var statusText = debt > 0 ? 'عليه مديونية' : 'مسدد';
-                var dateObj = new Date(c['last_visit']);
-                var lastVisit = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-EG') : (c['last_visit'] || '—');
+            for (var i = 0; i < expenses.length; i++) {
+                var e = expenses[i];
+                var acc = accounts.find(function(a) { return a.id === e.category_account_id; });
+                var catName = acc ? acc.name.replace('مصروفات الرحلات - ', '') : 'غير مصنّف';
+                var dateObj = new Date(e.expense_date);
+                var dateStr = !isNaN(dateObj) ? dateObj.toLocaleDateString('ar-EG') : (e.expense_date || '—');
 
                 html += '<tr>' +
                     '<td>' + (i + 1) + '</td>' +
-                    '<td><strong>' + (c['name'] || '—') + '</strong></td>' +
-                    '<td>' + (c['phone'] || '—') + '</td>' +
-                    '<td style="' + (debt > 0 ? 'color:var(--danger);' : '') + '">' + Supabase.formatCurrency(debt) + '</td>' +
-                    '<td>' + visits + '</td>' +
-                    '<td>' + lastVisit + '</td>' +
-                    '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>' +
-                    '<td style="text-align:center;white-space:nowrap;">' +
-                        '<button class="btn-icon btn-icon-edit" onclick="openPaymentModal(\'' + c['id'] + '\')" title="تسديد"><i class="bi bi-cash-coin"></i></button> ' +
-                        '<button class="btn-icon btn-icon-delete" onclick="deleteClient(\'' + c['id'] + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
+                    '<td>' + dateStr + '</td>' +
+                    '<td>' + catName + '</td>' +
+                    '<td>' + (e.description || '—') + '</td>' +
+                    '<td>' + (e.payment_method || '—') + '</td>' +
+                    '<td style="color:var(--danger);font-weight:700;">' + Supabase.formatCurrency(e.amount) + '</td>' +
+                    '<td style="text-align:center;">' +
+                        '<button class="btn-icon btn-icon-delete" onclick="deleteExpenseRow(\'' + e.id + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
                     '</td>' +
                     '</tr>';
             }
             tbody.innerHTML = html;
         }
 
+        function renderBookingsTable() {
+            var tbody = document.getElementById('bookingsBody');
+            var count = document.getElementById('bookingCount');
+
+            if (!bookings.length) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-tertiary);">لا توجد حجوزات مسجّلة على هذه الرحلة</td></tr>';
+                count.textContent = '0 سجل';
+                return;
+            }
+            count.textContent = bookings.length + ' سجل';
+
+            var html = '';
+            for (var i = 0; i < bookings.length; i++) {
+                var b = bookings[i];
+                var value = parseFloat(b.booking_value || 0);
+                var paid = parseFloat(b.paid_amount || 0);
+                var remaining = value - paid;
+                var client = clients.find(function(c) { return String(c.id) === String(b.client_id); });
+
+                html += '<tr>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + (client ? client.name : '—') + '</td>' +
+                    '<td>' + Supabase.formatCurrency(value) + '</td>' +
+                    '<td style="color:var(--success);">' + Supabase.formatCurrency(paid) + '</td>' +
+                    '<td style="' + (remaining > 0 ? 'color:var(--danger);' : '') + '">' + Supabase.formatCurrency(remaining) + '</td>' +
+                    '</tr>';
+            }
+            tbody.innerHTML = html;
+        }
+
         // ================================================================
-        // إضافة عميل
+        // إضافة تكلفة رحلة
         // ================================================================
-        async function handleClientSubmit(event) {
+        function openExpenseModal() {
+            var catSelect = document.getElementById('expenseCategory');
+            catSelect.innerHTML = costCategoryAccounts.map(function(a) {
+                return '<option value="' + a.id + '">' + a.name.replace('مصروفات الرحلات - ', '') + '</option>';
+            }).join('');
+
+            var cashSelect = document.getElementById('expenseCashAccount');
+            cashSelect.innerHTML = cashAccounts.map(function(a) {
+                return '<option value="' + a.id + '">' + a.name + '</option>';
+            }).join('');
+
+            var supplierSelect = document.getElementById('expenseSupplier');
+            supplierSelect.innerHTML = suppliers.map(function(s) {
+                return '<option value="' + s.id + '">' + s.name + '</option>';
+            }).join('');
+
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('expensePaymentMethod').value = 'نقدي';
+            onExpensePaymentMethodChange();
+
+            openModalById('expenseModal');
+        }
+
+        function onExpensePaymentMethodChange() {
+            var method = document.getElementById('expensePaymentMethod').value;
+            document.getElementById('expenseCashWrap').style.display = method === 'نقدي' ? 'block' : 'none';
+            document.getElementById('expenseSupplierWrap').style.display = method === 'آجل' ? 'block' : 'none';
+        }
+
+        async function handleExpenseSubmit(event) {
             event.preventDefault();
 
-            var name = document.getElementById('clientName').value.trim();
-            var phone = document.getElementById('clientPhone').value.trim();
-            var email = document.getElementById('clientEmail').value.trim();
-            var address = document.getElementById('clientAddress').value.trim();
-            var debt = document.getElementById('clientDebt').value;
+            var categoryId = document.getElementById('expenseCategory').value;
+            var amount = parseFloat(document.getElementById('expenseAmount').value);
+            var date = document.getElementById('expenseDate').value;
+            var description = document.getElementById('expenseDescription').value.trim();
+            var method = document.getElementById('expensePaymentMethod').value;
+            var cashAccountId = document.getElementById('expenseCashAccount').value;
+            var supplierId = document.getElementById('expenseSupplier').value;
 
-            if (!name) { showToast('⚠️ الرجاء إدخال اسم العميل', 'warning'); return; }
+            if (!categoryId) { showToast('⚠️ الرجاء اختيار تصنيف التكلفة', 'warning'); return; }
+            if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
+            if (method === 'نقدي' && !cashAccountId) { showToast('⚠️ الرجاء اختيار حساب الدفع', 'warning'); return; }
+            if (method === 'آجل' && !supplierId) { showToast('⚠️ الرجاء اختيار المورد', 'warning'); return; }
 
-            var btn = document.getElementById('saveClientBtn');
+            var btn = document.getElementById('saveExpenseBtn');
             btn.disabled = true;
             btn.textContent = 'جاري الحفظ...';
 
             try {
-                await Supabase.addData('clients', {
-                    name: name, phone: phone, email: email, address: address,
-                    debt: parseFloat(debt) || 0, visits: 0,
-                    last_visit: new Date().toISOString().split('T')[0]
+                await Supabase.addTripExpense({
+                    trip_id: trip.id,
+                    category_account_id: categoryId,
+                    amount: amount,
+                    description: description,
+                    expense_date: date,
+                    payment_method: method,
+                    cash_account_id: method === 'نقدي' ? cashAccountId : null,
+                    supplier_id: method === 'آجل' ? supplierId : null
                 });
-                closeModalById('clientModal');
-                document.getElementById('clientForm').reset();
-                showToast('✅ تمت إضافة العميل بنجاح', 'success');
-                loadData();
+
+                if (method === 'آجل') {
+                    var supplier = suppliers.find(function(s) { return String(s.id) === String(supplierId); });
+                    if (supplier) {
+                        var newDebt = parseFloat(supplier.debt || 0) + amount;
+                        await Supabase.updateSupplier(supplierId, { debt: newDebt });
+                    }
+                }
+
+                closeModalById('expenseModal');
+                document.getElementById('expenseForm').reset();
+                showToast('✅ تمت إضافة التكلفة وترحيلها للمحرك المحاسبي', 'success');
+                loadTripDetails();
             } catch (error) {
-                showToast('❌ فشل إضافة العميل: ' + error.message, 'error');
+                showToast('❌ فشل إضافة التكلفة: ' + error.message, 'error');
             }
 
             btn.disabled = false;
             btn.textContent = 'حفظ';
         }
 
-        function deleteClient(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا العميل؟')) return;
-            Supabase.deleteData('clients', id)
-                .then(function() {
-                    showToast('✅ تم حذف العميل بنجاح', 'success');
-                    loadData();
-                })
-                .catch(function(error) {
-                    showToast('❌ فشل حذف العميل: ' + error.message, 'error');
-                });
-        }
-
-        // ================================================================
-        // تسديد
-        // ================================================================
-        function openPaymentModal(clientId) {
-            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
-            if (!client) { showToast('⚠️ العميل غير موجود، حاول تحديث الصفحة', 'error'); return; }
-
-            var currentDebt = parseFloat(client['debt'] || 0);
-            document.getElementById('paymentClientId').value = clientId;
-            document.getElementById('paymentClientLabel').textContent = 'العميل: ' + client['name'] + ' — المديونية الحالية: ' + Supabase.formatCurrency(currentDebt);
-            document.getElementById('paymentAmount').value = currentDebt > 0 ? currentDebt : '';
-            document.getElementById('paymentAmount').max = currentDebt;
-            openModalById('paymentModal');
-        }
-
-        async function handlePaymentSubmit(event) {
-            event.preventDefault();
-
-            var clientId = document.getElementById('paymentClientId').value;
-            var amount = parseFloat(document.getElementById('paymentAmount').value);
-            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
-
-            if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
-            if (!client) { showToast('⚠️ العميل غير موجود', 'error'); return; }
-
-            var currentDebt = parseFloat(client['debt'] || 0);
-            if (amount > currentDebt) {
-                showToast('⚠️ المبلغ أكبر من المديونية الحالية (' + Supabase.formatCurrency(currentDebt) + ')', 'warning');
-                return;
-            }
-
-            var btn = document.getElementById('paymentBtn');
-            btn.disabled = true;
-            btn.textContent = 'جاري التسديد...';
+        async function deleteExpenseRow(id) {
+            if (!confirm('هل أنت متأكد من حذف هذه التكلفة؟ سيتم حذف القيد المحاسبي المرتبط بها أيضًا.')) return;
+            var expense = expenses.find(function(e) { return String(e.id) === String(id); });
+            if (!expense) return;
 
             try {
-                var newDebt = Math.max(0, currentDebt - amount);
-                var newVisits = parseInt(client['visits'] || 0) + 1;
+                await Supabase.deleteTripExpense(expense);
 
-                await Supabase.updateData('clients', clientId, {
-                    debt: newDebt, visits: newVisits,
-                    last_visit: new Date().toISOString().split('T')[0]
-                });
+                if (expense.payment_method === 'آجل' && expense.supplier_id) {
+                    var supplier = suppliers.find(function(s) { return String(s.id) === String(expense.supplier_id); });
+                    if (supplier) {
+                        var newDebt = Math.max(0, parseFloat(supplier.debt || 0) - parseFloat(expense.amount || 0));
+                        await Supabase.updateSupplier(expense.supplier_id, { debt: newDebt });
+                    }
+                }
 
-                await Supabase.addData('transactions', {
-                    date: new Date().toISOString().split('T')[0],
-                    type: 'وارد', category: 'عميل', amount: amount,
-                    description: 'تسديد من العميل ' + client['name'],
-                    reference: client['name']
-                });
-
-                closeModalById('paymentModal');
-                showToast('✅ تم تسجيل تسديد ' + Supabase.formatCurrency(amount) + ' من ' + client['name'], 'success');
-                loadData();
+                showToast('✅ تم حذف التكلفة بنجاح', 'success');
+                loadTripDetails();
             } catch (error) {
-                showToast('❌ فشل التسديد: ' + error.message, 'error');
+                showToast('❌ فشل حذف التكلفة: ' + error.message, 'error');
             }
-
-            btn.disabled = false;
-            btn.textContent = 'تسديد';
         }
 
         // ================================================================
-        // MODALS (نمط موحّد data-modal)
+        // MODALS
         // ================================================================
         function openModalById(id) {
             var el = document.getElementById(id + 'Overlay');
@@ -1971,7 +2147,7 @@
         async function applySystemName() {
             try {
                 var systemName = await Supabase.getSystemName();
-                document.title = 'العملاء' + ' - ' + systemName;
+                document.title = 'الرحلات' + ' - ' + systemName;
 
                 var brandText = document.getElementById('sidebarBrandText');
                 if (brandText) {
@@ -2112,10 +2288,10 @@
             if (notifBtn) {
                 notifBtn.addEventListener('click', function() {
                     var messages = [
-                        '👥 تم تحديث بيانات العملاء',
-                        '💰 تم تسجيل تسديد جديد من أحد العملاء',
-                        '📊 عدد العملاء المسجلين: يمكنك مراجعة الجدول',
-                        '⚠️ تنبيه: راجع العملاء أصحاب المديونيات المرتفعة'
+                        '✈️ تم تحديث بيانات الرحلات',
+                        '📈 راجع الرحلات ذات الأرباح المرتفعة',
+                        '📊 يمكنك متابعة حالة الرحلات القادمة من الجدول',
+                        '⚠️ تنبيه: راجع الرحلات المنتهية وأرشفها'
                     ];
                     var random = messages[Math.floor(Math.random() * messages.length)];
                     showToast(random, 'info');
@@ -2198,24 +2374,17 @@
         }
 
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModalById('clientModal');
-                closeModalById('paymentModal');
-            }
+            if (e.key === 'Escape') closeModalById('tripModal');
         });
 
-        // ================================================================
-        // EXPOSE
-        // ================================================================
         window.openModalById = openModalById;
         window.closeModalById = closeModalById;
-        window.openPaymentModal = openPaymentModal;
-        window.deleteClient = deleteClient;
+        window.deleteTrip = deleteTrip;
         window.logout = logout;
         window.showToast = showToast;
         window.loadData = loadData;
 
-        console.log('👥 نظام العملاء - حراء للسياحة');
+        console.log('✈️ نظام الرحلات - حراء للسياحة');
         console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
     </script>
 

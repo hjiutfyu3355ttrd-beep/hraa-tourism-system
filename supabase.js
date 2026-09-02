@@ -1214,6 +1214,167 @@ async function getBalanceSheet(asOfDate) {
 }
 
 // ================================================================
+// 6ج) الخطوة 2 — الموردين + مصروفات الرحلة المُصنّفة + ربط الحجوزات بالمحاسبة
+// ================================================================
+
+/** جلب كل الموردين */
+async function getSuppliers() {
+    return await fetchData('suppliers');
+}
+
+/** إضافة مورد جديد */
+async function addSupplier(data) {
+    var result = await addData('suppliers', data);
+    return result[0] || result;
+}
+
+/** تحديث بيانات مورد */
+async function updateSupplier(id, data) {
+    return await updateData('suppliers', id, data);
+}
+
+/** حذف مورد */
+async function deleteSupplier(id) {
+    return await deleteData('suppliers', id);
+}
+
+/** جلب كل مصروفات الرحلات (اختياريًا لرحلة معينة) */
+async function getTripExpenses(tripId) {
+    var opts = { order: 'expense_date' };
+    if (tripId) opts.filter = { trip_id: tripId };
+    return await fetchData('trip_expenses', opts);
+}
+
+/**
+ * إضافة مصروف رحلة مُصنّف (انتقالات/فنادق/طيران/تأشيرات/باركود/أوفر باركود/باركود الغرفة)
+ * ينشئ تلقائيًا قيد يومية مزدوج:
+ *   - دفع نقدي فوري: مدين = حساب المصروف (حسب التصنيف)  ، دائن = الصندوق/البنك المختار
+ *   - دفع آجل لمورد:  مدين = حساب المصروف (حسب التصنيف)  ، دائن = حساب الموردون (دائنون)
+ * exp = { trip_id, category_account_id, amount, description, expense_date,
+ *         payment_method: 'نقدي'|'آجل', cash_account_id (لو نقدي), supplier_id (لو آجل) }
+ */
+async function addTripExpense(exp) {
+    var supplierAccounts = await getAccounts();
+    var payableAccount = supplierAccounts.find(function(a) { return a.code === '2100'; }); // الموردون (دائنون)
+
+    var lines;
+    if (exp.payment_method === 'آجل') {
+        if (!payableAccount) throw new Error('حساب الموردون (2100) غير موجود في دليل الحسابات');
+        lines = [
+            { account_id: exp.category_account_id, debit: exp.amount, credit: 0 },
+            { account_id: payableAccount.id, debit: 0, credit: exp.amount }
+        ];
+    } else {
+        if (!exp.cash_account_id) throw new Error('الرجاء اختيار حساب الصندوق/البنك للدفع النقدي');
+        lines = [
+            { account_id: exp.category_account_id, debit: exp.amount, credit: 0 },
+            { account_id: exp.cash_account_id, debit: 0, credit: exp.amount }
+        ];
+    }
+
+    var entry = await addJournalEntry({
+        entry_date: exp.expense_date,
+        description: 'مصروف رحلة — ' + (exp.description || ''),
+        source_type: 'trip_expense'
+    }, lines);
+
+    var result = await addData('trip_expenses', {
+        trip_id: exp.trip_id,
+        category_account_id: exp.category_account_id,
+        supplier_id: exp.supplier_id || null,
+        payment_method: exp.payment_method || 'نقدي',
+        cash_account_id: exp.payment_method === 'آجل' ? null : exp.cash_account_id,
+        amount: exp.amount,
+        description: exp.description || null,
+        expense_date: exp.expense_date,
+        journal_entry_id: entry.id
+    });
+
+    return result[0] || result;
+}
+
+/** حذف مصروف رحلة + القيد المرتبط به */
+async function deleteTripExpense(expense) {
+    if (expense.journal_entry_id) {
+        try { await deleteData('journal_entries', expense.journal_entry_id); } catch (e) { console.warn(e); }
+    }
+    return await deleteData('trip_expenses', expense.id);
+}
+
+/**
+ * تسجيل دفعة حجز (من عميل) — تنشئ سند قبض تلقائيًا يترحّل للمحرك المحاسبي:
+ *   مدين = الصندوق/البنك المختار  ،  دائن = إيرادات الرحلات (4100)
+ * وتزيد paid_amount في الحجز نفسه بنفس القيمة.
+ */
+async function recordBookingPayment(booking, amount, cashAccountId, client, trip) {
+    var accounts = await getAccounts();
+    var revenueAccount = accounts.find(function(a) { return a.code === '4100'; }); // إيرادات الرحلات
+    if (!revenueAccount) throw new Error('حساب إيرادات الرحلات (4100) غير موجود في دليل الحسابات');
+
+    var voucher = await addVoucher({
+        voucher_type: 'قبض',
+        voucher_date: new Date().toISOString().split('T')[0],
+        cash_account_id: cashAccountId,
+        counter_account_id: revenueAccount.id,
+        party_type: 'client',
+        party_id: booking.client_id,
+        party_name: client ? client.name : '',
+        amount: amount,
+        description: 'دفعة حجز ' + (booking.booking_code || '') + (trip ? (' — ' + (trip.trip_code || trip.trip_name || '')) : ''),
+        trip_id: booking.trip_id,
+        booking_id: booking.id
+    });
+
+    var newPaid = parseFloat(booking.paid_amount || 0) + parseFloat(amount);
+    await updateData('bookings', booking.id, { paid_amount: newPaid });
+
+    return voucher;
+}
+
+/** جلب سندات مورد معين (لكشف حساب المورد) */
+async function getSupplierVouchers(supplierId) {
+    var all = await getVouchers();
+    return all.filter(function(v) { return v.party_type === 'supplier' && String(v.party_id) === String(supplierId); });
+}
+
+/**
+ * حساب ملخص أرباح الرحلة المُصنّف: إيراد الحجوزات (المحصّل) مقابل كل بند تكلفة على حدة
+ * (الانتقالات / الفنادق / الطيران / تأشيرات الوكيل / الباركود / أوفر باركود / باركود الغرفة)
+ */
+async function getTripFinancials(tripId) {
+    var results = await Promise.all([
+        getBookings(tripId),
+        getTripExpenses(tripId),
+        getAccounts()
+    ]);
+    var bookings = results[0] || [];
+    var expenses = results[1] || [];
+    var accounts = results[2] || [];
+
+    var totalBookingValue = bookings.reduce(function(s, b) { return s + (parseFloat(b.booking_value) || 0); }, 0);
+    var totalCollected = bookings.reduce(function(s, b) { return s + (parseFloat(b.paid_amount) || 0); }, 0);
+
+    var byCategory = {};
+    expenses.forEach(function(e) {
+        var acc = accounts.find(function(a) { return a.id === e.category_account_id; });
+        var key = acc ? acc.name : 'غير مصنّف';
+        byCategory[key] = (byCategory[key] || 0) + (parseFloat(e.amount) || 0);
+    });
+
+    var totalExpense = expenses.reduce(function(s, e) { return s + (parseFloat(e.amount) || 0); }, 0);
+
+    return {
+        bookings: bookings,
+        expenses: expenses,
+        totalBookingValue: totalBookingValue,
+        totalCollected: totalCollected,
+        totalExpense: totalExpense,
+        netProfit: totalCollected - totalExpense,
+        byCategory: byCategory
+    };
+}
+
+// ================================================================
 // 7. دوال خاصة بالشعار
 // ================================================================
 
@@ -1561,6 +1722,18 @@ window.Supabase = {
     getTrialBalance: getTrialBalance,
     getIncomeStatement: getIncomeStatement,
     getBalanceSheet: getBalanceSheet,
+
+    // الخطوة 2 — الموردين / مصروفات الرحلة المُصنّفة / ربط الحجوزات بالمحاسبة
+    getSuppliers: getSuppliers,
+    addSupplier: addSupplier,
+    updateSupplier: updateSupplier,
+    deleteSupplier: deleteSupplier,
+    getTripExpenses: getTripExpenses,
+    addTripExpense: addTripExpense,
+    deleteTripExpense: deleteTripExpense,
+    recordBookingPayment: recordBookingPayment,
+    getSupplierVouchers: getSupplierVouchers,
+    getTripFinancials: getTripFinancials,
 
     // النظام
     initSystem: initSystem,

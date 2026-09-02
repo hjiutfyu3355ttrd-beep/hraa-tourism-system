@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
-    <title id="pageTitle">كشف حساب العميل - حراء للسياحة</title>
+    <title id="pageTitle">كشف حساب المورد - حراء للسياحة</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -822,7 +822,7 @@
             font-weight: 500;
         }
 
-        #clientNameDisplay {
+        #supplierNameDisplay {
             font-weight: 700;
             color: var(--accent);
             font-size: 13px;
@@ -1440,7 +1440,7 @@
             color: #8ab4d4;
         }
 
-        body.dark-mode #clientNameDisplay {
+        body.dark-mode #supplierNameDisplay {
             color: var(--accent-light);
         }
 
@@ -1673,7 +1673,7 @@
                 font-size: 13px !important;
             }
 
-            #clientNameDisplay {
+            #supplierNameDisplay {
                 color: white !important;
                 font-size: 13px !important;
             }
@@ -1875,8 +1875,8 @@
 
             <div class="nav-section-title">التقارير</div>
             <ul class="nav-list">
-                <li><a href="client_statement.html" class="active"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
-                <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
+                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="supplier_statement.html" class="active"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
                 <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
             </ul>
 
@@ -1926,8 +1926,8 @@
                 </div>
 
                 <h4 class="page-title" id="pageTitleText">
-                    كشف حساب العميل
-                    <small>عرض تفاصيل حسابات العملاء</small>
+                    كشف حساب المورد
+                    <small>عرض تفاصيل حسابات الموردين</small>
                 </h4>
             </div>
 
@@ -1956,8 +1956,8 @@
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>كشف حساب العميل</h2>
-                    <p>عرض تفاصيل حسابات العملاء والحركات المالية</p>
+                    <h2>كشف حساب المورد</h2>
+                    <p>عرض تفاصيل حسابات الموردين والحركات المالية</p>
                 </div>
                 <div class="ph-right">
                     <strong>اليوم</strong>
@@ -1965,16 +1965,16 @@
                 </div>
             </div>
 
-            <!-- ===== CLIENT SELECTOR ===== -->
+            <!-- ===== SUPPLIER SELECTOR ===== -->
             <div class="client-selector">
-                <label for="clientSelect"><i class="bi bi-person-fill"></i> اختر العميل:</label>
+                <label for="supplierSelect"><i class="bi bi-truck"></i> اختر المورد:</label>
                 <div class="select-wrapper">
-                    <select id="clientSelect" onchange="loadClientStatement()">
-                        <option value="">-- اختر عميل --</option>
+                    <select id="supplierSelect" onchange="loadSupplierStatement()">
+                        <option value="">-- اختر مورد --</option>
                     </select>
                 </div>
                 <div class="btn-group">
-                    <button class="btn-action btn-primary" onclick="loadClientStatement()">
+                    <button class="btn-action btn-primary" onclick="loadSupplierStatement()">
                         <i class="bi bi-search"></i> عرض
                     </button>
                     <button class="btn-action btn-outline-accent" onclick="printStatement()">
@@ -1983,18 +1983,18 @@
                 </div>
             </div>
 
-            <!-- ===== CLIENT SUMMARY ===== -->
-            <div class="client-summary" id="clientSummary" style="display:none;">
+            <!-- ===== SUPPLIER SUMMARY ===== -->
+            <div class="client-summary" id="supplierSummary" style="display:none;">
                 <div class="summary-item summary-income">
-                    <div class="summary-label">إجمالي الخدمات</div>
+                    <div class="summary-label">إجمالي المشتريات/المصروفات الآجلة</div>
                     <div class="summary-value" id="totalServices">0</div>
                 </div>
                 <div class="summary-item summary-expense">
-                    <div class="summary-label">إجمالي المدفوعات</div>
+                    <div class="summary-label">إجمالي المسدد له</div>
                     <div class="summary-value" id="totalPayments">0</div>
                 </div>
                 <div class="summary-item summary-balance">
-                    <div class="summary-label">الرصيد المتبقي</div>
+                    <div class="summary-label">المستحق له حاليًا</div>
                     <div class="summary-value" id="remainingBalance">0</div>
                 </div>
                 <div class="summary-item summary-count">
@@ -2007,7 +2007,7 @@
             <div class="panel">
                 <div class="panel-header">
                     <h5 class="panel-title"><i class="bi bi-receipt"></i> كشف الحساب</h5>
-                    <span id="clientNameDisplay" class="record-count" style="font-weight:600;color:var(--accent);"></span>
+                    <span id="supplierNameDisplay" class="record-count" style="font-weight:600;color:var(--accent);"></span>
                     <span id="recordCount" class="record-count">0 معاملة</span>
                 </div>
                 <div class="table-wrap">
@@ -2026,8 +2026,8 @@
                         <tbody id="statementBody">
                             <tr>
                                 <td colspan="7" style="text-align:center;padding:30px;color:var(--text-tertiary);">
-                                    <i class="bi bi-person" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.35;"></i>
-                                    اختر عميلاً لعرض كشف الحساب
+                                    <i class="bi bi-truck" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.35;"></i>
+                                    اختر موردًا لعرض كشف الحساب
                                 </td>
                             </tr>
                         </tbody>
@@ -2043,19 +2043,19 @@
                     <span id="printSystemName">حراء للسياحة</span>
                     <small>النظام المحاسبي المتكامل</small>
                 </div>
-                <div class="print-title">كشف حساب العميل</div>
+                <div class="print-title">كشف حساب المورد</div>
                 <div class="print-date" id="printDate">—</div>
             </div>
 
             <div class="print-client-info">
                 <div class="pci-row">
                     <div class="pci-item">
-                        <span class="label">اسم العميل:</span>
-                        <span class="value" id="printClientName">—</span>
+                        <span class="label">اسم المورد:</span>
+                        <span class="value" id="printSupplierName">—</span>
                     </div>
                     <div class="pci-item">
-                        <span class="label">رقم العميل:</span>
-                        <span class="value" id="printClientId">—</span>
+                        <span class="label">رقم المورد:</span>
+                        <span class="value" id="printSupplierId">—</span>
                     </div>
                     <div class="pci-item">
                         <span class="label">تاريخ التقرير:</span>
@@ -2098,10 +2098,10 @@
         // ================================================================
         // STATE
         // ================================================================
-        var clients = [];
-        var services = [];
-        var transactions = [];
-        var currentClientId = null;
+        var suppliers = [];
+        var vouchers = [];
+        var tripExpenses = [];
+        var currentSupplierId = null;
         var isLoading = false;
         var currentUser = null;
         var systemCurrency = 'SAR';
@@ -2148,7 +2148,7 @@
         // ================================================================
         function applySystemName() {
             var systemName = Supabase.getSystemName();
-            document.title = 'كشف حساب العميل - ' + systemName;
+            document.title = 'كشف حساب المورد - ' + systemName;
 
             var brandText = document.getElementById('sidebarBrandText');
             if (brandText) {
@@ -2227,19 +2227,19 @@
             try {
                 console.log('📡 جاري جلب البيانات...');
 
-                var clientsData = await Supabase.getClients();
-                clients = clientsData || [];
+                var suppliersData = await Supabase.getSuppliers();
+                suppliers = suppliersData || [];
 
-                var servicesData = await Supabase.getServices();
-                services = servicesData || [];
+                var vouchersData = await Supabase.getVouchers();
+                vouchers = vouchersData || [];
 
-                var transactionsData = await Supabase.getTransactions();
-                transactions = transactionsData || [];
+                var expensesData = await Supabase.getTripExpenses();
+                tripExpenses = expensesData || [];
 
-                populateClientSelect();
+                populateSupplierSelect();
 
-                if (currentClientId) {
-                    loadClientStatement();
+                if (currentSupplierId) {
+                    loadSupplierStatement();
                 }
 
             } catch (error) {
@@ -2251,21 +2251,21 @@
         }
 
         // ================================================================
-        // POPULATE CLIENT SELECT
+        // POPULATE SUPPLIER SELECT
         // ================================================================
-        function populateClientSelect() {
-            var select = document.getElementById('clientSelect');
+        function populateSupplierSelect() {
+            var select = document.getElementById('supplierSelect');
             if (!select) return;
 
-            select.innerHTML = '<option value="">-- اختر عميل --</option>';
+            select.innerHTML = '<option value="">-- اختر مورد --</option>';
 
-            for (var i = 0; i < clients.length; i++) {
-                var c = clients[i];
+            for (var i = 0; i < suppliers.length; i++) {
+                var c = suppliers[i];
                 var option = document.createElement('option');
                 option.value = c['id'];
                 var debt = parseFloat(c['debt'] || 0);
-                option.textContent = c['name'] + ' (مديونية: ' + Supabase.formatCurrency(debt) + ')';
-                if (currentClientId && String(currentClientId) === String(c['id'])) {
+                option.textContent = c['name'] + ' (مستحق: ' + Supabase.formatCurrency(debt) + ')';
+                if (currentSupplierId && String(currentSupplierId) === String(c['id'])) {
                     option.selected = true;
                 }
                 select.appendChild(option);
@@ -2275,97 +2275,99 @@
         // ================================================================
         // LOAD CLIENT STATEMENT
         // ================================================================
-        function loadClientStatement() {
-            var select = document.getElementById('clientSelect');
-            currentClientId = select.value;
+        function loadSupplierStatement() {
+            var select = document.getElementById('supplierSelect');
+            currentSupplierId = select.value;
 
-            if (!currentClientId) {
+            if (!currentSupplierId) {
                 document.getElementById('statementBody').innerHTML = `
                     <tr>
                         <td colspan="7" style="text-align:center;padding:30px;color:var(--text-tertiary);">
-                            <i class="bi bi-person" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.35;"></i>
-                            اختر عميلاً لعرض كشف الحساب
+                            <i class="bi bi-truck" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.35;"></i>
+                            اختر موردًا لعرض كشف الحساب
                         </td>
                     </tr>
                 `;
-                document.getElementById('clientSummary').style.display = 'none';
-                document.getElementById('clientNameDisplay').textContent = '';
+                document.getElementById('supplierSummary').style.display = 'none';
+                document.getElementById('supplierNameDisplay').textContent = '';
                 document.getElementById('recordCount').textContent = '0 معاملة';
                 return;
             }
 
-            renderStatement(currentClientId);
+            renderStatement(currentSupplierId);
         }
 
         // ================================================================
         // RENDER STATEMENT
         // ================================================================
-        function renderStatement(clientId) {
-            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
-            if (!client) {
-                showToast('⚠️ العميل غير موجود', 'warning');
+        function renderStatement(supplierId) {
+            var supplier = suppliers.find(function(c) { return String(c['id']) === String(supplierId); });
+            if (!supplier) {
+                showToast('⚠️ المورد غير موجود', 'warning');
                 return;
             }
 
-            document.getElementById('clientNameDisplay').textContent = '📋 ' + (client['name'] || '');
+            document.getElementById('supplierNameDisplay').textContent = '📋 ' + (supplier['name'] || '');
 
             // تحديث معلومات الطباعة
-            document.getElementById('printClientName').textContent = client['name'] || '—';
-            document.getElementById('printClientId').textContent = client['id'] || '—';
+            document.getElementById('printSupplierName').textContent = supplier['name'] || '—';
+            document.getElementById('printSupplierId').textContent = supplier['id'] || '—';
 
-            var clientServices = services.filter(function(s) {
-                return String(s['client_id']) === String(clientId);
+            // مصروفات الرحلات الآجلة على هذا المورد (زيادة في المستحق له)
+            var supplierExpenses = tripExpenses.filter(function(e) {
+                return String(e['supplier_id']) === String(supplierId) && e['payment_method'] === 'آجل';
             });
 
-            var clientTransactions = transactions.filter(function(t) {
-                return t['category'] === 'عميل' && t['reference'] === client['name'];
+            // السندات (سندات الصرف) المسدَّدة لهذا المورد (تخفيض في المستحق له)
+            var supplierVouchers = vouchers.filter(function(v) {
+                return v['party_type'] === 'supplier' && String(v['party_id']) === String(supplierId);
             });
 
             statementData = [];
 
-            // 1. إضافة الخدمات
-            for (var i = 0; i < clientServices.length; i++) {
-                var s = clientServices[i];
+            // 1. إضافة المشتريات/المصروفات الآجلة (مدين على الشركة تجاه المورد = زيادة المستحق)
+            for (var i = 0; i < supplierExpenses.length; i++) {
+                var e = supplierExpenses[i];
                 statementData.push({
-                    date: s['date'] || new Date().toISOString().split('T')[0],
-                    description: s['service_name'] || 'خدمة',
-                    type: 'service',
-                    typeLabel: 'خدمة',
+                    date: e['expense_date'] || new Date().toISOString().split('T')[0],
+                    description: e['description'] || 'مصروف رحلة (آجل)',
+                    type: 'expense',
+                    typeLabel: 'مشتريات آجلة',
                     badgeClass: 'badge-service',
-                    debit: parseFloat(s['total'] || 0),
-                    credit: 0,
-                    amount: parseFloat(s['total'] || 0)
+                    debit: 0,
+                    credit: parseFloat(e['amount'] || 0),
+                    amount: parseFloat(e['amount'] || 0)
                 });
             }
 
-            // 2. إضافة المدفوعات
-            for (var j = 0; j < clientTransactions.length; j++) {
-                var t = clientTransactions[j];
-                var amount = parseFloat(t['amount'] || 0);
+            // 2. إضافة السداد (سندات الصرف)
+            for (var j = 0; j < supplierVouchers.length; j++) {
+                var v = supplierVouchers[j];
+                var amount = parseFloat(v['amount'] || 0);
                 statementData.push({
-                    date: t['date'] || new Date().toISOString().split('T')[0],
-                    description: t['description'] || 'دفعة',
+                    date: v['voucher_date'] || new Date().toISOString().split('T')[0],
+                    description: v['description'] || 'سداد',
                     type: 'payment',
-                    typeLabel: 'دفع',
+                    typeLabel: 'سداد',
                     badgeClass: 'badge-payment',
-                    debit: 0,
-                    credit: amount,
+                    debit: amount,
+                    credit: 0,
                     amount: amount
                 });
             }
 
             // 3. إضافة الرصيد الافتتاحي
-            var openingBalance = parseFloat(client['debt'] || 0);
+            var openingBalance = parseFloat(supplier['debt'] || 0);
             if (openingBalance > 0) {
                 statementData.push({
-                    date: client['created_at'] ? new Date(client['created_at']).toISOString().split('T')[0] : new Date().toISOString().split(
+                    date: supplier['created_at'] ? new Date(supplier['created_at']).toISOString().split('T')[0] : new Date().toISOString().split(
                         'T')[0],
                     description: 'رصيد افتتاحي',
                     type: 'opening',
                     typeLabel: 'افتتاحي',
                     badgeClass: 'badge-opening',
-                    debit: openingBalance,
-                    credit: 0,
+                    debit: 0,
+                    credit: openingBalance,
                     amount: openingBalance
                 });
             }
@@ -2375,15 +2377,15 @@
                 return new Date(a.date) - new Date(b.date);
             });
 
-            // حساب الرصيد التراكمي
+            // حساب الرصيد التراكمي (الرصيد الموجب = مستحق له عليك)
             var runningBalance = 0;
             for (var k = 0; k < statementData.length; k++) {
-                runningBalance += statementData[k].debit - statementData[k].credit;
+                runningBalance += statementData[k].credit - statementData[k].debit;
                 statementData[k].runningBalance = runningBalance;
             }
 
             renderTable();
-            renderSummary(clientId);
+            renderSummary(supplierId);
         }
 
         // ================================================================
@@ -2400,7 +2402,7 @@
                     <tr>
                         <td colspan="7" style="text-align:center;padding:20px;color:var(--text-tertiary);">
                             <i class="bi bi-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
-                            لا توجد حركات لهذا العميل
+                            لا توجد حركات لهذا المورد
                         </td>
                     </tr>
                 `;
@@ -2448,22 +2450,22 @@
         // ================================================================
         // RENDER SUMMARY
         // ================================================================
-        function renderSummary(clientId) {
-            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
-            if (!client) return;
+        function renderSummary(supplierId) {
+            var supplier = suppliers.find(function(c) { return String(c['id']) === String(supplierId); });
+            if (!supplier) return;
 
-            var totalServices = 0;
-            var totalPayments = 0;
+            var totalServices = 0; // إجمالي المشتريات/المصروفات الآجلة (credit)
+            var totalPayments = 0; // إجمالي المسدد له (debit)
 
             for (var i = 0; i < statementData.length; i++) {
                 var s = statementData[i];
-                totalServices += s.debit || 0;
-                totalPayments += s.credit || 0;
+                totalServices += s.credit || 0;
+                totalPayments += s.debit || 0;
             }
 
             var remainingBalance = totalServices - totalPayments;
 
-            document.getElementById('clientSummary').style.display = 'grid';
+            document.getElementById('supplierSummary').style.display = 'grid';
             document.getElementById('totalServices').textContent = Supabase.formatCurrency(totalServices);
             document.getElementById('totalPayments').textContent = Supabase.formatCurrency(totalPayments);
             document.getElementById('remainingBalance').textContent = Supabase.formatCurrency(remainingBalance);
@@ -2483,14 +2485,14 @@
         // PRINT STATEMENT
         // ================================================================
         function printStatement() {
-            if (!currentClientId) {
-                showToast('⚠️ الرجاء اختيار عميل أولاً', 'warning');
+            if (!currentSupplierId) {
+                showToast('⚠️ الرجاء اختيار مورد أولاً', 'warning');
                 return;
             }
 
-            var client = clients.find(function(c) { return String(c['id']) === String(currentClientId); });
-            if (!client) {
-                showToast('⚠️ العميل غير موجود', 'warning');
+            var supplier = suppliers.find(function(c) { return String(c['id']) === String(currentSupplierId); });
+            if (!supplier) {
+                showToast('⚠️ المورد غير موجود', 'warning');
                 return;
             }
 
@@ -2500,8 +2502,8 @@
                 day: 'numeric' });
             document.getElementById('printReportDate').textContent = now.toLocaleDateString('ar-SA', { year: 'numeric',
                 month: 'long', day: 'numeric' });
-            document.getElementById('printClientName').textContent = client['name'] || '—';
-            document.getElementById('printClientId').textContent = client['id'] || '—';
+            document.getElementById('printSupplierName').textContent = supplier['name'] || '—';
+            document.getElementById('printSupplierId').textContent = supplier['id'] || '—';
 
             var systemName = Supabase.getSystemName();
             document.getElementById('printSystemName').textContent = systemName;
@@ -2520,8 +2522,8 @@
                     var messages = [
                         '📋 تم تحديث كشف الحساب',
                         '💰 تم تسجيل معاملة جديدة',
-                        '📊 تقرير العميل جاهز للطباعة',
-                        '✅ تم تحديث بيانات العملاء',
+                        '📊 تقرير المورد جاهز للطباعة',
+                        '✅ تم تحديث بيانات الموردين',
                         '📈 يمكنك طباعة كشف الحساب'
                     ];
                     var random = messages[Math.floor(Math.random() * messages.length)];
@@ -2706,13 +2708,13 @@
         // ================================================================
         // EXPOSE
         // ================================================================
-        window.loadClientStatement = loadClientStatement;
+        window.loadSupplierStatement = loadSupplierStatement;
         window.printStatement = printStatement;
         window.logout = logout;
         window.showToast = showToast;
         window.loadData = loadData;
 
-        console.log('📋 كشف حساب العميل - حراء للسياحة');
+        console.log('📋 كشف حساب المورد - حراء للسياحة');
         console.log('💰 العملة:', systemCurrency, currencySymbol);
         console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي) | Ctrl+P (طباعة)');
         console.log('✅ النظام جاهز للعمل');

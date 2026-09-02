@@ -1496,6 +1496,7 @@
                 <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
                 <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
                 <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="suppliers.html"><i class="bi bi-truck"></i> الموردين <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
                 <li><a href="bookings.html" class="active"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
@@ -1505,6 +1506,7 @@
             <div class="nav-section-title">التقارير</div>
             <ul class="nav-list">
                 <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
                 <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
             </ul>
 
@@ -1666,6 +1668,12 @@
                 <label for="bookingPaid">المدفوع مقدمًا</label>
                 <input type="number" id="bookingPaid" step="0.01" min="0" value="0" placeholder="0" oninput="updateRemainingPreview()" />
 
+                <div id="bookingCashAccountWrap">
+                    <label for="bookingCashAccount">الدفعة المقدمة تُقيّد على <span class="required">*</span></label>
+                    <select id="bookingCashAccount"></select>
+                    <p style="font-size:11.5px;color:var(--text-tertiary);margin:-8px 0 14px;">سيتم إنشاء سند قبض تلقائيًا للدفعة المقدمة ويترحّل مباشرة لميزان المراجعة والقوائم المالية</p>
+                </div>
+
                 <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface-alt);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;margin-bottom:14px;border:1px solid var(--border-light);">
                     <span style="color:var(--text-secondary);font-weight:600;">المتبقي</span>
                     <span style="font-weight:700;color:var(--danger);" id="remainingPreview">0</span>
@@ -1685,6 +1693,30 @@
                 <div class="modal-actions">
                     <button type="button" class="btn-action btn-outline" onclick="closeModalById('bookingModal')">إلغاء</button>
                     <button type="submit" class="btn-action btn-primary" id="saveBookingBtn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MODAL - تسجيل دفعة إضافية على حجز -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="bookingPaymentModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-cash-coin"></i> تسجيل دفعة على الحجز</h3>
+            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="bookingPaymentLabel">—</p>
+            <form id="bookingPaymentForm" onsubmit="handleBookingPaymentSubmit(event)">
+                <input type="hidden" id="bookingPaymentBookingId" />
+                <label for="bookingPaymentAmount">المبلغ المحصّل <span class="required">*</span></label>
+                <input type="number" id="bookingPaymentAmount" min="0.01" step="0.01" required />
+
+                <label for="bookingPaymentCashAccount">الدفعة تُقيّد على <span class="required">*</span></label>
+                <select id="bookingPaymentCashAccount" required></select>
+                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-8px 0 14px;">سيتم إنشاء سند قبض تلقائيًا ويترحّل مباشرة لميزان المراجعة والقوائم المالية</p>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('bookingPaymentModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="bookingPaymentBtn">تسجيل الدفعة</button>
                 </div>
             </form>
         </div>
@@ -1718,6 +1750,7 @@
         var bookings = [];
         var clients = [];
         var trips = [];
+        var cashAccounts = [];
         var currentUser = null;
         var systemCurrency = 'SAR';
         var currencySymbol = 'ر.س';
@@ -1736,11 +1769,14 @@
                 var results = await Promise.all([
                     Supabase.getBookings().catch(function() { return []; }),
                     Supabase.getClients().catch(function() { return []; }),
-                    Supabase.getTrips().catch(function() { return []; })
+                    Supabase.getTrips().catch(function() { return []; }),
+                    Supabase.getAccounts().catch(function() { return []; })
                 ]);
                 bookings = results[0] || [];
                 clients = results[1] || [];
                 trips = results[2] || [];
+                var accounts = results[3] || [];
+                cashAccounts = accounts.filter(function(a) { return a.code === '1100' || a.code === '1200'; });
             } catch (error) {
                 console.error('❌ خطأ في جلب الحجوزات:', error);
                 showToast('⚠️ فشل تحميل الحجوزات', 'warning');
@@ -1757,12 +1793,17 @@
         function populateSelects() {
             var clientSelect = document.getElementById('bookingClient');
             var tripSelect = document.getElementById('bookingTrip');
+            var cashSelect = document.getElementById('bookingCashAccount');
 
             clientSelect.innerHTML = '<option value="">-- اختر عميل --</option>' +
                 clients.map(function(c) { return '<option value="' + c['id'] + '">' + (c['name'] || '') + '</option>'; }).join('');
 
             tripSelect.innerHTML = '<option value="">-- اختر رحلة --</option>' +
                 trips.map(function(t) { return '<option value="' + t['id'] + '">' + (t['trip_code'] || '') + ' — ' + (t['trip_name'] || '') + '</option>'; }).join('');
+
+            if (cashSelect) {
+                cashSelect.innerHTML = cashAccounts.map(function(a) { return '<option value="' + a.id + '">' + a.name + '</option>'; }).join('');
+            }
         }
 
         function renderStats() {
@@ -1814,7 +1855,9 @@
                     '<td style="color:var(--success);">' + Supabase.formatCurrency(paid) + '</td>' +
                     '<td style="color:var(--danger);">' + Supabase.formatCurrency(remaining) + '</td>' +
                     '<td><span class="status-badge ' + statusClass + '">' + status + '</span></td>' +
-                    '<td style="text-align:center;">' +
+                    '<td style="text-align:center;white-space:nowrap;">' +
+                        (remaining > 0 ? '<button class="btn-icon btn-icon-edit" onclick="openBookingPaymentModal(\'' + b['id'] + '\')" title="تسجيل دفعة"><i class="bi bi-cash-coin"></i></button> ' : '') +
+                        (trip ? '<button class="btn-icon btn-icon-edit" onclick="location.href=\'trip_details.html?trip_id=' + trip['id'] + '\'" title="تفاصيل الرحلة"><i class="bi bi-airplane-fill"></i></button> ' : '') +
                         '<button class="btn-icon btn-icon-delete" onclick="deleteBooking(\'' + b['id'] + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
                     '</td>' +
                     '</tr>';
@@ -1823,7 +1866,7 @@
         }
 
         // ================================================================
-        // المودال
+        // المودال - حجز جديد
         // ================================================================
         function openBookingModal() {
             document.getElementById('bookingForm').reset();
@@ -1845,6 +1888,7 @@
             var tripId = document.getElementById('bookingTrip').value;
             var value = parseFloat(document.getElementById('bookingValue').value);
             var paid = parseFloat(document.getElementById('bookingPaid').value) || 0;
+            var cashAccountId = document.getElementById('bookingCashAccount').value;
             var status = document.getElementById('bookingStatus').value;
             var notes = document.getElementById('bookingNotes').value.trim();
 
@@ -1852,24 +1896,36 @@
             if (!tripId) { showToast('⚠️ الرجاء اختيار الرحلة', 'warning'); return; }
             if (!value || value <= 0) { showToast('⚠️ الرجاء إدخال قيمة حجز صحيحة', 'warning'); return; }
             if (paid > value) { showToast('⚠️ المدفوع لا يمكن أن يتجاوز قيمة الحجز', 'warning'); return; }
+            if (paid > 0 && !cashAccountId) { showToast('⚠️ الرجاء اختيار الحساب الذي قُيّدت عليه الدفعة المقدمة', 'warning'); return; }
 
             var btn = document.getElementById('saveBookingBtn');
             btn.disabled = true;
             btn.textContent = 'جاري الحفظ...';
 
             try {
-                await Supabase.addData('bookings', {
+                var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
+                var trip = trips.find(function(t) { return String(t['id']) === String(tripId); });
+
+                // ننشئ الحجز أولًا بدون دفعة، ثم نسجل الدفعة عبر recordBookingPayment
+                // لضمان أن كل مبلغ محصّل يمرّ دائمًا عبر سند قبض تلقائي ويترحّل للمحرك المحاسبي
+                var newBookingResult = await Supabase.addData('bookings', {
                     booking_code: 'BK-' + Date.now().toString().slice(-8),
                     client_id: clientId,
                     trip_id: tripId,
                     booking_value: value,
-                    paid_amount: paid,
+                    paid_amount: 0,
                     status: status,
                     notes: notes,
                     booking_date: new Date().toISOString().split('T')[0]
                 });
+                var newBooking = newBookingResult[0] || newBookingResult;
+
+                if (paid > 0) {
+                    await Supabase.recordBookingPayment(newBooking, paid, cashAccountId, client, trip);
+                }
+
                 closeModalById('bookingModal');
-                showToast('✅ تمت إضافة الحجز بنجاح', 'success');
+                showToast('✅ تمت إضافة الحجز بنجاح' + (paid > 0 ? ' وتسجيل الدفعة المقدمة محاسبيًا' : ''), 'success');
                 loadData();
             } catch (error) {
                 showToast('❌ فشل إضافة الحجز: ' + error.message, 'error');
@@ -1880,7 +1936,7 @@
         }
 
         function deleteBooking(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا الحجز؟')) return;
+            if (!confirm('هل أنت متأكد من حذف هذا الحجز؟ (لن يتم حذف السندات المحاسبية المرتبطة به تلقائيًا)')) return;
             Supabase.deleteData('bookings', id)
                 .then(function() {
                     showToast('✅ تم حذف الحجز بنجاح', 'success');
@@ -1889,6 +1945,71 @@
                 .catch(function(error) {
                     showToast('❌ فشل حذف الحجز: ' + error.message, 'error');
                 });
+        }
+
+        // ================================================================
+        // تسجيل دفعة إضافية على حجز قائم
+        // ================================================================
+        function openBookingPaymentModal(bookingId) {
+            var booking = bookings.find(function(b) { return String(b['id']) === String(bookingId); });
+            if (!booking) { showToast('⚠️ الحجز غير موجود، حاول تحديث الصفحة', 'error'); return; }
+
+            var client = clients.find(function(c) { return String(c['id']) === String(booking['client_id']); });
+            var value = parseFloat(booking['booking_value'] || 0);
+            var paid = parseFloat(booking['paid_amount'] || 0);
+            var remaining = value - paid;
+
+            document.getElementById('bookingPaymentBookingId').value = bookingId;
+            document.getElementById('bookingPaymentLabel').textContent =
+                'الحجز: ' + (booking['booking_code'] || '') + ' — ' + (client ? client['name'] : '') + ' — المتبقي: ' + Supabase.formatCurrency(remaining);
+            document.getElementById('bookingPaymentAmount').value = remaining > 0 ? remaining : '';
+            document.getElementById('bookingPaymentAmount').max = remaining;
+
+            var cashSelect = document.getElementById('bookingPaymentCashAccount');
+            cashSelect.innerHTML = cashAccounts.map(function(a) { return '<option value="' + a.id + '">' + a.name + '</option>'; }).join('');
+
+            openModalById('bookingPaymentModal');
+        }
+
+        async function handleBookingPaymentSubmit(event) {
+            event.preventDefault();
+
+            var bookingId = document.getElementById('bookingPaymentBookingId').value;
+            var amount = parseFloat(document.getElementById('bookingPaymentAmount').value);
+            var cashAccountId = document.getElementById('bookingPaymentCashAccount').value;
+            var booking = bookings.find(function(b) { return String(b['id']) === String(bookingId); });
+
+            if (!booking) { showToast('⚠️ الحجز غير موجود', 'error'); return; }
+            if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
+            if (!cashAccountId) { showToast('⚠️ الرجاء اختيار الحساب', 'warning'); return; }
+
+            var value = parseFloat(booking['booking_value'] || 0);
+            var paid = parseFloat(booking['paid_amount'] || 0);
+            var remaining = value - paid;
+            if (amount > remaining) {
+                showToast('⚠️ المبلغ أكبر من المتبقي على الحجز (' + Supabase.formatCurrency(remaining) + ')', 'warning');
+                return;
+            }
+
+            var btn = document.getElementById('bookingPaymentBtn');
+            btn.disabled = true;
+            btn.textContent = 'جاري التسجيل...';
+
+            try {
+                var client = clients.find(function(c) { return String(c['id']) === String(booking['client_id']); });
+                var trip = trips.find(function(t) { return String(t['id']) === String(booking['trip_id']); });
+
+                await Supabase.recordBookingPayment(booking, amount, cashAccountId, client, trip);
+
+                closeModalById('bookingPaymentModal');
+                showToast('✅ تم تسجيل الدفعة وترحيلها محاسبيًا', 'success');
+                loadData();
+            } catch (error) {
+                showToast('❌ فشل تسجيل الدفعة: ' + error.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'تسجيل الدفعة';
         }
 
         // ================================================================
