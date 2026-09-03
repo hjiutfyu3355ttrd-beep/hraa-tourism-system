@@ -1732,9 +1732,17 @@
 
             // التحقق من صلاحية المدير (من عمود role في public.users، محمي بـ RLS)
             var isAdmin = await Supabase.isAdmin();
-            if (!isAdmin) {
+            if (isAdmin === null) {
+                // تعذر التحقق (خطأ شبكة/اتصال) — نجرب مرة تانية بدل ما نطرد المستخدم فورًا
+                isAdmin = await Supabase.isAdmin();
+            }
+            if (isAdmin === false) {
                 showToast('⛔ غير مصرح لك بالوصول إلى هذه الصفحة', 'error');
                 window.location.href = 'index.html';
+                return;
+            }
+            if (isAdmin === null) {
+                showToast('⚠️ تعذر التحقق من صلاحياتك حاليًا، حاول تحديث الصفحة', 'warning');
                 return;
             }
 

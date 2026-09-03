@@ -148,6 +148,13 @@ function logoutUser() {
  * الوحيد هو عمود role في جدول public.users (محمي بـ RLS: كل مستخدم
  * يقرأ صفّه فقط)، لذلك الدالة async وبتستعلم القيمة من القاعدة كل مرة.
  */
+/**
+ * التحقق من صلاحية المدير.
+ * ملاحظة مهمة: بترجع true / false لو التحقق تم بنجاح فعليًا،
+ * وبترجع null لو تعذر التحقق (خطأ شبكة، انقطاع، جدول غير موجود... إلخ) —
+ * الفرق ده مهم عشان الصفحات اللي بتمنع الوصول متطردش المستخدم بسبب
+ * خطأ مؤقت وهي أصلًا معندهاش قرار نهائي بعد.
+ */
 async function isAdmin() {
     var session = getSession();
     var user = getCurrentUser();
@@ -163,12 +170,19 @@ async function isAdmin() {
                 }
             }
         );
-        if (!response.ok) return false;
+        if (!response.ok) {
+            console.warn('⚠️ تعذر التحقق من صلاحية المدير (استجابة غير ناجحة):', response.status);
+            return null; // تعذر التحقق — مش "مش مدير"
+        }
         var rows = await response.json();
-        return !!(rows && rows[0] && rows[0].role === 'admin');
+        if (!rows || !rows[0]) {
+            console.warn('⚠️ لم يتم العثور على سجل المستخدم في users');
+            return null; // تعذر التحقق
+        }
+        return rows[0].role === 'admin';
     } catch (e) {
         console.error('❌ خطأ في التحقق من صلاحية المدير:', e);
-        return false;
+        return null; // تعذر التحقق — خطأ شبكة/اتصال
     }
 }
 
@@ -398,6 +412,8 @@ async function getUserSettings() {
                     currentCurrencySymbol = getCurrencySymbol(currentCurrency);
                     localStorage.setItem('systemSettings', JSON.stringify(result));
                     localStorage.setItem('systemCurrency', currentCurrency);
+                    // مزامنة صامتة لمفتاح الثيم فقط (بدون لمس الـDOM) — يستخدمه سكريبت منع الوميض في التحميل القادم
+                    localStorage.setItem('darkMode', result.darkMode ? 'true' : 'false');
                     
                     return result;
                 }
@@ -1580,6 +1596,10 @@ async function toggleTheme(isDark) {
  * @returns {boolean} true إذا كان الوضع مظلماً
  */
 function isDarkModeEnabled() {
+    try {
+        var flat = localStorage.getItem('darkMode');
+        if (flat !== null) return flat === 'true';
+    } catch (e) {}
     var settings = _systemSettings || getLocalSettings();
     return settings.darkMode !== undefined ? settings.darkMode : false;
 }
