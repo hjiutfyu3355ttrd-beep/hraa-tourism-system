@@ -1549,6 +1549,7 @@
             <ul class="nav-list">
                 <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
                 <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
+                <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
                 <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
             </ul>
 
@@ -2148,10 +2149,102 @@
         }
 
         // ================================================================
+        // ACCOUNTING INTEGRATION (خطوة 4 من مراجعة التكامل)
+        // كل معاملة يدوية هنا (وارد/صادر/رصيد افتتاحي) كانت بتتسجل بس في
+        // جدول transactions القديم من غير أي قيد محاسبي — يعني رصيد الخزينة
+        // المعروض في الصفحة كان منفصل بصمت عن ميزان المراجعة الحقيقي، بالظبط
+        // زي مشكلة تحويل البنك اللي اتصلحت في خطوة 6. دلوقتي كل معاملة بتنشئ
+        // سند حقيقي (Supabase.addVoucher) بنفس آلية vouchers.html بالظبط —
+        // مدين/دائن متوازن، ومسجّل في ميزان المراجعة. linked_voucher_id بيربط
+        // صف transactions بالسند المقابل عشان التعديل/الحذف يعكسوا القيد صح.
+        // محتاج تشغيل accounting_schema_step4.sql مرة واحدة (حسابين جدد
+        // 4900/5800 + عمود linked_voucher_id) قبل ما الكود ده يشتغل.
+        // ================================================================
+        var CATEGORY_ACCOUNT_CODES = {
+            'عميل':  { income: '1300', expense: '1300' }, // العملاء (مدينون)
+            'سيارة': { income: '4900', expense: '5800' }, // إيرادات أخرى / مصروفات سيارات
+            'شركة':  { income: '4900', expense: '5600' }, // إيرادات أخرى / مصروفات إدارية وعمومية
+            'بنك':   { income: '4900', expense: '5600' }  // إيرادات أخرى / مصروفات إدارية وعمومية
+        };
+        var OPENING_BALANCE_ACCOUNT_CODE = '3200'; // الأرباح المرحلة
+
+        async function findAccountByCode(code) {
+            var accounts = await Supabase.getAccounts();
+            var account = accounts.find(function(a) { return a.code === code; });
+            if (!account) {
+                throw new Error('حساب رقم ' + code + ' غير موجود في دليل الحسابات — شغّل accounting_schema_step4.sql أولاً');
+            }
+            return account;
+        }
+
+        /** ينشئ السند المحاسبي المقابل لمعاملة خزينة يدوية ويرجّعه (لتخزين id بتاعه) */
+        async function createLinkedVoucher(type, category, amount, description, reference, clientId, isOpening) {
+            var cashAccount = await findAccountByCode('1100'); // الصندوق النقدي العام
+            var counterAccount;
+            var partyType = null, partyId = null, partyName = null;
+
+            if (isOpening) {
+                counterAccount = await findAccountByCode(OPENING_BALANCE_ACCOUNT_CODE);
+            } else {
+                var mapping = CATEGORY_ACCOUNT_CODES[category] || CATEGORY_ACCOUNT_CODES['شركة'];
+                var code = (type === 'وارد') ? mapping.income : mapping.expense;
+                counterAccount = await findAccountByCode(code);
+
+                if (category === 'عميل' && clientId) {
+                    var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
+                    partyType = 'client';
+                    partyId = clientId;
+                    partyName = client ? client['name'] : null;
+                }
+            }
+
+            return await Supabase.addVoucher({
+                voucher_type: (type === 'وارد') ? 'قبض' : 'صرف',
+                voucher_date: new Date().toISOString().split('T')[0],
+                cash_account_id: cashAccount.id,
+                counter_account_id: counterAccount.id,
+                party_type: partyType,
+                party_id: partyId,
+                party_name: partyName,
+                amount: amount,
+                description: isOpening ? (description || 'رصيد افتتاحي للخزينة') : (description || category) + (reference ? ' — ' + reference : '')
+            });
+        }
+
+        /**
+         * يحذف/يعكس الأثر المحاسبي المرتبط بمعاملة خزينة (لو موجود) — عند
+         * التعديل أو الحذف. المعاملة ممكن تكون مرتبطة بواحد من اتنين:
+         *   - سند حقيقي (linked_voucher_id) لو كانت وارد/صادر/رصيد افتتاحي.
+         *   - قيد تحويل مباشر (linked_journal_entry_id + linked_bank_account_id)
+         *     لو كانت معاملة "تحويل إلى بنك".
+         */
+        async function reverseLinkedAccountingEntry(transaction) {
+            if (!transaction) return;
+            try {
+                if (transaction['linked_voucher_id']) {
+                    var rows = await Supabase.fetchData('vouchers', { filter: { id: transaction['linked_voucher_id'] } });
+                    var voucher = rows && rows[0];
+                    if (voucher) await Supabase.deleteVoucher(voucher);
+                } else if (transaction['linked_journal_entry_id'] && transaction['linked_bank_account_id']) {
+                    await Supabase.reverseCashToBankTransfer(
+                        transaction['linked_journal_entry_id'],
+                        transaction['linked_bank_account_id'],
+                        transaction['amount']
+                    );
+                }
+            } catch (e) {
+                // معاملات قديمة اتسجلت قبل خطوة 4 مبيكونش ليها أثر محاسبي مرتبط أصلاً — نكمل بهدوء
+                console.warn('⚠️ فشل عكس الأثر المحاسبي المرتبط بالمعاملة:', e);
+            }
+        }
+
+        // ================================================================
         // ADD TRANSACTION
         // ================================================================
         async function addTransactionToSupabase(date, type, category, amount, description, reference, clientId, isOpening) {
             try {
+                var voucher = await createLinkedVoucher(type, category, amount, description, reference, clientId, isOpening);
+
                 var data = {
                     date: date,
                     type: type,
@@ -2159,7 +2252,8 @@
                     amount: amount,
                     description: description || '',
                     reference: reference || '',
-                    opening_balance: isOpening || false
+                    opening_balance: isOpening || false,
+                    linked_voucher_id: voucher.id
                 };
                 if (clientId && category === 'عميل') {
                     data.client_id = clientId;
@@ -2176,6 +2270,8 @@
         // ================================================================
         async function addOpeningBalance(amount, description) {
             try {
+                var voucher = await createLinkedVoucher('وارد', 'شركة', amount, description, '', null, true);
+
                 var data = {
                     date: new Date().toISOString().split('T')[0],
                     type: 'وارد',
@@ -2183,7 +2279,8 @@
                     amount: amount,
                     description: description || 'رصيد افتتاحي للخزينة',
                     reference: 'افتتاحي',
-                    opening_balance: true
+                    opening_balance: true,
+                    linked_voucher_id: voucher.id
                 };
                 return await Supabase.addData('transactions', data);
             } catch (error) {
@@ -2197,6 +2294,14 @@
         // ================================================================
         async function updateTransactionInSupabase(id, date, type, category, amount, description, reference, clientId, isOpening) {
             try {
+                var oldTransaction = transactions.find(function(t) { return t['id'] === id; });
+                if (oldTransaction && oldTransaction['linked_journal_entry_id']) {
+                    throw new Error('معاملات "تحويل إلى بنك" ما بتتعدلش من هنا — احذفها واعمل تحويل جديد بالقيمة الصح');
+                }
+                await reverseLinkedAccountingEntry(oldTransaction);
+
+                var voucher = await createLinkedVoucher(type, category, amount, description, reference, clientId, isOpening);
+
                 var data = {
                     date: date,
                     type: type,
@@ -2204,7 +2309,8 @@
                     amount: amount,
                     description: description || '',
                     reference: reference || '',
-                    opening_balance: isOpening || false
+                    opening_balance: isOpening || false,
+                    linked_voucher_id: voucher.id
                 };
                 if (clientId && category === 'عميل') {
                     data.client_id = clientId;
@@ -2228,7 +2334,8 @@
             if (!confirm(confirmMessage)) return;
 
             showToast('⏳ جاري حذف المعاملة...', 'info');
-            Supabase.deleteData('transactions', id)
+            reverseLinkedAccountingEntry(transaction)
+                .then(function() { return Supabase.deleteData('transactions', id); })
                 .then(function() {
                     showToast('✅ تم حذف المعاملة بنجاح', 'success');
                     loadData();
@@ -2271,6 +2378,10 @@
                 var transaction = transactions.find(function(t) { return t['id'] === id; });
                 if (!transaction) {
                     showToast('⚠️ المعاملة غير موجودة', 'warning');
+                    return;
+                }
+                if (transaction['linked_journal_entry_id']) {
+                    showToast('⚠️ معاملات "تحويل إلى بنك" ما بتتعدلش من هنا — احذفها واعمل تحويل جديد بالقيمة الصح', 'warning');
                     return;
                 }
                 var isOpening = transaction['opening_balance'] || false;
@@ -2434,11 +2545,22 @@
                 return;
             }
 
-            var currentBalance = parseFloat(bank['balance'] || 0);
-            if (amount > currentBalance) {
-                showToast('⚠️ رصيد البنك غير كافٍ. الرصيد الحالي: ' + Supabase.formatCurrency(currentBalance), 'warning');
+            // التحقق من كفاية رصيد الخزينة النقدية (وليس رصيد البنك نفسه، لأن
+            // العملية هنا هي "إيداع" من الخزينة إلى البنك، فالمبلغ يخرج من
+            // النقدية المتاحة في الخزينة، لا من رصيد البنك المستلم)
+            var cashAvailable = 0;
+            for (var i = 0; i < transactions.length; i++) {
+                var t = transactions[i];
+                var amt = parseFloat(t['amount'] || 0);
+                if (t['type'] === 'وارد') cashAvailable += amt;
+                else if (t['type'] === 'صادر') cashAvailable -= amt;
+            }
+            if (amount > cashAvailable) {
+                showToast('⚠️ رصيد الخزينة النقدية غير كافٍ. المتاح حاليًا: ' + Supabase.formatCurrency(cashAvailable), 'warning');
                 return;
             }
+
+            var currentBalance = parseFloat(bank['balance'] || 0);
 
             var transferBtn = document.getElementById('transferBtn');
             transferBtn.disabled = true;
@@ -2447,6 +2569,14 @@
             try {
                 var today = new Date().toISOString().split('T')[0];
 
+                // التحويل بيعمل قيد يومية حقيقي (مدين حساب البنك / دائن حساب
+                // الصندوق 1100) وبيحدّث banks.balance عن طريقه — مش بتعديل مباشر
+                // على الرقم زي الأول، عشان يفضل متوافق مع ميزان المراجعة. بنعمل
+                // القيد الأول عشان نلحق نربط صف transactions بيه (linked_journal_entry_id
+                // + linked_bank_account_id) — فلو اتحذف الصف ده لاحقًا، التحويل
+                // الفعلي وحساب البنك يترجعوا صح (Supabase.reverseCashToBankTransfer).
+                var transferEntry = await Supabase.transferCashToBank(bank, amount, description);
+
                 await Supabase.addData('transactions', {
                     date: today,
                     type: 'صادر',
@@ -2454,11 +2584,10 @@
                     amount: amount,
                     description: description,
                     reference: 'تحويل إلى ' + bank['name'],
-                    opening_balance: false
+                    opening_balance: false,
+                    linked_journal_entry_id: transferEntry.id,
+                    linked_bank_account_id: transferEntry.bank_account_id
                 });
-
-                var newBankBalance = currentBalance - amount;
-                await Supabase.updateData('banks', bankId, { balance: newBankBalance });
 
                 showToast('✅ تم تحويل ' + Supabase.formatCurrency(amount) + ' إلى ' + bank['name'], 'success');
                 closeTransferModal();

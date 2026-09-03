@@ -1507,6 +1507,7 @@
             <ul class="nav-list">
                 <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
                 <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
+                <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
                 <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
             </ul>
 
@@ -1830,10 +1831,41 @@
             btn.textContent = 'جاري الحفظ...';
 
             try {
-                await Supabase.addSupplier({
+                var debtAmount = parseFloat(debt) || 0;
+
+                var newSupplier = await Supabase.addSupplier({
                     name: name, phone: phone, email: email, address: address, notes: notes,
-                    debt: parseFloat(debt) || 0
+                    debt: debtAmount
                 });
+
+                // مستحق مبدئي = الشركة مديونة للمورد من الأول — قيد افتتاحي
+                // حقيقي: مدين الأرباح المرحلة (3200)، دائن حساب الموردون (2100)،
+                // بنفس منطق الرصيد الافتتاحي في treasury.html وbanks.html بالظبط
+                if (debtAmount > 0 && newSupplier && newSupplier.id) {
+                    try {
+                        var accounts = await Supabase.getAccounts();
+                        var payableAccount = accounts.find(function(a) { return a.code === '2100'; });
+                        var openingAccount = accounts.find(function(a) { return a.code === '3200'; });
+                        if (payableAccount && openingAccount) {
+                            await Supabase.addVoucher({
+                                voucher_type: 'قبض',
+                                voucher_date: new Date().toISOString().split('T')[0],
+                                cash_account_id: openingAccount.id,
+                                counter_account_id: payableAccount.id,
+                                party_type: 'supplier',
+                                party_id: newSupplier.id,
+                                party_name: name,
+                                amount: debtAmount,
+                                description: 'مستحق افتتاحي للمورد ' + name
+                            });
+                        } else {
+                            console.warn('⚠️ حساب الموردون (2100) أو الرصيد الافتتاحي (3200) غير موجود — لم يُسجَّل المستحق الافتتاحي محاسبيًا');
+                        }
+                    } catch (openingError) {
+                        console.warn('⚠️ تمت إضافة المورد لكن فشل تسجيل المستحق الافتتاحي محاسبيًا:', openingError);
+                    }
+                }
+
                 closeModalById('supplierModal');
                 document.getElementById('supplierForm').reset();
                 showToast('✅ تمت إضافة المورد بنجاح', 'success');

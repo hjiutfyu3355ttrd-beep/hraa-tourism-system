@@ -1877,6 +1877,7 @@
             <ul class="nav-list">
                 <li><a href="client_statement.html" class="active"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
                 <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
+                <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
                 <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
             </ul>
 
@@ -2100,7 +2101,7 @@
         // ================================================================
         var clients = [];
         var services = [];
-        var transactions = [];
+        var vouchers = [];
         var currentClientId = null;
         var isLoading = false;
         var currentUser = null;
@@ -2137,6 +2138,16 @@
             initNotifications();
             initKeyboardShortcuts();
             updateDate();
+
+            // دعم فتح كشف حساب عميل معيّن مباشرة عبر رابط ?client_id=...
+            // (مستخدم من بيان حركة البنك في banks.html عشان يودّي المستخدم
+            // على طول لمكان تعديل/حذف سند تسديد العميل الصح)
+            var urlParams = new URLSearchParams(window.location.search);
+            var linkedClientId = urlParams.get('client_id');
+            if (linkedClientId) {
+                currentClientId = linkedClientId;
+            }
+
             loadData();
 
             setInterval(loadData, 60000);
@@ -2233,8 +2244,8 @@
                 var servicesData = await Supabase.getServices();
                 services = servicesData || [];
 
-                var transactionsData = await Supabase.getTransactions();
-                transactions = transactionsData || [];
+                var vouchersData = await Supabase.getVouchers();
+                vouchers = vouchersData || [];
 
                 populateClientSelect();
 
@@ -2317,8 +2328,8 @@
                 return String(s['client_id']) === String(clientId);
             });
 
-            var clientTransactions = transactions.filter(function(t) {
-                return t['category'] === 'عميل' && t['reference'] === client['name'];
+            var clientVouchers = vouchers.filter(function(v) {
+                return v['party_type'] === 'client' && String(v['party_id']) === String(clientId);
             });
 
             statementData = [];
@@ -2338,13 +2349,13 @@
                 });
             }
 
-            // 2. إضافة المدفوعات
-            for (var j = 0; j < clientTransactions.length; j++) {
-                var t = clientTransactions[j];
-                var amount = parseFloat(t['amount'] || 0);
+            // 2. إضافة المدفوعات (سندات القبض)
+            for (var j = 0; j < clientVouchers.length; j++) {
+                var v = clientVouchers[j];
+                var amount = parseFloat(v['amount'] || 0);
                 statementData.push({
-                    date: t['date'] || new Date().toISOString().split('T')[0],
-                    description: t['description'] || 'دفعة',
+                    date: v['voucher_date'] || new Date().toISOString().split('T')[0],
+                    description: v['description'] || 'دفعة',
                     type: 'payment',
                     typeLabel: 'دفع',
                     badgeClass: 'badge-payment',

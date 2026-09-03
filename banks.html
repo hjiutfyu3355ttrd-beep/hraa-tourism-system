@@ -1779,6 +1779,7 @@
             <ul class="nav-list">
                 <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
                 <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
+                <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
                 <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
             </ul>
 
@@ -1948,6 +1949,9 @@
 
                 <label for="bankBalance">الرصيد الافتتاحي</label>
                 <input type="number" id="bankBalance" placeholder="الرصيد" value="0" step="0.01" min="0" />
+                <small id="bankBalanceHint" style="display:none;color:var(--text-tertiary);">
+                    الرصيد بيتحدّث بس من زرار "إيداع/سحب" — مش من هنا، عشان يتسجل بقيد محاسبي حقيقي.
+                </small>
 
                 <div class="modal-actions">
                     <button type="button" class="btn-action btn-outline" onclick="closeBankModal()">إلغاء</button>
@@ -2057,6 +2061,7 @@
         var currencySymbol = 'ر.س';
         var currentBankTransactions = [];
         var currentBankId = null;
+        var accountsCache = null; // كاش بسيط لدليل الحسابات، يتحمّل مرة واحدة عند فتح بيان حركة أول بنك
 
         // ================================================================
         // CONFIRM MODAL - نافذة تأكيد مخصصة مع إغلاق النوافذ الأخرى
@@ -2373,17 +2378,55 @@
         // ================================================================
         // BANK CRUD
         // ================================================================
-        async function addBank(name, accountNumber, branch, balance) {
+        var OPENING_BALANCE_ACCOUNT_CODE = '3200'; // الأرباح المرحلة
+
+        async function addBank(name, accountNumber, branch, openingBalance) {
             try {
+                // بنك جديد بيتسجل دايمًا برصيد 0 — الرصيد الافتتاحي (لو موجود)
+                // بيتحوّل لقيد يومية حقيقي تحت، وده اللي فعليًا بيرفع
+                // banks.balance عبر adjustLinkedBankBalance بالظبط زي أي سند
+                // عادي، عشان ميزان المراجعة يفضل متوافق مع رصيد البنك المعروض
                 var data = {
                     name: name,
                     account_number: accountNumber || '',
                     branch: branch || '',
-                    balance: parseFloat(balance) || 0
+                    balance: 0
                 };
 
                 console.log('📤 جاري إرسال البنك:', data);
-                return await Supabase.addData('banks', data);
+                var result = await Supabase.addData('banks', data);
+                var newBank = result[0] || result;
+
+                // إنشاء حساب محاسبي مستقل لهذا البنك تلقائيًا، عشان السندات
+                // والحجوزات والمصروفات اللي تخصه تقدر تتربط بيه بالظبط بدل ما
+                // تتشارك حساب "البنوك" العام مع كل البنوك التانية
+                if (newBank && newBank.id) {
+                    try {
+                        var bankAccount = await Supabase.ensureBankAccount(newBank);
+
+                        var amount = parseFloat(openingBalance) || 0;
+                        if (amount > 0) {
+                            var accounts = await Supabase.getAccounts();
+                            var openingAccount = accounts.find(function(a) { return a.code === OPENING_BALANCE_ACCOUNT_CODE; });
+                            if (openingAccount) {
+                                await Supabase.addVoucher({
+                                    voucher_type: 'قبض',
+                                    voucher_date: new Date().toISOString().split('T')[0],
+                                    cash_account_id: bankAccount.id,
+                                    counter_account_id: openingAccount.id,
+                                    amount: amount,
+                                    description: 'رصيد افتتاحي لبنك ' + name
+                                });
+                            } else {
+                                console.warn('⚠️ حساب الرصيد الافتتاحي (3200) غير موجود — لم يُسجَّل رصيد البنك الافتتاحي محاسبيًا');
+                            }
+                        }
+                    } catch (accError) {
+                        console.warn('⚠️ تم إضافة البنك لكن فشل تسجيل حسابه المحاسبي/رصيده الافتتاحي:', accError);
+                    }
+                }
+
+                return result;
 
             } catch (error) {
                 console.error('❌ خطأ في إضافة البنك:', error);
@@ -2391,13 +2434,15 @@
             }
         }
 
-        async function updateBank(id, name, accountNumber, branch, balance) {
+        async function updateBank(id, name, accountNumber, branch) {
             try {
+                // الرصيد بقى للعرض بس هنا — أي تعديل عليه لازم يعدّي من المحرك
+                // المحاسبي (زرار إيداع/سحب)، مش من نافذة "تعديل البنك" مباشرة،
+                // عشان banks.balance يفضل متوافق دايمًا مع ميزان المراجعة
                 var data = {
                     name: name,
                     account_number: accountNumber || '',
-                    branch: branch || '',
-                    balance: parseFloat(balance) || 0
+                    branch: branch || ''
                 };
 
                 console.log('📤 جاري تحديث البنك:', data);
@@ -2442,6 +2487,8 @@
             document.getElementById('bankAccount').value = '';
             document.getElementById('bankBranch').value = '';
             document.getElementById('bankBalance').value = '0';
+            document.getElementById('bankBalance').disabled = false;
+            document.getElementById('bankBalanceHint').style.display = 'none';
             document.getElementById('saveBankBtn').textContent = 'حفظ';
 
             document.getElementById('bankModalOverlay').classList.add('active');
@@ -2456,7 +2503,11 @@
             document.getElementById('bankName').value = bank['name'] || '';
             document.getElementById('bankAccount').value = bank['account_number'] || '';
             document.getElementById('bankBranch').value = bank['branch'] || '';
+            // الرصيد هنا للعرض بس عند التعديل — أي تغيير فعلي في الرصيد لازم
+            // يعدّي من زرار "إيداع/سحب" عشان يتسجل بقيد محاسبي حقيقي
             document.getElementById('bankBalance').value = bank['balance'] || 0;
+            document.getElementById('bankBalance').disabled = true;
+            document.getElementById('bankBalanceHint').style.display = 'block';
             document.getElementById('saveBankBtn').textContent = 'تحديث';
 
             document.getElementById('bankModalOverlay').classList.add('active');
@@ -2486,7 +2537,7 @@
 
             try {
                 if (id) {
-                    await updateBank(id, name, accountNumber, branch, balance);
+                    await updateBank(id, name, accountNumber, branch);
                     showToast('✅ تم تحديث البنك بنجاح', 'success');
                 } else {
                     await addBank(name, accountNumber, branch, balance);
@@ -2618,11 +2669,14 @@
                     showToast('✅ تم تعديل الحركة وتحديث الرصيد بنجاح', 'success');
 
                 } else {
-                    var newBalance = (type === 'deposit') ? currentBalance + amount : currentBalance - amount;
-
-                    await Supabase.updateData('banks', bankId, {
-                        balance: newBalance
-                    });
+                    // إيداع/سحب بقى بيعمل قيد يومية حقيقي (زي "تحويل إلى بنك" في
+                    // treasury.html بالظبط) بدل تعديل banks.balance مباشرة —
+                    // فيترحّل صح على ميزان المراجعة، ونسجّل linked_journal_entry_id
+                    // و linked_bank_account_id على صف transactions عشان
+                    // التعديل/الحذف يقدروا يعكسوا القيد الصح لاحقًا
+                    var transferEntry = (type === 'deposit')
+                        ? await Supabase.transferCashToBank(bank, amount, description)
+                        : await Supabase.transferBankToCash(bank, amount, description);
 
                     await Supabase.addData('transactions', {
                         date: today,
@@ -2631,11 +2685,19 @@
                         amount: amount,
                         description: treasuryDescription,
                         reference: bank['name'],
-                        opening_balance: false
+                        opening_balance: false,
+                        linked_journal_entry_id: transferEntry.id,
+                        linked_bank_account_id: transferEntry.bank_account_id
                     });
 
                     var freshDataAfterAdd = await Supabase.getTransactions();
                     allTransactions = freshDataAfterAdd || [];
+
+                    // رصيد البنك اتحدّث فعليًا جوه transferCashToBank/transferBankToCash
+                    // عبر adjustLinkedBankBalance — نجيبه تاني من القاعدة بدل ما نحسبه يدويًا
+                    var freshBanks = await Supabase.getBanks();
+                    var updatedBank = (freshBanks || []).find(function(b) { return String(b['id']) === String(bankId); });
+                    var newBalance = updatedBank ? parseFloat(updatedBank['balance'] || 0) : currentBalance;
 
                     var bankIndex = banks.findIndex(function(b) { return String(b['id']) === String(bankId); });
                     if (bankIndex !== -1) {
@@ -2710,9 +2772,50 @@
             `;
 
             try {
-                var bankTransactions = allTransactions.filter(function(t) {
+                // (أ) حركات الإيداع/السحب اليدوية القديمة — من transactions
+                var manualTransactions = allTransactions.filter(function(t) {
                     return t['reference'] === bank['name'] && t['category'] === 'بنك';
                 });
+
+                // (ب) كل السندات (تسديد عميل/مورد، رصيد افتتاحي، ...) اللي
+                // اتعملت على حساب البنك ده تحديدًا — قبل كده كانت غائبة
+                // تمامًا من بيان الحركة، رغم إنها بتأثّر فعليًا على الرصيد
+                // المعروض فوق (recalculateBankBalance بيحسبه من نفس القيود دي)
+                var voucherRows = [];
+                try {
+                    if (!accountsCache) accountsCache = await Supabase.getAccounts();
+                    var bankAccount = accountsCache.find(function(a) { return a.linked_bank_id === bank.id; });
+                    if (bankAccount) {
+                        var vouchers = await Supabase.getVouchers();
+                        voucherRows = vouchers
+                            .filter(function(v) { return v.cash_account_id === bankAccount.id; })
+                            .map(function(v) {
+                                return {
+                                    id: 'voucher:' + v.id,
+                                    date: v.voucher_date,
+                                    type: (v.voucher_type === 'قبض') ? 'وارد' : 'صادر',
+                                    amount: v.amount,
+                                    description: 'سند ' + v.voucher_type + ' ' + v.voucher_no + (v.party_name ? ' — ' + v.party_name : (v.description ? ' — ' + v.description : '')),
+                                    source: 'voucher',
+                                    party_type: v.party_type || null,
+                                    party_id: v.party_id || null
+                                };
+                            });
+                    }
+                } catch (voucherError) {
+                    console.warn('⚠️ فشل تحميل سندات البنك:', voucherError);
+                }
+
+                var bankTransactions = manualTransactions.map(function(t) {
+                    return {
+                        id: t['id'],
+                        date: t['date'],
+                        type: t['type'],
+                        amount: t['amount'],
+                        description: t['description'],
+                        source: 'manual'
+                    };
+                }).concat(voucherRows);
 
                 currentBankTransactions = bankTransactions;
 
@@ -2748,12 +2851,16 @@
                 for (var i = 0; i < bankTransactions.length; i++) {
                     var t = bankTransactions[i];
                     var id = t['id'] || '';
+                    var isVoucherRow = (t['source'] === 'voucher');
                     var date = t['date'] || '—';
                     var originalType = t['type'] || '—';
                     var amount = parseFloat(t['amount'] || 0);
                     var description = t['description'] || '—';
 
-                    var bankDisplayType = (originalType === 'صادر') ? 'وارد' : 'صادر';
+                    // الحركات اليدوية (transactions) مسجلة بمنطق "أثرها على الخزينة"
+                    // فبتتعكس هنا (صادر من الخزينة = وارد للبنك)، أما السندات فمسجلة
+                    // بالفعل بمنطق "أثرها على البنك نفسه" فبتتعرض زي ما هي من غير عكس
+                    var bankDisplayType = isVoucherRow ? originalType : ((originalType === 'صادر') ? 'وارد' : 'صادر');
                     var isIncome = (bankDisplayType === 'وارد');
                     var badgeClass = isIncome ? 'badge-income' : 'badge-expense';
                     var amountClass = isIncome ? 'amount-income' : 'amount-expense';
@@ -2762,21 +2869,46 @@
                     var dateObj = new Date(date);
                     var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-SA') : date;
 
+                    var sourceBadge = isVoucherRow
+                        ? '<span class="badge-custom" style="background:var(--info-bg,#e0f2fe);color:var(--info,#0284c7);font-size:9px;margin-inline-start:4px;">سند</span>'
+                        : '';
+
+                    // السندات (قبض/صرف/رصيد افتتاحي) بتتعدّل أو تتحذف من صفحتها
+                    // الأصلية (vouchers.html/clients.html/suppliers.html) مش من
+                    // هنا، عشان مايحصلش تعارض بين المصدرين — هنا للعرض بس، لكن
+                    // بنودّي المستخدم على طول لمكان التعديل الصح برابط سريع
+                    var actionsHtml;
+                    if (isVoucherRow) {
+                        var voucherLink = 'vouchers.html';
+                        var voucherLinkLabel = 'فتح السندات';
+                        if (t['party_type'] === 'client' && t['party_id']) {
+                            voucherLink = 'client_statement.html?client_id=' + encodeURIComponent(t['party_id']);
+                            voucherLinkLabel = 'كشف حساب العميل';
+                        } else if (t['party_type'] === 'supplier' && t['party_id']) {
+                            voucherLink = 'supplier_statement.html?supplier_id=' + encodeURIComponent(t['party_id']);
+                            voucherLinkLabel = 'كشف حساب المورد';
+                        }
+                        actionsHtml = '<a href="' + voucherLink + '" class="btn-icon" title="' + voucherLinkLabel + '" style="text-decoration:none;font-size:11px;color:var(--primary);white-space:nowrap;">' +
+                            '<i class="bi bi-box-arrow-up-left"></i> ' + voucherLinkLabel +
+                            '</a>';
+                    } else {
+                        actionsHtml =
+                            '<button class="btn-icon btn-icon-edit" onclick="editBankTransaction(\'' + id + '\')" title="تعديل">' +
+                                '<i class="bi bi-pencil-fill"></i>' +
+                            '</button>' +
+                            '<button class="btn-icon btn-icon-delete" onclick="deleteBankTransaction(\'' + id + '\')" title="حذف">' +
+                                '<i class="bi bi-trash-fill"></i>' +
+                            '</button>';
+                    }
+
                     html += `
                         <tr>
                             <td>${i + 1}</td>
                             <td>${formattedDate}</td>
-                            <td>${description}</td>
+                            <td>${description}${sourceBadge}</td>
                             <td><span class="badge-custom ${badgeClass}">${bankDisplayType}</span></td>
                             <td class="${amountClass}">${sign} ${Supabase.formatCurrency(amount)}</td>
-                            <td style="text-align:center;white-space:nowrap;">
-                                <button class="btn-icon btn-icon-edit" onclick="editBankTransaction('${id}')" title="تعديل">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
-                                <button class="btn-icon btn-icon-delete" onclick="deleteBankTransaction('${id}')" title="حذف">
-                                    <i class="bi bi-trash-fill"></i>
-                                </button>
-                            </td>
+                            <td style="text-align:center;white-space:nowrap;">${actionsHtml}</td>
                         </tr>
                     `;
                 }
@@ -2809,24 +2941,11 @@
                     throw new Error('البنك غير موجود');
                 }
 
-                var bankTransactions = allTransactions.filter(function(t) {
-                    return t['reference'] === bank['name'] && t['category'] === 'بنك';
-                });
-
-                var totalIncome = 0;
-                var totalExpense = 0;
-
-                for (var i = 0; i < bankTransactions.length; i++) {
-                    var t = bankTransactions[i];
-                    var amount = parseFloat(t['amount'] || 0);
-                    if (t['type'] === 'صادر') {
-                        totalIncome += amount;
-                    } else if (t['type'] === 'وارد') {
-                        totalExpense += amount;
-                    }
-                }
-
-                var newBalance = totalIncome - totalExpense;
+                // بيتحسب من قيود اليومية الفعلية (Supabase.getBankAccountBalance)
+                // مش من صفوف transactions فئة "بنك" بس — عشان يشمل أثر السندات
+                // (تسديد عميل/مورد عبر البنك ده) ومصروفات الرحلات والرصيد
+                // الافتتاحي، مش بس حركات الإيداع/السحب اليدوية
+                var newBalance = await Supabase.getBankAccountBalance(bankId);
 
                 await Supabase.updateData('banks', bankId, {
                     balance: newBalance
@@ -2857,6 +2976,10 @@
             var transaction = currentBankTransactions.find(function(t) { return String(t['id']) === String(transactionId); });
             if (!transaction) {
                 showToast('⚠️ الحركة غير موجودة', 'warning');
+                return;
+            }
+            if (transaction['linked_journal_entry_id']) {
+                showToast('⚠️ حركات الإيداع/السحب الجديدة ما بتتعدلش من هنا — احذفها واعمل حركة جديدة بالقيمة الصح', 'warning');
                 return;
             }
 
@@ -2922,7 +3045,17 @@
                 function() {
                     showToast('⏳ جاري حذف الحركة وتحديث الرصيد...', 'info');
 
-                    Supabase.deleteData('transactions', transactionId)
+                    // لو الحركة مربوطة بقيد يومية حقيقي (إيداع/سحب من خطوة 2)،
+                    // لازم نحذف القيد نفسه الأول عشان مايفضلش "يتيم" معلّق في
+                    // ميزان المراجعة — recalculateBankBalance بعد كده بيحسب
+                    // الرصيد النهائي الصحيح من الصفوف المتبقية في transactions
+                    var deleteJournalStep = transaction['linked_journal_entry_id']
+                        ? Supabase.deleteData('journal_entries', transaction['linked_journal_entry_id'])
+                            .catch(function(e) { console.warn('⚠️ فشل حذف القيد المرتبط:', e); })
+                        : Promise.resolve();
+
+                    deleteJournalStep
+                        .then(function() { return Supabase.deleteData('transactions', transactionId); })
                         .then(function() {
                             return Supabase.getTransactions();
                         })

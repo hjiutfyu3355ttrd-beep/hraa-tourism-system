@@ -323,6 +323,105 @@ async function changePassword(currentPassword, newPassword) {
     }
 }
 
+/**
+ * إضافة مستخدم جديد (تُستخدم من صفحة إدارة المستخدمين users.html)
+ *
+ * ملاحظة مهمة: التطبيق ده front-end بحت وماعندوش مفتاح Service Role، فمفيش
+ * طريقة "إدارية" حقيقية لإنشاء مستخدمين في Supabase Auth. اللي بيحصل فعليًا
+ * هو نفس اللي بيحصل في register.html بالظبط: بنستخدم مسار التسجيل العام
+ * (auth/v1/signup) لإنشاء حساب Auth حقيقي، وبعدين نضيف صف مقابل له في جدول
+ * public.users ببيانات الاسم/الدور — باستخدام جلسة المدير الحالي (مسموح
+ * بالإضافة لأي مستخدم مسجّل دخول حسب سياسة users_insert).
+ *
+ * تنبيه: لو إعدادات المشروع في Supabase مفعّل فيها "تأكيد البريد الإلكتروني"،
+ * الحساب الجديد هيتطلب من صاحبه يفتح إيميله ويأكّد قبل ما يقدر يسجّل دخول —
+ * ده سلوك Supabase نفسه ومش حاجة نقدر نتخطاها من غير مفتاح إداري.
+ */
+async function addUser(email, password, fullName, role) {
+    try {
+        if (!email || !password) {
+            return { error: { message: 'البريد الإلكتروني وكلمة المرور مطلوبان' } };
+        }
+
+        var signupResponse = await fetch(SUPABASE_CONFIG.URL + '/auth/v1/signup', {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_CONFIG.KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: password })
+        });
+
+        var signupData = await signupResponse.json();
+
+        if (!signupResponse.ok) {
+            var msg = signupData.error_description || signupData.msg || signupData.message || 'فشل إنشاء حساب المستخدم';
+            if (String(msg).toLowerCase().includes('already registered')) {
+                msg = 'هذا البريد الإلكتروني مسجل بالفعل';
+            }
+            return { error: { message: msg } };
+        }
+
+        var newUserId = signupData.id || (signupData.user && signupData.user.id);
+        if (!newUserId) {
+            return { error: { message: 'تم إنشاء الحساب لكن لم يتم استلام رقم المستخدم' } };
+        }
+
+        var profileResult = await addData('users', {
+            id: newUserId,
+            full_name: fullName,
+            email: email,
+            role: role || 'user',
+            is_active: true
+        });
+
+        return { error: null, data: profileResult };
+
+    } catch (error) {
+        console.error('❌ خطأ في إضافة المستخدم:', error);
+        return { error: { message: error.message || 'فشل إضافة المستخدم' } };
+    }
+}
+
+/**
+ * تحديث بيانات مستخدم (الاسم/الدور/حالة التفعيل) من جدول public.users
+ * تنبيه: بدون مفتاح Service Role مفيش طريقة نغيّر كلمة مرور مستخدم تاني —
+ * لو اتبعتت data.password هنا بنرجّع رسالة خطأ واضحة بدل ما نتجاهلها بصمت.
+ */
+async function updateUser(id, data) {
+    if (data && data.password) {
+        return { error: { message: 'تغيير كلمة مرور مستخدم آخر غير متاح من غير صلاحيات إدارية على Supabase — يقدر المستخدم يغيّرها بنفسه من صفحة الملف الشخصي' } };
+    }
+
+    try {
+        var payload = {};
+        if (data.full_name !== undefined) payload.full_name = data.full_name;
+        if (data.role !== undefined) payload.role = data.role;
+        if (data.is_active !== undefined) payload.is_active = data.is_active;
+
+        var result = await updateData('users', id, payload);
+        return { error: null, data: result };
+    } catch (error) {
+        console.error('❌ خطأ في تحديث المستخدم:', error);
+        return { error: { message: error.message || 'فشل تحديث المستخدم' } };
+    }
+}
+
+/**
+ * حذف مستخدم — بيحذف صف الملف الشخصي من public.users بس.
+ * تنبيه مهم: بدون مفتاح Service Role مقدرش أحذف حساب Auth بتاعه فعليًا،
+ * فلو كان عنده جلسة (token) شغالة، هيقدر يفضل يسجّل دخول لحد ما الجلسة
+ * تنتهي، لكن هيبقى بدون صف بيانات (اسم/دور) في النظام. لو محتاج منع دخول
+ * فعلي وفوري، البديل المتاح من غير باك إند هو استخدام updateUser لتعيين
+ * is_active: false بدل الحذف الكامل.
+ */
+async function deleteUser(id) {
+    try {
+        await deleteData('users', id);
+        return { error: null };
+    } catch (error) {
+        console.error('❌ خطأ في حذف المستخدم:', error);
+        return { error: { message: error.message || 'فشل حذف المستخدم' } };
+    }
+}
+
 // ================================================================
 // 3. إعدادات النظام (باستخدام الجدول المباشر - الحل 1)
 // ================================================================
@@ -382,7 +481,7 @@ async function getUserSettings() {
         console.log('📡 جلب الإعدادات من جدول user_settings للمستخدم:', user.id);
 
         try {
-            var response = await fetch(SUPABASE_CONFIG.URL + '/rest/v1/user_settings?user_id=eq.' + user.id + '&select=*', {
+            var response = await fetchWithRetry(SUPABASE_CONFIG.URL + '/rest/v1/user_settings?user_id=eq.' + user.id + '&select=*', {
                 method: 'GET',
                 headers: getHeaders(true)
             });
@@ -467,7 +566,7 @@ async function saveUserSettings(settings) {
         var headers = getHeaders(true);
         headers['Prefer'] = 'resolution=merge-duplicates,return=representation';
 
-        var response = await fetch(SUPABASE_CONFIG.URL + '/rest/v1/user_settings?on_conflict=user_id', {
+        var response = await fetchWithRetry(SUPABASE_CONFIG.URL + '/rest/v1/user_settings?on_conflict=user_id', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(dbData)
@@ -633,7 +732,7 @@ async function resetSystem() {
         for (var i = 0; i < tables.length; i++) {
             try {
                 var table = tables[i];
-                var response = await fetch(SUPABASE_CONFIG.URL + '/rest/v1/' + table + '?user_id=eq.' + user.id, {
+                var response = await fetchWithRetry(SUPABASE_CONFIG.URL + '/rest/v1/' + table + '?user_id=eq.' + user.id, {
                     method: 'DELETE',
                     headers: getHeaders(true)
                 });
@@ -647,7 +746,7 @@ async function resetSystem() {
         
         // حذف إعدادات المستخدم
         try {
-            await fetch(SUPABASE_CONFIG.URL + '/rest/v1/user_settings?user_id=eq.' + user.id, {
+            await fetchWithRetry(SUPABASE_CONFIG.URL + '/rest/v1/user_settings?user_id=eq.' + user.id, {
                 method: 'DELETE',
                 headers: getHeaders(true)
             });
@@ -730,7 +829,7 @@ async function clearAllData() {
         for (var i = 0; i < tables.length; i++) {
             try {
                 var table = tables[i];
-                var response = await fetch(SUPABASE_CONFIG.URL + '/rest/v1/' + table + '?user_id=eq.' + user.id, {
+                var response = await fetchWithRetry(SUPABASE_CONFIG.URL + '/rest/v1/' + table + '?user_id=eq.' + user.id, {
                     method: 'DELETE',
                     headers: getHeaders(true)
                 });
@@ -862,7 +961,12 @@ async function fetchData(table, options) {
 async function addData(table, data) {
     try {
         var headers = getHeaders(true);
-        
+        // لازم نطلب Prefer: return=representation صراحةً، لأن Supabase (PostgREST)
+        // افتراضيًا (من غير الطلب ده) بيرجّع رد فاضي بعد الإضافة، فمكناش قادرين
+        // ناخد id الصف الجديد فورًا — وده كان بيكسر ربط القيود المحاسبية ببنودها
+        // (journal_entry_lines.entry_id) وربط السندات بقيودها (vouchers.journal_entry_id)
+        headers['Prefer'] = 'return=representation';
+
         var response = await fetchWithRetry(SUPABASE_CONFIG.URL + '/rest/v1/' + table, {
             method: 'POST',
             headers: headers,
@@ -1016,6 +1120,87 @@ async function addAccount(data) {
     return result[0] || result;
 }
 
+/**
+ * يتأكد أن هناك حسابًا محاسبيًا مستقلاً (في دليل الحسابات) مرتبطًا بهذا
+ * البنك/الصندوق تحديدًا (عبر linked_bank_id) — لو مش موجود، يُنشئه تلقائيًا
+ * تحت المجموعة "1200 البنوك" بكود جديد. بدون ده، كل البنوك كانت بتتشارك
+ * حسابًا محاسبيًا واحدًا عامًا، فمفيش طريقة نعرف السند ده بيخص أي بنك بالظبط.
+ * تُستدعى تلقائيًا عند إضافة بنك جديد، وأيضًا آمنة الاستدعاء لبنك قديم بالفعل
+ * له حساب (هترجعه من غير ما تكرره).
+ */
+async function ensureBankAccount(bank) {
+    if (!bank || !bank.id) throw new Error('بيانات البنك غير صالحة');
+
+    var accounts = await getAccounts();
+    var existing = accounts.find(function(a) { return a.linked_bank_id === bank.id; });
+    if (existing) return existing;
+
+    var usedNumbers = accounts
+        .map(function(a) { return a.code; })
+        .filter(function(c) { return /^12\d{2}$/.test(c); })
+        .map(function(c) { return parseInt(c.substring(2), 10); });
+    var nextNum = (usedNumbers.length ? Math.max.apply(null, usedNumbers) : 0) + 1;
+    var newCode = '12' + String(nextNum).padStart(2, '0');
+
+    return await addAccount({
+        code: newCode,
+        name: bank.name,
+        account_type: 'asset',
+        parent_code: '1200',
+        is_default: false,
+        linked_bank_id: bank.id
+    });
+}
+
+/**
+ * لو الحساب المحاسبي ده مرتبط ببنك حقيقي (عبر linked_bank_id)، يحدّث banks.balance
+ * بمقدار delta (موجب = زيادة الرصيد، سالب = نقصان). لو الحساب مش مرتبط ببنك
+ * (زي حساب "الصندوق النقدي" العام أو أي حساب تاني)، الدالة متعملش حاجة بهدوء.
+ */
+async function adjustLinkedBankBalance(accountId, delta) {
+    if (!accountId || !delta) return;
+    try {
+        var accounts = await getAccounts();
+        var account = accounts.find(function(a) { return a.id === accountId; });
+        if (!account || !account.linked_bank_id) return;
+
+        var banks = await getBanks();
+        var bank = banks.find(function(b) { return b.id === account.linked_bank_id; });
+        if (!bank) return;
+
+        var newBalance = parseFloat(bank.balance || 0) + parseFloat(delta);
+        await updateData('banks', bank.id, { balance: newBalance });
+    } catch (e) {
+        // ما نوقفش العملية الأساسية (السند/المصروف) بسبب فشل تحديث رصيد البنك،
+        // لكن نسجل التحذير عشان يبان في الـ console لو حصل خطأ
+        console.warn('⚠️ فشل تحديث رصيد البنك المرتبط:', e);
+    }
+}
+
+/**
+ * يحسب رصيد الحساب المحاسبي المرتبط ببنك معيّن مباشرة من قيود اليومية
+ * (journal_entry_lines) — مش من جدول transactions القديم. ده المصدر
+ * الوحيد الموثوق فيه رصيد البنك الحقيقي، لأنه بياخد في الاعتبار كل حاجة
+ * أثّرت على الحساب (سندات قبض/صرف، تحويلات صندوق↔بنك، رصيد افتتاحي)
+ * بدل ما يعتمد بس على صفوف transactions فئة "بنك" اللي ممكن متعرفش
+ * بأثر السندات أو الرصيد الافتتاحي أصلًا.
+ */
+async function getBankAccountBalance(bankId) {
+    var accounts = await getAccounts();
+    var account = accounts.find(function(a) { return a.linked_bank_id === bankId; });
+    if (!account) return 0;
+
+    var lines = await getJournalEntryLines();
+    var totalDebit = 0, totalCredit = 0;
+    lines.forEach(function(l) {
+        if (l.account_id === account.id) {
+            totalDebit += parseFloat(l.debit) || 0;
+            totalCredit += parseFloat(l.credit) || 0;
+        }
+    });
+    return totalDebit - totalCredit; // حساب أصل (Asset) — الرصيد = مدين - دائن
+}
+
 /** توليد رقم سند تلقائي متسلسل حسب نوع السند */
 async function generateVoucherNo(voucherType) {
     try {
@@ -1127,14 +1312,23 @@ async function addVoucher(v) {
         journal_entry_id: entry.id
     });
 
+    // سند قبض: الفلوس دخلت الصندوق/البنك (زيادة) — سند صرف: خرجت (نقصان)
+    var balanceDelta = (v.voucher_type === 'قبض') ? parseFloat(v.amount) : -parseFloat(v.amount);
+    await adjustLinkedBankBalance(v.cash_account_id, balanceDelta);
+
     return voucherResult[0] || voucherResult;
 }
 
-/** حذف سند + القيد المرتبط به (البنود تُحذف تلقائيًا عبر cascade) */
+/** حذف سند + القيد المرتبط به (البنود تُحذف تلقائيًا عبر cascade) — وإرجاع رصيد البنك المرتبط لما كان عليه */
 async function deleteVoucher(voucher) {
     if (voucher.journal_entry_id) {
         try { await deleteData('journal_entries', voucher.journal_entry_id); } catch (e) { console.warn(e); }
     }
+
+    // نعكس بالظبط الأثر اللي حصل وقت الإضافة
+    var balanceDelta = (voucher.voucher_type === 'قبض') ? -parseFloat(voucher.amount) : parseFloat(voucher.amount);
+    await adjustLinkedBankBalance(voucher.cash_account_id, balanceDelta);
+
     return await deleteData('vouchers', voucher.id);
 }
 
@@ -1299,14 +1493,24 @@ async function addTripExpense(exp) {
         journal_entry_id: entry.id
     });
 
+    // مصروف رحلة مدفوع نقدي فورًا (مش آجل لمورد) بيقلل رصيد الصندوق/البنك المختار
+    if (exp.payment_method !== 'آجل' && exp.cash_account_id) {
+        await adjustLinkedBankBalance(exp.cash_account_id, -parseFloat(exp.amount));
+    }
+
     return result[0] || result;
 }
 
-/** حذف مصروف رحلة + القيد المرتبط به */
+/** حذف مصروف رحلة + القيد المرتبط به — وإرجاع رصيد البنك المرتبط لو كان دفع نقدي */
 async function deleteTripExpense(expense) {
     if (expense.journal_entry_id) {
         try { await deleteData('journal_entries', expense.journal_entry_id); } catch (e) { console.warn(e); }
     }
+
+    if (expense.payment_method !== 'آجل' && expense.cash_account_id) {
+        await adjustLinkedBankBalance(expense.cash_account_id, parseFloat(expense.amount));
+    }
+
     return await deleteData('trip_expenses', expense.id);
 }
 
@@ -1347,6 +1551,100 @@ async function getSupplierVouchers(supplierId) {
 }
 
 /**
+ * تحويل نقدي من "الصندوق" (خزينة الشركة النقدية العامة، حساب 1100) إلى بنك
+ * معيّن — ده كان بيتعمل قبل كده بتعديل banks.balance مباشرة من غير أي قيد
+ * محاسبي، فكان بيخلي رصيد البنك ينفصل عن ميزان المراجعة بصمت. دلوقتي:
+ *   1) بيعمل قيد يومية حقيقي متوازن: مدين = حساب البنك المرتبط، دائن = حساب
+ *      الصندوق (1100) — فيبان في getTrialBalance() بشكل صحيح.
+ *   2) بيحدّث banks.balance فعليًا عبر adjustLinkedBankBalance (بيتأكد إن
+ *      البنك مرتبط بحساب محاسبي، وينشئه تلقائيًا لو مش موجود).
+ * بيرجّع القيد المُنشأ عشان صفحة treasury.html تقدر تسجّله كمان في جدول
+ * transactions القديم (عشان أرقام "رصيد الخزينة النقدية" المعروضة هناك
+ * تفضل صحيحة، لحد ما نوحّد الصفحة دي بالكامل مع المحرك المحاسبي).
+ */
+async function transferCashToBank(bank, amount, description) {
+    if (!bank || !bank.id) throw new Error('بيانات البنك غير صالحة');
+    if (!amount || amount <= 0) throw new Error('المبلغ غير صالح');
+
+    var accounts = await getAccounts();
+    var cashAccount = accounts.find(function(a) { return a.code === '1100'; }); // الصندوق
+    if (!cashAccount) throw new Error('حساب الصندوق (1100) غير موجود في دليل الحسابات');
+
+    var bankAccount = await ensureBankAccount(bank);
+
+    var entry = await addJournalEntry({
+        entry_date: new Date().toISOString().split('T')[0],
+        description: 'تحويل من الصندوق إلى ' + bank.name + (description ? ' — ' + description : ''),
+        source_type: 'cash_transfer'
+    }, [
+        { account_id: bankAccount.id, debit: amount, credit: 0 },
+        { account_id: cashAccount.id, debit: 0, credit: amount }
+    ]);
+
+    await adjustLinkedBankBalance(bankAccount.id, amount);
+
+    // نرجّع id الحساب المحاسبي المرتبط بالبنك كمان (مش بس القيد) عشان
+    // الصفحة اللي بتنادي الدالة دي تقدر تخزّنه وتستخدمه لاحقًا لو حبت
+    // تعكس التحويل (حذف/تعديل) عن طريق reverseCashToBankTransfer
+    entry.bank_account_id = bankAccount.id;
+    return entry;
+}
+
+/**
+ * يعكس تحويلاً نقديًا من الصندوق إلى بنك كان اتعمل عبر transferCashToBank —
+ * بيحذف القيد المحاسبي المرتبط وبيرجّع رصيد البنك لما كان عليه قبل التحويل.
+ * تُستخدم من treasury.html عند حذف/تعديل صف معاملة "تحويل إلى بنك".
+ */
+async function reverseCashToBankTransfer(journalEntryId, bankAccountId, amount) {
+    if (journalEntryId) {
+        try { await deleteData('journal_entries', journalEntryId); } catch (e) { console.warn(e); }
+    }
+    await adjustLinkedBankBalance(bankAccountId, -parseFloat(amount));
+}
+
+/**
+ * عكس transferCashToBank: سحب نقدي من بنك معيّن ورجوعه للصندوق (1100) —
+ * قيد يومية حقيقي متوازن: مدين = الصندوق (1100)، دائن = حساب البنك المرتبط.
+ * تُستخدم لتنفيذ "سحب من البنك" في banks.html بدل تعديل banks.balance مباشرة.
+ */
+async function transferBankToCash(bank, amount, description) {
+    if (!bank || !bank.id) throw new Error('بيانات البنك غير صالحة');
+    if (!amount || amount <= 0) throw new Error('المبلغ غير صالح');
+
+    var accounts = await getAccounts();
+    var cashAccount = accounts.find(function(a) { return a.code === '1100'; }); // الصندوق
+    if (!cashAccount) throw new Error('حساب الصندوق (1100) غير موجود في دليل الحسابات');
+
+    var bankAccount = await ensureBankAccount(bank);
+
+    var entry = await addJournalEntry({
+        entry_date: new Date().toISOString().split('T')[0],
+        description: 'سحب من ' + bank.name + ' إلى الصندوق' + (description ? ' — ' + description : ''),
+        source_type: 'cash_transfer'
+    }, [
+        { account_id: cashAccount.id, debit: amount, credit: 0 },
+        { account_id: bankAccount.id, debit: 0, credit: amount }
+    ]);
+
+    await adjustLinkedBankBalance(bankAccount.id, -amount);
+
+    entry.bank_account_id = bankAccount.id;
+    return entry;
+}
+
+/**
+ * يعكس سحبًا نقديًا كان اتعمل عبر transferBankToCash — بيحذف القيد
+ * ويرجّع رصيد البنك لما كان عليه قبل السحب (عكس اتجاه reverseCashToBankTransfer
+ * بالظبط، لأن الأثر الأصلي كان إنقاص رصيد البنك مش زيادته).
+ */
+async function reverseBankToCashTransfer(journalEntryId, bankAccountId, amount) {
+    if (journalEntryId) {
+        try { await deleteData('journal_entries', journalEntryId); } catch (e) { console.warn(e); }
+    }
+    await adjustLinkedBankBalance(bankAccountId, parseFloat(amount));
+}
+
+/**
  * حساب ملخص أرباح الرحلة المُصنّف: إيراد الحجوزات (المحصّل) مقابل كل بند تكلفة على حدة
  * (الانتقالات / الفنادق / الطيران / تأشيرات الوكيل / الباركود / أوفر باركود / باركود الغرفة)
  */
@@ -1354,11 +1652,13 @@ async function getTripFinancials(tripId) {
     var results = await Promise.all([
         getBookings(tripId),
         getTripExpenses(tripId),
-        getAccounts()
+        getAccounts(),
+        getRepresentatives()
     ]);
     var bookings = results[0] || [];
     var expenses = results[1] || [];
     var accounts = results[2] || [];
+    var representatives = results[3] || [];
 
     var totalBookingValue = bookings.reduce(function(s, b) { return s + (parseFloat(b.booking_value) || 0); }, 0);
     var totalCollected = bookings.reduce(function(s, b) { return s + (parseFloat(b.paid_amount) || 0); }, 0);
@@ -1372,13 +1672,37 @@ async function getTripFinancials(tripId) {
 
     var totalExpense = expenses.reduce(function(s, e) { return s + (parseFloat(e.amount) || 0); }, 0);
 
+    // عمولة المناديب: بند مصروف حقيقي كان ناقصًا من حساب الربح — كل حجز له مندوب
+    // (booking.rep_id) بياخد عمولة % من قيمة الحجز (booking_value) حسب commission_rate
+    // المسجلة في بطاقة المندوب. بنجمعها لكل مندوب على حدة عشان تبان في كشف الرحلة.
+    var byRepresentative = {};
+    var totalCommission = 0;
+    bookings.forEach(function(b) {
+        if (!b.rep_id) return;
+        var rep = representatives.find(function(r) { return r.id === b.rep_id; });
+        if (!rep) return;
+        var rate = parseFloat(rep.commission_rate) || 0;
+        if (!rate) return;
+        var commission = (parseFloat(b.booking_value) || 0) * rate / 100;
+        if (!commission) return;
+        var key = rep.rep_name || 'مندوب';
+        byRepresentative[key] = (byRepresentative[key] || 0) + commission;
+        totalCommission += commission;
+    });
+
+    var netProfit = totalCollected - totalExpense - totalCommission;
+    var profitMargin = totalCollected ? (netProfit / totalCollected) * 100 : 0;
+
     return {
         bookings: bookings,
         expenses: expenses,
         totalBookingValue: totalBookingValue,
         totalCollected: totalCollected,
         totalExpense: totalExpense,
-        netProfit: totalCollected - totalExpense,
+        totalCommission: totalCommission,
+        byRepresentative: byRepresentative,
+        netProfit: netProfit,
+        profitMargin: profitMargin,
         byCategory: byCategory
     };
 }
@@ -1676,6 +2000,9 @@ window.Supabase = {
     loginUser: loginUser,
     updateUserProfile: updateUserProfile,
     changePassword: changePassword,
+    addUser: addUser,
+    updateUser: updateUser,
+    deleteUser: deleteUser,
     
     // الإعدادات
     getSystemSettings: getSystemSettings,
@@ -1725,6 +2052,9 @@ window.Supabase = {
     // المحرك المحاسبي (دليل حسابات / قيود / سندات / قوائم مالية)
     getAccounts: getAccounts,
     addAccount: addAccount,
+    ensureBankAccount: ensureBankAccount,
+    adjustLinkedBankBalance: adjustLinkedBankBalance,
+    getBankAccountBalance: getBankAccountBalance,
     generateVoucherNo: generateVoucherNo,
     addJournalEntry: addJournalEntry,
     getJournalEntries: getJournalEntries,
@@ -1747,6 +2077,10 @@ window.Supabase = {
     recordBookingPayment: recordBookingPayment,
     getSupplierVouchers: getSupplierVouchers,
     getTripFinancials: getTripFinancials,
+    transferCashToBank: transferCashToBank,
+    reverseCashToBankTransfer: reverseCashToBankTransfer,
+    transferBankToCash: transferBankToCash,
+    reverseBankToCashTransfer: reverseBankToCashTransfer,
 
     // النظام
     initSystem: initSystem,

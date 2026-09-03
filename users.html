@@ -1492,6 +1492,7 @@
             <ul class="nav-list">
                 <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
                 <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
+                <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
                 <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
             </ul>
 
@@ -1662,8 +1663,11 @@
                 <label for="userEmail">البريد الإلكتروني <span class="required">*</span></label>
                 <input type="email" id="userEmail" placeholder="البريد الإلكتروني" required />
 
-                <label for="userPassword">كلمة المرور <span class="required" id="passwordRequired">*</span></label>
+                <label for="userPassword" id="userPasswordLabel">كلمة المرور <span class="required" id="passwordRequired">*</span></label>
                 <input type="password" id="userPassword" placeholder="كلمة المرور" minlength="6" />
+                <small id="userPasswordEditNote" style="display:none;color:var(--text-tertiary);font-size:11px;">
+                    تغيير كلمة مرور مستخدم آخر مش متاح من الصفحة دي — المستخدم يقدر يغيّرها بنفسه من "الملف الشخصي" بعد تسجيل الدخول.
+                </small>
 
                 <label for="userRole">الدور <span class="required">*</span></label>
                 <select id="userRole" required>
@@ -1950,6 +1954,9 @@
             document.getElementById('userEmail').value = '';
             document.getElementById('userPassword').value = '';
             document.getElementById('userPassword').required = true;
+            document.getElementById('userPassword').style.display = '';
+            document.getElementById('userPasswordLabel').style.display = '';
+            document.getElementById('userPasswordEditNote').style.display = 'none';
             document.getElementById('passwordRequired').textContent = '*';
             document.getElementById('userRole').value = 'user';
             document.getElementById('saveUserBtn').textContent = 'حفظ';
@@ -1974,7 +1981,9 @@
             document.getElementById('userEmail').value = user['email'] || '';
             document.getElementById('userPassword').value = '';
             document.getElementById('userPassword').required = false;
-            document.getElementById('passwordRequired').textContent = '(اختياري)';
+            document.getElementById('userPassword').style.display = 'none';
+            document.getElementById('userPasswordLabel').style.display = 'none';
+            document.getElementById('userPasswordEditNote').style.display = 'block';
             document.getElementById('userRole').value = user['role'] || 'user';
             document.getElementById('saveUserBtn').textContent = 'تحديث';
 
