@@ -460,31 +460,24 @@ async function saveUserSettings(settings) {
             updated_at: new Date().toISOString()
         };
 
-        // محاولة تحديث (PUT)
-        var response = await fetch(SUPABASE_CONFIG.URL + '/rest/v1/user_settings?user_id=eq.' + user.id, {
-            method: 'PUT',
-            headers: getHeaders(true),
+        // Upsert حقيقي عبر PostgREST: POST واحد بـ on_conflict + Prefer: resolution=merge-duplicates
+        // (الطريقة القديمة كانت بتجرب PUT بفلتر على user_id، لكن PostgREST مايقبلش PUT إلا بفلتر
+        // على المفتاح الأساسي (id)، فكان بيرجع 405 دايمًا، وبعدين POST كان بيفشل بـ409 لو السجل موجود
+        // بالفعل بسبب قيد unique على user_id)
+        var headers = getHeaders(true);
+        headers['Prefer'] = 'resolution=merge-duplicates,return=representation';
+
+        var response = await fetch(SUPABASE_CONFIG.URL + '/rest/v1/user_settings?on_conflict=user_id', {
+            method: 'POST',
+            headers: headers,
             body: JSON.stringify(dbData)
         });
 
-        // إذا فشل PUT (ربما السجل غير موجود)، جرب POST
         if (!response.ok) {
-            console.log('📤 PUT فشل (قد يكون السجل غير موجود)، محاولة POST...');
-            
-            var postResponse = await fetch(SUPABASE_CONFIG.URL + '/rest/v1/user_settings', {
-                method: 'POST',
-                headers: getHeaders(true),
-                body: JSON.stringify(dbData)
-            });
-
-            if (!postResponse.ok) {
-                var errorText = await postResponse.text();
-                throw new Error('فشل حفظ الإعدادات (POST): ' + errorText);
-            }
-            console.log('✅ تم إنشاء الإعدادات (POST)');
-        } else {
-            console.log('✅ تم تحديث الإعدادات (PUT)');
+            var errorText = await response.text();
+            throw new Error('فشل حفظ الإعدادات: ' + errorText);
         }
+        console.log('✅ تم حفظ الإعدادات (upsert)');
 
         // تحديث المتغيرات العامة
         _systemSettings = settings;
