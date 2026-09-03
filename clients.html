@@ -1752,7 +1752,12 @@
 
             try {
                 var allAccounts = await Supabase.getAccounts();
-                cashAccounts = allAccounts.filter(function(a) { return a.code === '1100' || a.code === '1200'; });
+                // الصندوق (1100) + كل بنك فرعي حقيقي مرتبط ببنك فعلي (كوده يبدأ بـ12 وليس 1200 نفسه،
+                // لأن 1200 حساب أب تجميعي مالوش linked_bank_id فمفيش بنك حقيقي يتحدّث رصيده لو
+                // اخترناه، والمستخدم لازم يقدر يحدد فعليًا أي بنك دخلت عليه الفلوس)
+                cashAccounts = allAccounts.filter(function(a) {
+                    return a.code === '1100' || (a.code && a.code.indexOf('12') === 0 && a.code !== '1200');
+                });
             } catch (error) {
                 console.error('❌ خطأ في جلب حسابات الصندوق/البنك:', error);
                 cashAccounts = [];
@@ -1913,7 +1918,13 @@
             document.getElementById('paymentAmount').max = currentDebt;
 
             var cashSelect = document.getElementById('paymentCashAccount');
-            cashSelect.innerHTML = cashAccounts.map(function(a) { return '<option value="' + a.id + '">' + a.name + '</option>'; }).join('');
+            if (!cashAccounts.length) {
+                cashSelect.innerHTML = '<option value="">-- لا توجد حسابات صندوق/بنك، راجع الإعدادات --</option>';
+            } else {
+                cashSelect.innerHTML = cashAccounts.map(function(a) {
+                    return '<option value="' + a.id + '">' + (a.code ? a.code + ' — ' : '') + a.name + '</option>';
+                }).join('');
+            }
 
             openModalById('paymentModal');
         }
