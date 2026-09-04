@@ -2275,7 +2275,7 @@
                 var c = suppliers[i];
                 var option = document.createElement('option');
                 option.value = c['id'];
-                var debt = Supabase.getSupplierBalance(c['id'], tripExpenses, vouchers);
+                var debt = parseFloat(c['debt'] || 0);
                 option.textContent = c['name'] + ' (مستحق: ' + Supabase.formatCurrency(debt) + ')';
                 if (currentSupplierId && String(currentSupplierId) === String(c['id'])) {
                     option.selected = true;
@@ -2352,35 +2352,36 @@
                 });
             }
 
-            // 2. إضافة السندات — نفس تفريق getSupplierBalance بالظبط:
-            // سند "قبض" على المورد = مستحق افتتاحي مُسجَّل عليه → دائن (زيادة المستحق)
-            // سند "صرف" له = سداد فعلي من الشركة → مدين (تخفيض المستحق)
+            // 2. إضافة السداد (سندات الصرف)
             for (var j = 0; j < supplierVouchers.length; j++) {
                 var v = supplierVouchers[j];
                 var amount = parseFloat(v['amount'] || 0);
-                if (v['voucher_type'] === 'قبض') {
-                    statementData.push({
-                        date: v['voucher_date'] || new Date().toISOString().split('T')[0],
-                        description: v['description'] || 'مستحق',
-                        type: 'credit_voucher',
-                        typeLabel: 'مستحق',
-                        badgeClass: 'badge-service',
-                        debit: 0,
-                        credit: amount,
-                        amount: amount
-                    });
-                } else {
-                    statementData.push({
-                        date: v['voucher_date'] || new Date().toISOString().split('T')[0],
-                        description: v['description'] || 'سداد',
-                        type: 'payment',
-                        typeLabel: 'سداد',
-                        badgeClass: 'badge-payment',
-                        debit: amount,
-                        credit: 0,
-                        amount: amount
-                    });
-                }
+                statementData.push({
+                    date: v['voucher_date'] || new Date().toISOString().split('T')[0],
+                    description: v['description'] || 'سداد',
+                    type: 'payment',
+                    typeLabel: 'سداد',
+                    badgeClass: 'badge-payment',
+                    debit: amount,
+                    credit: 0,
+                    amount: amount
+                });
+            }
+
+            // 3. إضافة الرصيد الافتتاحي
+            var openingBalance = parseFloat(supplier['debt'] || 0);
+            if (openingBalance > 0) {
+                statementData.push({
+                    date: supplier['created_at'] ? new Date(supplier['created_at']).toISOString().split('T')[0] : new Date().toISOString().split(
+                        'T')[0],
+                    description: 'رصيد افتتاحي',
+                    type: 'opening',
+                    typeLabel: 'افتتاحي',
+                    badgeClass: 'badge-opening',
+                    debit: 0,
+                    credit: openingBalance,
+                    amount: openingBalance
+                });
             }
 
             // ترتيب حسب التاريخ
