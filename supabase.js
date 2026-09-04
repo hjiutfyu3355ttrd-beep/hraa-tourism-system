@@ -381,13 +381,58 @@ async function addUser(email, password, fullName, role) {
 }
 
 /**
- * تحديث بيانات مستخدم (الاسم/الدور/حالة التفعيل) من جدول public.users
- * تنبيه: بدون مفتاح Service Role مفيش طريقة نغيّر كلمة مرور مستخدم تاني —
- * لو اتبعتت data.password هنا بنرجّع رسالة خطأ واضحة بدل ما نتجاهلها بصمت.
+ * نداء Edge Function الإدارية (admin-users) — الغرض الوحيد منها تنفيذ
+ * عمليات محتاجة Service Role Key (تغيير كلمة مرور مستخدم آخر، حذف حساب
+ * Auth فعليًا) في مكان آمن على السيرفر. راجع STEP11_README.md لخطوات
+ * نشرها على Supabase.
+ * لازم تكون الدالة منشورة (supabase functions deploy admin-users) قبل
+ * ما أي من العمليتين دول تشتغل، وإلا هترجع رسالة خطأ واضحة.
+ */
+async function callAdminUsersFunction(action, payload) {
+    var session = getSession();
+    if (!session || !session.access_token) {
+        return { error: { message: 'الجلسة منتهية — سجّل دخول تاني' } };
+    }
+
+    try {
+        var response = await fetch(SUPABASE_CONFIG.URL + '/functions/v1/admin-users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_CONFIG.KEY,
+                'Authorization': 'Bearer ' + session.access_token
+            },
+            body: JSON.stringify(Object.assign({ action: action }, payload || {}))
+        });
+
+        var data = await response.json().catch(function() { return {}; });
+
+        if (!response.ok) {
+            var msg = (data && data.error) || 'فشل تنفيذ العملية';
+            if (response.status === 404) {
+                msg = 'دالة admin-users مش منشورة على Supabase بعد — راجع STEP11_README.md';
+            }
+            return { error: { message: msg } };
+        }
+
+        return { error: null, data: data };
+    } catch (error) {
+        console.error('❌ خطأ في نداء admin-users:', error);
+        return { error: { message: 'تعذر الوصول لدالة admin-users — تأكد من نشرها ومن اتصال الشبكة' } };
+    }
+}
+
+/**
+ * تحديث بيانات مستخدم (الاسم/الدور/حالة التفعيل) من جدول public.users،
+ * وتغيير كلمة المرور (اختياري) عبر Edge Function الإدارية admin-users.
  */
 async function updateUser(id, data) {
     if (data && data.password) {
-        return { error: { message: 'تغيير كلمة مرور مستخدم آخر غير متاح من غير صلاحيات إدارية على Supabase — يقدر المستخدم يغيّرها بنفسه من صفحة الملف الشخصي' } };
+        var pwResult = await callAdminUsersFunction('set_password', {
+            userId: id,
+            newPassword: data.password
+        });
+        if (pwResult.error) return pwResult;
     }
 
     try {
@@ -396,7 +441,7 @@ async function updateUser(id, data) {
         if (data.role !== undefined) payload.role = data.role;
         if (data.is_active !== undefined) payload.is_active = data.is_active;
 
-        var result = await updateData('users', id, payload);
+        var result = (Object.keys(payload).length > 0) ? await updateData('users', id, payload) : null;
         return { error: null, data: result };
     } catch (error) {
         console.error('❌ خطأ في تحديث المستخدم:', error);
@@ -405,21 +450,12 @@ async function updateUser(id, data) {
 }
 
 /**
- * حذف مستخدم — بيحذف صف الملف الشخصي من public.users بس.
- * تنبيه مهم: بدون مفتاح Service Role مقدرش أحذف حساب Auth بتاعه فعليًا،
- * فلو كان عنده جلسة (token) شغالة، هيقدر يفضل يسجّل دخول لحد ما الجلسة
- * تنتهي، لكن هيبقى بدون صف بيانات (اسم/دور) في النظام. لو محتاج منع دخول
- * فعلي وفوري، البديل المتاح من غير باك إند هو استخدام updateUser لتعيين
- * is_active: false بدل الحذف الكامل.
+ * حذف مستخدم — حذف حقيقي وكامل لحساب الـ Auth عبر Edge Function
+ * الإدارية admin-users. صف public.users بيتحذف تلقائيًا معاه بسبب
+ * "on delete cascade" في database_schema.sql، فمفيش داعي لنداء منفصل.
  */
 async function deleteUser(id) {
-    try {
-        await deleteData('users', id);
-        return { error: null };
-    } catch (error) {
-        console.error('❌ خطأ في حذف المستخدم:', error);
-        return { error: { message: error.message || 'فشل حذف المستخدم' } };
-    }
+    return await callAdminUsersFunction('delete_user', { userId: id });
 }
 
 // ================================================================

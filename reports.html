@@ -1580,6 +1580,7 @@
             <ul class="nav-list">
                 <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
                 <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
+                <li><a href="trip_details.html"><i class="bi bi-airplane-engines"></i> تفاصيل الرحلة</a></li>
                 <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
                 <li><a href="reports.html" class="active"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
             </ul>
@@ -2169,8 +2170,8 @@
                 applyFilters();
 
                 renderTable();
-                renderStats();
-                renderCharts();
+                await renderStats();
+                await renderCharts();
 
             } catch (error) {
                 console.error('❌ خطأ في جلب البيانات:', error);
@@ -2178,8 +2179,8 @@
                 transactions = [];
                 filteredTransactions = [];
                 renderTable();
-                renderStats();
-                renderCharts();
+                await renderStats();
+                await renderCharts();
             }
 
             isLoading = false;
@@ -2396,35 +2397,36 @@
         // ================================================================
         // RENDER STATS
         // ================================================================
-        function renderStats() {
-            var totalIncome = 0;
-            var totalExpense = 0;
-
-            for (var i = 0; i < filteredTransactions.length; i++) {
-                var t = filteredTransactions[i];
-                // خطوة 7 (جزء 3 — تحقق) + خطوة 10أ: تحويلات الخزينة↔البنك
-                // (فئة "بنك") وسندات الرصيد الافتتاحي (فئة "رصيد افتتاحي")
-                // مش إيراد ولا مصروف حقيقي — حركات تسوية داخلية بتُرحّل
-                // لحسابات ميزانية (نقدية/حقوق ملكية) مش إيراد/مصروف. لو
-                // ضمّيناها هنا، صافي الربح المعروض هيتعارض مع تبويب
-                // "ميزان المراجعة"/"الأرباح والخسائر" رغم إن الاتنين بيقرأوا
-                // نفس القيود فعليًا.
-                if (t['category'] === 'بنك' || t['category'] === 'رصيد افتتاحي') continue;
-
-                var amount = parseFloat(t['amount'] || 0);
-                if (t['type'] === 'وارد') {
-                    totalIncome += amount;
-                } else if (t['type'] === 'صادر') {
-                    totalExpense += amount;
-                }
-            }
-
-            var netProfit = totalIncome - totalExpense;
-
-            document.getElementById('totalIncome').textContent = Supabase.formatCurrency(totalIncome);
-            document.getElementById('totalExpense').textContent = Supabase.formatCurrency(totalExpense);
-            document.getElementById('netProfit').textContent = Supabase.formatCurrency(netProfit);
+        // ------------------------------------------------------------
+        // كانت بتحسب "إيراد" = أي حركة وارد، و"مصروف" = أي حركة صادر
+        // (باستثناء فئتي بنك/رصيد افتتاحي فقط) — من غير ما تتأكد إن
+        // الحساب المقابل فعلاً إيراد أو مصروف. تحصيل مديونية عميل
+        // (وارد، فئة "عميل") كان بيتحسب إيراد، وتسديد مستحق مورد
+        // (صادر، فئة "مورد") كان بيتحسب مصروف، فالأرقام هنا كانت
+        // بتختلف عن تبويب "الأرباح والخسائر" في نفس الصفحة رغم إن
+        // الاتنين المفروض يتطابقوا. دلوقتي بتسحب الثلاثة أرقام من نفس
+        // دالة الأرباح والخسائر المحاسبية الحقيقية (Supabase.getIncomeStatement)
+        // بنفس فلتر التاريخ العلوي (filterDateFrom/filterDateTo)، فيتطابقوا
+        // مع تبويب "الأرباح والخسائر" بالتصميم مش بالصدفة. فلتري النوع
+        // والفئة يفضلوا يتحكموا بس في "إجمالي المعاملات".
+        // ------------------------------------------------------------
+        async function renderStats() {
             document.getElementById('totalTransactions').textContent = filteredTransactions.length;
+
+            try {
+                var dateFrom = document.getElementById('filterDateFrom').value;
+                var dateTo = document.getElementById('filterDateTo').value;
+                var stmt = await Supabase.getIncomeStatement(dateFrom, dateTo);
+
+                document.getElementById('totalIncome').textContent = Supabase.formatCurrency(stmt.totalRevenue);
+                document.getElementById('totalExpense').textContent = Supabase.formatCurrency(stmt.totalExpense);
+                document.getElementById('netProfit').textContent = Supabase.formatCurrency(stmt.netProfit);
+            } catch (error) {
+                console.error('❌ خطأ في جلب قائمة الأرباح والخسائر:', error);
+                document.getElementById('totalIncome').textContent = '—';
+                document.getElementById('totalExpense').textContent = '—';
+                document.getElementById('netProfit').textContent = '—';
+            }
         }
 
         // ================================================================
@@ -2492,31 +2494,25 @@
         // ================================================================
         // RENDER CHARTS
         // ================================================================
-        function renderCharts() {
-            // ===== PREPARE MONTHLY DATA =====
-            var monthlyIncome = {};
-            var monthlyExpense = {};
+        // ------------------------------------------------------------
+        // الرسم البياني الشهري كان بيحسب "إيراد الشهر" = أي حركة وارد،
+        // و"مصروف الشهر" = أي حركة صادر (باستثناء بنك/رصيد افتتاحي) —
+        // نفس خلل renderStats بالظبط (تحصيل مديونية عميل = إيراد وهمي،
+        // تسديد مستحق مورد = مصروف وهمي). دلوقتي كل شهر بيتحسب من
+        // Supabase.getIncomeStatement(بداية الشهر, نهاية الشهر) بنفس
+        // مصدر الحقيقة المحاسبي، فيتطابق مع تبويب "الأرباح والخسائر".
+        //
+        // توزيع الفئات (categoryData/دونات "توزيع المعاملات") سيبناه
+        // زي ما هو: مش بيدّعي إيراد/مصروف، هو بس حجم الحركة (وارد+صادر)
+        // لكل فئة، وده رقم صحيح في حد ذاته لغرضه (نشاط كل فئة).
+        // ------------------------------------------------------------
+        async function renderCharts() {
+            // ===== PREPARE CATEGORY DATA (نشاط الفئات، بدون علاقة بالإيراد/المصروف) =====
             var categoryData = {};
-
             for (var i = 0; i < filteredTransactions.length; i++) {
                 var t = filteredTransactions[i];
                 var amount = parseFloat(t['amount'] || 0);
-                var date = t['date'] || new Date().toISOString();
-                var month = date.substring(0, 7);
-                var type = t['type'] || '';
                 var category = t['category'] || 'أخرى';
-
-                // نفس منطق renderStats: تحويلات الخزينة↔البنك والرصيد
-                // الافتتاحي مش إيراد/مصروف حقيقي، فمش بيدخلوا في الرسم
-                // البياني الشهري للإيراد/المصروف. بس بيفضلوا ظاهرين في
-                // توزيع الفئات (categoryData) كنشاط حركة.
-                var isNonOperational = (category === 'بنك' || category === 'رصيد افتتاحي');
-                if (type === 'وارد' && !isNonOperational) {
-                    monthlyIncome[month] = (monthlyIncome[month] || 0) + amount;
-                } else if (type === 'صادر' && !isNonOperational) {
-                    monthlyExpense[month] = (monthlyExpense[month] || 0) + amount;
-                }
-
                 categoryData[category] = (categoryData[category] || 0) + amount;
             }
 
@@ -2530,12 +2526,28 @@
                 months.push(key);
             }
 
-            var incomeData = months.map(function(m) {
-                return monthlyIncome[m] || 0;
-            });
-            var expenseData = months.map(function(m) {
-                return monthlyExpense[m] || 0;
-            });
+            // ===== MONTHLY INCOME/EXPENSE — من قائمة الدخل المحاسبية الحقيقية =====
+            var incomeData = [];
+            var expenseData = [];
+            for (var mi = 0; mi < months.length; mi++) {
+                var monthKey = months[mi];
+                var parts = monthKey.split('-');
+                var year = parseInt(parts[0]);
+                var monthNum = parseInt(parts[1]);
+                var monthStart = monthKey + '-01';
+                var lastDay = new Date(year, monthNum, 0).getDate();
+                var monthEnd = monthKey + '-' + String(lastDay).padStart(2, '0');
+
+                try {
+                    var monthStmt = await Supabase.getIncomeStatement(monthStart, monthEnd);
+                    incomeData.push(monthStmt.totalRevenue);
+                    expenseData.push(monthStmt.totalExpense);
+                } catch (error) {
+                    console.error('❌ خطأ في حساب قائمة الدخل لشهر ' + monthKey + ':', error);
+                    incomeData.push(0);
+                    expenseData.push(0);
+                }
+            }
 
             var monthLabels = months.map(function(m) {
                 var parts = m.split('-');
@@ -2840,37 +2852,45 @@
         // ================================================================
         var notifIndex = 0;
 
-        function buildNotificationMessages() {
-            var totalIncome = 0;
-            var totalExpense = 0;
+        // ------------------------------------------------------------
+        // نفس خلل كروت "نظرة عامة" اللي اتصلح في treasury.html كان
+        // موجود هنا كمان: بيحسب "إيراد" = أي حركة وارد، و"مصروف" = أي
+        // حركة صادر، من غير ما يتأكد إن الحساب المقابل فعلاً إيراد أو
+        // مصروف (فتحصيل مديونية عميل كان بيتحسب إيراد، وتسديد مستحق
+        // مورد كان بيتحسب مصروف). دلوقتي بيسحب الرقمين من نفس دالة
+        // الأرباح والخسائر المحاسبية الحقيقية (Supabase.getIncomeStatement)
+        // بنفس فلتر التاريخ المعروض فعليًا (filterDateFrom/filterDateTo)،
+        // عشان يتطابق مع تبويب "الأرباح والخسائر" بالتصميم مش بالصدفة.
+        // فلتري النوع والفئة (وارد/صادر/فئة معينة) بيفضلوا يتحكموا في
+        // "عدد المعاملات المعروضة" بس، لأن مفيش معادلة محاسبية تقدر
+        // تطبقهم على قائمة الدخل بمعنى سليم.
+        // ------------------------------------------------------------
+        async function buildNotificationMessages() {
+            var messages = [
+                '📋 عدد المعاملات المعروضة حاليًا: ' + filteredTransactions.length
+            ];
 
-            for (var i = 0; i < filteredTransactions.length; i++) {
-                var t = filteredTransactions[i];
-                if (t['category'] === 'بنك' || t['category'] === 'رصيد افتتاحي') continue;
-                var amount = parseFloat(t['amount'] || 0);
-                if (t['type'] === 'وارد') {
-                    totalIncome += amount;
-                } else if (t['type'] === 'صادر') {
-                    totalExpense += amount;
-                }
+            try {
+                var dateFrom = document.getElementById('filterDateFrom').value;
+                var dateTo = document.getElementById('filterDateTo').value;
+                var stmt = await Supabase.getIncomeStatement(dateFrom, dateTo);
+
+                messages.push('💰 إجمالي الإيرادات (حسب الفترة المحددة): ' + Supabase.formatCurrency(stmt.totalRevenue, systemCurrency));
+                messages.push('📉 إجمالي المصروفات (حسب الفترة المحددة): ' + Supabase.formatCurrency(stmt.totalExpense, systemCurrency));
+                messages.push((stmt.netProfit >= 0 ? '📈 صافي الربح الحالي: ' : '📉 صافي الخسارة الحالية: ') + Supabase.formatCurrency(Math.abs(stmt.netProfit), systemCurrency));
+            } catch (error) {
+                console.error('❌ خطأ في جلب قائمة الأرباح والخسائر:', error);
             }
 
-            var netProfit = totalIncome - totalExpense;
-
-            return [
-                '📋 عدد المعاملات المعروضة حاليًا: ' + filteredTransactions.length,
-                '💰 إجمالي الإيرادات (حسب الفلتر الحالي): ' + Supabase.formatCurrency(totalIncome, systemCurrency),
-                '📉 إجمالي المصروفات (حسب الفلتر الحالي): ' + Supabase.formatCurrency(totalExpense, systemCurrency),
-                (netProfit >= 0 ? '📈 صافي الربح الحالي: ' : '📉 صافي الخسارة الحالية: ') + Supabase.formatCurrency(Math.abs(netProfit), systemCurrency),
-                '🖨️ لطباعة أو حفظ التقرير كـ PDF: Ctrl+P'
-            ];
+            messages.push('🖨️ لطباعة أو حفظ التقرير كـ PDF: Ctrl+P');
+            return messages;
         }
 
         function initNotifications() {
             var notifBtn = document.getElementById('notifBtn');
             if (notifBtn) {
-                notifBtn.addEventListener('click', function() {
-                    var messages = buildNotificationMessages();
+                notifBtn.addEventListener('click', async function() {
+                    var messages = await buildNotificationMessages();
                     var message = messages[notifIndex % messages.length];
                     notifIndex++;
                     showToast(message, 'info');
