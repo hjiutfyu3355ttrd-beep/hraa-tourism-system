@@ -1842,6 +1842,9 @@
         var transactions = [];
         var banks = [];
         var clients = [];
+        var clientBookings = [];
+        var clientServices = [];
+        var clientVouchers = [];
         var isLoading = false;
         var currentModalType = 'income';
         var currentUser = null;
@@ -1975,6 +1978,25 @@
                 var clientsData = await Supabase.getClients();
                 clients = clientsData || [];
 
+                try {
+                    clientBookings = await Supabase.getBookings() || [];
+                } catch (error) {
+                    console.error('❌ خطأ في جلب الحجوزات:', error);
+                    clientBookings = [];
+                }
+                try {
+                    clientServices = await Supabase.getServices() || [];
+                } catch (error) {
+                    console.error('❌ خطأ في جلب الخدمات:', error);
+                    clientServices = [];
+                }
+                try {
+                    clientVouchers = await Supabase.getVouchers() || [];
+                } catch (error) {
+                    console.error('❌ خطأ في جلب السندات:', error);
+                    clientVouchers = [];
+                }
+
                 hasOpeningBalance = transactions.some(function(t) {
                     return t['opening_balance'] === true || t['opening_balance'] === 'true';
                 });
@@ -2022,7 +2044,7 @@
                 var c = clients[i];
                 var option = document.createElement('option');
                 option.value = c['id'];
-                var debt = parseFloat(c['debt'] || 0);
+                var debt = Supabase.getClientBalance(c['id'], clientBookings, clientServices, clientVouchers);
                 option.textContent = c['name'] + ' (مديونية: ' + Supabase.formatCurrency(debt) + ')';
                 select.appendChild(option);
             }
@@ -2143,19 +2165,17 @@
         // والخسائر" بالتصميم مش بالصدفة.
         // ================================================================
         async function renderStats() {
-            var cashIn = 0;
-            var cashOut = 0;
-
-            for (var i = 0; i < transactions.length; i++) {
-                var t = transactions[i];
-                var amount = parseFloat(t['amount'] || 0);
-                var type = t['type'] || '';
-                if (type === 'وارد') cashIn += amount;
-                else if (type === 'صادر') cashOut += amount;
+            // رصيد الخزينة بيتحسب دلوقتي مباشرة من قيود اليومية لحساب الصندوق
+            // (1100) — مش من جدول transactions القديم اللي كان بيتجاهل أي سند
+            // قبض/صرف اتعمل من صفحات تانية (زي vouchers.html) على نفس الحساب.
+            // نفس الأسلوب المستخدم فعلاً لحساب رصيد أي بنك (getBankAccountBalance).
+            try {
+                var treasuryBalance = await Supabase.getAccountBalanceByCode('1100');
+                document.getElementById('treasuryBalance').textContent = Supabase.formatCurrency(treasuryBalance);
+            } catch (error) {
+                console.error('❌ خطأ في حساب رصيد الصندوق:', error);
+                document.getElementById('treasuryBalance').textContent = '—';
             }
-
-            var treasuryBalance = cashIn - cashOut;
-            document.getElementById('treasuryBalance').textContent = Supabase.formatCurrency(treasuryBalance);
 
             try {
                 var stmt = await Supabase.getIncomeStatement();

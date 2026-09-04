@@ -1240,6 +1240,32 @@ async function getBankAccountBalance(bankId) {
     return totalDebit - totalCredit; // حساب أصل (Asset) — الرصيد = مدين - دائن
 }
 
+/**
+ * يحسب رصيد أي حساب محاسبي (أصل) عن طريق كوده في دليل الحسابات، مباشرة من
+ * قيود اليومية (journal_entry_lines) — بنفس منطق getBankAccountBalance تمامًا
+ * لكن لأي كود (زي 1100 الصندوق النقدي العام). ده اللي كان ناقص وسبب إن رصيد
+ * الصندوق المعروض في treasury.html كان بيتحسب بس من جدول transactions القديم
+ * (وارد/صادر يدوي) وبيتجاهل تمامًا أي سند قبض/صرف اتعمل من vouchers.html أو
+ * من صفحات تانية بيبقى الحساب النقدي بتاعه هو "الصندوق" — فالسند بيتسجل صح في
+ * القيد وميزان المراجعة، لكن بطاقة "رصيد الخزينة" في treasury.html متعرفش
+ * بيه فتفضل زي ما هي (أو صفر لو لسه مفيش رصيد افتتاحي ولا حركة يدوية).
+ */
+async function getAccountBalanceByCode(code) {
+    var accounts = await getAccounts();
+    var account = accounts.find(function(a) { return a.code === code; });
+    if (!account) return 0;
+
+    var lines = await getJournalEntryLines();
+    var totalDebit = 0, totalCredit = 0;
+    lines.forEach(function(l) {
+        if (l.account_id === account.id) {
+            totalDebit += parseFloat(l.debit) || 0;
+            totalCredit += parseFloat(l.credit) || 0;
+        }
+    });
+    return totalDebit - totalCredit; // حساب أصل (Asset) — الرصيد = مدين - دائن
+}
+
 /** توليد رقم سند تلقائي متسلسل حسب نوع السند */
 async function generateVoucherNo(voucherType) {
     try {
@@ -2154,6 +2180,7 @@ window.Supabase = {
     ensureBankAccount: ensureBankAccount,
     adjustLinkedBankBalance: adjustLinkedBankBalance,
     getBankAccountBalance: getBankAccountBalance,
+    getAccountBalanceByCode: getAccountBalanceByCode,
     generateVoucherNo: generateVoucherNo,
     addJournalEntry: addJournalEntry,
     getJournalEntries: getJournalEntries,

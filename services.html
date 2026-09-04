@@ -1706,6 +1706,8 @@
         // ================================================================
         var services = [];
         var clients = [];
+        var clientBookings = [];
+        var clientVouchers = [];
         var isLoading = false;
         var currentUser = null;
         var systemCurrency = 'SAR';
@@ -1846,6 +1848,19 @@
                 var clientsData = await Supabase.getClients();
                 clients = clientsData || [];
 
+                try {
+                    clientBookings = await Supabase.getBookings() || [];
+                } catch (error) {
+                    console.error('❌ خطأ في جلب الحجوزات:', error);
+                    clientBookings = [];
+                }
+                try {
+                    clientVouchers = await Supabase.getVouchers() || [];
+                } catch (error) {
+                    console.error('❌ خطأ في جلب السندات:', error);
+                    clientVouchers = [];
+                }
+
                 renderTable();
                 renderStats();
                 populateClientSelect();
@@ -1874,7 +1889,7 @@
                 var c = clients[i];
                 var option = document.createElement('option');
                 option.value = c['id'];
-                var debt = parseFloat(c['debt'] || 0);
+                var debt = Supabase.getClientBalance(c['id'], clientBookings, services, clientVouchers);
                 option.textContent = c['name'] + ' (مديونية: ' + Supabase.formatCurrency(debt) + ')';
                 select.appendChild(option);
             }
