@@ -478,7 +478,8 @@ function getDefaultSettings() {
         notifyDebts: true,
         notifySystem: false,
         logoUrl: '',
-        darkMode: false
+        darkMode: false,
+        hideCurrencySymbol: false
     };
 }
 
@@ -538,7 +539,8 @@ async function getUserSettings() {
                         notifyDebts: settings.notify_debts !== undefined ? settings.notify_debts : true,
                         notifySystem: settings.notify_system !== undefined ? settings.notify_system : false,
                         logoUrl: settings.logo_url || '',
-                        darkMode: settings.dark_mode !== undefined ? settings.dark_mode : false
+                        darkMode: settings.dark_mode !== undefined ? settings.dark_mode : false,
+                        hideCurrencySymbol: settings.hide_currency_symbol !== undefined ? settings.hide_currency_symbol : false
                     };
                     
                     // تحديث المتغيرات العامة
@@ -592,6 +594,7 @@ async function saveUserSettings(settings) {
             notify_system: settings.notifySystem !== undefined ? settings.notifySystem : false,
             logo_url: settings.logoUrl || '',
             dark_mode: settings.darkMode !== undefined ? settings.darkMode : false,
+            hide_currency_symbol: settings.hideCurrencySymbol !== undefined ? settings.hideCurrencySymbol : false,
             updated_at: new Date().toISOString()
         };
 
@@ -1829,7 +1832,6 @@ function formatCurrency(amount, currencyCode) {
     if (typeof amount !== 'number') amount = parseFloat(amount) || 0;
     
     var code = currencyCode || currentCurrency || 'SAR';
-    var symbol = getCurrencySymbol(code);
     var settings = _systemSettings || getLocalSettings();
     var numberFormat = settings.numberFormat || 'ar';
     
@@ -1837,7 +1839,14 @@ function formatCurrency(amount, currencyCode) {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
     });
-    
+
+    // خيار "لا تظهر رمز العملة" من الإعدادات — لو مفعّل، يرجع الرقم بدون
+    // أي رمز/كود عملة جنبه.
+    if (settings.hideCurrencySymbol) {
+        return formatted;
+    }
+
+    var symbol = getCurrencySymbol(code);
     return formatted + ' ' + symbol;
 }
 

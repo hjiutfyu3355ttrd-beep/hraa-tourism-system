@@ -35,8 +35,14 @@ create table if not exists public.user_settings (
     notify_system boolean default false,
     logo_url text,
     dark_mode boolean default false,
+    hide_currency_symbol boolean default false,
     updated_at timestamptz default now()
 );
+
+-- ترقية آمنة لقاعدة بيانات موجودة بالفعل من قبل هذا التعديل (لو الجدول
+-- اتعمل قبل إضافة العمود ده، الـ create table if not exists فوق مش
+-- هيضيفه، فالسطر ده بيضمن إضافته سواء الجدول جديد أو قديم).
+alter table public.user_settings add column if not exists hide_currency_symbol boolean default false;
 
 -- ================================================================
 -- 3) العملاء

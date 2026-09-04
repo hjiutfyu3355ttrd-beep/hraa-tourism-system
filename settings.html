@@ -1766,6 +1766,15 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                                <input type="checkbox" id="hideCurrencySymbol" style="width:16px;height:16px;margin:0;" />
+                                عدم إظهار رمز/كود العملة بجانب الأرقام في كل الصفحات
+                            </label>
+                            <small style="color:var(--text-tertiary);font-size:11px;">
+                                لو مفعّل، الأرقام هتظهر زي "12,500" بدل "12,500 ر.س" في كل التقارير والكشوفات.
+                            </small>
+                        </div>
+                        <div class="form-group">
                             <label>اللغة</label>
                             <select id="systemLanguage">
                                 <option value="ar" selected>العربية</option>
@@ -2035,6 +2044,7 @@
             document.getElementById('systemName').value = settings.systemName || 'حراء للسياحة';
             document.getElementById('systemCurrency').value = settings.currency || 'SAR';
             document.getElementById('systemLanguage').value = settings.language || 'ar';
+            document.getElementById('hideCurrencySymbol').checked = !!settings.hideCurrencySymbol;
 
             // عرض الشعار
             var logoUrl = settings.logoUrl || '';
@@ -2160,6 +2170,7 @@
             var systemName = document.getElementById('systemName').value.trim();
             var currency = document.getElementById('systemCurrency').value;
             var language = document.getElementById('systemLanguage').value;
+            var hideCurrencySymbol = document.getElementById('hideCurrencySymbol').checked;
 
             if (!systemName) {
                 showToast('⚠️ الرجاء إدخال اسم النظام', 'warning');
@@ -2171,11 +2182,17 @@
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> جاري الحفظ...';
 
             try {
-                await Supabase.updateSystemSettings({
+                // بنبني على أحدث نسخة كاملة من الإعدادات (مش بس الحقول
+                // اللي في الفورم ده) عشان مانفقدش إعدادات تانية (الشعار،
+                // الوضع الليلي، الإشعارات...) كانت محفوظة قبل كده.
+                var fullSettings = Object.assign({}, Supabase.getSystemSettings(), {
                     systemName: systemName,
                     currency: currency,
-                    language: language
+                    language: language,
+                    hideCurrencySymbol: hideCurrencySymbol
                 });
+
+                await Supabase.updateSystemSettings(fullSettings);
 
                 // تحديث البيانات المحلية
                 settings = Supabase.getSystemSettings();
