@@ -1840,6 +1840,7 @@
         // STATE
         // ================================================================
         var transactions = [];
+        var mergedTransactions = []; // transactions اليدوية + السندات المرتبطة بحساب الصندوق (للعرض فقط)
         var banks = [];
         var clients = [];
         var clientBookings = [];
@@ -2001,6 +2002,8 @@
                     return t['opening_balance'] === true || t['opening_balance'] === 'true';
                 });
 
+                await buildMergedTransactions();
+
                 renderTable();
                 await renderStats();
                 populateBankSelect();
@@ -2010,11 +2013,60 @@
                 console.error('❌ خطأ في جلب البيانات:', error);
                 showToast('⚠️ فشل تحميل المعاملات', 'warning');
                 transactions = [];
+                mergedTransactions = [];
                 renderTable();
                 await renderStats();
             }
 
             isLoading = false;
+        }
+
+        /**
+         * يدمج حركات الخزينة اليدوية (transactions) مع أي سند قبض/صرف اتعمل
+         * على حساب الصندوق (1100) من صفحة تانية (زي vouchers.html أو
+         * client_statement.html أو trip_details.html) — قبل كده كانت
+         * السندات دي بتأثّر فعليًا على الرصيد المعروض فوق لكن تختفي تمامًا
+         * من سجل المعاملات هنا. بنستبعد السندات اللي ليها بالفعل صف
+         * transactions مرتبط بيها (linked_voucher_id) عشان مايتكررش نفس
+         * الحركة مرتين لو اتعملت أصلًا من مودال "وارد جديد/مصروف جديد" هنا.
+         */
+        async function buildMergedTransactions() {
+            try {
+                var cashAccount = await findAccountByCode('1100');
+                var linkedVoucherIds = {};
+                transactions.forEach(function(t) {
+                    if (t['linked_voucher_id']) linkedVoucherIds[t['linked_voucher_id']] = true;
+                });
+
+                var vouchers = await Supabase.getVouchers();
+                var voucherRows = vouchers
+                    .filter(function(v) { return v.cash_account_id === cashAccount.id && !linkedVoucherIds[v.id]; })
+                    .map(function(v) {
+                        var category = 'شركة';
+                        if (v.party_type === 'client') category = 'عميل';
+                        else if (v.party_type === 'supplier') category = 'مورد';
+                        return {
+                            id: 'voucher:' + v.id,
+                            date: v.voucher_date,
+                            type: (v.voucher_type === 'قبض') ? 'وارد' : 'صادر',
+                            category: category,
+                            amount: v.amount,
+                            description: 'سند ' + v.voucher_type + ' ' + v.voucher_no + (v.party_name ? ' — ' + v.party_name : (v.description ? ' — ' + v.description : '')),
+                            client_id: (v.party_type === 'client') ? v.party_id : null,
+                            opening_balance: false,
+                            source: 'voucher',
+                            party_type: v.party_type || null,
+                            party_id: v.party_id || null
+                        };
+                    });
+
+                mergedTransactions = transactions.concat(voucherRows).sort(function(a, b) {
+                    return new Date(b['date']) - new Date(a['date']);
+                });
+            } catch (error) {
+                console.warn('⚠️ فشل دمج سندات الصندوق في سجل المعاملات:', error);
+                mergedTransactions = transactions.slice();
+            }
         }
 
         // ================================================================
@@ -2071,7 +2123,7 @@
             var count = document.getElementById('recordCount');
             if (!tbody) return;
 
-            if (!transactions || transactions.length === 0) {
+            if (!mergedTransactions || mergedTransactions.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="8" style="text-align:center;padding:20px;color:var(--text-tertiary);">
@@ -2084,14 +2136,15 @@
                 return;
             }
 
-            if (count) count.textContent = transactions.length + ' سجل';
+            if (count) count.textContent = mergedTransactions.length + ' سجل';
 
-            var displayData = transactions.slice(0, 20);
+            var displayData = mergedTransactions.slice(0, 20);
             var html = '';
 
             for (var i = 0; i < displayData.length; i++) {
                 var t = displayData[i];
                 var id = t['id'] || '';
+                var isVoucherRow = (t['source'] === 'voucher');
                 var date = t['date'] || '—';
                 var type = t['type'] || '—';
                 var category = t['category'] || '—';
@@ -2123,23 +2176,46 @@
                 var dateObj = new Date(date);
                 var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-SA') : date;
                 var openingBadge = isOpening ? ' <span class="badge-custom" style="background:var(--warning-bg);color:var(--warning);font-size:8px;">افتتاحي</span>' : '';
+                var sourceBadge = isVoucherRow ? ' <span class="badge-custom" style="background:var(--info-bg,#e0f2fe);color:var(--info,#0284c7);font-size:8px;">سند</span>' : '';
+
+                // صفوف السندات (اتعملت من vouchers.html/client_statement/...) للعرض
+                // بس هنا — تعديلها أو حذفها لازم يعدّي من مكانها الأصلي عشان
+                // مايحصلش تعارض بين المصدرين
+                var actionsHtml;
+                if (isVoucherRow) {
+                    var voucherLink = 'vouchers.html';
+                    var voucherLinkLabel = 'فتح السندات';
+                    if (t['party_type'] === 'client' && t['party_id']) {
+                        voucherLink = 'client_statement.html?client_id=' + encodeURIComponent(t['party_id']);
+                        voucherLinkLabel = 'كشف حساب العميل';
+                    } else if (t['party_type'] === 'supplier' && t['party_id']) {
+                        voucherLink = 'supplier_statement.html?supplier_id=' + encodeURIComponent(t['party_id']);
+                        voucherLinkLabel = 'كشف حساب المورد';
+                    }
+                    actionsHtml = '<a href="' + voucherLink + '" class="btn-icon" title="' + voucherLinkLabel + '" style="text-decoration:none;font-size:11px;color:var(--primary);white-space:nowrap;">' +
+                        '<i class="bi bi-box-arrow-up-left"></i> ' + voucherLinkLabel +
+                        '</a>';
+                } else {
+                    actionsHtml =
+                        '<button class="btn-icon btn-icon-edit" onclick="openModal(\'edit\', \'' + type + '\', \'' + id + '\')" title="تعديل">' +
+                            '<i class="bi bi-pencil-fill"></i>' +
+                        '</button>' +
+                        '<button class="btn-icon btn-icon-delete" onclick="deleteTransaction(\'' + id + '\')" title="حذف">' +
+                            '<i class="bi bi-trash-fill"></i>' +
+                        '</button>';
+                }
 
                 html += `
                     <tr>
                         <td>${i + 1}</td>
                         <td>${formattedDate}</td>
-                        <td>${description} ${openingBadge}</td>
+                        <td>${description} ${openingBadge}${sourceBadge}</td>
                         <td><span class="badge-custom ${badgeClass}">${type}</span></td>
                         <td>${category}</td>
                         <td>${clientName}</td>
                         <td class="${amountClass}">${sign} ${Supabase.formatCurrency(amount)}</td>
                         <td style="text-align:center;white-space:nowrap;">
-                            <button class="btn-icon btn-icon-edit" onclick="openModal('edit', '${type}', '${id}')" title="تعديل">
-                                <i class="bi bi-pencil-fill"></i>
-                            </button>
-                            <button class="btn-icon btn-icon-delete" onclick="deleteTransaction('${id}')" title="حذف">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
+                            ${actionsHtml}
                         </td>
                     </tr>
                 `;
