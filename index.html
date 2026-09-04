@@ -1807,7 +1807,12 @@
         };
         var TRIP_STATUS_CLASS = { 'جاري': 'status-active', 'مخطط': 'status-pending' };
 
-        
+        function greetingByTime() {
+            var h = new Date().getHours();
+            if (h < 12) return 'صباح الخير';
+            if (h < 17) return 'مساء النور';
+            return 'مساء الخير';
+        }
 
         // ================================================================
         // LOAD DASHBOARD

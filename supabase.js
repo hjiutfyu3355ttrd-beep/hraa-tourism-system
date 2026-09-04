@@ -1590,6 +1590,60 @@ async function getSupplierVouchers(supplierId) {
 }
 
 /**
+ * حساب مديونية العميل "الحقيقية" لحظيًا — مصدر واحد موثوق بدل حقل clients.debt
+ * الساكن (اللي كان بيفضل زي ما هو بعد أي حجز جديد أو دفعة عبر recordBookingPayment،
+ * لأن مفيش حد كان بيحدّثه إلا زرار "تسديد" اليدوي في clients.html).
+ *
+ * المديونية = (قيمة كل حجوزات العميل غير الملغاة) + (قيمة كل خدماته الإضافية)
+ *           + (سندات الصرف المسجّلة عليه كـ"مديونية افتتاحية")
+ *           - (سندات القبض المحصّلة منه — سواء من دفعة حجز أو تسديد يدوي)
+ *
+ * لازم تُستدعى بالبيانات كاملة (bookings/services/vouchers) اللي الصفحة أصلاً
+ * محمّلاها، عشان منعملش fetch منفصل لكل عميل في الجدول.
+ */
+function getClientBalance(clientId, bookings, services, vouchers) {
+    var total = 0;
+    (bookings || []).forEach(function(b) {
+        if (String(b.client_id) === String(clientId) && b.status !== 'ملغي') {
+            total += parseFloat(b.booking_value || 0);
+        }
+    });
+    (services || []).forEach(function(s) {
+        if (String(s.client_id) === String(clientId)) {
+            total += parseFloat(s.total || 0);
+        }
+    });
+    (vouchers || []).forEach(function(v) {
+        if (v.party_type === 'client' && String(v.party_id) === String(clientId)) {
+            if (v.voucher_type === 'صرف') total += parseFloat(v.amount || 0);
+            else if (v.voucher_type === 'قبض') total -= parseFloat(v.amount || 0);
+        }
+    });
+    return total;
+}
+
+/**
+ * حساب مستحقات المورد "الحقيقية" لحظيًا — نفس فكرة getClientBalance بالظبط
+ * لكن معكوسة: مصروفات الرحلات الآجلة بتزوّد المستحق، وسندات الصرف (السداد) بتقلله.
+ * سندات القبض هنا بتمثل فقط المستحق الافتتاحي (نفس منطق إنشاء المورد في suppliers.html).
+ */
+function getSupplierBalance(supplierId, tripExpenses, vouchers) {
+    var total = 0;
+    (tripExpenses || []).forEach(function(e) {
+        if (String(e.supplier_id) === String(supplierId) && e.payment_method === 'آجل') {
+            total += parseFloat(e.amount || 0);
+        }
+    });
+    (vouchers || []).forEach(function(v) {
+        if (v.party_type === 'supplier' && String(v.party_id) === String(supplierId)) {
+            if (v.voucher_type === 'قبض') total += parseFloat(v.amount || 0);
+            else if (v.voucher_type === 'صرف') total -= parseFloat(v.amount || 0);
+        }
+    });
+    return total;
+}
+
+/**
  * تحويل نقدي من "الصندوق" (خزينة الشركة النقدية العامة، حساب 1100) إلى بنك
  * معيّن — ده كان بيتعمل قبل كده بتعديل banks.balance مباشرة من غير أي قيد
  * محاسبي، فكان بيخلي رصيد البنك ينفصل عن ميزان المراجعة بصمت. دلوقتي:
@@ -2121,6 +2175,8 @@ window.Supabase = {
     deleteTripExpense: deleteTripExpense,
     recordBookingPayment: recordBookingPayment,
     getSupplierVouchers: getSupplierVouchers,
+    getClientBalance: getClientBalance,
+    getSupplierBalance: getSupplierBalance,
     getTripFinancials: getTripFinancials,
     transferCashToBank: transferCashToBank,
     reverseCashToBankTransfer: reverseCashToBankTransfer,

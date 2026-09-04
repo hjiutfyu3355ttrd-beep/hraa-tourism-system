@@ -1842,6 +1842,9 @@
         var transactions = [];
         var banks = [];
         var clients = [];
+        var clientBookings = [];
+        var clientServices = [];
+        var clientVouchers = [];
         var isLoading = false;
         var currentModalType = 'income';
         var currentUser = null;
@@ -1975,6 +1978,25 @@
                 var clientsData = await Supabase.getClients();
                 clients = clientsData || [];
 
+                try {
+                    clientBookings = await Supabase.getBookings() || [];
+                } catch (error) {
+                    console.error('❌ خطأ في جلب الحجوزات:', error);
+                    clientBookings = [];
+                }
+                try {
+                    clientServices = await Supabase.getServices() || [];
+                } catch (error) {
+                    console.error('❌ خطأ في جلب الخدمات:', error);
+                    clientServices = [];
+                }
+                try {
+                    clientVouchers = await Supabase.getVouchers() || [];
+                } catch (error) {
+                    console.error('❌ خطأ في جلب السندات:', error);
+                    clientVouchers = [];
+                }
+
                 hasOpeningBalance = transactions.some(function(t) {
                     return t['opening_balance'] === true || t['opening_balance'] === 'true';
                 });
@@ -2022,7 +2044,7 @@
                 var c = clients[i];
                 var option = document.createElement('option');
                 option.value = c['id'];
-                var debt = parseFloat(c['debt'] || 0);
+                var debt = Supabase.getClientBalance(c['id'], clientBookings, clientServices, clientVouchers);
                 option.textContent = c['name'] + ' (مديونية: ' + Supabase.formatCurrency(debt) + ')';
                 select.appendChild(option);
             }

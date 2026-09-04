@@ -2050,13 +2050,12 @@
                     supplier_id: method === 'آجل' ? supplierId : null
                 });
 
-                if (method === 'آجل') {
-                    var supplier = suppliers.find(function(s) { return String(s.id) === String(supplierId); });
-                    if (supplier) {
-                        var newDebt = parseFloat(supplier.debt || 0) + amount;
-                        await Supabase.updateSupplier(supplierId, { debt: newDebt });
-                    }
-                }
+                // ملحوظة: مبقيناش بنكتب على suppliers.debt هنا خالص — addTripExpense()
+                // فوق سجّلت القيد المحاسبي المزدوج بالفعل (مدين المصروف / دائن
+                // الموردون 2100)، وده كافي عشان المستحق يتحسب صح لحظيًا من
+                // Supabase.getSupplierBalance() في أي صفحة (نفس منطق clients.html).
+                // الكتابة المباشرة القديمة هنا كانت هي سبب انفصال suppliers.debt
+                // عن الواقع أساسًا.
 
                 closeModalById('expenseModal');
                 document.getElementById('expenseForm').reset();
@@ -2078,13 +2077,10 @@
             try {
                 await Supabase.deleteTripExpense(expense);
 
-                if (expense.payment_method === 'آجل' && expense.supplier_id) {
-                    var supplier = suppliers.find(function(s) { return String(s.id) === String(expense.supplier_id); });
-                    if (supplier) {
-                        var newDebt = Math.max(0, parseFloat(supplier.debt || 0) - parseFloat(expense.amount || 0));
-                        await Supabase.updateSupplier(expense.supplier_id, { debt: newDebt });
-                    }
-                }
+                // نفس الملحوظة: deleteTripExpense() فوق بتحذف القيد المحاسبي
+                // المرتبط تلقائيًا، فالمستحق بيرجع يقل لوحده لحظيًا من
+                // Supabase.getSupplierBalance() — من غير أي كتابة مباشرة إضافية
+                // على suppliers.debt.
 
                 showToast('✅ تم حذف التكلفة بنجاح', 'success');
                 loadTripDetails();

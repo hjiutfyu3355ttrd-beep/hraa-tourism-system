@@ -1734,6 +1734,8 @@
         // ================================================================
         var suppliers = [];
         var cashAccounts = [];
+        var supplierTripExpenses = [];
+        var supplierVouchers = [];
         var currentUser = null;
         var systemCurrency = 'SAR';
         var currencySymbol = 'ر.س';
@@ -1760,16 +1762,35 @@
                 suppliers = [];
             }
 
+            // المستحق الحقيقي بيتحسب لحظيًا من مصروفات الرحلات الآجلة + السندات
+            // (مش من حقل suppliers.debt الساكن) — نفس فكرة clients.html بالظبط.
+            try {
+                supplierTripExpenses = await Supabase.getTripExpenses() || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب مصروفات الرحلات:', error);
+                supplierTripExpenses = [];
+            }
+            try {
+                supplierVouchers = await Supabase.getVouchers() || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب السندات:', error);
+                supplierVouchers = [];
+            }
+
             renderStats();
             renderTable();
 
             isLoading = false;
         }
 
+        function supplierDebt(supplierId) {
+            return Supabase.getSupplierBalance(supplierId, supplierTripExpenses, supplierVouchers);
+        }
+
         function renderStats() {
             var totalDebts = 0, withDebtCount = 0, paidCount = 0;
             suppliers.forEach(function(c) {
-                var debt = parseFloat(c['debt'] || 0);
+                var debt = supplierDebt(c['id']);
                 totalDebts += debt;
                 if (debt > 0) withDebtCount++; else paidCount++;
             });
@@ -1795,7 +1816,7 @@
             var html = '';
             for (var i = 0; i < suppliers.length; i++) {
                 var c = suppliers[i];
-                var debt = parseFloat(c['debt'] || 0);
+                var debt = supplierDebt(c['id']);
                 var statusClass = debt > 0 ? 'status-pending' : 'status-active';
                 var statusText = debt > 0 ? 'عليه مستحقات' : 'مسدد';
 
@@ -1902,7 +1923,7 @@
             var supplier = suppliers.find(function(c) { return String(c['id']) === String(supplierId); });
             if (!supplier) { showToast('⚠️ المورد غير موجود، حاول تحديث الصفحة', 'error'); return; }
 
-            var currentDebt = parseFloat(supplier['debt'] || 0);
+            var currentDebt = supplierDebt(supplierId);
             document.getElementById('paymentSupplierId').value = supplierId;
             document.getElementById('paymentSupplierLabel').textContent = 'المورد: ' + supplier['name'] + ' — المستحق عليه حاليًا: ' + Supabase.formatCurrency(currentDebt);
             document.getElementById('supplierPaymentAmount').value = currentDebt > 0 ? currentDebt : '';
@@ -1932,7 +1953,7 @@
             if (!supplier) { showToast('⚠️ المورد غير موجود', 'error'); return; }
             if (!cashAccountId) { showToast('⚠️ الرجاء اختيار حساب الدفع', 'warning'); return; }
 
-            var currentDebt = parseFloat(supplier['debt'] || 0);
+            var currentDebt = supplierDebt(supplierId);
             if (amount > currentDebt) {
                 showToast('⚠️ المبلغ أكبر من المستحق الحالي (' + Supabase.formatCurrency(currentDebt) + ')', 'warning');
                 return;
@@ -1959,8 +1980,10 @@
                     description: 'سداد لمورد ' + supplier['name']
                 });
 
-                var newDebt = Math.max(0, currentDebt - amount);
-                await Supabase.updateSupplier(supplierId, { debt: newDebt });
+                // ملحوظة: مبقيناش بنكتب على suppliers.debt هنا خالص — السند اللي
+                // اتسجل فوق هو مصدر الحقيقة الوحيد دلوقتي، وأي عرض للمستحق
+                // بيتحسب لحظيًا من Supabase.getSupplierBalance() في loadData()،
+                // فمفيش أي احتمال إنه "يتأخر" عن آخر عملية زي ما كان بيحصل قبل كده.
 
                 closeModalById('paymentModal');
                 showToast('✅ تم تسجيل سداد ' + Supabase.formatCurrency(amount) + ' لـ ' + supplier['name'], 'success');

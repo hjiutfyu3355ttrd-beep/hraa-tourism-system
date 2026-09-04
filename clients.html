@@ -1730,6 +1730,9 @@
         // STATE
         // ================================================================
         var clients = [];
+        var clientBookings = [];
+        var clientServices = [];
+        var clientVouchers = [];
         var cashAccounts = [];
         var currentUser = null;
         var systemCurrency = 'SAR';
@@ -1751,6 +1754,28 @@
                 clients = [];
             }
 
+            // المديونية الحقيقية بتتحسب لحظيًا من الحجوزات + الخدمات + السندات
+            // (مش من حقل clients.debt الساكن) — عشان الأرقام تتحدث فورًا مع أي
+            // عملية جديدة، بدون أي تأخير.
+            try {
+                clientBookings = await Supabase.getBookings() || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب الحجوزات:', error);
+                clientBookings = [];
+            }
+            try {
+                clientServices = await Supabase.getServices() || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب الخدمات:', error);
+                clientServices = [];
+            }
+            try {
+                clientVouchers = await Supabase.getVouchers() || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب السندات:', error);
+                clientVouchers = [];
+            }
+
             try {
                 var allAccounts = await Supabase.getAccounts();
                 // الصندوق (1100) + كل بنك فرعي حقيقي مرتبط ببنك فعلي (كوده يبدأ بـ12 وليس 1200 نفسه،
@@ -1770,13 +1795,17 @@
             isLoading = false;
         }
 
+        function clientDebt(clientId) {
+            return Supabase.getClientBalance(clientId, clientBookings, clientServices, clientVouchers);
+        }
+
         function renderStats() {
             var totalDebts = 0, totalVisits = 0, paidCount = 0;
             clients.forEach(function(c) {
-                var debt = parseFloat(c['debt'] || 0);
+                var debt = clientDebt(c['id']);
                 totalDebts += debt;
                 totalVisits += parseInt(c['visits'] || 0);
-                if (debt === 0) paidCount++;
+                if (debt <= 0) paidCount++;
             });
 
             document.getElementById('statTotalClients').textContent = clients.length;
@@ -1800,7 +1829,7 @@
             var html = '';
             for (var i = 0; i < clients.length; i++) {
                 var c = clients[i];
-                var debt = parseFloat(c['debt'] || 0);
+                var debt = clientDebt(c['id']);
                 var visits = parseInt(c['visits'] || 0);
                 var statusClass = debt > 0 ? 'status-pending' : 'status-active';
                 var statusText = debt > 0 ? 'عليه مديونية' : 'مسدد';
@@ -1912,7 +1941,7 @@
             var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
             if (!client) { showToast('⚠️ العميل غير موجود، حاول تحديث الصفحة', 'error'); return; }
 
-            var currentDebt = parseFloat(client['debt'] || 0);
+            var currentDebt = clientDebt(clientId);
             document.getElementById('paymentClientId').value = clientId;
             document.getElementById('paymentClientLabel').textContent = 'العميل: ' + client['name'] + ' — المديونية الحالية: ' + Supabase.formatCurrency(currentDebt);
             document.getElementById('paymentAmount').value = currentDebt > 0 ? currentDebt : '';
@@ -1942,7 +1971,7 @@
             if (!client) { showToast('⚠️ العميل غير موجود', 'error'); return; }
             if (!cashAccountId) { showToast('⚠️ الرجاء اختيار حساب الاستلام', 'warning'); return; }
 
-            var currentDebt = parseFloat(client['debt'] || 0);
+            var currentDebt = clientDebt(clientId);
             if (amount > currentDebt) {
                 showToast('⚠️ المبلغ أكبر من المديونية الحالية (' + Supabase.formatCurrency(currentDebt) + ')', 'warning');
                 return;
@@ -1971,11 +2000,14 @@
                     description: 'تسديد من العميل ' + client['name']
                 });
 
-                var newDebt = Math.max(0, currentDebt - amount);
+                // ملحوظة: مبقيناش بنكتب على clients.debt هنا خالص — السند اللي
+                // اتسجل فوق فوق هو مصدر الحقيقة الوحيد دلوقتي، وأي عرض للمديونية
+                // بيتحسب لحظيًا من Supabase.getClientBalance() في loadData()،
+                // فمفيش أي احتمال إنه "يتأخر" عن آخر عملية زي ما كان بيحصل قبل كده.
                 var newVisits = parseInt(client['visits'] || 0) + 1;
 
                 await Supabase.updateData('clients', clientId, {
-                    debt: newDebt, visits: newVisits,
+                    visits: newVisits,
                     last_visit: new Date().toISOString().split('T')[0]
                 });
 

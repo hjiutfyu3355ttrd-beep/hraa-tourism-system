@@ -1988,7 +1988,7 @@
             <!-- ===== CLIENT SUMMARY ===== -->
             <div class="client-summary" id="clientSummary" style="display:none;">
                 <div class="summary-item summary-income">
-                    <div class="summary-label">إجمالي الخدمات</div>
+                    <div class="summary-label">إجمالي المستحقات (حجوزات وخدمات)</div>
                     <div class="summary-value" id="totalServices">0</div>
                 </div>
                 <div class="summary-item summary-expense">
@@ -2103,6 +2103,7 @@
         var clients = [];
         var services = [];
         var vouchers = [];
+        var bookings = [];
         var currentClientId = null;
         var isLoading = false;
         var currentUser = null;
@@ -2242,6 +2243,9 @@
                 var clientsData = await Supabase.getClients();
                 clients = clientsData || [];
 
+                var bookingsData = await Supabase.getBookings();
+                bookings = bookingsData || [];
+
                 var servicesData = await Supabase.getServices();
                 services = servicesData || [];
 
@@ -2275,7 +2279,7 @@
                 var c = clients[i];
                 var option = document.createElement('option');
                 option.value = c['id'];
-                var debt = parseFloat(c['debt'] || 0);
+                var debt = Supabase.getClientBalance(c['id'], bookings, services, vouchers);
                 option.textContent = c['name'] + ' (مديونية: ' + Supabase.formatCurrency(debt) + ')';
                 if (currentClientId && String(currentClientId) === String(c['id'])) {
                     option.selected = true;
@@ -2325,6 +2329,11 @@
             document.getElementById('printClientName').textContent = client['name'] || '—';
             document.getElementById('printClientId').textContent = client['id'] || '—';
 
+            // الحجوزات غير الملغاة لهذا العميل (نفس شرط getClientBalance بالظبط)
+            var clientBookings = bookings.filter(function(b) {
+                return String(b['client_id']) === String(clientId) && b['status'] !== 'ملغي';
+            });
+
             var clientServices = services.filter(function(s) {
                 return String(s['client_id']) === String(clientId);
             });
@@ -2335,7 +2344,25 @@
 
             statementData = [];
 
-            // 1. إضافة الخدمات
+            // 1. إضافة الحجوزات (قيمة الحجز كاملة تُحسب مديونية على العميل،
+            // بغض النظر عن المدفوع مقدمًا — نفس منطق getClientBalance تمامًا؛
+            // الدفعة المقدمة بتتسجل بسند قبض منفصل عبر recordBookingPayment
+            // وده اللي بيظهر تحتها في القسم رقم 3)
+            for (var b = 0; b < clientBookings.length; b++) {
+                var bk = clientBookings[b];
+                statementData.push({
+                    date: bk['booking_date'] || new Date().toISOString().split('T')[0],
+                    description: 'حجز رقم ' + (bk['booking_code'] || bk['id']),
+                    type: 'booking',
+                    typeLabel: 'حجز',
+                    badgeClass: 'badge-service',
+                    debit: parseFloat(bk['booking_value'] || 0),
+                    credit: 0,
+                    amount: parseFloat(bk['booking_value'] || 0)
+                });
+            }
+
+            // 2. إضافة الخدمات
             for (var i = 0; i < clientServices.length; i++) {
                 var s = clientServices[i];
                 statementData.push({
@@ -2350,36 +2377,35 @@
                 });
             }
 
-            // 2. إضافة المدفوعات (سندات القبض)
+            // 3. إضافة السندات — نفس تفريق getClientBalance بالظبط:
+            // سند "صرف" على العميل = مديونية عليه (مثال: مديونية افتتاحية) → مدين
+            // سند "قبض" منه = تحصيل/دفعة فعلية (مقدم حجز أو تسديد يدوي) → دائن
             for (var j = 0; j < clientVouchers.length; j++) {
                 var v = clientVouchers[j];
                 var amount = parseFloat(v['amount'] || 0);
-                statementData.push({
-                    date: v['voucher_date'] || new Date().toISOString().split('T')[0],
-                    description: v['description'] || 'دفعة',
-                    type: 'payment',
-                    typeLabel: 'دفع',
-                    badgeClass: 'badge-payment',
-                    debit: 0,
-                    credit: amount,
-                    amount: amount
-                });
-            }
-
-            // 3. إضافة الرصيد الافتتاحي
-            var openingBalance = parseFloat(client['debt'] || 0);
-            if (openingBalance > 0) {
-                statementData.push({
-                    date: client['created_at'] ? new Date(client['created_at']).toISOString().split('T')[0] : new Date().toISOString().split(
-                        'T')[0],
-                    description: 'رصيد افتتاحي',
-                    type: 'opening',
-                    typeLabel: 'افتتاحي',
-                    badgeClass: 'badge-opening',
-                    debit: openingBalance,
-                    credit: 0,
-                    amount: openingBalance
-                });
+                if (v['voucher_type'] === 'صرف') {
+                    statementData.push({
+                        date: v['voucher_date'] || new Date().toISOString().split('T')[0],
+                        description: v['description'] || 'مديونية',
+                        type: 'debit_voucher',
+                        typeLabel: 'مديونية',
+                        badgeClass: 'badge-service',
+                        debit: amount,
+                        credit: 0,
+                        amount: amount
+                    });
+                } else {
+                    statementData.push({
+                        date: v['voucher_date'] || new Date().toISOString().split('T')[0],
+                        description: v['description'] || 'دفعة',
+                        type: 'payment',
+                        typeLabel: 'دفع',
+                        badgeClass: 'badge-payment',
+                        debit: 0,
+                        credit: amount,
+                        amount: amount
+                    });
+                }
             }
 
             // ترتيب حسب التاريخ
