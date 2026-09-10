@@ -1845,6 +1845,7 @@
                     '<td>' + lastVisit + '</td>' +
                     '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>' +
                     '<td style="text-align:center;white-space:nowrap;">' +
+                        '<a class="btn-icon btn-icon-edit" href="client_statement.html?id=' + c['id'] + '" title="كشف الحساب (العدد/السعر/الدفعات)" style="text-decoration:none;display:inline-flex;"><i class="bi bi-receipt"></i></a> ' +
                         '<button class="btn-icon btn-icon-edit" onclick="openPaymentModal(\'' + c['id'] + '\')" title="تسديد"><i class="bi bi-cash-coin"></i></button> ' +
                         '<button class="btn-icon btn-icon-delete" onclick="deleteClient(\'' + c['id'] + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
                     '</td>' +
