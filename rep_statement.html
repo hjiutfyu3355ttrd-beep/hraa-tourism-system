@@ -1,0 +1,2349 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
+    <title id="pageTitle">كشف حساب المندوب - حراء للسياحة</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- ============================================================ -->
+    <!-- SUPABASE.JS - الملف المركزي -->
+    <!-- ============================================================ -->
+    <script src="supabase.js"></script>
+    <style>
+
+        /* ================================================================
+           DESIGN SYSTEM - مطابق للصفحة الرئيسية
+           ================================================================ */
+        :root {
+            --primary: #0e1c2e;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
+            --accent-tint: rgba(156, 122, 60, 0.08);
+            --success: #1c7a4e;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
+            --surface: #ffffff;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+            --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-full: 9999px;
+            --t-base: 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+            --font-display: 'Inter', 'Cairo', sans-serif;
+            --font-body: 'Cairo', 'Inter', sans-serif;
+        }
+
+        /* ================================================================
+           RESET & BASE
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ================================================================
+           SIDEBAR
+           ================================================================ */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary);
+            z-index: 1050;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(calc(var(--sidebar-width) + 20px));
+        }
+
+        .sidebar-brand {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo-img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            display: none;
+        }
+
+        .brand-logo-img.visible {
+            display: block;
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-inverse);
+            flex-shrink: 0;
+        }
+
+        .brand-mark.hidden {
+            display: none;
+        }
+
+        .brand-text {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-inverse);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            color: var(--accent-light);
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 10px 8px;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 12px 6px;
+            font-family: var(--font-display);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 0;
+        }
+
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.5);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: var(--t-base);
+            position: relative;
+        }
+
+        .nav-list a:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-inverse);
+        }
+
+        .nav-list a.active {
+            background: rgba(139, 122, 75, 0.12);
+            color: var(--text-inverse);
+            font-weight: 600;
+        }
+
+        .nav-list a.active i {
+            color: var(--accent-light);
+        }
+
+        .nav-list a.active::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 16px;
+            background: var(--accent);
+        }
+
+        .nav-list a i {
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar-badge {
+            margin-right: auto;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(139, 122, 75, 0.18);
+            color: var(--accent-light);
+            border: 1px solid rgba(139, 122, 75, 0.15);
+            font-family: var(--font-display);
+        }
+
+        .sidebar-footer {
+            padding: 12px 16px 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.3);
+            transition: var(--t-base);
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: rgba(184, 74, 62, 0.12);
+            color: #e8a09a;
+        }
+
+        .logout-btn i {
+            font-size: 14px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1045;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ================================================================
+           MAIN CONTENT
+           ================================================================ */
+        .main-content {
+            margin-right: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-right 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* ================================================================
+           NAVBAR
+           ================================================================ */
+        .navbar-custom {
+            background: var(--bg);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-toggle {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--surface);
+            border-color: var(--text-tertiary);
+        }
+
+        .navbar-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 4px;
+        }
+
+        .navbar-logo-img {
+            height: 28px;
+            width: 28px;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+
+        .navbar-logo-img.visible {
+            display: block;
+        }
+
+        .navbar-logo-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--font-display);
+        }
+
+        .navbar-logo-text span {
+            color: var(--accent);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-title small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            margin-right: 6px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: var(--t-base);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 4px 3px 12px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+        }
+
+        .user-profile:hover {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            font-family: var(--font-display);
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        /* ================================================================
+           DASHBOARD CONTENT
+           ================================================================ */
+        .dashboard-content {
+            padding: 20px 24px 30px;
+            flex: 1;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .page-header .ph-left h2 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .page-header .ph-left p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .page-header .ph-right {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: left;
+        }
+
+        .page-header .ph-right strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        /* ================================================================
+           STAT CARDS
+           ================================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            transition: var(--t-base);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+
+        .stat-card .stat-number {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .stat-card .stat-icon {
+            float: left;
+            font-size: 18px;
+            color: var(--accent-light);
+            opacity: 0.5;
+        }
+
+        .stat-blue .stat-number {
+            color: var(--info);
+        }
+        .stat-green .stat-number {
+            color: var(--success);
+        }
+        .stat-gold .stat-number {
+            color: var(--accent);
+        }
+        .stat-red .stat-number {
+            color: var(--danger);
+        }
+
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 12px;
+            transition: var(--t-base);
+            border: 1px solid transparent;
+            font-family: var(--font-display);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--text-inverse);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #166a4a;
+            border-color: #166a4a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a03d32;
+            border-color: #a03d32;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: var(--accent-tint);
+        }
+
+        .btn-sm {
+            font-size: 10px;
+            padding: 4px 10px;
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            font-size: 12px;
+            transition: var(--t-base);
+        }
+
+        .btn-icon-edit {
+            background: var(--info-bg);
+            color: var(--info);
+            border-color: var(--border);
+        }
+
+        .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-icon-delete {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: var(--border);
+        }
+
+        .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ================================================================
+           PANEL
+           ================================================================ */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+        }
+
+        .panel-title i {
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .record-count {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* ================================================================
+           TABLE
+           ================================================================ */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+
+        .table-custom thead {
+            background: var(--bg);
+        }
+
+        .table-custom th {
+            padding: 8px 12px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        .table-custom td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+        .table-custom tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-custom tr:hover td {
+            background: var(--surface-alt);
+        }
+
+        .badge-custom {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+
+        .badge-admin {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .badge-finance {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-user {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        /* ================================================================
+           MODAL
+           ================================================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1060;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            max-width: 520px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-box h3 {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .modal-box h3 i {
+            color: var(--accent);
+            margin-left: 8px;
+        }
+
+        .modal-box label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .modal-box select,
+        .modal-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 13px;
+            margin-bottom: 12px;
+            transition: var(--t-base);
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .modal-box select:focus,
+        .modal-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 122, 75, 0.08);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* ================================================================
+           TOAST
+           ================================================================ */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-right: 3px solid var(--accent);
+            z-index: 9999;
+            animation: slideUp 0.3s ease forwards;
+            max-width: 380px;
+            font-size: 12.5px;
+        }
+
+        .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+        }
+
+        /* ================================================================
+           SHIMMER
+           ================================================================ */
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: shimmer-animation 1.5s ease-in-out infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer-animation {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ================================================================
+           FOOTER - تذييل الصفحة
+           ================================================================ */
+        .footer-custom {
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 12px 24px;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            margin-top: auto;
+        }
+
+        .footer-custom .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-custom .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .footer-custom .footer-brand span {
+            color: var(--accent);
+        }
+
+        .footer-custom .footer-copy {
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-copy strong {
+            color: var(--accent-dark);
+            font-weight: 700;
+        }
+
+        .footer-custom .footer-divider {
+            color: var(--border);
+            font-size: 14px;
+        }
+
+        .footer-custom .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .footer-custom .footer-version {
+            font-family: var(--font-display);
+            font-size: 11px;
+            color: var(--text-tertiary);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+        }
+
+        .footer-custom .footer-link {
+            color: var(--text-tertiary);
+            transition: var(--t-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .footer-custom .footer-link:hover {
+            color: var(--accent);
+        }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(calc(var(--sidebar-width) + 20px));
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-content {
+                padding: 16px 18px;
+            }
+            .navbar-custom {
+                padding: 0 16px;
+            }
+            .user-info {
+                display: none;
+            }
+            .page-header .ph-right {
+                display: none;
+            }
+            .navbar-logo-text {
+                display: none;
+            }
+            .footer-custom .footer-divider {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-right .nav-btn:not(:first-child) {
+                display: none;
+            }
+            .navbar-custom {
+                height: 54px;
+                padding: 0 12px;
+            }
+            .page-title {
+                font-size: 14px;
+            }
+            .page-title small {
+                display: none;
+            }
+            .sidebar-toggle {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            .dashboard-content {
+                padding: 12px 12px;
+            }
+            .page-header h2 {
+                font-size: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card .stat-number {
+                font-size: 16px;
+            }
+            .table-custom {
+                font-size: 11px;
+            }
+            .table-custom th,
+            .table-custom td {
+                padding: 6px 8px;
+            }
+            .modal-box {
+                padding: 20px;
+            }
+            .navbar-logo-img {
+                height: 24px;
+                width: 24px;
+            }
+            .footer-custom {
+                padding: 8px 14px;
+            }
+            .footer-custom .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 4px;
+            }
+            .footer-custom .footer-right {
+                flex-wrap: wrap;
+                justify-content: center;
+                font-size: 11px;
+            }
+            .footer-custom .footer-left {
+                font-size: 11px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-content {
+                padding: 10px 10px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 12px;
+            }
+            .stat-card .stat-number {
+                font-size: 14px;
+            }
+            .stat-card .stat-label {
+                font-size: 9px;
+            }
+            .stat-card .stat-icon {
+                font-size: 14px;
+            }
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            .modal-box {
+                padding: 16px;
+            }
+            .modal-box h3 {
+                font-size: 15px;
+            }
+            .footer-custom .footer-copy {
+                font-size: 10px;
+            }
+            .footer-custom .footer-version {
+                font-size: 10px;
+                padding: 1px 8px;
+            }
+        }
+
+        /* ================================================================
+           DARK MODE
+           ================================================================ */
+        body.dark-mode {
+            background: var(--primary-dark);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .navbar-custom {
+            background: var(--primary-dark);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .navbar-logo-text {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .stat-card .stat-number {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .panel {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .panel-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .table-custom thead {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .table-custom th {
+            color: rgba(232,228,220,0.4);
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .table-custom td {
+            border-bottom-color: rgba(255,255,255,0.04);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .table-custom tr:hover td {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .page-header {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .page-header .ph-left h2 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .page-header .ph-left p {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .btn-outline {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.6);
+        }
+
+        body.dark-mode .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: rgba(139, 122, 75, 0.1);
+        }
+
+        body.dark-mode .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            color: var(--text);
+        }
+
+        body.dark-mode .btn-success {
+            background: #166a4a;
+            border-color: #166a4a;
+        }
+
+        body.dark-mode .btn-danger {
+            background: #a03d32;
+            border-color: #a03d32;
+        }
+
+        body.dark-mode .sidebar-toggle {
+            border-color: rgba(255,255,255,0.08);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .sidebar-toggle:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.15);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .nav-btn {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .nav-btn:hover {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .user-profile:hover {
+            background: var(--primary);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .user-name {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .toast-notification {
+            background: var(--primary);
+            color: #e0dcd2;
+            border-right-color: var(--accent);
+        }
+
+        body.dark-mode .toast-notification.toast-success {
+            border-right-color: var(--success);
+        }
+
+        body.dark-mode .toast-notification.toast-error {
+            border-right-color: var(--danger);
+        }
+
+        body.dark-mode .toast-notification.toast-warning {
+            border-right-color: var(--warning);
+        }
+
+        body.dark-mode .modal-box {
+            background: var(--primary);
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box h3 {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .modal-box select,
+        body.dark-mode .modal-box input {
+            background: var(--primary-light);
+            color: #e0dcd2;
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .modal-box select:focus,
+        body.dark-mode .modal-box input:focus {
+            border-color: var(--accent);
+        }
+
+        body.dark-mode .badge-admin {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .badge-finance {
+            background: rgba(30, 122, 85, 0.2);
+            color: #7bc4a0;
+        }
+
+        body.dark-mode .badge-user {
+            background: rgba(184, 148, 58, 0.2);
+            color: #d4b87a;
+        }
+
+        body.dark-mode .btn-icon-edit {
+            background: rgba(58, 107, 143, 0.2);
+            color: #8ab4d4;
+        }
+
+        body.dark-mode .btn-icon-edit:hover {
+            background: var(--info);
+            color: white;
+        }
+
+        body.dark-mode .btn-icon-delete {
+            background: rgba(184, 74, 62, 0.2);
+            color: #dba09a;
+        }
+
+        body.dark-mode .btn-icon-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        body.dark-mode .shimmer {
+            background: linear-gradient(90deg, var(--primary-light) 25%, var(--primary) 50%, var(--primary-light) 75%);
+        }
+
+        body.dark-mode .footer-custom {
+            background: var(--primary);
+            border-top-color: rgba(255,255,255,0.06);
+        }
+
+        body.dark-mode .footer-custom .footer-brand {
+            color: #e0dcd2;
+        }
+
+        body.dark-mode .footer-custom .footer-copy {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-copy strong {
+            color: var(--accent-light);
+        }
+
+        body.dark-mode .footer-custom .footer-version {
+            background: var(--primary-light);
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link {
+            color: rgba(232,228,220,0.5);
+        }
+
+        body.dark-mode .footer-custom .footer-link:hover {
+            color: var(--accent-light);
+        }
+    </style>
+</head>
+<body>
+<script>(function(){try{if(localStorage.getItem('darkMode')==='true'){document.body.classList.add('dark-mode');}}catch(e){}})();</script>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-row">
+                <img id="sidebarLogo" class="brand-logo-img" src="" alt="شعار النظام" />
+                <div class="brand-mark" id="sidebarLogoFallback">ق</div>
+                <div class="brand-text" id="sidebarBrandText">
+                    حراء <span>للسياحة</span>
+                    <small>النظام المحاسبي المتكامل</small>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">القائمة الرئيسية</div>
+            <ul class="nav-list">
+                <li><a href="index.html"><i class="bi bi-grid-1x2-fill"></i> الرئيسية</a></li>
+            </ul>
+
+            <div class="nav-section-title">الإدارة المالية</div>
+            <ul class="nav-list">
+                <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
+                <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="suppliers.html"><i class="bi bi-truck"></i> الموردين <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
+                <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
+                <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
+            </ul>
+
+            <div class="nav-section-title">التقارير</div>
+            <ul class="nav-list">
+                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="rep_statement.html" class="active"><i class="bi bi-person-lines-fill"></i> كشف حساب المندوب <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
+                <li><a href="trip_details.html"><i class="bi bi-airplane-engines"></i> تفاصيل الرحلة</a></li>
+                <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
+                <li><a href="reports.html"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+            </ul>
+
+            <div class="nav-section-title">الإدارة</div>
+            <ul class="nav-list">
+                <li><a href="profile.html"><i class="bi bi-person-circle"></i> الملف الشخصي</a></li>
+                <li><a href="users.html"><i class="bi bi-people"></i> المستخدمين <span class="sidebar-badge">مدير</span></a></li>
+                <li><a href="settings.html"><i class="bi bi-gear-fill"></i> الإعدادات</a></li>
+            </ul>
+
+            <div class="nav-section-title">الدعم</div>
+            <ul class="nav-list">
+                <li><a href="support.html"><i class="bi bi-headset"></i> الدعم والتواصل</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="logout-btn" onclick="logout()">
+                <i class="bi bi-box-arrow-left"></i>
+                تسجيل الخروج
+            </a>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main-content" id="mainContent">
+
+        <nav class="navbar-custom">
+            <div class="navbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+
+                <div class="navbar-logo-container">
+                    <img id="navbarLogo" class="navbar-logo-img" src="" alt="شعار" />
+                    <span class="navbar-logo-text" id="navbarBrandText">حراء <span>للسياحة</span></span>
+                </div>
+
+                <h4 class="page-title" id="pageTitleText">
+                    كشف حساب المندوب
+                    <small>العدد، السعر، الإجمالي، وكل دفعة على حدة بتاريخها ورقم إيصالها</small>
+                </h4>
+            </div>
+
+            <div class="navbar-right">
+                <button class="nav-btn" id="darkModeToggle"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-role" id="userRole">حراء للسياحة</span>
+                    </div>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-content">
+
+            <!-- ===== PAGE HEADER ===== -->
+            <div class="page-header">
+                <div class="ph-left">
+                    <h2>كشف حساب المندوب</h2>
+                    <p>العدد، السعر، الإجمالي، المدفوع، المتبقي، وتاريخ كل دفعة برقم إيصالها والبيان</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">جاري التحميل...</span>
+                </div>
+            </div>
+
+            <!-- ===== SELECTORS ===== -->
+            <div class="panel" style="margin-bottom:16px;">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-funnel-fill"></i> اختيار المندوب</h5>
+                </div>
+                <div style="padding:14px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+                    <div style="min-width:220px;flex:1;">
+                        <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;">المندوب</label>
+                        <select id="repSelect" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+                            <option value="">— اختر مندوب —</option>
+                        </select>
+                    </div>
+                    <div style="min-width:220px;flex:1;">
+                        <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;">تصفية برحلة (اختياري)</label>
+                        <select id="tripFilterSelect" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+                            <option value="">كل الرحلات</option>
+                        </select>
+                    </div>
+                    <button class="btn-action btn-success" onclick="openBookingModal()">
+                        <i class="bi bi-journal-plus"></i> حجز جديد للمندوب على رحلة
+                    </button>
+                    <button class="btn-action btn-primary" onclick="loadData()">
+                        <i class="bi bi-arrow-clockwise"></i> تحديث
+                    </button>
+                    <button class="btn-action btn-outline" onclick="printStatement()">
+                        <i class="bi bi-printer"></i> طباعة
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STATS ===== -->
+            <div class="stats-grid" id="stats-container">
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-ticket-perforated-fill"></i></span>
+                    <div class="stat-number" id="statTotalCount">0</div>
+                    <div class="stat-label">إجمالي العدد (الأفراد)</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon"><i class="bi bi-cash-stack"></i></span>
+                    <div class="stat-number" id="statTotalValue">0</div>
+                    <div class="stat-label">إجمالي المستحق</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-hand-thumbs-up-fill"></i></span>
+                    <div class="stat-number" id="statTotalCollected">0</div>
+                    <div class="stat-label">إجمالي المحصّل</div>
+                </div>
+                <div class="stat-card stat-red">
+                    <span class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
+                    <div class="stat-number" id="statTotalRemaining">0</div>
+                    <div class="stat-label">إجمالي المتبقي</div>
+                </div>
+            </div>
+
+            <!-- ===== STATEMENT TABLE ===== -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-person-lines-fill"></i> كشف حساب المندوب</h5>
+                    <span id="recordCount" class="record-count">0 سجل</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الرحلة</th>
+                                <th>العدد</th>
+                                <th>السعر</th>
+                                <th>الإجمالي</th>
+                                <th>تاريخ الدفعة</th>
+                                <th>المدفوع (هذه الدفعة)</th>
+                                <th>رقم الإيصال</th>
+                                <th>البيان</th>
+                                <th>المتبقي</th>
+                                <th style="text-align:center;">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="statementBody">
+                            <tr>
+                                <td colspan="11" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                    <i class="bi bi-person-lines-fill" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
+                                    اختر مندوبًا لعرض كشف حسابه
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- MODAL - حجز جديد للمندوب على رحلة (العدد والسعر) -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="bookingModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-journal-plus"></i> حجز جديد للمندوب</h3>
+            <form id="bookingForm" onsubmit="handleBookingSubmit(event)">
+                <label for="bkRep">المندوب <span class="required">*</span></label>
+                <select id="bkRep" required></select>
+
+                <label for="bkTrip">الرحلة <span class="required">*</span></label>
+                <select id="bkTrip" required></select>
+
+                <label for="bkCount">العدد (عدد الأفراد) <span class="required">*</span></label>
+                <input type="number" id="bkCount" min="1" step="1" value="1" required />
+
+                <label for="bkPrice">سعر الفرد <span class="required">*</span></label>
+                <input type="number" id="bkPrice" min="0" step="0.01" required placeholder="0" />
+
+                <label>الإجمالي</label>
+                <input type="text" id="bkTotalPreview" disabled value="0" />
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('bookingModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveBookingBtn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MODAL - تسجيل دفعة على حجز موجود -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="paymentModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-cash-coin"></i> تسجيل دفعة</h3>
+            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="paymentBookingLabel">—</p>
+            <form id="paymentForm" onsubmit="handlePaymentSubmit(event)">
+                <input type="hidden" id="paymentBookingId" />
+
+                <label for="paymentAmount">المبلغ المدفوع <span class="required">*</span></label>
+                <input type="number" id="paymentAmount" step="0.01" min="0.01" required placeholder="0" />
+
+                <label for="paymentDate">تاريخ الدفعة <span class="required">*</span></label>
+                <input type="date" id="paymentDate" required />
+
+                <label for="paymentReceipt">رقم الإيصال</label>
+                <input type="text" id="paymentReceipt" placeholder="مثال: 1024" />
+
+                <label for="paymentNotes">البيان</label>
+                <input type="text" id="paymentNotes" placeholder="مثال: دفعة مقدمة نقدًا" />
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('paymentModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="savePaymentBtn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer-custom">
+        <div class="footer-content">
+            <div class="footer-right">
+                <span class="footer-brand">حراء <span>للسياحة</span></span>
+                <span class="footer-divider">|</span>
+                <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
+            </div>
+            <div class="footer-left">
+                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-divider">|</span>
+                <a href="support.html" class="footer-link">
+                    <i class="bi bi-headset"></i> الدعم الفني
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ================================================================ -->
+    <script>
+
+        // ================================================================
+        // STATE
+        // ================================================================
+        var reps = [];
+        var trips = [];
+        var bookings = [];
+        var payments = [];          // كل دفعات الحجوزات (booking_payments)
+        var currentUser = null;
+        var systemCurrency = 'SAR';
+        var currencySymbol = 'ر.س';
+        var isLoading = false;
+
+        // ================================================================
+        // LOAD DATA
+        // ================================================================
+        async function loadData() {
+            if (isLoading) return;
+            isLoading = true;
+
+            try {
+                var results = await Promise.all([
+                    Supabase.getRepresentatives().catch(function() { return []; }),
+                    Supabase.getTrips().catch(function() { return []; }),
+                    Supabase.getBookings().catch(function() { return []; }),
+                    Supabase.getBookingPayments().catch(function() { return []; })
+                ]);
+                reps = results[0] || [];
+                trips = results[1] || [];
+                bookings = results[2] || [];
+                payments = results[3] || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب بيانات كشف المندوب:', error);
+                showToast('⚠️ فشل تحميل البيانات', 'warning');
+            }
+
+            populateSelects();
+            renderStatement();
+
+            isLoading = false;
+        }
+
+        function populateSelects() {
+            var repSelect = document.getElementById('repSelect');
+            var currentRep = repSelect.value;
+            var opts = '<option value="">— اختر مندوب —</option>';
+            reps.forEach(function(r) {
+                opts += '<option value="' + r.id + '">' + (r.rep_name || '—') + '</option>';
+            });
+            repSelect.innerHTML = opts;
+            if (currentRep) repSelect.value = currentRep;
+
+            var tripFilter = document.getElementById('tripFilterSelect');
+            var currentTripFilter = tripFilter.value;
+            var tOpts = '<option value="">كل الرحلات</option>';
+            trips.forEach(function(t) {
+                tOpts += '<option value="' + t.id + '">' + (t.trip_name || t.trip_code || '—') + '</option>';
+            });
+            tripFilter.innerHTML = tOpts;
+            if (currentTripFilter) tripFilter.value = currentTripFilter;
+
+            var bkTrip = document.getElementById('bkTrip');
+            var bkTripOpts = '';
+            trips.forEach(function(t) {
+                bkTripOpts += '<option value="' + t.id + '">' + (t.trip_name || t.trip_code || '—') + '</option>';
+            });
+            bkTrip.innerHTML = bkTripOpts;
+
+            var bkRep = document.getElementById('bkRep');
+            var bkRepOpts = '';
+            reps.forEach(function(r) {
+                bkRepOpts += '<option value="' + r.id + '">' + (r.rep_name || '—') + '</option>';
+            });
+            bkRep.innerHTML = bkRepOpts;
+        }
+
+        function tripName(tripId) {
+            var t = trips.find(function(x) { return String(x.id) === String(tripId); });
+            return t ? (t.trip_name || t.trip_code || '—') : '—';
+        }
+
+        function bookingPayments(bookingId) {
+            return payments
+                .filter(function(p) { return String(p.booking_id) === String(bookingId); })
+                .sort(function(a, b) { return new Date(a.payment_date) - new Date(b.payment_date); });
+        }
+
+        // ================================================================
+        // RENDER STATEMENT — صف واحد لكل دفعة (زي الشيت بالظبط)
+        // ================================================================
+        function renderStatement() {
+            var repId = document.getElementById('repSelect').value;
+            var tripFilterId = document.getElementById('tripFilterSelect').value;
+            var tbody = document.getElementById('statementBody');
+            var count = document.getElementById('recordCount');
+
+            if (!repId) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-person-lines-fill" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>اختر مندوبًا لعرض كشف حسابه</td></tr>';
+                count.textContent = '0 سجل';
+                document.getElementById('statTotalCount').textContent = '0';
+                document.getElementById('statTotalValue').textContent = '0';
+                document.getElementById('statTotalCollected').textContent = '0';
+                document.getElementById('statTotalRemaining').textContent = '0';
+                return;
+            }
+
+            var repBookings = bookings.filter(function(b) {
+                if (String(b.rep_id) !== String(repId)) return false;
+                if (tripFilterId && String(b.trip_id) !== String(tripFilterId)) return false;
+                return true;
+            });
+
+            var rows = [];
+            var totalCount = 0, totalValue = 0, totalCollected = 0;
+
+            repBookings.forEach(function(b) {
+                var total = parseFloat(b.booking_value || 0);
+                var pax = parseInt(b.pax_count || 0, 10);
+                var price = parseFloat(b.unit_price || 0);
+                totalCount += pax;
+                totalValue += total;
+
+                var bp = bookingPayments(b.id);
+                var cumulative = 0;
+
+                if (bp.length === 0) {
+                    rows.push({
+                        booking: b, pax: pax, price: price, total: total,
+                        date: null, amount: null, receipt: null, notes: null,
+                        remaining: total
+                    });
+                } else {
+                    bp.forEach(function(p) {
+                        cumulative += parseFloat(p.amount || 0);
+                        totalCollected += parseFloat(p.amount || 0);
+                        rows.push({
+                            booking: b, pax: pax, price: price, total: total,
+                            date: p.payment_date, amount: p.amount, receipt: p.receipt_no, notes: p.notes,
+                            remaining: total - cumulative
+                        });
+                    });
+                }
+            });
+
+            document.getElementById('statTotalCount').textContent = totalCount;
+            document.getElementById('statTotalValue').textContent = Supabase.formatCurrency(totalValue);
+            document.getElementById('statTotalCollected').textContent = Supabase.formatCurrency(totalCollected);
+            document.getElementById('statTotalRemaining').textContent = Supabase.formatCurrency(totalValue - totalCollected);
+
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--text-tertiary);">لا توجد حجوزات لهذا المندوب بعد</td></tr>';
+                count.textContent = '0 سجل';
+                return;
+            }
+
+            count.textContent = rows.length + ' سجل';
+
+            var html = '';
+            rows.forEach(function(row, i) {
+                var remColor = row.remaining > 0 ? 'color:var(--danger);font-weight:600;' : 'color:var(--success);font-weight:600;';
+                html += '<tr>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + tripName(row.booking.trip_id) + '</td>' +
+                    '<td>' + row.pax + '</td>' +
+                    '<td>' + Supabase.formatCurrency(row.price) + '</td>' +
+                    '<td><strong>' + Supabase.formatCurrency(row.total) + '</strong></td>' +
+                    '<td>' + (row.date || '—') + '</td>' +
+                    '<td style="color:var(--success);">' + (row.amount !== null ? Supabase.formatCurrency(row.amount) : '—') + '</td>' +
+                    '<td>' + (row.receipt || '—') + '</td>' +
+                    '<td>' + (row.notes || '—') + '</td>' +
+                    '<td style="' + remColor + '">' + Supabase.formatCurrency(row.remaining) + '</td>' +
+                    '<td style="text-align:center;white-space:nowrap;">' +
+                        '<button class="btn-icon btn-icon-edit" onclick="openPaymentModal(\'' + row.booking.id + '\',\'' + tripName(row.booking.trip_id) + '\')" title="إضافة دفعة"><i class="bi bi-cash-coin"></i></button>' +
+                    '</td>' +
+                    '</tr>';
+            });
+            tbody.innerHTML = html;
+        }
+
+        // ================================================================
+        // حجز جديد للمندوب (العدد × السعر)
+        // ================================================================
+        function openBookingModal() {
+            var repSelect = document.getElementById('repSelect');
+            document.getElementById('bookingForm').reset();
+            if (repSelect.value) document.getElementById('bkRep').value = repSelect.value;
+            document.getElementById('bkTotalPreview').value = '0';
+            openModalById('bookingModal');
+        }
+
+        function updateBookingTotalPreview() {
+            var count = parseFloat(document.getElementById('bkCount').value) || 0;
+            var price = parseFloat(document.getElementById('bkPrice').value) || 0;
+            document.getElementById('bkTotalPreview').value = Supabase.formatCurrency(count * price);
+        }
+
+        async function handleBookingSubmit(event) {
+            event.preventDefault();
+
+            var repId = document.getElementById('bkRep').value;
+            var tripId = document.getElementById('bkTrip').value;
+            var count = parseInt(document.getElementById('bkCount').value, 10);
+            var price = parseFloat(document.getElementById('bkPrice').value);
+
+            if (!repId || !tripId) { showToast('⚠️ اختر المندوب والرحلة', 'warning'); return; }
+            if (!count || count < 1) { showToast('⚠️ أدخل عدد صحيح', 'warning'); return; }
+            if (!price || price < 0) { showToast('⚠️ أدخل سعر صحيح', 'warning'); return; }
+
+            var btn = document.getElementById('saveBookingBtn');
+            btn.disabled = true;
+            btn.textContent = 'جاري الحفظ...';
+
+            try {
+                await Supabase.addData('bookings', {
+                    rep_id: repId,
+                    trip_id: tripId,
+                    pax_count: count,
+                    unit_price: price,
+                    booking_value: count * price,
+                    paid_amount: 0,
+                    status: 'قيد الانتظار',
+                    booking_date: new Date().toISOString().slice(0, 10)
+                });
+                closeModalById('bookingModal');
+                showToast('✅ تم تسجيل الحجز بنجاح', 'success');
+                document.getElementById('repSelect').value = repId;
+                loadData();
+            } catch (error) {
+                showToast('❌ فشل تسجيل الحجز: ' + error.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'حفظ';
+        }
+
+        // ================================================================
+        // تسجيل دفعة على حجز
+        // ================================================================
+        function openPaymentModal(bookingId, tripLabel) {
+            document.getElementById('paymentForm').reset();
+            document.getElementById('paymentBookingId').value = bookingId;
+            document.getElementById('paymentBookingLabel').textContent = 'الرحلة: ' + tripLabel;
+            document.getElementById('paymentDate').value = new Date().toISOString().slice(0, 10);
+            openModalById('paymentModal');
+        }
+
+        async function handlePaymentSubmit(event) {
+            event.preventDefault();
+
+            var bookingId = document.getElementById('paymentBookingId').value;
+            var amount = parseFloat(document.getElementById('paymentAmount').value);
+            var date = document.getElementById('paymentDate').value;
+            var receipt = document.getElementById('paymentReceipt').value.trim();
+            var notes = document.getElementById('paymentNotes').value.trim();
+
+            if (!amount || amount <= 0) { showToast('⚠️ أدخل مبلغًا صحيحًا', 'warning'); return; }
+
+            var btn = document.getElementById('savePaymentBtn');
+            btn.disabled = true;
+            btn.textContent = 'جاري الحفظ...';
+
+            try {
+                await Supabase.addBookingPayment({
+                    booking_id: bookingId,
+                    amount: amount,
+                    payment_date: date,
+                    direction: 'قبض',
+                    receipt_no: receipt || null,
+                    notes: notes || null
+                });
+                closeModalById('paymentModal');
+                showToast('✅ تم تسجيل الدفعة بنجاح', 'success');
+                loadData();
+            } catch (error) {
+                showToast('❌ فشل تسجيل الدفعة: ' + error.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'حفظ';
+        }
+
+        // ================================================================
+        // طباعة
+        // ================================================================
+        function printStatement() {
+            window.print();
+        }
+
+        // ================================================================
+        // MODALS
+        // ================================================================
+        function openModalById(id) {
+            var el = document.getElementById(id + 'Overlay');
+            if (el) el.classList.add('active');
+        }
+        function closeModalById(id) {
+            var el = document.getElementById(id + 'Overlay');
+            if (el) el.classList.remove('active');
+        }
+
+        // ================================================================
+        // DOM READY
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!Supabase.initSystem()) return;
+
+            try {
+                var settings = await Supabase.getSystemSettings();
+                systemCurrency = settings.currency || 'SAR';
+                currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+            } catch (error) {
+                console.error('❌ خطأ في جلب الإعدادات:', error);
+                var savedCurrency = localStorage.getItem('systemCurrency');
+                if (savedCurrency) {
+                    systemCurrency = savedCurrency;
+                    currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
+                }
+            }
+            localStorage.setItem('systemCurrency', systemCurrency);
+
+            currentUser = Supabase.getCurrentUser();
+            if (currentUser) {
+                updateUserUI();
+            }
+
+            await applySystemName();
+            Supabase.applySystemLogo();
+
+            initSidebar();
+            initDarkMode();
+            initRefresh();
+            initNotifications();
+            initKeyboardShortcuts();
+            updateDate();
+
+            document.getElementById('repSelect').addEventListener('change', renderStatement);
+            document.getElementById('tripFilterSelect').addEventListener('change', renderStatement);
+            document.getElementById('bkCount').addEventListener('input', updateBookingTotalPreview);
+            document.getElementById('bkPrice').addEventListener('input', updateBookingTotalPreview);
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var presetRepId = urlParams.get('id');
+
+            loadData().then(function() {
+                if (presetRepId) {
+                    document.getElementById('repSelect').value = presetRepId;
+                    renderStatement();
+                }
+            });
+            setInterval(loadData, 60000);
+        });
+
+        // ================================================================
+        // APPLY SYSTEM NAME
+        // ================================================================
+        async function applySystemName() {
+            try {
+                var systemName = await Supabase.getSystemName();
+                document.title = 'كشف حساب المندوب' + ' - ' + systemName;
+
+                var brandText = document.getElementById('sidebarBrandText');
+                if (brandText) {
+                    brandText.innerHTML = systemName + ' <small>النظام المحاسبي المتكامل</small>';
+                }
+            } catch (error) {
+                console.warn('⚠️ فشل تطبيق اسم النظام:', error);
+            }
+        }
+
+        // ================================================================
+        // UPDATE USER UI
+        // ================================================================
+        function updateUserUI() {
+            if (!currentUser) return;
+            var userName = document.getElementById('userName');
+            var userRole = document.getElementById('userRole');
+            var userAvatar = document.getElementById('userAvatar');
+
+            if (userName) {
+                userName.textContent = currentUser.user_metadata?.full_name || currentUser.email || 'مستخدم';
+            }
+            if (userRole) {
+                userRole.textContent = currentUser.user_metadata?.role || 'حراء للسياحة';
+            }
+            if (userAvatar) {
+                var name = currentUser.user_metadata?.full_name || currentUser.email || 'م';
+                userAvatar.textContent = name.charAt(0).toUpperCase();
+            }
+        }
+
+        // ================================================================
+        // DATE DISPLAY
+        // ================================================================
+        function updateDate() {
+            var now = new Date();
+            var options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            var dateElement = document.getElementById('headerDate');
+            if (dateElement) {
+                dateElement.textContent = now.toLocaleDateString('ar-SA', options);
+            }
+        }
+
+        // ================================================================
+        // LOGOUT
+        // ================================================================
+        function logout() {
+            if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+            localStorage.removeItem('supabase_session');
+            localStorage.removeItem('darkMode');
+            window.location.href = 'login.html';
+        }
+
+        // ================================================================
+        // SIDEBAR TOGGLE
+        // ================================================================
+        function initSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            var toggle = document.getElementById('sidebarToggle');
+            var main = document.getElementById('mainContent');
+            var overlay = document.getElementById('sidebarOverlay');
+
+            var MOBILE_BREAKPOINT = 1200;
+
+            toggle.addEventListener('click', function() {
+                if (window.innerWidth <= MOBILE_BREAKPOINT) {
+                    var isOpen = sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                    document.body.style.overflow = isOpen ? 'hidden' : '';
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('expanded');
+                }
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > MOBILE_BREAKPOINT) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    main.classList.remove('expanded');
+                }
+            });
+        }
+
+        // ================================================================
+        // DARK MODE
+        // ================================================================
+        function initDarkMode() {
+            var toggle = document.getElementById('darkModeToggle');
+            if (!toggle) return;
+
+            var icon = toggle.querySelector('i');
+            var isDark = Supabase.isDarkModeEnabled();
+            Supabase.applyTheme(isDark);
+
+            if (icon) {
+                icon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+            }
+
+            toggle.addEventListener('click', function() {
+                var currentState = document.body.classList.contains('dark-mode');
+                var newState = !currentState;
+
+                Supabase.toggleTheme(newState).then(function() {
+                    if (icon) {
+                        icon.className = newState ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+                    }
+                });
+            });
+        }
+
+        // ================================================================
+        // REFRESH BUTTON
+        // ================================================================
+        function initRefresh() {
+            var btn = document.getElementById('refreshBtn');
+            if (!btn) return;
+            btn.addEventListener('click', function() {
+                loadData();
+                showToast('🔄 جاري تحديث البيانات...', 'info');
+            });
+        }
+
+        // ================================================================
+        // NOTIFICATIONS
+        // ================================================================
+        function initNotifications() {
+            var notifBtn = document.getElementById('notifBtn');
+            if (notifBtn) {
+                notifBtn.addEventListener('click', function() {
+                    var messages = [
+                        '🧑‍💼 راجع كشف حساب المناديب دوريًا',
+                        '💰 تابع المتبقي من كل مندوب على كل رحلة',
+                        '📊 يمكنك تسجيل دفعة جديدة لأي حجز'
+                    ];
+                    var random = messages[Math.floor(Math.random() * messages.length)];
+                    showToast(random, 'info');
+                });
+            }
+        }
+
+        // ================================================================
+        // KEYBOARD SHORTCUTS
+        // ================================================================
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'b') {
+                    e.preventDefault();
+                    document.getElementById('sidebarToggle').click();
+                }
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    loadData();
+                    showToast('🔄 جاري تحديث البيانات...', 'info');
+                }
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    document.getElementById('darkModeToggle').click();
+                }
+                if (e.ctrlKey && e.key === 'l') {
+                    e.preventDefault();
+                    logout();
+                }
+            });
+        }
+
+        // ================================================================
+        // TOAST
+        // ================================================================
+        function showToast(message, type) {
+            var existingToasts = document.querySelectorAll('.toast-notification');
+            for (var i = 0; i < existingToasts.length; i++) {
+                existingToasts[i].remove();
+            }
+
+            var toast = document.createElement('div');
+            toast.className = 'toast-notification';
+
+            var iconClass = 'bi-info-circle-fill';
+            var toastClass = '';
+
+            if (type === 'success') {
+                iconClass = 'bi-check-circle-fill';
+                toastClass = 'toast-success';
+            } else if (type === 'error') {
+                iconClass = 'bi-x-circle-fill';
+                toastClass = 'toast-error';
+            } else if (type === 'warning') {
+                iconClass = 'bi-exclamation-triangle-fill';
+                toastClass = 'toast-warning';
+            }
+
+            toast.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="bi ${iconClass}" style="font-size:14px;color:var(--accent-light);"></i>
+                    <span style="font-size:12.5px;font-weight:500;">${message}</span>
+                </div>
+            `;
+
+            if (toastClass) {
+                toast.classList.add(toastClass);
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(function() {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModalById('bookingModal');
+                closeModalById('paymentModal');
+            }
+        });
+
+        window.openModalById = openModalById;
+        window.closeModalById = closeModalById;
+        window.openBookingModal = openBookingModal;
+        window.openPaymentModal = openPaymentModal;
+        window.logout = logout;
+        window.showToast = showToast;
+        window.loadData = loadData;
+        window.printStatement = printStatement;
+
+        console.log('🧑‍💼 كشف حساب المندوب - حراء للسياحة');
+        console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
+    </script>
+
+</body>
+</html>
