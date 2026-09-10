@@ -1130,6 +1130,27 @@ async function getHotels() {
     return await fetchData('hotels');
 }
 
+/**
+ * جلب دفعات حجز/حجوزات معينة من جدول booking_payments (سجل كل دفعة لوحدها:
+ * تاريخها، مبلغها، رقم إيصالها، ملاحظاتها). لو bookingId اتبعت، بيرجع دفعات
+ * الحجز ده بس، وإلا بيرجع كل الدفعات (تُستخدم بعدين للتصفية في الواجهة).
+ */
+async function getBookingPayments(bookingId) {
+    var opts = { order: 'payment_date' };
+    if (bookingId) opts.filter = { booking_id: bookingId };
+    return await fetchData('booking_payments', opts);
+}
+
+/**
+ * تسجيل دفعة جديدة لحجز (مندوب أو عميل) — بترجع الصف المُنشأ. الـ trigger
+ * الموجود على قاعدة البيانات (trg_sync_booking_totals) بيحدّث bookings.paid_amount
+ * تلقائيًا بعد الإضافة، فمفيش داعي نحدّثه يدويًا من هنا.
+ */
+async function addBookingPayment(payment) {
+    var rows = await addData('booking_payments', payment);
+    return Array.isArray(rows) ? rows[0] : rows;
+}
+
 async function getRepresentatives() {
     return await fetchData('representatives');
 }
@@ -1791,25 +1812,22 @@ async function getTripFinancials(tripId) {
 
     var totalExpense = expenses.reduce(function(s, e) { return s + (parseFloat(e.amount) || 0); }, 0);
 
-    // عمولة المناديب: بند مصروف حقيقي كان ناقصًا من حساب الربح — كل حجز له مندوب
-    // (booking.rep_id) بياخد عمولة % من قيمة الحجز (booking_value) حسب commission_rate
-    // المسجلة في بطاقة المندوب. بنجمعها لكل مندوب على حدة عشان تبان في كشف الرحلة.
+    // ملاحظة محاسبية مهمة (تم تصحيحها بناءً على طلب الإدارة بتاريخ سبتمبر 2026):
+    // الشركة هنا مش وسيط بياخد عمولة % وتوزّع الباقي — الشركة هي اللي بتحجز
+    // للمناديب وبتسدد للموردين مباشرة، والفرق الكامل بين (المُحصّل من المناديب)
+    // و(تكلفة الموردين) هو ربح الشركة بالكامل. مفيش خصم عمولة إضافي من الربح.
+    // لسه بنجمّع "commission_rate" (لو موجودة في بطاقة المندوب) كبيانات معلوماتية
+    // فقط لعرضها في كشف الرحلة، لكنها ما بقتش بتتخصم من صافي الربح.
     var byRepresentative = {};
-    var totalCommission = 0;
     bookings.forEach(function(b) {
         if (!b.rep_id) return;
         var rep = representatives.find(function(r) { return r.id === b.rep_id; });
         if (!rep) return;
-        var rate = parseFloat(rep.commission_rate) || 0;
-        if (!rate) return;
-        var commission = (parseFloat(b.booking_value) || 0) * rate / 100;
-        if (!commission) return;
         var key = rep.rep_name || 'مندوب';
-        byRepresentative[key] = (byRepresentative[key] || 0) + commission;
-        totalCommission += commission;
+        byRepresentative[key] = (byRepresentative[key] || 0) + (parseFloat(b.booking_value) || 0);
     });
 
-    var netProfit = totalCollected - totalExpense - totalCommission;
+    var netProfit = totalCollected - totalExpense;
     var profitMargin = totalCollected ? (netProfit / totalCollected) * 100 : 0;
 
     return {
@@ -2169,6 +2187,8 @@ window.Supabase = {
     getHotels: getHotels,
     getRepresentatives: getRepresentatives,
     getRepTransactions: getRepTransactions,
+    getBookingPayments: getBookingPayments,
+    addBookingPayment: addBookingPayment,
     getAgents: getAgents,
     getClients: getClients,
     getUsers: getUsers,
