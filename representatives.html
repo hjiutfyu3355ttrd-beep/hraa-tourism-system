@@ -1488,6 +1488,7 @@
             <div class="nav-section-title">التقارير</div>
             <ul class="nav-list">
                 <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
+                <li><a href="rep_statement.html"><i class="bi bi-person-lines-fill"></i> كشف حساب المندوب <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
                 <li><a href="trip_details.html"><i class="bi bi-airplane-engines"></i> تفاصيل الرحلة</a></li>
                 <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
@@ -1799,6 +1800,7 @@
                     '<td style="color:var(--success);">' + Supabase.formatCurrency(collected) + '</td>' +
                     '<td style="' + remColor + '">' + Supabase.formatCurrency(remaining) + '</td>' +
                     '<td style="text-align:center;white-space:nowrap;">' +
+                        '<a class="btn-icon btn-icon-edit" href="rep_statement.html?id=' + r['id'] + '" title="كشف الحساب (العدد/السعر/الدفعات)" style="text-decoration:none;display:inline-flex;"><i class="bi bi-person-lines-fill"></i></a> ' +
                         '<button class="btn-icon btn-icon-edit" onclick="openCollectModal(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')" title="تسجيل تحصيل"><i class="bi bi-cash-coin"></i></button> ' +
                         '<button class="btn-icon btn-icon-delete" onclick="deleteRep(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
                     '</td>' +
