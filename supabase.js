@@ -1829,6 +1829,7 @@ async function getTripFinancials(tripId) {
 
     var netProfit = totalCollected - totalExpense;
     var profitMargin = totalCollected ? (netProfit / totalCollected) * 100 : 0;
+    var totalRepSales = Object.keys(byRepresentative).reduce(function(s, k) { return s + byRepresentative[k]; }, 0);
 
     return {
         bookings: bookings,
@@ -1836,7 +1837,7 @@ async function getTripFinancials(tripId) {
         totalBookingValue: totalBookingValue,
         totalCollected: totalCollected,
         totalExpense: totalExpense,
-        totalCommission: totalCommission,
+        totalRepSales: totalRepSales,
         byRepresentative: byRepresentative,
         netProfit: netProfit,
         profitMargin: profitMargin,
