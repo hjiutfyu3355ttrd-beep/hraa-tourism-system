@@ -1959,7 +1959,7 @@
             <div class="page-header">
                 <div class="ph-left">
                     <h2>كشف ربحية الرحلة</h2>
-                    <p>تفصيل الحجوزات والتكاليف وعمولات المناديب وصافي الربح</p>
+                    <p>تفصيل الحجوزات والتكاليف ومبيعات المناديب وصافي الربح</p>
                 </div>
                 <div class="ph-right">
                     <strong>اليوم</strong>
@@ -1999,8 +1999,8 @@
                     <div class="summary-label">إجمالي التكاليف</div>
                     <div class="summary-value" id="totalPayments">0</div>
                 </div>
-                <div class="summary-item summary-expense">
-                    <div class="summary-label">إجمالي عمولات المناديب</div>
+                <div class="summary-item summary-count">
+                    <div class="summary-label">إجمالي مبيعات المناديب (معلوماتي)</div>
                     <div class="summary-value" id="totalCommissionVal">0</div>
                 </div>
                 <div class="summary-item summary-balance">
@@ -2070,10 +2070,10 @@
                 </div>
             </div>
 
-            <!-- ===== COMMISSIONS TABLE ===== -->
+            <!-- ===== REP SALES BREAKDOWN TABLE (معلوماتي - مش مصروف يُخصم من الربح) ===== -->
             <div class="panel" id="commissionPanel" style="display:none;">
                 <div class="panel-header">
-                    <h5 class="panel-title"><i class="bi bi-person-badge-fill"></i> عمولات المناديب</h5>
+                    <h5 class="panel-title"><i class="bi bi-person-badge-fill"></i> مبيعات المناديب على الرحلة</h5>
                     <span id="commissionCount" class="record-count">0 مندوب</span>
                 </div>
                 <div class="table-wrap">
@@ -2082,7 +2082,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>المندوب</th>
-                                <th>العمولة المستحقة</th>
+                                <th>إجمالي المبيعات</th>
                             </tr>
                         </thead>
                         <tbody id="commissionBody"></tbody>
@@ -2490,7 +2490,7 @@
         }
 
         // ================================================================
-        // RENDER COMMISSIONS
+        // RENDER REP SALES BREAKDOWN (معلوماتي فقط - مش بيتخصم من صافي الربح)
         // ================================================================
         function renderCommissions() {
             var panel = document.getElementById('commissionPanel');
@@ -2515,7 +2515,7 @@
                     <tr>
                         <td>${i + 1}</td>
                         <td>${key}</td>
-                        <td class="amount-expense">${Supabase.formatCurrency(byRep[key])}</td>
+                        <td>${Supabase.formatCurrency(byRep[key])}</td>
                     </tr>
                 `;
             });
@@ -2531,7 +2531,7 @@
             var totalBookingValue = currentFinancials.totalBookingValue || 0;
             var totalCollected = currentFinancials.totalCollected || 0;
             var totalExpense = currentFinancials.totalExpense || 0;
-            var totalCommission = currentFinancials.totalCommission || 0;
+            var totalRepSales = currentFinancials.totalRepSales || 0;
             var netProfit = currentFinancials.netProfit || 0;
             var profitMargin = currentFinancials.profitMargin || 0;
 
@@ -2543,7 +2543,7 @@
             document.getElementById('totalServices').textContent = Supabase.formatCurrency(totalBookingValue);
             document.getElementById('totalCollectedVal').textContent = Supabase.formatCurrency(totalCollected);
             document.getElementById('totalPayments').textContent = Supabase.formatCurrency(totalExpense);
-            document.getElementById('totalCommissionVal').textContent = Supabase.formatCurrency(totalCommission);
+            document.getElementById('totalCommissionVal').textContent = Supabase.formatCurrency(totalRepSales);
             document.getElementById('remainingBalance').textContent = Supabase.formatCurrency(netProfit);
             document.getElementById('profitMarginVal').textContent = profitMargin.toFixed(1) + '%';
             document.getElementById('occupancyVal').textContent = occupancy.toFixed(0) + '%' +
