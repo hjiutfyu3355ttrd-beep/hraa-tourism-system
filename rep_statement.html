@@ -1622,8 +1622,33 @@
                 </div>
             </div>
 
+            <!-- ===== REPS SUMMARY FOR TRIP (زي شيت "ملخص اعداد المناديب" بالظبط) ===== -->
+            <div class="panel" id="repsSummaryPanel" style="display:none;margin-bottom:16px;">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-people-fill"></i> ملخص كل المناديب على الرحلة</h5>
+                    <span id="repsSummaryCount" class="record-count">0 مندوب</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>المندوب</th>
+                                <th>العدد</th>
+                                <th>السعر</th>
+                                <th>الإجمالي</th>
+                                <th>المدفوع</th>
+                                <th>المتبقي</th>
+                                <th style="text-align:center;">كشف الحساب</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repsSummaryBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- ===== STATEMENT TABLE ===== -->
-            <div class="panel">
+            <div class="panel" id="ledgerPanel">
                 <div class="panel-header">
                     <h5 class="panel-title"><i class="bi bi-person-lines-fill"></i> كشف حساب المندوب</h5>
                     <span id="recordCount" class="record-count">0 سجل</span>
@@ -1837,16 +1862,41 @@
             var tripFilterId = document.getElementById('tripFilterSelect').value;
             var tbody = document.getElementById('statementBody');
             var count = document.getElementById('recordCount');
+            var ledgerPanel = document.getElementById('ledgerPanel');
+            var summaryPanel = document.getElementById('repsSummaryPanel');
 
             if (!repId) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-person-lines-fill" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>اختر مندوبًا لعرض كشف حسابه</td></tr>';
-                count.textContent = '0 سجل';
-                document.getElementById('statTotalCount').textContent = '0';
-                document.getElementById('statTotalValue').textContent = '0';
-                document.getElementById('statTotalCollected').textContent = '0';
-                document.getElementById('statTotalRemaining').textContent = '0';
+                if (tripFilterId) {
+                    ledgerPanel.style.display = 'none';
+                    summaryPanel.style.display = 'block';
+                    renderRepsSummaryForTrip(tripFilterId);
+
+                    var tPax = 0, tTotal = 0, tPaid = 0;
+                    bookings.forEach(function(b) {
+                        if (!b.rep_id || String(b.trip_id) !== String(tripFilterId)) return;
+                        tPax += parseInt(b.pax_count || 0, 10);
+                        tTotal += parseFloat(b.booking_value || 0);
+                        tPaid += parseFloat(b.paid_amount || 0);
+                    });
+                    document.getElementById('statTotalCount').textContent = tPax;
+                    document.getElementById('statTotalValue').textContent = Supabase.formatCurrency(tTotal);
+                    document.getElementById('statTotalCollected').textContent = Supabase.formatCurrency(tPaid);
+                    document.getElementById('statTotalRemaining').textContent = Supabase.formatCurrency(tTotal - tPaid);
+                } else {
+                    summaryPanel.style.display = 'none';
+                    ledgerPanel.style.display = 'block';
+                    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-person-lines-fill" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>اختر مندوبًا لعرض كشف حسابه بالتفصيل، أو اختر رحلة لعرض ملخص كل المناديب عليها</td></tr>';
+                    count.textContent = '0 سجل';
+                    document.getElementById('statTotalCount').textContent = '—';
+                    document.getElementById('statTotalValue').textContent = '—';
+                    document.getElementById('statTotalCollected').textContent = '—';
+                    document.getElementById('statTotalRemaining').textContent = '—';
+                }
                 return;
             }
+
+            summaryPanel.style.display = 'none';
+            ledgerPanel.style.display = 'block';
 
             var repBookings = bookings.filter(function(b) {
                 if (String(b.rep_id) !== String(repId)) return false;
@@ -1918,6 +1968,72 @@
                     '</td>' +
                     '</tr>';
             });
+            tbody.innerHTML = html;
+        }
+
+        // ================================================================
+        // ملخص كل المناديب على رحلة معينة (زي شيت "ملخص اعداد المناديب")
+        // ================================================================
+        function renderRepsSummaryForTrip(tripId) {
+            var tbody = document.getElementById('repsSummaryBody');
+            var count = document.getElementById('repsSummaryCount');
+
+            var groups = {};
+            bookings.forEach(function(b) {
+                if (!b.rep_id) return;
+                if (String(b.trip_id) !== String(tripId)) return;
+                var key = b.rep_id;
+                if (!groups[key]) groups[key] = { pax: 0, total: 0, paid: 0 };
+                groups[key].pax += parseInt(b.pax_count || 0, 10);
+                groups[key].total += parseFloat(b.booking_value || 0);
+                groups[key].paid += parseFloat(b.paid_amount || 0);
+            });
+
+            var repIds = Object.keys(groups);
+            count.textContent = repIds.length + ' مندوب';
+
+            if (!repIds.length) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">لا يوجد مناديب على هذه الرحلة بعد</td></tr>';
+                return;
+            }
+
+            var grandPax = 0, grandTotal = 0, grandPaid = 0;
+            var html = '';
+            repIds.forEach(function(repId, i) {
+                var g = groups[repId];
+                var rep = reps.find(function(r) { return String(r.id) === String(repId); });
+                var name = rep ? (rep.rep_name || '—') : '—';
+                var avgPrice = g.pax ? (g.total / g.pax) : 0;
+                var remaining = g.total - g.paid;
+
+                grandPax += g.pax;
+                grandTotal += g.total;
+                grandPaid += g.paid;
+
+                html += '<tr>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + name + '</td>' +
+                    '<td>' + g.pax + '</td>' +
+                    '<td>' + Supabase.formatCurrency(avgPrice) + '</td>' +
+                    '<td><strong>' + Supabase.formatCurrency(g.total) + '</strong></td>' +
+                    '<td style="color:var(--success);">' + Supabase.formatCurrency(g.paid) + '</td>' +
+                    '<td style="' + (remaining > 0 ? 'color:var(--danger);font-weight:600;' : 'color:var(--success);font-weight:600;') + '">' + Supabase.formatCurrency(remaining) + '</td>' +
+                    '<td style="text-align:center;">' +
+                        '<a class="btn-icon btn-icon-edit" href="rep_statement.html?id=' + repId + '" style="text-decoration:none;display:inline-flex;" title="كشف الحساب"><i class="bi bi-person-lines-fill"></i></a>' +
+                    '</td>' +
+                    '</tr>';
+            });
+
+            html += '<tr style="font-weight:700;background:var(--surface-alt,rgba(0,0,0,0.03));">' +
+                '<td colspan="2">الإجمالي</td>' +
+                '<td>' + grandPax + '</td>' +
+                '<td>—</td>' +
+                '<td>' + Supabase.formatCurrency(grandTotal) + '</td>' +
+                '<td style="color:var(--success);">' + Supabase.formatCurrency(grandPaid) + '</td>' +
+                '<td style="' + ((grandTotal - grandPaid) > 0 ? 'color:var(--danger);' : 'color:var(--success);') + '">' + Supabase.formatCurrency(grandTotal - grandPaid) + '</td>' +
+                '<td></td>' +
+                '</tr>';
+
             tbody.innerHTML = html;
         }
 
