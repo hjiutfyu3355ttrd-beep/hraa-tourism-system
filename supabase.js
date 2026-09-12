@@ -1535,12 +1535,14 @@ async function getTripExpenses(tripId) {
 }
 
 /**
- * إضافة مصروف رحلة مُصنّف (انتقالات/فنادق/طيران/تأشيرات/باركود/أوفر باركود/باركود الغرفة)
+ * إضافة مصروف — إما مصروف رحلة مُصنّف (لو trip_id موجود) أو مصروف إداري/عمومي
+ * عام (لو trip_id فاضي، زي شيت "المصروفات": رقم مستند/مستفيد/بيان/ملاحظات).
  * ينشئ تلقائيًا قيد يومية مزدوج:
  *   - دفع نقدي فوري: مدين = حساب المصروف (حسب التصنيف)  ، دائن = الصندوق/البنك المختار
  *   - دفع آجل لمورد:  مدين = حساب المصروف (حسب التصنيف)  ، دائن = حساب الموردون (دائنون)
- * exp = { trip_id, category_account_id, amount, description, expense_date,
- *         payment_method: 'نقدي'|'آجل', cash_account_id (لو نقدي), supplier_id (لو آجل) }
+ * exp = { trip_id (اختياري), category_account_id, amount, description, expense_date,
+ *         payment_method: 'نقدي'|'آجل', cash_account_id (لو نقدي), supplier_id (لو آجل),
+ *         document_no (اختياري - رقم المستند), beneficiary (اختياري - المستفيد), notes (اختياري) }
  */
 async function addTripExpense(exp) {
     var supplierAccounts = await getAccounts();
@@ -1563,12 +1565,12 @@ async function addTripExpense(exp) {
 
     var entry = await addJournalEntry({
         entry_date: exp.expense_date,
-        description: 'مصروف رحلة — ' + (exp.description || ''),
+        description: (exp.trip_id ? 'مصروف رحلة — ' : 'مصروف إداري/عمومي — ') + (exp.description || ''),
         source_type: 'trip_expense'
     }, lines);
 
     var result = await addData('trip_expenses', {
-        trip_id: exp.trip_id,
+        trip_id: exp.trip_id || null,
         category_account_id: exp.category_account_id,
         supplier_id: exp.supplier_id || null,
         payment_method: exp.payment_method || 'نقدي',
@@ -1576,10 +1578,13 @@ async function addTripExpense(exp) {
         amount: exp.amount,
         description: exp.description || null,
         expense_date: exp.expense_date,
-        journal_entry_id: entry.id
+        journal_entry_id: entry.id,
+        document_no: exp.document_no || null,
+        beneficiary: exp.beneficiary || null,
+        notes: exp.notes || null
     });
 
-    // مصروف رحلة مدفوع نقدي فورًا (مش آجل لمورد) بيقلل رصيد الصندوق/البنك المختار
+    // مصروف مدفوع نقدي فورًا (مش آجل لمورد) بيقلل رصيد الصندوق/البنك المختار
     if (exp.payment_method !== 'آجل' && exp.cash_account_id) {
         await adjustLinkedBankBalance(exp.cash_account_id, -parseFloat(exp.amount));
     }
