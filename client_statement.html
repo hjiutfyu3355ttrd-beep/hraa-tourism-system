@@ -1597,14 +1597,6 @@
                 </div>
             </div>
 
-            <!-- ===== CLIENT SUMMARY CARD ===== -->
-            <div class="panel" id="clientInfoPanel" style="margin-bottom:16px;display:none;">
-                <div style="padding:14px 16px;display:flex;gap:24px;flex-wrap:wrap;">
-                    <div><span style="font-size:11px;color:var(--text-tertiary);display:block;">اسم العميل</span><strong id="ciName">—</strong></div>
-                    <div><span style="font-size:11px;color:var(--text-tertiary);display:block;">الهاتف</span><strong id="ciPhone">—</strong></div>
-                </div>
-            </div>
-
             <!-- ===== STATS ===== -->
             <div class="stats-grid" id="stats-container">
                 <div class="stat-card stat-blue">
@@ -1640,6 +1632,8 @@
                         <thead>
                             <tr>
                                 <th>م</th>
+                                <th>اسم العميل</th>
+                                <th>الهاتف</th>
                                 <th>الرحلة</th>
                                 <th>العدد</th>
                                 <th>السعر</th>
@@ -1655,7 +1649,7 @@
                         </thead>
                         <tbody id="statementBody">
                             <tr>
-                                <td colspan="12" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                <td colspan="14" style="text-align:center;padding:30px;color:var(--text-tertiary);">
                                     <i class="bi bi-receipt" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
                                     اختر عميلًا لعرض كشف حسابه
                                 </td>
@@ -1851,12 +1845,12 @@
             var tripFilterId = document.getElementById('tripFilterSelect').value;
             var tbody = document.getElementById('statementBody');
             var count = document.getElementById('recordCount');
-            var infoPanel = document.getElementById('clientInfoPanel');
+
 
             if (!clientId) {
-                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-receipt" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>اختر عميلًا لعرض كشف حسابه</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-receipt" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>اختر عميلًا لعرض كشف حسابه</td></tr>';
                 count.textContent = '0 سجل';
-                infoPanel.style.display = 'none';
+
                 document.getElementById('statTotalCount').textContent = '0';
                 document.getElementById('statTotalValue').textContent = '0';
                 document.getElementById('statTotalCollected').textContent = '0';
@@ -1865,9 +1859,7 @@
             }
 
             var client = clients.find(function(c) { return String(c.id) === String(clientId); });
-            infoPanel.style.display = 'block';
-            document.getElementById('ciName').textContent = client ? (client.name || '—') : '—';
-            document.getElementById('ciPhone').textContent = client ? (client.phone || '—') : '—';
+
 
             var clientBookings = bookings.filter(function(b) {
                 if (String(b.client_id) !== String(clientId)) return false;
@@ -1915,7 +1907,7 @@
             document.getElementById('statTotalRemaining').textContent = Supabase.formatCurrency(totalValue - totalPaidNet);
 
             if (!rows.length) {
-                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--text-tertiary);">لا توجد حجوزات لهذا العميل بعد</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:30px;color:var(--text-tertiary);">لا توجد حجوزات لهذا العميل بعد</td></tr>';
                 count.textContent = '0 سجل';
                 return;
             }
@@ -1933,6 +1925,8 @@
 
                 html += '<tr>' +
                     '<td>' + (i + 1) + '</td>' +
+                    '<td>' + (client ? (client.name || '—') : '—') + '</td>' +
+                    '<td>' + (client ? (client.phone || '—') : '—') + '</td>' +
                     '<td>' + tripName(row.booking.trip_id) + '</td>' +
                     '<td>' + row.pax + '</td>' +
                     '<td>' + Supabase.formatCurrency(row.price) + '</td>' +
