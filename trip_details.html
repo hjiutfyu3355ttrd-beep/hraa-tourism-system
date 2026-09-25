@@ -1533,6 +1533,7 @@
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
                 <li><a href="expenses.html"><i class="bi bi-cash-coin"></i> المصروفات العمومية <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="allowances.html"><i class="bi bi-car-front-fill"></i> بدلات وانتقالات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
@@ -1631,7 +1632,13 @@
             <div id="tripContent" style="display:none;">
 
                 <!-- ===== STATS ===== -->
-                <div class="stats-grid" id="stats-container">
+<div style="flex:1;min-width:220px;">
+                    <div style="font-weight:800;font-size:14px;margin-bottom:2px;"></div>
+                    <div style="font-size:12.5px;opacity:0.9;line-height:1.5;">التأشيرة · الباركود · الطيران · الفنادق · الانتقالات · الإعاشة. اختر التصنيف لإدخال التفاصيل.</div>
+                </div>
+                <button type="button" onclick="this.parentElement.style.display='none'" style="background:rgba(255,255,255,0.15);border:0;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;">إخفاء</button>
+            </div>
+<div class="stats-grid" id="stats-container">
                     <div class="stat-card stat-blue">
                         <span class="stat-icon"><i class="bi bi-journal-check"></i></span>
                         <div class="stat-number" id="statBookingValue">0</div>
@@ -1662,10 +1669,10 @@
                     <div class="table-wrap">
                         <table class="table-custom">
                             <thead>
-                                <tr><th>التصنيف</th><th>الإجمالي</th></tr>
+                                <tr><th>م</th><th>البيان</th><th>المبلغ</th></tr>
                             </thead>
                             <tbody id="categoryBreakdownBody">
-                                <tr><td colspan="2" style="text-align:center;padding:20px;color:var(--text-tertiary);">لا توجد تكاليف مسجّلة بعد</td></tr>
+                                <tr><td colspan="3" style="text-align:center;padding:20px;color:var(--text-tertiary);">لا توجد تكاليف مسجّلة بعد</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1735,26 +1742,174 @@
     <!-- ================================================================ -->
     <!-- MODAL - إضافة تكلفة رحلة مُصنّفة -->
     <!-- ================================================================ -->
+    <!-- MODAL - إضافة تكلفة رحلة مُصنّفة  -->
+    <!-- ================================================================ -->
     <div class="modal-overlay" id="expenseModalOverlay">
-        <div class="modal-box">
+        <div class="modal-box" style="max-width:640px;max-height:92vh;overflow-y:auto;">
             <h3><i class="bi bi-receipt-cutoff"></i> إضافة تكلفة رحلة</h3>
             <form id="expenseForm" onsubmit="handleExpenseSubmit(event)">
                 <label for="expenseCategory">التصنيف <span class="required">*</span></label>
-                <select id="expenseCategory" required></select>
+                <select id="expenseCategory" required onchange="onExpenseCategoryChange()"></select>
 
-                <label for="expenseAmount">المبلغ <span class="required">*</span></label>
+                <!-- ===== تفاصيل الفنادق (5200)  ===== -->
+                <div id="detailHotel" class="cost-detail-block" style="display:none;background:var(--bg-secondary);padding:12px;border-radius:10px;margin:10px 0;border:1px solid var(--border-color);">
+                    <div style="font-weight:700;margin-bottom:8px;color:var(--accent);"><i class="bi bi-building"></i> تفاصيل الفندق</div>
+                    <label for="hotelName">اسم الفندق / البيان</label>
+                    <input type="text" id="hotelName" placeholder="مثال: الرحاب هارموني — المدينة" />
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div>
+                            <label for="hotelRooms">عدد الغرف</label>
+                            <input type="number" id="hotelRooms" min="0" step="1" value="0" oninput="recalcHotelAmount()" />
+                        </div>
+                        <div>
+                            <label for="hotelNights">عدد الليالي</label>
+                            <input type="number" id="hotelNights" min="0" step="1" value="0" oninput="recalcHotelAmount()" />
+                        </div>
+                        <div>
+                            <label for="hotelRateSar">سعر الليلة (ريال)</label>
+                            <input type="number" id="hotelRateSar" min="0" step="0.01" value="0" oninput="recalcHotelAmount()" />
+                        </div>
+                        <div>
+                            <label for="hotelFx">سعر التحويل (جنيه/ريال)</label>
+                            <input type="number" id="hotelFx" min="0" step="0.01" value="13.46" oninput="recalcHotelAmount()" />
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);">
+                        المبلغ بالريال: <strong id="hotelSarPreview">0</strong> —
+                        المبلغ بالمصري (يُحسب تلقائياً): <strong id="hotelEgpPreview">0</strong>
+                    </div>
+                </div>
+
+                <!-- ===== تفاصيل التأشيرة (5400)  ===== -->
+                <div id="detailVisa" class="cost-detail-block" style="display:none;background:var(--bg-secondary);padding:12px;border-radius:10px;margin:10px 0;border:1px solid var(--border-color);">
+                    <div style="font-weight:700;margin-bottom:8px;color:var(--accent);"><i class="bi bi-passport"></i> تفاصيل التأشيرة</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+                        <div>
+                            <label for="visaPax">عدد الأفراد</label>
+                            <input type="number" id="visaPax" min="0" step="1" value="0" oninput="recalcVisaAmount()" />
+                        </div>
+                        <div>
+                            <label for="visaRateSar">سعر التأشيرة (ريال)</label>
+                            <input type="number" id="visaRateSar" min="0" step="0.01" value="0" oninput="recalcVisaAmount()" />
+                        </div>
+                        <div>
+                            <label for="visaFx">سعر التحويل</label>
+                            <input type="number" id="visaFx" min="0" step="0.01" value="13.46" oninput="recalcVisaAmount()" />
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);">
+                        المبلغ بالريال: <strong id="visaSarPreview">0</strong> —
+                        أو أدخل المبلغ بالمصري مباشرة أدناه إن لم يُحسب من الريال
+                    </div>
+                </div>
+
+                <!-- ===== تفاصيل الباركود (5500/5510/5520) ===== -->
+                <div id="detailBarcode" class="cost-detail-block" style="display:none;background:var(--bg-secondary);padding:12px;border-radius:10px;margin:10px 0;border:1px solid var(--border-color);">
+                    <div style="font-weight:700;margin-bottom:8px;color:var(--accent);"><i class="bi bi-qr-code"></i> تفاصيل الباركود</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div>
+                            <label for="barcodeQty">العدد</label>
+                            <input type="number" id="barcodeQty" min="0" step="1" value="0" oninput="recalcBarcodeAmount()" />
+                        </div>
+                        <div>
+                            <label for="barcodePrice">السعر للفرد (جنيه)</label>
+                            <input type="number" id="barcodePrice" min="0" step="0.01" value="3000" oninput="recalcBarcodeAmount()" />
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);">
+                        الإجمالي المحسوب: <strong id="barcodePreview">0</strong>
+                    </div>
+                </div>
+
+                <!-- ===== تفاصيل الطيران (5300) ===== -->
+                <div id="detailFlight" class="cost-detail-block" style="display:none;background:var(--bg-secondary);padding:12px;border-radius:10px;margin:10px 0;border:1px solid var(--border-color);">
+                    <div style="font-weight:700;margin-bottom:8px;color:var(--accent);"><i class="bi bi-airplane"></i> تفاصيل الطيران</div>
+                    <label for="flightSupplier">شركة الطيران / المندوب</label>
+                    <input type="text" id="flightSupplier" placeholder="مثال: طيران حكمت اسك للسياحة" />
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div>
+                            <label for="flightPax">العدد</label>
+                            <input type="number" id="flightPax" min="0" step="1" value="0" oninput="recalcFlightAmount()" />
+                        </div>
+                        <div>
+                            <label for="flightPrice">السعر للفرد (جنيه)</label>
+                            <input type="number" id="flightPrice" min="0" step="0.01" value="0" oninput="recalcFlightAmount()" />
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);">
+                        الإجمالي المحسوب: <strong id="flightPreview">0</strong>
+                    </div>
+                </div>
+
+                <!-- ===== تفاصيل الإعاشة (5900)  ===== -->
+                <div id="detailMeal" class="cost-detail-block" style="display:none;background:var(--bg-secondary);padding:12px;border-radius:10px;margin:10px 0;border:1px solid var(--border-color);">
+                    <div style="font-weight:700;margin-bottom:8px;color:var(--accent);"><i class="bi bi-cup-hot"></i> تفاصيل الإعاشة</div>
+                    <div style="font-size:12.5px;font-weight:600;margin:6px 0 4px;">المدينة</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+                        <div>
+                            <label for="mealMadPax">عدد الأفراد</label>
+                            <input type="number" id="mealMadPax" min="0" step="1" value="0" oninput="recalcMealAmount()" />
+                        </div>
+                        <div>
+                            <label for="mealMadRate">سعر/فرد/ليلة (ريال)</label>
+                            <input type="number" id="mealMadRate" min="0" step="0.01" value="3.5" oninput="recalcMealAmount()" />
+                        </div>
+                        <div>
+                            <label for="mealMadNights">الليالي</label>
+                            <input type="number" id="mealMadNights" min="0" step="1" value="4" oninput="recalcMealAmount()" />
+                        </div>
+                    </div>
+                    <div style="font-size:12.5px;font-weight:600;margin:10px 0 4px;">مكة</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+                        <div>
+                            <label for="mealMakPax">عدد الأفراد</label>
+                            <input type="number" id="mealMakPax" min="0" step="1" value="0" oninput="recalcMealAmount()" />
+                        </div>
+                        <div>
+                            <label for="mealMakRate">سعر/فرد/ليلة (ريال)</label>
+                            <input type="number" id="mealMakRate" min="0" step="0.01" value="2" oninput="recalcMealAmount()" />
+                        </div>
+                        <div>
+                            <label for="mealMakNights">الليالي</label>
+                            <input type="number" id="mealMakNights" min="0" step="1" value="12" oninput="recalcMealAmount()" />
+                        </div>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <label for="mealFx">سعر التحويل (جنيه/ريال)</label>
+                        <input type="number" id="mealFx" min="0" step="0.01" value="13.46" oninput="recalcMealAmount()" />
+                    </div>
+                    <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);">
+                        تكلفة المدينة: <strong id="mealMadPreview">0</strong> —
+                        تكلفة مكة: <strong id="mealMakPreview">0</strong> —
+                        الإجمالي: <strong id="mealTotalPreview">0</strong>
+                    </div>
+                </div>
+
+                <!-- ===== تفاصيل الانتقالات (5100) ===== -->
+                <div id="detailTransport" class="cost-detail-block" style="display:none;background:var(--bg-secondary);padding:12px;border-radius:10px;margin:10px 0;border:1px solid var(--border-color);">
+                    <div style="font-weight:700;margin-bottom:8px;color:var(--accent);"><i class="bi bi-bus-front"></i> تفاصيل الانتقالات</div>
+                    <label for="transportDesc">البيان</label>
+                    <input type="text" id="transportDesc" placeholder="مثال: مشوار العاصمة — ديوان عام وزارة السياحة" />
+                </div>
+
+                <label for="expenseAmount">المبلغ بالمصري (جنيه) <span class="required">*</span></label>
                 <input type="number" id="expenseAmount" min="0.01" step="0.01" required />
+                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-6px 0 10px;">يُحسب تلقائياً من التفاصيل أعلاه — يمكن تعديله يدوياً</p>
 
                 <label for="expenseDate">التاريخ <span class="required">*</span></label>
                 <input type="date" id="expenseDate" required />
 
-                <label for="expenseDescription">البيان (اختياري)</label>
-                <input type="text" id="expenseDescription" placeholder="تفاصيل التكلفة" />
+                <label for="expenseDescription">البيان / الملاحظات</label>
+                <input type="text" id="expenseDescription" placeholder="تفاصيل إضافية — تُحفظ مع بيانات الحساب التفصيلية" />
+
+                <label for="expenseDocNo">رقم المستند / إذن الصرف</label>
+                <input type="text" id="expenseDocNo" placeholder="مثال: 5 أو PAY-0000001" />
 
                 <label for="expensePaymentMethod">طريقة الدفع <span class="required">*</span></label>
                 <select id="expensePaymentMethod" onchange="onExpensePaymentMethodChange()" required>
                     <option value="نقدي">نقدي / بنكي فوري</option>
                     <option value="آجل">آجل — على حساب مورد</option>
+                    <option value="مباشر من عميل">مباشر من عميل — العميل دفع والمبلغ راح للمورد على طول</option>
                 </select>
 
                 <div id="expenseCashWrap">
@@ -1764,14 +1919,43 @@
 
                 <div id="expenseSupplierWrap" style="display:none;">
                     <label for="expenseSupplier">المورد <span class="required">*</span></label>
-                    <select id="expenseSupplier"></select>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <select id="expenseSupplier" style="flex:1;"></select>
+                        <button type="button" class="btn-action btn-outline" style="white-space:nowrap;padding:8px 12px;" onclick="openQuickAddSupplier()" title="إضافة مورد جديد من غير ما تسيب الشاشة"><i class="bi bi-truck"></i> مورد جديد</button>
+                    </div>
                 </div>
 
-                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-8px 0 14px;">سيتم إنشاء قيد يومية مزدوج تلقائيًا ويترحّل مباشرة لميزان المراجعة والقوائم المالية</p>
+                <div id="expenseFundedByWrap" style="display:none;">
+                    <label for="expenseFundedBy">حجز العميل الممول للدفعة <span class="required">*</span></label>
+                    <select id="expenseFundedBy"></select>
+                    <p style="font-size:11.5px;color:var(--text-tertiary);margin:4px 0 0;">هيتسجّل قيد واحد بيثبت الإيراد والمصروف مع بعض، وهيتزود على "المدفوع" في حجز العميل ده تلقائيًا</p>
+                </div>
+
+                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-8px 0 14px;">سيتم إنشاء قيد يومية مزدوج تلقائيًا ويُرحَّل إلى ميزان المراجعة والقوائم المالية</p>
 
                 <div class="modal-actions">
                     <button type="button" class="btn-action btn-outline" onclick="closeModalById('expenseModal')">إلغاء</button>
                     <button type="submit" class="btn-action btn-primary" id="saveExpenseBtn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <div class="modal-overlay" id="quickAddSupplierModalOverlay">
+        <div class="modal-box">
+            <h3><i class="bi bi-truck"></i> مورد جديد</h3>
+            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;">هيتضاف على طول ويترشّح في قايمة الموردين فوق — من غير ما تسيب شاشة المصروف</p>
+            <form id="quickAddSupplierForm" onsubmit="handleQuickAddSupplierSubmit(event)">
+                <label for="quickSupplierName">اسم المورد <span class="required">*</span></label>
+                <input type="text" id="quickSupplierName" required autofocus />
+
+                <label for="quickSupplierPhone">الهاتف (اختياري)</label>
+                <input type="text" id="quickSupplierPhone" />
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('quickAddSupplierModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="quickAddSupplierBtn">إضافة واختيار</button>
                 </div>
             </form>
         </div>
@@ -1784,7 +1968,7 @@
                 <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
             </div>
             <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-version">الإصدار 3.2.2</span>
                 <span class="footer-divider">|</span>
                 <a href="support.html" class="footer-link">
                     <i class="bi bi-headset"></i> الدعم الفني
@@ -1811,11 +1995,151 @@
         var bookings = [];
         var expenses = [];
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var isLoading = false;
 
-        var COST_CATEGORY_CODES = ['5100', '5200', '5300', '5400', '5500', '5510', '5520'];
+
+var COST_CATEGORY_CODES = ['5100', '5200', '5300', '5400', '5500', '5510', '5520', '5900'];
+        var DEFAULT_FX = 13.46; // سعر التحويل الافتراضي مطابق شيتات الإكسل
+
+        // إظهار/إخفاء كتل التفاصيل حسب التصنيف (مطابقة 100% للإكسل)
+        function onExpenseCategoryChange() {
+            var sel = document.getElementById('expenseCategory');
+            var opt = sel.options[sel.selectedIndex];
+            var code = opt ? (opt.getAttribute('data-code') || '') : '';
+            var blocks = {
+                '5200': 'detailHotel',
+                '5400': 'detailVisa',
+                '5500': 'detailBarcode', '5510': 'detailBarcode', '5520': 'detailBarcode',
+                '5300': 'detailFlight',
+                '5900': 'detailMeal',
+                '5100': 'detailTransport'
+            };
+            ['detailHotel','detailVisa','detailBarcode','detailFlight','detailMeal','detailTransport'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            if (blocks[code]) {
+                var show = document.getElementById(blocks[code]);
+                if (show) show.style.display = 'block';
+            }
+        }
+
+        function fmtNum(n) {
+            return (Math.round((parseFloat(n) || 0) * 100) / 100).toLocaleString('en-US');
+        }
+
+        function recalcHotelAmount() {
+            var rooms = parseFloat(document.getElementById('hotelRooms').value) || 0;
+            var nights = parseFloat(document.getElementById('hotelNights').value) || 0;
+            var rate = parseFloat(document.getElementById('hotelRateSar').value) || 0;
+            var fx = parseFloat(document.getElementById('hotelFx').value) || DEFAULT_FX;
+            var sar = rooms * nights * rate;
+            var egp = sar * fx;
+            document.getElementById('hotelSarPreview').textContent = fmtNum(sar);
+            document.getElementById('hotelEgpPreview').textContent = fmtNum(egp);
+            if (egp > 0) document.getElementById('expenseAmount').value = Math.round(egp * 100) / 100;
+        }
+
+        function recalcVisaAmount() {
+            var pax = parseFloat(document.getElementById('visaPax').value) || 0;
+            var rate = parseFloat(document.getElementById('visaRateSar').value) || 0;
+            var fx = parseFloat(document.getElementById('visaFx').value) || DEFAULT_FX;
+            var sar = pax * rate;
+            var egp = sar * fx;
+            document.getElementById('visaSarPreview').textContent = fmtNum(sar);
+            if (egp > 0) document.getElementById('expenseAmount').value = Math.round(egp * 100) / 100;
+        }
+
+        function recalcBarcodeAmount() {
+            var qty = parseFloat(document.getElementById('barcodeQty').value) || 0;
+            var price = parseFloat(document.getElementById('barcodePrice').value) || 0;
+            var total = qty * price;
+            document.getElementById('barcodePreview').textContent = fmtNum(total);
+            if (total > 0) document.getElementById('expenseAmount').value = Math.round(total * 100) / 100;
+        }
+
+        function recalcFlightAmount() {
+            var pax = parseFloat(document.getElementById('flightPax').value) || 0;
+            var price = parseFloat(document.getElementById('flightPrice').value) || 0;
+            var total = pax * price;
+            document.getElementById('flightPreview').textContent = fmtNum(total);
+            if (total > 0) document.getElementById('expenseAmount').value = Math.round(total * 100) / 100;
+        }
+
+        function recalcMealAmount() {
+            var madPax = parseFloat(document.getElementById('mealMadPax').value) || 0;
+            var madRate = parseFloat(document.getElementById('mealMadRate').value) || 0;
+            var madNights = parseFloat(document.getElementById('mealMadNights').value) || 0;
+            var makPax = parseFloat(document.getElementById('mealMakPax').value) || 0;
+            var makRate = parseFloat(document.getElementById('mealMakRate').value) || 0;
+            var makNights = parseFloat(document.getElementById('mealMakNights').value) || 0;
+            var fx = parseFloat(document.getElementById('mealFx').value) || DEFAULT_FX;
+            var madSar = madPax * madRate * madNights;
+            var makSar = makPax * makRate * makNights;
+            var madEgp = madSar * fx;
+            var makEgp = makSar * fx;
+            var total = madEgp + makEgp;
+            document.getElementById('mealMadPreview').textContent = fmtNum(madEgp);
+            document.getElementById('mealMakPreview').textContent = fmtNum(makEgp);
+            document.getElementById('mealTotalPreview').textContent = fmtNum(total);
+            if (total > 0) document.getElementById('expenseAmount').value = Math.round(total * 100) / 100;
+        }
+
+        // بناء نص البيان التفصيلي مطابق لصيغة ملاحظات الإكسل
+        function buildDetailDescription(code, baseDesc) {
+            var parts = [];
+            if (baseDesc) parts.push(baseDesc);
+            if (code === '5200') {
+                var name = document.getElementById('hotelName').value.trim();
+                var rooms = document.getElementById('hotelRooms').value;
+                var nights = document.getElementById('hotelNights').value;
+                var rate = document.getElementById('hotelRateSar').value;
+                var fx = document.getElementById('hotelFx').value || DEFAULT_FX;
+                if (name) parts.push(name);
+                parts.push('عدد ' + rooms + ' غرف × سعر ' + rate + ' ريال × ' + nights + ' ليالي / سعر التحويل ' + fx);
+            } else if (code === '5400') {
+                var pax = document.getElementById('visaPax').value;
+                var rate = document.getElementById('visaRateSar').value;
+                var fx = document.getElementById('visaFx').value || DEFAULT_FX;
+                parts.push('تأشيرة ' + pax + ' فرد × ' + rate + ' ريال / تحويل ' + fx);
+            } else if (code === '5500' || code === '5510' || code === '5520') {
+                var qty = document.getElementById('barcodeQty').value;
+                var price = document.getElementById('barcodePrice').value;
+                parts.push('باركود عدد ' + qty + ' × ' + price + ' جنيه');
+            } else if (code === '5300') {
+                var sup = document.getElementById('flightSupplier').value.trim();
+                var pax = document.getElementById('flightPax').value;
+                var price = document.getElementById('flightPrice').value;
+                if (sup) parts.push(sup);
+                parts.push('طيران ' + pax + ' فرد × ' + price + ' جنيه');
+            } else if (code === '5900') {
+                var madPax = document.getElementById('mealMadPax').value;
+                var madRate = document.getElementById('mealMadRate').value;
+                var madNights = document.getElementById('mealMadNights').value;
+                var makPax = document.getElementById('mealMakPax').value;
+                var makRate = document.getElementById('mealMakRate').value;
+                var makNights = document.getElementById('mealMakNights').value;
+                var fx = document.getElementById('mealFx').value || DEFAULT_FX;
+                parts.push('إعاشة المدينة ' + madPax + ' فرد × ' + madRate + ' ريال × ' + madNights + ' ليالي');
+                parts.push('إعاشة مكة ' + makPax + ' فرد × ' + makRate + ' ريال × ' + makNights + ' ليالي');
+                parts.push('تحويل ' + fx);
+            } else if (code === '5100') {
+                var td = document.getElementById('transportDesc').value.trim();
+                if (td) parts.push(td);
+            }
+            var docNo = (document.getElementById('expenseDocNo') || {}).value;
+            if (docNo && docNo.trim()) parts.push('مستند: ' + docNo.trim());
+            return parts.join(' | ');
+        }
+
+        function getSelectedCategoryCode() {
+            var sel = document.getElementById('expenseCategory');
+            var opt = sel.options[sel.selectedIndex];
+            return opt ? (opt.getAttribute('data-code') || '') : '';
+        }
+
 
         function getQueryParam(name) {
             var params = new URLSearchParams(window.location.search);
@@ -1900,7 +2224,7 @@
                 profitEl.textContent = Supabase.formatCurrency(financials.netProfit);
                 profitEl.style.color = financials.netProfit >= 0 ? 'var(--success)' : 'var(--danger)';
 
-                renderCategoryBreakdown(financials.byCategory);
+                renderCategoryBreakdown(financials.byCategoryCode, financials.netProfit, financials.totalExpense);
                 renderExpensesTable();
                 renderBookingsTable();
             } catch (error) {
@@ -1909,17 +2233,34 @@
             }
         }
 
-        function renderCategoryBreakdown(byCategory) {
+        // نفس ترتيب وتبويب شيت "ملخص الرحلة" بالظبط: تأشيرة، باركود (مجمّع)، طيران،
+        // فنادق، انتقالات، إعاشة — كل بند بيظهر حتى لو صفر، وبعدها صافي الربح
+        // والإجمالي، تمامًا زي الشيت اللي الشركاء متعودين عليه
+        var TRIP_SUMMARY_ROWS = [
+            { label: 'إجمالى تكلفة التأشيرة', codes: ['5400'] },
+            { label: 'إجمالى تكلفة الباركود', codes: ['5500', '5510', '5520'] },
+            { label: 'إجمالى تكلفة الطيران', codes: ['5300'] },
+            { label: 'إجمالى تكلفة الفنادق', codes: ['5200'] },
+            { label: 'إجمالى تكلفة الانتقالات', codes: ['5100'] },
+            { label: 'إجمالى تكلفة الإعاشة', codes: ['5900'] }
+        ];
+
+        function renderCategoryBreakdown(byCategoryByCode, netProfit, totalExpense) {
             var tbody = document.getElementById('categoryBreakdownBody');
-            var keys = Object.keys(byCategory || {});
-            if (!keys.length) {
-                tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:20px;color:var(--text-tertiary);">لا توجد تكاليف مسجّلة بعد</td></tr>';
-                return;
-            }
             var html = '';
-            keys.forEach(function(k) {
-                html += '<tr><td>' + k.replace('مصروفات الرحلات - ', '') + '</td><td style="color:var(--danger);font-weight:700;">' + Supabase.formatCurrency(byCategory[k]) + '</td></tr>';
+            var seq = 1;
+
+            TRIP_SUMMARY_ROWS.forEach(function(row) {
+                var amount = 0;
+                row.codes.forEach(function(code) {
+                    amount += parseFloat((byCategoryByCode && byCategoryByCode[code]) || 0);
+                });
+                html += '<tr><td>' + (seq++) + '</td><td>' + row.label + '</td><td style="color:var(--danger);font-weight:700;">' + Supabase.formatCurrency(amount) + '</td></tr>';
             });
+
+            html += '<tr style="border-top:2px solid var(--border-color);"><td colspan="2" style="font-weight:900;">إجمالى ربح الرحلة</td><td style="font-weight:900;color:' + (netProfit >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + Supabase.formatCurrency(netProfit) + '</td></tr>';
+            html += '<tr><td colspan="2" style="font-weight:900;">الإجمالى (التكاليف)</td><td style="font-weight:900;">' + Supabase.formatCurrency(totalExpense) + '</td></tr>';
+
             tbody.innerHTML = html;
         }
 
@@ -1993,30 +2334,86 @@
         function openExpenseModal() {
             var catSelect = document.getElementById('expenseCategory');
             catSelect.innerHTML = costCategoryAccounts.map(function(a) {
-                return '<option value="' + a.id + '">' + a.name.replace('مصروفات الرحلات - ', '') + '</option>';
+                return '<option value="' + a.id + '" data-code="' + (a.code || '') + '">' + a.name.replace('مصروفات الرحلات - ', '') + ' (' + (a.code || '') + ')</option>';
             }).join('');
 
             var cashSelect = document.getElementById('expenseCashAccount');
             cashSelect.innerHTML = cashAccounts.map(function(a) {
-                return '<option value="' + a.id + '">' + a.name + '</option>';
+                return '<option value="' + a.id + '">' + (a.code ? a.code + ' — ' : '') + a.name + '</option>';
             }).join('');
 
+            populateSupplierSelect();
+
+            var fundedBySelect = document.getElementById('expenseFundedBy');
+            fundedBySelect.innerHTML = bookings.map(function(b) {
+                var client = clients.find(function(c) { return String(c.id) === String(b.client_id); });
+                var label = (client ? client.name : 'عميل') + ' — ' + (b.booking_code || '') + ' (متبقي ' + Supabase.formatCurrency((parseFloat(b.booking_value || 0) - parseFloat(b.paid_amount || 0))) + ')';
+                return '<option value="' + b.id + '">' + label + '</option>';
+            }).join('');
+
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('expensePaymentMethod').value = 'نقدي';
+            // إعادة ضبط القيم الافتراضية المطابقة للإكسل
+            if (document.getElementById('hotelFx')) document.getElementById('hotelFx').value = DEFAULT_FX;
+            if (document.getElementById('visaFx')) document.getElementById('visaFx').value = DEFAULT_FX;
+            if (document.getElementById('mealFx')) document.getElementById('mealFx').value = DEFAULT_FX;
+            if (document.getElementById('mealMadRate')) document.getElementById('mealMadRate').value = 3.5;
+            if (document.getElementById('mealMakRate')) document.getElementById('mealMakRate').value = 2;
+            if (document.getElementById('mealMadNights')) document.getElementById('mealMadNights').value = 4;
+            if (document.getElementById('mealMakNights')) document.getElementById('mealMakNights').value = 12;
+            if (document.getElementById('barcodePrice')) document.getElementById('barcodePrice').value = 3000;
+            onExpensePaymentMethodChange();
+            onExpenseCategoryChange();
+
+            openModalById('expenseModal');
+        }
+
+        function populateSupplierSelect() {
             var supplierSelect = document.getElementById('expenseSupplier');
             supplierSelect.innerHTML = suppliers.map(function(s) {
                 return '<option value="' + s.id + '">' + s.name + '</option>';
             }).join('');
+        }
 
-            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('expensePaymentMethod').value = 'نقدي';
-            onExpensePaymentMethodChange();
+        function openQuickAddSupplier() {
+            document.getElementById('quickAddSupplierForm').reset();
+            openModalById('quickAddSupplierModal');
+        }
 
-            openModalById('expenseModal');
+        /** إضافة مورد جديد من داخل شاشة "إضافة تكلفة" مباشرة، من غير مغادرة الرحلة */
+        async function handleQuickAddSupplierSubmit(event) {
+            event.preventDefault();
+
+            var name = document.getElementById('quickSupplierName').value.trim();
+            var phone = document.getElementById('quickSupplierPhone').value.trim();
+            if (!name) { showToast('⚠️ الرجاء إدخال اسم المورد', 'warning'); return; }
+
+            var btn = document.getElementById('quickAddSupplierBtn');
+            btn.disabled = true;
+            btn.textContent = 'جاري الإضافة...';
+
+            try {
+                var result = await Supabase.addData('suppliers', { name: name, phone: phone || null });
+                var newSupplier = result[0] || result;
+                suppliers.push(newSupplier);
+                populateSupplierSelect();
+                document.getElementById('expenseSupplier').value = newSupplier.id;
+                closeModalById('quickAddSupplierModal');
+                showToast('✅ اتضاف المورد واتحدد في المصروف', 'success');
+            } catch (error) {
+                showToast('❌ فشلت إضافة المورد: ' + error.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'إضافة واختيار';
         }
 
         function onExpensePaymentMethodChange() {
             var method = document.getElementById('expensePaymentMethod').value;
             document.getElementById('expenseCashWrap').style.display = method === 'نقدي' ? 'block' : 'none';
-            document.getElementById('expenseSupplierWrap').style.display = method === 'آجل' ? 'block' : 'none';
+            document.getElementById('expenseSupplierWrap').style.display = (method === 'آجل' || method === 'مباشر من عميل') ? 'block' : 'none';
+            document.getElementById('expenseFundedByWrap').style.display = method === 'مباشر من عميل' ? 'block' : 'none';
         }
 
         async function handleExpenseSubmit(event) {
@@ -2025,15 +2422,21 @@
             var categoryId = document.getElementById('expenseCategory').value;
             var amount = parseFloat(document.getElementById('expenseAmount').value);
             var date = document.getElementById('expenseDate').value;
-            var description = document.getElementById('expenseDescription').value.trim();
+            var baseDesc = document.getElementById('expenseDescription').value.trim();
+            var catCode = getSelectedCategoryCode();
+            // بناء البيان التفصيلي مطابق لصيغة ملاحظات شيتات الإكسل 100%
+            var description = buildDetailDescription(catCode, baseDesc);
             var method = document.getElementById('expensePaymentMethod').value;
             var cashAccountId = document.getElementById('expenseCashAccount').value;
             var supplierId = document.getElementById('expenseSupplier').value;
+            var fundedByBookingId = document.getElementById('expenseFundedBy').value;
+            var docNo = (document.getElementById('expenseDocNo') || {}).value || '';
 
             if (!categoryId) { showToast('⚠️ الرجاء اختيار تصنيف التكلفة', 'warning'); return; }
             if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
             if (method === 'نقدي' && !cashAccountId) { showToast('⚠️ الرجاء اختيار حساب الدفع', 'warning'); return; }
-            if (method === 'آجل' && !supplierId) { showToast('⚠️ الرجاء اختيار المورد', 'warning'); return; }
+            if ((method === 'آجل' || method === 'مباشر من عميل') && !supplierId) { showToast('⚠️ الرجاء اختيار المورد', 'warning'); return; }
+            if (method === 'مباشر من عميل' && !fundedByBookingId) { showToast('⚠️ الرجاء اختيار حجز العميل الممول', 'warning'); return; }
 
             var btn = document.getElementById('saveExpenseBtn');
             btn.disabled = true;
@@ -2048,7 +2451,9 @@
                     expense_date: date,
                     payment_method: method,
                     cash_account_id: method === 'نقدي' ? cashAccountId : null,
-                    supplier_id: method === 'آجل' ? supplierId : null
+                    supplier_id: (method === 'آجل' || method === 'مباشر من عميل') ? supplierId : null,
+                    funded_by_booking_id: method === 'مباشر من عميل' ? fundedByBookingId : null,
+                    document_no: docNo.trim() || null
                 });
 
                 // ملحوظة: مبقيناش بنكتب على suppliers.debt هنا خالص — addTripExpense()
@@ -2058,10 +2463,25 @@
                 // الكتابة المباشرة القديمة هنا كانت هي سبب انفصال suppliers.debt
                 // عن الواقع أساسًا.
 
-                closeModalById('expenseModal');
-                document.getElementById('expenseForm').reset();
-                showToast('✅ تمت إضافة التكلفة وترحيلها للمحرك المحاسبي', 'success');
-                loadTripDetails();
+                showToast('✅ تم حفظ بند التكلفة بنجاح', 'success');
+                var keep = confirm('تم الحفظ.\n\nهل تريد إضافة بند آخر؟');
+                if (keep) {
+                    document.getElementById('expenseForm').reset();
+                    document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+                    if (document.getElementById('hotelFx')) document.getElementById('hotelFx').value = DEFAULT_FX;
+                    if (document.getElementById('visaFx')) document.getElementById('visaFx').value = DEFAULT_FX;
+                    if (document.getElementById('mealFx')) document.getElementById('mealFx').value = DEFAULT_FX;
+                    if (document.getElementById('mealMadRate')) document.getElementById('mealMadRate').value = 3.5;
+                    if (document.getElementById('mealMakRate')) document.getElementById('mealMakRate').value = 2;
+                    if (document.getElementById('barcodePrice')) document.getElementById('barcodePrice').value = 3000;
+                    onExpensePaymentMethodChange();
+                    onExpenseCategoryChange();
+                    loadTripDetails();
+                } else {
+                    closeModalById('expenseModal');
+                    document.getElementById('expenseForm').reset();
+                    loadTripDetails();
+                }
             } catch (error) {
                 showToast('❌ فشل إضافة التكلفة: ' + error.message, 'error');
             }
@@ -2110,11 +2530,13 @@
 
             try {
                 var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
+                systemCurrency = settings.currency || 'EGP';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
             } catch (error) {
                 console.error('❌ خطأ في جلب الإعدادات:', error);
                 var savedCurrency = localStorage.getItem('systemCurrency');
+                // هجرة عملة: النظام مبني على الجنيه المصري مطابقة للإكسل
+                if (savedCurrency === 'SAR') { localStorage.setItem('systemCurrency', 'EGP'); savedCurrency = 'EGP'; }
                 if (savedCurrency) {
                     systemCurrency = savedCurrency;
                     currencySymbol = Supabase.getCurrencySymbol(systemCurrency);

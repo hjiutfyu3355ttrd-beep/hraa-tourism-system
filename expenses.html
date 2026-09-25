@@ -1451,6 +1451,24 @@
         body.dark-mode .footer-custom .footer-link:hover {
             color: var(--accent-light);
         }
+    
+        /* ================================================================
+           STATUS BADGES (إضافي)
+           ================================================================ */
+        .status-badge {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+        .status-active { background: var(--success-bg); color: var(--success); }
+        .status-pending { background: var(--warning-bg); color: var(--warning); }
+        .status-completed { background: var(--info-bg); color: var(--info); }
+        .status-cancelled { background: var(--danger-bg); color: var(--danger); }
+        .status-info { background: var(--info-bg); color: var(--info); }
+
     </style>
 </head>
 <body>
@@ -1483,13 +1501,13 @@
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
                 <li><a href="expenses.html" class="active"><i class="bi bi-cash-coin"></i> المصروفات العمومية <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="allowances.html"><i class="bi bi-car-front-fill"></i> بدلات وانتقالات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
             <div class="nav-section-title">التقارير</div>
             <ul class="nav-list">
                 <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
-                <li><a href="rep_statement.html"><i class="bi bi-person-lines-fill"></i> كشف حساب المندوب</a></li>
                 <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
                 <li><a href="trip_details.html"><i class="bi bi-airplane-engines"></i> تفاصيل الرحلة</a></li>
                 <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
@@ -1534,6 +1552,7 @@
 
                 <h4 class="page-title" id="pageTitleText">
                     المصروفات العمومية
+                    <small>مصروفات بدل الانتقال والمطار لكل موظف</small>
                 </h4>
             </div>
 
@@ -1559,7 +1578,8 @@
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>المصروفات العمومية</h2>
+                    <h2>المصروفات العمومية الموظفين</h2>
+                    <p>تسجيل الرواتب والمصاريف العمومية</p>
                 </div>
                 <div class="ph-right">
                     <strong>اليوم</strong>
@@ -1568,37 +1588,46 @@
             </div>
 
             <!-- ===== STATS ===== -->
-            <div class="stats-grid" id="stats-container">
-                <div class="stat-card stat-blue">
-                    <span class="stat-icon"><i class="bi bi-list-ol"></i></span>
-                    <div class="stat-number" id="statCount">0</div>
-                    <div class="stat-label">عدد المصروفات</div>
+<div style="flex:1;min-width:220px;">
+                    <div style="font-weight:800;font-size:14px;margin-bottom:2px;"></div>
+                    <div style="font-size:12.5px;opacity:0.9;line-height:1.5;">رقم المصروف · التاريخ · نوع المصروف (رواتب/كهرباء/أثاث/دعاية...) · المستفيد · طريقة السداد · المبلغ · رقم المستند · البيان · ملاحظات.</div>
                 </div>
+                <button type="button" onclick="this.parentElement.style.display='none'" style="background:rgba(255,255,255,0.15);border:0;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;">إخفاء</button>
+            </div>
+<div class="stats-grid" id="stats-container">
                 <div class="stat-card stat-red">
                     <span class="stat-icon"><i class="bi bi-cash-stack"></i></span>
-                    <div class="stat-number" id="statTotal">0</div>
+                    <div class="stat-number" id="statTotalExpenses">0</div>
                     <div class="stat-label">إجمالي المصروفات</div>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-icon"><i class="bi bi-calendar-month"></i></span>
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-list-ol"></i></span>
+                    <div class="stat-number" id="statExpenseCount">0</div>
+                    <div class="stat-label">عدد السندات</div>
+                </div>
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-calendar-month-fill"></i></span>
                     <div class="stat-number" id="statThisMonth">0</div>
-                    <div class="stat-label">مصروفات الشهر الحالي</div>
+                    <div class="stat-label">مصروفات هذا الشهر</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-person-check-fill"></i></span>
+                    <div class="stat-number" id="statTypeCount">0</div>
+                    <div class="stat-label">عدد الموظفين المستفيدين</div>
                 </div>
             </div>
 
-            <!-- ===== ACTIONS ===== -->
-            <div class="panel" style="margin-bottom:16px;">
-                <div style="padding:14px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-                    <button class="btn-action btn-success" onclick="openExpenseModal()">
-                        <i class="bi bi-plus-circle-fill"></i> تسجيل مصروف جديد
-                    </button>
-                    <button class="btn-action btn-primary" onclick="loadData()">
-                        <i class="bi bi-arrow-clockwise"></i> تحديث
-                    </button>
-                </div>
+            <!-- ===== TOOLBAR ===== -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <button class="btn-action btn-success" onclick="openExpenseModal()">
+                    <i class="bi bi-plus-circle-fill"></i> بدل جديد
+                </button>
+                <button class="btn-action btn-primary" onclick="loadData()">
+                    <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
+                </button>
             </div>
 
-            <!-- ===== EXPENSES TABLE ===== -->
+            <!-- ===== ALLOWANCES TABLE ===== -->
             <div class="panel">
                 <div class="panel-header">
                     <h5 class="panel-title"><i class="bi bi-cash-coin"></i> سجل المصروفات العمومية</h5>
@@ -1608,21 +1637,17 @@
                     <table class="table-custom">
                         <thead>
                             <tr>
-                                <th>م</th>
-                                <th>التاريخ</th>
-                                <th>نوع المصروف</th>
-                                <th>المستفيد</th>
-                                <th>طريقة السداد</th>
-                                <th>المبلغ</th>
-                                <th>رقم المستند</th>
-                                <th>البيان</th>
-                                <th>ملاحظات</th>
+                                <th>م</th><th>التاريخ</th><th>المستفيد</th><th>نوع البدل</th>
+                                <th>طريقة السداد</th><th>المبلغ</th><th>رقم المستند</th><th>البيان</th>
                                 <th style="text-align:center;">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="expensesBody">
                             <tr>
-                                <td colspan="10" style="text-align:center;padding:30px;color:var(--text-tertiary);">جاري التحميل...</td>
+                                <td colspan="9" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                    <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
+                                    جاري التحميل...
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -1634,51 +1659,55 @@
     </main>
 
     <!-- ================================================================ -->
-    <!-- MODAL - تسجيل مصروف عمومي -->
+    <!-- MODAL - رواتب / مطار جديد -->
     <!-- ================================================================ -->
     <div class="modal-overlay" id="expenseModalOverlay">
         <div class="modal-box">
-            <h3><i class="bi bi-cash-coin"></i> تسجيل مصروف عمومي</h3>
+            <h3><i class="bi bi-car-front-fill"></i> رواتب / مطار جديد</h3>
+            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;">يُسجَّل تلقائيًا بقيد محاسبي مزدوج</p>
             <form id="expenseForm" onsubmit="handleExpenseSubmit(event)">
-                <label for="expenseCategory">نوع المصروف <span class="required">*</span></label>
-                <select id="expenseCategory" required></select>
-
-                <label for="expenseBeneficiary">المستفيد</label>
-                <input type="text" id="expenseBeneficiary" placeholder="اسم الشخص/الجهة المستفيدة" />
-
-                <label for="expenseAmount">المبلغ <span class="required">*</span></label>
-                <input type="number" id="expenseAmount" min="0.01" step="0.01" required placeholder="0" />
-
                 <label for="expenseDate">التاريخ <span class="required">*</span></label>
                 <input type="date" id="expenseDate" required />
 
-                <label for="expensePaymentMethod">طريقة السداد <span class="required">*</span></label>
-                <select id="expensePaymentMethod" onchange="onExpensePaymentMethodChange()" required>
-                    <option value="نقدي">نقدي / بنكي فوري</option>
-                    <option value="آجل">آجل — على حساب مورد</option>
+                <label for="expenseBeneficiary">المستفيد (الموظف) <span class="required">*</span></label>
+                <input type="text" id="expenseBeneficiary" placeholder="اسم الموظف" required />
+
+                <label for="expenseType">نوع البدل <span class="required">*</span></label>
+                <select id="expenseType" required>
+                    <option value="رواتب">رواتب</option>
+                    <option value="مصاريف">مصاريف</option>
+                    <option value="مصروف كهرباء">مصروف كهرباء</option>
+                    <option value="مصاريف أثاث">مصاريف أثاث</option>
+                    <option value="مصاريف دعايه و اعلان">مصاريف دعايه و اعلان</option>
+                    <option value="إنترنت">إنترنت</option>
+                    <option value="غاز">غاز</option>
+                    <option value="أخرى">أخرى</option>
                 </select>
 
-                <div id="expenseCashWrap">
-                    <label for="expenseCashAccount">الدفع من <span class="required">*</span></label>
+                <label for="expenseAmount">المبلغ <span class="required">*</span></label>
+                <input type="number" id="expenseAmount" min="0.01" step="0.01" required />
+
+                <label for="expensePaymentMethod">طريقة السداد <span class="required">*</span></label>
+                <select id="expensePaymentMethod" onchange="toggleExpenseCashAccount()" required>
+                    <option value="نقدا">نقدا</option>
+                    <option value="تحويل بنكي">تحويل بنكي</option>
+                </select>
+
+                <div id="expenseCashAccountWrap">
+                    <label for="expenseCashAccount">تُصرف من <span class="required">*</span></label>
                     <select id="expenseCashAccount"></select>
                 </div>
 
-                <div id="expenseSupplierWrap" style="display:none;">
-                    <label for="expenseSupplier">المورد <span class="required">*</span></label>
-                    <select id="expenseSupplier"></select>
-                </div>
+                <label for="expenseDocumentNo">رقم المستند (اختياري)</label>
+                <input type="text" id="expenseDocumentNo" placeholder="رقم الإيصال إن وجد" />
 
-                <label for="expenseDocumentNo">رقم المستند</label>
-                <input type="text" id="expenseDocumentNo" placeholder="مثال: 205" />
+                <label for="expenseDescription">البيان <span class="required">*</span></label>
+                <input type="text" id="expenseDescription" placeholder="بيان تفصيلي للمصروف" required />
 
-                <label for="expenseDescription">البيان</label>
-                <input type="text" id="expenseDescription" placeholder="تفاصيل المصروف" />
+                <label for="expenseNotes">ملاحظات (اختياري)</label>
+                <input type="text" id="expenseNotes" placeholder="ملاحظات إضافية" />
 
-                <label for="expenseNotes">ملاحظات</label>
-                <input type="text" id="expenseNotes" placeholder="ملاحظات إضافية (اختياري)" />
-
-                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-8px 0 14px;">سيتم إنشاء قيد يومية مزدوج تلقائيًا ويترحّل مباشرة لميزان المراجعة والقوائم المالية</p>
-
+                <p style="font-size:11.5px;color:var(--text-tertiary);margin:0 0 10px;">بعد الحفظ يمكنك إضافة سجل جديد مباشرة.</p>
                 <div class="modal-actions">
                     <button type="button" class="btn-action btn-outline" onclick="closeModalById('expenseModal')">إلغاء</button>
                     <button type="submit" class="btn-action btn-primary" id="saveExpenseBtn">حفظ</button>
@@ -1695,7 +1724,7 @@
                 <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
             </div>
             <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-version">الإصدار 3.2.2</span>
                 <span class="footer-divider">|</span>
                 <a href="support.html" class="footer-link">
                     <i class="bi bi-headset"></i> الدعم الفني
@@ -1712,14 +1741,12 @@
         // ================================================================
         // STATE
         // ================================================================
-        var expenses = [];
-        var accounts = [];
-        var suppliers = [];
-        var expenseTypeAccounts = [];   // كل حسابات المصروفات النشطة (account_type = expense)
-        var cashAccounts = [];          // الصندوق + البنوك
+        var allowances = [];
+        var cashAccounts = [];
+        var allowanceCategoryAccount = null; // حساب "المصروفات العمومية الموظفين" في دليل الحسابات
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var isLoading = false;
 
         // ================================================================
@@ -1730,27 +1757,33 @@
             isLoading = true;
 
             try {
-                var results = await Promise.all([
-                    Supabase.getTripExpenses().catch(function() { return []; }),
-                    Supabase.getAccounts().catch(function() { return []; }),
-                    Supabase.getSuppliers().catch(function() { return []; })
-                ]);
-                var allExpenses = results[0] || [];
-                accounts = results[1] || [];
-                suppliers = results[2] || [];
+                await ensureAllowanceAccount();
+            } catch (error) {
+                console.error('❌ خطأ في تجهيز حساب المصروفات:', error);
+            }
 
-                // المصروفات العمومية فقط = اللي مش مرتبطة برحلة (trip_id فاضي)
-                expenses = allExpenses.filter(function(e) { return !e.trip_id; });
-
-                expenseTypeAccounts = accounts.filter(function(a) {
-                    return a.account_type === 'expense' && a.is_active !== false;
+            try {
+                // مصروفات الرحلات بدون trip_id هي المصروفات الإدارية العامة،
+                // ونعرض هنا فقط اللي مسجّلة على حساب "المصروفات العمومية الموظفين"
+                var allExpenses = await Supabase.getTripExpenses();
+                allowances = (allExpenses || []).filter(function(e) {
+                    return !e.trip_id && allowanceCategoryAccount && e.category_account_id === allowanceCategoryAccount.id;
                 });
-                cashAccounts = accounts.filter(function(a) {
-                    return a.code === '1100' || a.code === '1200';
+                allowances.sort(function(a, b) { return new Date(b.expense_date) - new Date(a.expense_date); });
+            } catch (error) {
+                console.error('❌ خطأ في جلب المصروفات:', error);
+                showToast('⚠️ فشل تحميل المصروفات', 'warning');
+                allowances = [];
+            }
+
+            try {
+                var allAccounts = await Supabase.getAccounts();
+                cashAccounts = allAccounts.filter(function(a) {
+                    return a.code === '1100' || (a.code && a.code.indexOf('12') === 0 && a.code !== '1200');
                 });
             } catch (error) {
-                console.error('❌ خطأ في جلب المصروفات العمومية:', error);
-                showToast('⚠️ فشل تحميل البيانات', 'warning');
+                console.error('❌ خطأ في جلب حسابات الصندوق/البنك:', error);
+                cashAccounts = [];
             }
 
             renderStats();
@@ -1759,156 +1792,181 @@
             isLoading = false;
         }
 
-        function accountName(id) {
-            var a = accounts.find(function(x) { return String(x.id) === String(id); });
-            return a ? a.name : '—';
+        /**
+         * يتأكد من وجود حساب "المصروفات العمومية الموظفين" في دليل الحسابات
+         * (تحت مجموعة 5600 مصروفات إدارية وعمومية) — لو مش موجود بينشئه
+         * تلقائيًا بكود 5700، بنفس فكرة ensureBankAccount في supabase.js
+         */
+        async function ensureAllowanceAccount() {
+            var accounts = await Supabase.getAccounts();
+            var existing = accounts.find(function(a) { return a.code === '5700'; });
+            if (existing) { allowanceCategoryAccount = existing; return existing; }
+
+            var created = await Supabase.addAccount({
+                code: '5700',
+                name: 'المصروفات العمومية — رواتب ومصاريف',
+                account_type: 'expense',
+                parent_code: '5600',
+                is_default: false
+            });
+            allowanceCategoryAccount = created;
+            return created;
         }
 
         function renderStats() {
-            var total = expenses.reduce(function(s, e) { return s + parseFloat(e.amount || 0); }, 0);
+            var total = 0, thisMonthTotal = 0, beneficiaries = {};
             var now = new Date();
-            var thisMonth = expenses.filter(function(e) {
-                var d = new Date(e.expense_date);
-                return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-            }).reduce(function(s, e) { return s + parseFloat(e.amount || 0); }, 0);
 
-            document.getElementById('statCount').textContent = expenses.length;
-            document.getElementById('statTotal').textContent = Supabase.formatCurrency(total);
-            document.getElementById('statThisMonth').textContent = Supabase.formatCurrency(thisMonth);
+            allowances.forEach(function(a) {
+                var amount = parseFloat(a.amount || 0);
+                total += amount;
+
+                var d = new Date(a.expense_date);
+                if (!isNaN(d) && d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) {
+                    thisMonthTotal += amount;
+                }
+                if (a.beneficiary) beneficiaries[a.beneficiary] = true;
+            });
+
+            document.getElementById('statTotalExpenses').textContent = Supabase.formatCurrency(total);
+            document.getElementById('statExpenseCount').textContent = allowances.length;
+            document.getElementById('statThisMonth').textContent = Supabase.formatCurrency(thisMonthTotal);
+            document.getElementById('statTypeCount').textContent = Object.keys(beneficiaries).length;
         }
 
         function renderTable() {
             var tbody = document.getElementById('expensesBody');
             var count = document.getElementById('recordCount');
 
-            if (!expenses.length) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-cash-coin" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا توجد مصروفات عمومية مسجلة بعد</td></tr>';
+            if (!allowances.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-cash-coin" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا توجد مصروفات مسجلة</td></tr>';
                 count.textContent = '0 سجل';
                 return;
             }
 
-            var sorted = expenses.slice().sort(function(a, b) { return new Date(b.expense_date) - new Date(a.expense_date); });
-            count.textContent = sorted.length + ' سجل';
+            count.textContent = allowances.length + ' سجل';
 
             var html = '';
-            sorted.forEach(function(e, i) {
-                var supplierName = e.supplier_id ? (suppliers.find(function(s) { return String(s.id) === String(e.supplier_id); }) || {}).name : null;
+            for (var i = 0; i < allowances.length; i++) {
+                var a = allowances[i];
+                var dateObj = new Date(a.expense_date);
+                var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-EG') : (a.expense_date || '—');
+                var expenseType = (a.notes && a.notes.indexOf('نوع:') === 0) ? a.notes.replace('نوع:', '').split('|')[0] : '—';
+                var realNotes = (a.notes && a.notes.indexOf('|') > -1) ? a.notes.split('|').slice(1).join('|').trim() : (a.notes || '—');
+
                 html += '<tr>' +
                     '<td>' + (i + 1) + '</td>' +
-                    '<td>' + (e.expense_date || '—') + '</td>' +
-                    '<td>' + accountName(e.category_account_id).replace('مصروفات الرحلات - ', '') + '</td>' +
-                    '<td>' + (e.beneficiary || supplierName || '—') + '</td>' +
-                    '<td>' + (e.payment_method || '—') + '</td>' +
-                    '<td style="color:var(--danger);font-weight:600;">' + Supabase.formatCurrency(e.amount) + '</td>' +
-                    '<td>' + (e.document_no || '—') + '</td>' +
-                    '<td>' + (e.description || '—') + '</td>' +
-                    '<td>' + (e.notes || '—') + '</td>' +
+                    '<td>' + formattedDate + '</td>' +
+                    '<td><strong>' + (a.beneficiary || '—') + '</strong></td>' +
+                    '<td>' + expenseType + '</td>' +
+                    '<td>' + (a.payment_method || '—') + '</td>' +
+                    '<td style="color:var(--danger);font-weight:700;">' + Supabase.formatCurrency(a.amount) + '</td>' +
+                    '<td>' + (a.document_no || '—') + '</td>' +
+                    '<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (a.description || '').replace(/"/g, '') + '">' + (a.description || '—') + '</td>' +
                     '<td style="text-align:center;white-space:nowrap;">' +
-                        '<button class="btn-icon btn-icon-delete" onclick="deleteExpenseRow(\'' + e.id + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
+                        '<button class="btn-icon btn-icon-delete" onclick="deleteAllowance(\'' + a.id + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
                     '</td>' +
                     '</tr>';
-            });
+            }
             tbody.innerHTML = html;
         }
 
         // ================================================================
-        // إضافة مصروف عمومي
+        // إضافة بدل جديد
         // ================================================================
         function openExpenseModal() {
-            var catSelect = document.getElementById('expenseCategory');
-            catSelect.innerHTML = expenseTypeAccounts.map(function(a) {
-                return '<option value="' + a.id + '"' + (a.code === '5600' ? ' selected' : '') + '>' + a.name + '</option>';
-            }).join('');
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expenseDate').value = new Date().toISOString().slice(0, 10);
 
             var cashSelect = document.getElementById('expenseCashAccount');
-            cashSelect.innerHTML = cashAccounts.map(function(a) {
-                return '<option value="' + a.id + '">' + a.name + '</option>';
-            }).join('');
-
-            var supplierSelect = document.getElementById('expenseSupplier');
-            supplierSelect.innerHTML = suppliers.map(function(s) {
-                return '<option value="' + s.id + '">' + s.name + '</option>';
-            }).join('');
-
-            document.getElementById('expenseForm').reset();
-            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('expensePaymentMethod').value = 'نقدي';
-            onExpensePaymentMethodChange();
-
+            if (!cashAccounts.length) {
+                cashSelect.innerHTML = '<option value="">-- لا توجد حسابات صندوق/بنك --</option>';
+            } else {
+                cashSelect.innerHTML = cashAccounts.map(function(a) {
+                    return '<option value="' + a.id + '">' + (a.code ? a.code + ' — ' : '') + a.name + '</option>';
+                }).join('');
+            }
+            toggleExpenseCashAccount();
             openModalById('expenseModal');
         }
 
-        function onExpensePaymentMethodChange() {
+        function toggleExpenseCashAccount() {
             var method = document.getElementById('expensePaymentMethod').value;
-            document.getElementById('expenseCashWrap').style.display = method === 'نقدي' ? 'block' : 'none';
-            document.getElementById('expenseSupplierWrap').style.display = method === 'آجل' ? 'block' : 'none';
+            var wrap = document.getElementById('expenseCashAccountWrap');
+            wrap.style.display = (method === 'نقدا' || method === 'تحويل بنكي') ? 'block' : 'none';
         }
 
         async function handleExpenseSubmit(event) {
             event.preventDefault();
 
-            var categoryId = document.getElementById('expenseCategory').value;
-            var beneficiary = document.getElementById('expenseBeneficiary').value.trim();
-            var amount = parseFloat(document.getElementById('expenseAmount').value);
             var date = document.getElementById('expenseDate').value;
-            var method = document.getElementById('expensePaymentMethod').value;
+            var beneficiary = document.getElementById('expenseBeneficiary').value.trim();
+            var type = document.getElementById('expenseType').value;
+            var amount = parseFloat(document.getElementById('expenseAmount').value);
+            var paymentMethod = document.getElementById('expensePaymentMethod').value;
             var cashAccountId = document.getElementById('expenseCashAccount').value;
-            var supplierId = document.getElementById('expenseSupplier').value;
             var documentNo = document.getElementById('expenseDocumentNo').value.trim();
             var description = document.getElementById('expenseDescription').value.trim();
             var notes = document.getElementById('expenseNotes').value.trim();
 
-            if (!categoryId) { showToast('⚠️ الرجاء اختيار نوع المصروف', 'warning'); return; }
+            if (!date) { showToast('⚠️ الرجاء إدخال التاريخ', 'warning'); return; }
+            if (!beneficiary) { showToast('⚠️ الرجاء إدخال اسم المستفيد', 'warning'); return; }
             if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
-            if (method === 'نقدي' && !cashAccountId) { showToast('⚠️ الرجاء اختيار حساب الدفع', 'warning'); return; }
-            if (method === 'آجل' && !supplierId) { showToast('⚠️ الرجاء اختيار المورد', 'warning'); return; }
+            if (!description) { showToast('⚠️ الرجاء إدخال البيان', 'warning'); return; }
+            if (!cashAccountId) { showToast('⚠️ الرجاء اختيار الحساب الذي يُصرف منه البدل', 'warning'); return; }
 
             var btn = document.getElementById('saveExpenseBtn');
             btn.disabled = true;
             btn.textContent = 'جاري الحفظ...';
 
             try {
+                if (!allowanceCategoryAccount) await ensureAllowanceAccount();
+
+                // النوع (رواتب/مصاريف/مصاريف أثاث) بيتسجل في أول سطر الملاحظات
+                // عشان يقدر يترجع في العرض من غير ما نحتاج عمود جديد في trip_expenses
+                var combinedNotes = 'نوع:' + type + (notes ? ' | ' + notes : ' | ');
+
                 await Supabase.addTripExpense({
                     trip_id: null,
-                    category_account_id: categoryId,
+                    category_account_id: allowanceCategoryAccount.id,
                     amount: amount,
                     description: description,
                     expense_date: date,
-                    payment_method: method,
-                    cash_account_id: method === 'نقدي' ? cashAccountId : null,
-                    supplier_id: method === 'آجل' ? supplierId : null,
-                    document_no: documentNo,
+                    payment_method: 'نقدي',
+                    cash_account_id: cashAccountId,
+                    document_no: documentNo || null,
                     beneficiary: beneficiary,
-                    notes: notes
+                    notes: combinedNotes
                 });
 
                 closeModalById('expenseModal');
-                showToast('✅ تم تسجيل المصروف وترحيله للمحرك المحاسبي', 'success');
+                showToast('✅ تم تسجيل البدل بنجاح وترحيله محاسبيًا', 'success');
                 loadData();
             } catch (error) {
-                showToast('❌ فشل تسجيل المصروف: ' + error.message, 'error');
+                showToast('❌ فشل تسجيل البدل: ' + error.message, 'error');
             }
 
             btn.disabled = false;
             btn.textContent = 'حفظ';
         }
 
-        async function deleteExpenseRow(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا المصروف؟ سيتم حذف القيد المحاسبي المرتبط به أيضًا.')) return;
-            var expense = expenses.find(function(e) { return String(e.id) === String(id); });
-            if (!expense) return;
+        function deleteAllowance(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا البدل؟')) return;
+            var allowance = allowances.find(function(a) { return String(a.id) === String(id); });
+            if (!allowance) return;
 
-            try {
-                await Supabase.deleteTripExpense(expense);
-                showToast('🗑️ تم حذف المصروف', 'success');
-                loadData();
-            } catch (error) {
-                showToast('❌ فشل الحذف: ' + error.message, 'error');
-            }
+            Supabase.deleteTripExpense(allowance)
+                .then(function() {
+                    showToast('✅ تم حذف البدل بنجاح', 'success');
+                    loadData();
+                })
+                .catch(function(error) {
+                    showToast('❌ فشل حذف البدل: ' + error.message, 'error');
+                });
         }
 
         // ================================================================
-        // MODALS
+        // MODALS (نمط موحّد data-modal)
         // ================================================================
         function openModalById(id) {
             var el = document.getElementById(id + 'Overlay');
@@ -1927,11 +1985,13 @@
 
             try {
                 var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
+                systemCurrency = settings.currency || 'EGP';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
             } catch (error) {
                 console.error('❌ خطأ في جلب الإعدادات:', error);
                 var savedCurrency = localStorage.getItem('systemCurrency');
+                // هجرة عملة: النظام مبني على الجنيه المصري مطابقة للإكسل
+                if (savedCurrency === 'SAR') { localStorage.setItem('systemCurrency', 'EGP'); savedCurrency = 'EGP'; }
                 if (savedCurrency) {
                     systemCurrency = savedCurrency;
                     currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
@@ -2105,9 +2165,10 @@
             if (notifBtn) {
                 notifBtn.addEventListener('click', function() {
                     var messages = [
-                        '💸 راجع المصروفات العمومية دوريًا',
-                        '📄 لا تنسَ رقم المستند عند التسجيل',
-                        '📊 المصروفات دي مش بتأثر على ربحية أي رحلة'
+                        '🚗 تم تحديث بيانات المصروفات',
+                        '💰 تم تسجيل رواتب جديد',
+                        '📊 راجع إجمالي المصروفات هذا الشهر',
+                        '⚠️ تنبيه: راجع المصروفات المتكررة'
                     ];
                     var random = messages[Math.floor(Math.random() * messages.length)];
                     showToast(random, 'info');
@@ -2195,16 +2256,19 @@
             }
         });
 
+        // ================================================================
+        // EXPOSE
+        // ================================================================
         window.openModalById = openModalById;
         window.closeModalById = closeModalById;
         window.openExpenseModal = openExpenseModal;
-        window.onExpensePaymentMethodChange = onExpensePaymentMethodChange;
-        window.deleteExpenseRow = deleteExpenseRow;
+        window.toggleExpenseCashAccount = toggleExpenseCashAccount;
+        window.deleteAllowance = deleteAllowance;
         window.logout = logout;
         window.showToast = showToast;
         window.loadData = loadData;
 
-        console.log('💸 المصروفات العمومية - حراء للسياحة');
+        console.log('🚗 نظام المصروفات العمومية الموظفين - حراء للسياحة');
         console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
     </script>
 

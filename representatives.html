@@ -1451,6 +1451,24 @@
         body.dark-mode .footer-custom .footer-link:hover {
             color: var(--accent-light);
         }
+    
+        /* ================================================================
+           STATUS BADGES (إضافي)
+           ================================================================ */
+        .status-badge {
+            padding: 1px 8px;
+            border-radius: var(--radius-full);
+            font-size: 9px;
+            font-weight: 600;
+            display: inline-block;
+            font-family: var(--font-display);
+        }
+        .status-active { background: var(--success-bg); color: var(--success); }
+        .status-pending { background: var(--warning-bg); color: var(--warning); }
+        .status-completed { background: var(--info-bg); color: var(--info); }
+        .status-cancelled { background: var(--danger-bg); color: var(--danger); }
+        .status-info { background: var(--info-bg); color: var(--info); }
+
     </style>
 </head>
 <body>
@@ -1477,19 +1495,19 @@
             <ul class="nav-list">
                 <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
                 <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
-                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">كشوف</span></a></li>
                 <li><a href="suppliers.html"><i class="bi bi-truck"></i> الموردين <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html" class="active"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
                 <li><a href="expenses.html"><i class="bi bi-cash-coin"></i> المصروفات العمومية <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="allowances.html"><i class="bi bi-car-front-fill"></i> بدلات وانتقالات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
             <div class="nav-section-title">التقارير</div>
             <ul class="nav-list">
-                <li><a href="client_statement.html"><i class="bi bi-receipt"></i> كشف حساب العميل</a></li>
-                <li><a href="rep_statement.html"><i class="bi bi-person-lines-fill"></i> كشف حساب المندوب <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="rep_statement.html"><i class="bi bi-receipt"></i> كشف حساب المندوب</a></li>
                 <li><a href="supplier_statement.html"><i class="bi bi-receipt-cutoff"></i> كشف حساب المورد</a></li>
                 <li><a href="trip_details.html"><i class="bi bi-airplane-engines"></i> تفاصيل الرحلة</a></li>
                 <li><a href="trip_statement.html"><i class="bi bi-graph-up-arrow"></i> كشف ربحية الرحلة</a></li>
@@ -1534,7 +1552,7 @@
 
                 <h4 class="page-title" id="pageTitleText">
                     المناديب
-                    <small>متابعة مبيعات وتحصيل كل مندوب</small>
+                    <small>إدارة المناديب والكشوف والزيارات</small>
                 </h4>
             </div>
 
@@ -1560,8 +1578,8 @@
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>إدارة المناديب</h2>
-                    <p>متابعة مبيعات وتحصيل كل مندوب من عملائه ورحلاته</p>
+                    <h2>إدارة المناديب / المعتمرين</h2>
+                    <p>متابعة بيانات المناديب والكشوف والزيارات</p>
                 </div>
                 <div class="ph-right">
                     <strong>اليوم</strong>
@@ -1570,26 +1588,32 @@
             </div>
 
             <!-- ===== STATS ===== -->
-            <div class="stats-grid" id="stats-container">
+<div style="flex:1;min-width:220px;">
+                    <div style="font-weight:800;font-size:14px;margin-bottom:2px;"></div>
+                    <div style="font-size:12.5px;opacity:0.9;line-height:1.5;">عرض المناديب وأعدادهم والمبالغ. اضغط كشف الحساب لتسجيل الدفعات.</div>
+                </div>
+                <button type="button" onclick="this.parentElement.style.display='none'" style="background:rgba(255,255,255,0.15);border:0;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;">إخفاء</button>
+            </div>
+<div class="stats-grid" id="stats-container">
                 <div class="stat-card stat-blue">
-                    <span class="stat-icon"><i class="bi bi-person-badge-fill"></i></span>
+                    <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
                     <div class="stat-number" id="statTotalReps">0</div>
                     <div class="stat-label">إجمالي المناديب</div>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-icon"><i class="bi bi-ticket-perforated-fill"></i></span>
-                    <div class="stat-number" id="statRepBookings">0</div>
-                    <div class="stat-label">إجمالي حجوزاتهم</div>
+                <div class="stat-card stat-red">
+                    <span class="stat-icon"><i class="bi bi-cash-stack"></i></span>
+                    <div class="stat-number" id="statTotalSales">0</div>
+                    <div class="stat-label">إجمالي الكشوف</div>
+                </div>
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-arrow-repeat"></i></span>
+                    <div class="stat-number" id="statTotalPax">0</div>
+                    <div class="stat-label">إجمالي الزيارات</div>
                 </div>
                 <div class="stat-card stat-green">
-                    <span class="stat-icon"><i class="bi bi-hand-thumbs-up-fill"></i></span>
-                    <div class="stat-number" id="statTotalCollected">0</div>
-                    <div class="stat-label">إجمالي المحصّل</div>
-                </div>
-                <div class="stat-card stat-red">
-                    <span class="stat-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
-                    <div class="stat-number" id="statTotalRemaining">0</div>
-                    <div class="stat-label">إجمالي المتبقي</div>
+                    <span class="stat-icon"><i class="bi bi-check-circle-fill"></i></span>
+                    <div class="stat-number" id="statActiveReps">0</div>
+                    <div class="stat-label">عملاء مسددون</div>
                 </div>
             </div>
 
@@ -1603,24 +1627,24 @@
                 </button>
             </div>
 
-            <!-- ===== REPS TABLE ===== -->
+            <!-- ===== CLIENTS TABLE ===== -->
             <div class="panel">
                 <div class="panel-header">
-                    <h5 class="panel-title"><i class="bi bi-person-badge-fill"></i> سجل المناديب</h5>
+                    <h5 class="panel-title"><i class="bi bi-people-fill"></i> سجل المناديب</h5>
                     <span id="recordCount" class="record-count">0 سجل</span>
                 </div>
                 <div class="table-wrap">
                     <table class="table-custom">
                         <thead>
                             <tr>
-                                <th>#</th><th>اسم المندوب</th><th>الهاتف</th><th>عدد الحجوزات</th>
-                                <th>إجمالي المستحق</th><th>المحصّل</th><th>المتبقي</th>
+                                <th>#</th><th>المندوب</th><th>الهاتف</th><th>العدد</th>
+                                <th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th>
                                 <th style="text-align:center;">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="repsBody">
                             <tr>
-                                <td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                <td colspan="9" style="text-align:center;padding:30px;color:var(--text-tertiary);">
                                     <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
                                     جاري تحميل المناديب...
                                 </td>
@@ -1635,20 +1659,30 @@
     </main>
 
     <!-- ================================================================ -->
-    <!-- MODAL - مندوب جديد -->
+    <!-- MODAL - إضافة مندوب جديد -->
     <!-- ================================================================ -->
     <div class="modal-overlay" id="repModalOverlay">
         <div class="modal-box">
-            <h3><i class="bi bi-person-badge-fill"></i> إضافة مندوب جديد</h3>
+            <h3><i class="bi bi-person-plus-fill"></i> إضافة مندوب جديد</h3>
             <form id="repForm" onsubmit="handleRepSubmit(event)">
                 <label for="repName">اسم المندوب <span class="required">*</span></label>
-                <input type="text" id="repName" placeholder="مثال: رزق صابر" required />
+                <input type="text" id="repName" placeholder="مثال: رزق صابر / علي بري / خالد السفيان" required />
 
                 <label for="repPhone">رقم الهاتف</label>
-                <input type="text" id="repPhone" placeholder="مثال: 0100xxxxxxx" />
+                <input type="text" id="repPhone" placeholder="0100xxxxxxx" />
 
-                <label for="repCommission">نسبة العمولة % (اختياري)</label>
-                <input type="number" id="repCommission" min="0" step="0.01" placeholder="0" />
+                <label for="repEmail">البريد الإلكتروني (اختياري)</label>
+                <input type="email" id="repEmail" placeholder="example@mail.com" />
+
+                <label for="repAddress">العنوان (اختياري)</label>
+                <input type="text" id="repAddress" placeholder="العنوان" />
+
+                <label for="repCommission">نسبة العمولة % (معلوماتية فقط — لا تُخصم من الربح)</label>
+                <input type="number" id="repCommission" min="0" step="0.01" value="0" />
+
+                <label for="repDefaultPrice">السعر الافتراضي للفرد (جنيه) <span style="color:var(--text-tertiary);font-weight:400;">— يُملأ تلقائياً عند الحجز</span></label>
+                <input type="number" id="repDefaultPrice" min="0" step="0.01" value="36000" placeholder="مثال: 36000" />
+                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-6px 0 12px;">يُستخدم تلقائياً عند إنشاء حجز جديد لهذا المندوب</p>
 
                 <div class="modal-actions">
                     <button type="button" class="btn-action btn-outline" onclick="closeModalById('repModal')">إلغاء</button>
@@ -1659,26 +1693,24 @@
     </div>
 
     <!-- ================================================================ -->
-    <!-- MODAL - تسجيل تحصيل -->
+    <!-- MODAL - تسجيل تسديد -->
     <!-- ================================================================ -->
-    <div class="modal-overlay" id="collectModalOverlay">
+    <div class="modal-overlay" id="paymentModalOverlay">
         <div class="modal-box">
-            <h3><i class="bi bi-cash-coin"></i> تسجيل تحصيل من مندوب</h3>
-            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="collectRepLabel">—</p>
-            <form id="collectForm" onsubmit="handleCollectSubmit(event)">
-                <input type="hidden" id="collectRepId" />
-                <label for="collectAmount">المبلغ المحصّل <span class="required">*</span></label>
-                <input type="number" id="collectAmount" step="0.01" min="0.01" required placeholder="0" />
+            <h3><i class="bi bi-cash-coin"></i> تسجيل تسديد</h3>
+            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="paymentClientLabel">—</p>
+            <form id="paymentForm" onsubmit="handlePaymentSubmit(event)">
+                <input type="hidden" id="paymentClientId" />
+                <label for="paymentAmount">المبلغ المسدد <span class="required">*</span></label>
+                <input type="number" id="paymentAmount" min="0.01" step="0.01" required />
 
-                <label for="collectDate">التاريخ <span class="required">*</span></label>
-                <input type="date" id="collectDate" required />
-
-                <label for="collectDesc">البيان</label>
-                <input type="text" id="collectDesc" placeholder="مثال: توريد كاش يد بيد من الحج" />
+                <label for="paymentCashAccount">الاستلام في <span class="required">*</span></label>
+                <select id="paymentCashAccount" required></select>
+                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-8px 0 14px;">سيتم إنشاء سند قبض تلقائيًا ويترحّل مباشرة لميزان المراجعة والقوائم المالية</p>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('collectModal')">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="saveCollectBtn">حفظ</button>
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('paymentModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="paymentBtn">تسديد</button>
                 </div>
             </form>
         </div>
@@ -1692,7 +1724,7 @@
                 <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
             </div>
             <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-version">الإصدار 3.2.2</span>
                 <span class="footer-divider">|</span>
                 <a href="support.html" class="footer-link">
                     <i class="bi bi-headset"></i> الدعم الفني
@@ -1709,12 +1741,15 @@
         // ================================================================
         // STATE
         // ================================================================
-        var reps = [];
-        var repTransactions = [];
-        var bookings = [];
+        var clients = [];
+        var clientBookings = [];
+        var clientServices = [];
+        var clientVouchers = [];
+        var clientTrips = [];
+        var cashAccounts = [];
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var isLoading = false;
 
         // ================================================================
@@ -1725,18 +1760,52 @@
             isLoading = true;
 
             try {
-                var results = await Promise.all([
-                    Supabase.getRepresentatives().catch(function() { return []; }),
-                    Supabase.getRepTransactions().catch(function() { return []; }),
-                    Supabase.getBookings().catch(function() { return []; })
-                ]);
-                reps = results[0] || [];
-                repTransactions = results[1] || [];
-                bookings = results[2] || [];
+                clients = await Supabase.getRepresentatives() || [];
             } catch (error) {
                 console.error('❌ خطأ في جلب المناديب:', error);
-                showToast('⚠️ فشل تحميل البيانات', 'warning');
-                reps = [];
+                showToast('⚠️ فشل تحميل المناديب', 'warning');
+                clients = [];
+            }
+
+            // المديونية الحقيقية بتتحسب لحظيًا من الحجوزات + الخدمات + السندات
+            // (مش من حقل clients.debt الساكن) — عشان الأرقام تتحدث فورًا مع أي
+            // عملية جديدة، بدون أي تأخير.
+            try {
+                clientBookings = await Supabase.getBookings() || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب الحجوزات:', error);
+                clientBookings = [];
+            }
+            try {
+                clientServices = await Supabase.getServices() || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب الخدمات:', error);
+                clientServices = [];
+            }
+            try {
+                clientVouchers = await Supabase.getVouchers() || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب السندات:', error);
+                clientVouchers = [];
+            }
+            try {
+                clientTrips = await Supabase.getTrips() || [];
+            } catch (error) {
+                console.error('❌ خطأ في جلب الرحلات:', error);
+                clientTrips = [];
+            }
+
+            try {
+                var allAccounts = await Supabase.getAccounts();
+                // الصندوق (1100) + كل بنك فرعي حقيقي مرتبط ببنك فعلي (كوده يبدأ بـ12 وليس 1200 نفسه،
+                // لأن 1200 حساب أب تجميعي مالوش linked_bank_id فمفيش بنك حقيقي يتحدّث رصيده لو
+                // اخترناه، والمستخدم لازم يقدر يحدد فعليًا أي بنك دخلت عليه الفلوس)
+                cashAccounts = allAccounts.filter(function(a) {
+                    return a.code === '1100' || (a.code && a.code.indexOf('12') === 0 && a.code !== '1200');
+                });
+            } catch (error) {
+                console.error('❌ خطأ في جلب حسابات الصندوق/البنك:', error);
+                cashAccounts = [];
             }
 
             renderStats();
@@ -1745,65 +1814,88 @@
             isLoading = false;
         }
 
-        function repBookings(repId) {
-            return bookings.filter(function(b) { return String(b['rep_id']) === String(repId); });
+        // رصيد المندوب = إجمالي حجوزاته (booking_value) − المدفوع — مطابق شيت ملخص اعداد المناديب
+        function calcRepBalance(repId) {
+            var total = 0, paid = 0;
+            (clientBookings || []).forEach(function(b) {
+                if (String(b.rep_id) === String(repId) && b.status !== 'ملغي') {
+                    total += parseFloat(b.booking_value || 0);
+                    paid += parseFloat(b.paid_amount || 0);
+                }
+            });
+            return total - paid;
         }
-        function repCollected(repId) {
-            return repTransactions
-                .filter(function(t) { return String(t['rep_id']) === String(repId); })
-                .reduce(function(sum, t) { return sum + parseFloat(t['amount'] || 0); }, 0);
+
+        function calcRepTotals(repId) {
+            var total = 0, paid = 0, pax = 0;
+            (clientBookings || []).forEach(function(b) {
+                if (String(b.rep_id) === String(repId) && b.status !== 'ملغي') {
+                    total += parseFloat(b.booking_value || 0);
+                    paid += parseFloat(b.paid_amount || 0);
+                    pax += parseFloat(b.pax_count || 0);
+                }
+            });
+            return { total: total, paid: paid, remaining: total - paid, pax: pax };
+        }
+
+        /** آخر حجز للعميل (بالأحدث تاريخًا) — بيمثل نفس فكرة عمود "الرحلة" في شيت دليل المناديب */
+        function clientLatestBooking(repId) {
+            var mine = clientBookings.filter(function(b) { return String(b['rep_id']) === String(repId); });
+            if (!mine.length) return null;
+            mine.sort(function(a, b) {
+                return new Date(b['booking_date'] || b['created_at'] || 0) - new Date(a['booking_date'] || a['created_at'] || 0);
+            });
+            return mine[0];
         }
 
         function renderStats() {
-            var totalExpected = 0, totalCollected = 0, repBookingsCount = 0;
-
-            bookings.forEach(function(b) {
-                if (b['rep_id']) {
-                    totalExpected += parseFloat(b['booking_value'] || 0);
-                    repBookingsCount++;
-                }
+            var totalDebts = 0, totalVisits = 0, paidCount = 0;
+            clients.forEach(function(c) {
+                var debt = calcRepBalance(c['id']);
+                totalDebts += debt;
+                totalVisits += parseInt(c['visits'] || 0);
+                if (debt <= 0) paidCount++;
             });
-            repTransactions.forEach(function(t) { totalCollected += parseFloat(t['amount'] || 0); });
 
-            document.getElementById('statTotalReps').textContent = reps.length;
-            document.getElementById('statRepBookings').textContent = repBookingsCount;
-            document.getElementById('statTotalCollected').textContent = Supabase.formatCurrency(totalCollected);
-            document.getElementById('statTotalRemaining').textContent = Supabase.formatCurrency(totalExpected - totalCollected);
+            document.getElementById('statTotalReps').textContent = clients.length;
+            document.getElementById('statTotalSales').textContent = Supabase.formatCurrency(totalDebts);
+            document.getElementById('statTotalPax').textContent = totalVisits;
+            document.getElementById('statActiveReps').textContent = paidCount;
         }
 
         function renderTable() {
             var tbody = document.getElementById('repsBody');
             var count = document.getElementById('recordCount');
 
-            if (!reps.length) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-person-x" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا يوجد مناديب مسجلون</td></tr>';
+            if (!clients.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-person-x" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا يوجد مناديب مسجلين</td></tr>';
                 count.textContent = '0 سجل';
                 return;
             }
 
-            count.textContent = reps.length + ' سجل';
+            count.textContent = clients.length + ' سجل';
 
             var html = '';
-            for (var i = 0; i < reps.length; i++) {
-                var r = reps[i];
-                var rb = repBookings(r['id']);
-                var expected = rb.reduce(function(sum, b) { return sum + parseFloat(b['booking_value'] || 0); }, 0);
-                var collected = repCollected(r['id']);
-                var remaining = expected - collected;
-                var remColor = remaining > 0 ? 'color:var(--danger);' : 'color:var(--success);';
+            for (var i = 0; i < clients.length; i++) {
+                var c = clients[i];
+                var totals = calcRepTotals(c['id']);
+                var debt = totals.remaining;
+                var statusClass = debt > 0 ? 'status-pending' : 'status-active';
+                var statusText = debt > 0 ? 'عليه متبقي' : 'خالص';
 
                 html += '<tr>' +
                     '<td>' + (i + 1) + '</td>' +
-                    '<td><strong>' + (r['rep_name'] || '—') + '</strong></td>' +
-                    '<td>' + (r['phone'] || '—') + '</td>' +
-                    '<td>' + rb.length + '</td>' +
-                    '<td>' + Supabase.formatCurrency(expected) + '</td>' +
-                    '<td style="color:var(--success);">' + Supabase.formatCurrency(collected) + '</td>' +
-                    '<td style="' + remColor + '">' + Supabase.formatCurrency(remaining) + '</td>' +
+                    '<td><strong>' + (c['rep_name'] || c['name'] || '—') + '</strong></td>' +
+                    '<td>' + (c['phone'] || '—') + '</td>' +
+                    '<td>' + (totals.pax || '—') + '</td>' +
+                    '<td>' + Supabase.formatCurrency(totals.total) + '</td>' +
+                    '<td style="color:var(--success);">' + Supabase.formatCurrency(totals.paid) + '</td>' +
+                    '<td style="' + (debt > 0 ? 'color:var(--danger);font-weight:700;' : '') + '">' + Supabase.formatCurrency(debt) + '</td>' +
+                    '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>' +
                     '<td style="text-align:center;white-space:nowrap;">' +
-                        '<a class="btn-icon btn-icon-edit" href="rep_statement.html?id=' + r['id'] + '" title="كشف الحساب (العدد/السعر/الدفعات)" style="text-decoration:none;display:inline-flex;"><i class="bi bi-person-lines-fill"></i></a> ' +
-                        '<button class="btn-icon btn-icon-edit" onclick="openCollectModal(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')" title="تسجيل تحصيل"><i class="bi bi-cash-coin"></i></button> ' +
-                        '<button class="btn-icon btn-icon-delete" onclick="deleteRep(\'' + r['id'] + '\',\'' + (r['rep_name'] || '') + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
+                        '<a class="btn-icon btn-icon-edit" href="rep_statement.html?id=' + c['id'] + '" title="كشف الحساب (العدد/السعر/الدفعات)" style="text-decoration:none;display:inline-flex;"><i class="bi bi-receipt"></i></a> ' +
+                        '<button class="btn-icon btn-icon-edit" onclick="openPaymentModal(\'' + c['id'] + '\')" title="تسديد"><i class="bi bi-cash-coin"></i></button> ' +
+                        '<button class="btn-icon btn-icon-delete" onclick="deleteRep(\'' + c['id'] + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
                     '</td>' +
                     '</tr>';
             }
@@ -1811,97 +1903,176 @@
         }
 
         // ================================================================
-        // إضافة / حذف مندوب
+        // إضافة مندوب
         // ================================================================
         async function handleRepSubmit(event) {
             event.preventDefault();
 
-            var repName = document.getElementById('repName').value.trim();
-            var repPhone = document.getElementById('repPhone').value.trim();
-            var repCommission = document.getElementById('repCommission').value;
+            var name = document.getElementById('repName').value.trim();
+            var phone = document.getElementById('repPhone').value.trim();
+            var email = document.getElementById('repEmail').value.trim();
+            var address = document.getElementById('repAddress').value.trim();
+            var debt = document.getElementById('repCommission').value;
 
-            if (!repName) { showToast('⚠️ الرجاء إدخال اسم المندوب', 'warning'); return; }
+            if (!name) { showToast('⚠️ الرجاء إدخال اسم المندوب', 'warning'); return; }
 
             var btn = document.getElementById('saveRepBtn');
             btn.disabled = true;
             btn.textContent = 'جاري الحفظ...';
 
             try {
-                await Supabase.addData('representatives', {
-                    rep_name: repName,
-                    phone: repPhone,
-                    commission_rate: repCommission ? parseFloat(repCommission) : 0
+                var debtAmount = parseFloat(debt) || 0;
+
+                var newClientResult = await Supabase.addData('representatives', {
+                    rep_name: name, phone: phone, email: email, notes: address, commission_rate: parseFloat(document.getElementById('repCommission').value) || 0, default_price: parseFloat(document.getElementById('repDefaultPrice').value) || 0,
+                    debt: debtAmount, visits: 0,
+                    last_visit: new Date().toISOString().split('T')[0]
                 });
+                var newClient = (newClientResult && newClientResult[0]) || newClientResult;
+
+                // نسبة العمولة % (معلوماتية فقط) = العميل مدين للشركة من الأول — قيد افتتاحي
+                // حقيقي: مدين حساب المناديب (1300)، دائن الأرباح المرحلة (3200)،
+                // بنفس منطق الرصيد الافتتاحي في treasury.html وbanks.html بالظبط،
+                // عشان ميزان المراجعة يعكس المديونية دي من يوم إضافتها
+                if (debtAmount > 0 && newClient && newClient.id) {
+                    try {
+                        var accounts = await Supabase.getAccounts();
+                        var receivableAccount = accounts.find(function(a) { return a.code === '1300'; });
+                        var openingAccount = accounts.find(function(a) { return a.code === '3200'; });
+                        if (receivableAccount && openingAccount) {
+                            await Supabase.addVoucher({
+                                voucher_type: 'صرف',
+                                voucher_date: new Date().toISOString().split('T')[0],
+                                cash_account_id: openingAccount.id,
+                                counter_account_id: receivableAccount.id,
+                                party_type: 'client',
+                                party_id: newClient.id,
+                                party_name: name,
+                                amount: debtAmount,
+                                description: 'رصيد افتتاحي للمندوب ' + name
+                            });
+                        } else {
+                            console.warn('⚠️ حساب المناديب (1300) أو الرصيد الافتتاحي (3200) غير موجود — لم تُسجَّل المديونية الافتتاحية محاسبيًا');
+                        }
+                    } catch (openingError) {
+                        console.warn('⚠️ تمت إضافة العميل لكن فشل تسجيل المديونية الافتتاحية محاسبيًا:', openingError);
+                    }
+                }
+
                 closeModalById('repModal');
                 document.getElementById('repForm').reset();
-                showToast('✅ تمت إضافة المندوب بنجاح', 'success');
+                showToast('✅ تمت إضافة العميل بنجاح', 'success');
                 loadData();
             } catch (error) {
-                showToast('❌ فشل إضافة المندوب: ' + error.message, 'error');
+                showToast('❌ فشل إضافة العميل: ' + error.message, 'error');
             }
 
             btn.disabled = false;
             btn.textContent = 'حفظ';
         }
 
-        function deleteRep(id, name) {
-            if (!confirm('هل أنت متأكد من حذف المندوب ' + name + '؟')) return;
+        function deleteRep(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا المندوب؟')) return;
             Supabase.deleteData('representatives', id)
                 .then(function() {
                     showToast('✅ تم حذف المندوب بنجاح', 'success');
                     loadData();
                 })
                 .catch(function(error) {
-                    showToast('❌ فشل حذف المندوب: ' + error.message, 'error');
+                    showToast('❌ فشل حذف العميل: ' + error.message, 'error');
                 });
         }
 
         // ================================================================
-        // تسجيل تحصيل
+        // تسديد
         // ================================================================
-        function openCollectModal(repId, repName) {
-            document.getElementById('collectRepId').value = repId;
-            document.getElementById('collectRepLabel').textContent = 'المندوب: ' + repName;
-            document.getElementById('collectForm').reset();
-            document.getElementById('collectRepId').value = repId;
-            document.getElementById('collectDate').value = new Date().toISOString().slice(0, 10);
-            openModalById('collectModal');
+        function openPaymentModal(clientId) {
+            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
+            if (!client) { showToast('⚠️ العميل غير موجود، حاول تحديث الصفحة', 'error'); return; }
+
+            var currentDebt = calcRepBalance(clientId);
+            document.getElementById('paymentClientId').value = clientId;
+            document.getElementById('paymentClientLabel').textContent = 'العميل: ' + (client['rep_name'] || client['name']) + ' — الرصيد الحالي: ' + Supabase.formatCurrency(currentDebt);
+            document.getElementById('paymentAmount').value = currentDebt > 0 ? currentDebt : '';
+            document.getElementById('paymentAmount').max = currentDebt;
+
+            var cashSelect = document.getElementById('paymentCashAccount');
+            if (!cashAccounts.length) {
+                cashSelect.innerHTML = '<option value="">-- لا توجد حسابات صندوق/بنك، راجع الإعدادات --</option>';
+            } else {
+                cashSelect.innerHTML = cashAccounts.map(function(a) {
+                    return '<option value="' + a.id + '">' + (a.code ? a.code + ' — ' : '') + a.name + '</option>';
+                }).join('');
+            }
+
+            openModalById('paymentModal');
         }
 
-        async function handleCollectSubmit(event) {
+        async function handlePaymentSubmit(event) {
             event.preventDefault();
 
-            var repId = document.getElementById('collectRepId').value;
-            var amount = parseFloat(document.getElementById('collectAmount').value);
-            var txnDate = document.getElementById('collectDate').value;
-            var desc = document.getElementById('collectDesc').value.trim();
+            var clientId = document.getElementById('paymentClientId').value;
+            var amount = parseFloat(document.getElementById('paymentAmount').value);
+            var cashAccountId = document.getElementById('paymentCashAccount').value;
+            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
 
             if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
+            if (!client) { showToast('⚠️ العميل غير موجود', 'error'); return; }
+            if (!cashAccountId) { showToast('⚠️ الرجاء اختيار حساب الاستلام', 'warning'); return; }
 
-            var btn = document.getElementById('saveCollectBtn');
+            var currentDebt = calcRepBalance(clientId);
+            if (amount > currentDebt) {
+                showToast('⚠️ المبلغ أكبر من الرصيد الحالي (' + Supabase.formatCurrency(currentDebt) + ')', 'warning');
+                return;
+            }
+
+            var btn = document.getElementById('paymentBtn');
             btn.disabled = true;
-            btn.textContent = 'جاري الحفظ...';
+            btn.textContent = 'جاري التسديد...';
 
             try {
-                await Supabase.addData('rep_transactions', {
-                    rep_id: repId,
+                var accounts = await Supabase.getAccounts();
+                var receivableAccount = accounts.find(function(a) { return a.code === '1300'; }); // المناديب (مدينون)
+
+                // سند قبض تلقائي: مدين = الصندوق/البنك المُختار (الفلوس دخلت فعليًا)،
+                // دائن = حساب المناديب 1300 (تخفيض المديونية) — بيترحّل لميزان
+                // المراجعة والقوائم المالية زي أي سند عادي
+                await Supabase.addVoucher({
+                    voucher_type: 'قبض',
+                    voucher_date: new Date().toISOString().split('T')[0],
+                    cash_account_id: cashAccountId,
+                    counter_account_id: receivableAccount.id,
+                    party_type: 'client',
+                    party_id: clientId,
+                    party_name: (client['rep_name'] || client['name']),
                     amount: amount,
-                    txn_date: txnDate,
-                    description: desc || 'تحصيل من العميل'
+                    description: 'تحصيل من المندوب ' + (client['rep_name'] || client['name'])
                 });
-                closeModalById('collectModal');
-                showToast('✅ تم تسجيل التحصيل بنجاح', 'success');
+
+                // ملحوظة: مبقيناش بنكتب على clients.debt هنا خالص — السند اللي
+                // اتسجل فوق فوق هو مصدر الحقيقة الوحيد دلوقتي، وأي عرض للمديونية
+                // بيتحسب لحظيًا من Supabase.getClientBalance() في loadData()،
+                // فمفيش أي احتمال إنه "يتأخر" عن آخر عملية زي ما كان بيحصل قبل كده.
+                var newVisits = parseInt(client['visits'] || 0) + 1;
+
+                await Supabase.updateData('representatives', clientId, {
+                    visits: newVisits,
+                    last_visit: new Date().toISOString().split('T')[0]
+                });
+
+                closeModalById('paymentModal');
+                showToast('✅ تم تسجيل تسديد ' + Supabase.formatCurrency(amount) + ' من ' + (client['rep_name'] || client['name']), 'success');
                 loadData();
             } catch (error) {
-                showToast('❌ فشل تسجيل التحصيل: ' + error.message, 'error');
+                showToast('❌ فشل التسديد: ' + error.message, 'error');
             }
 
             btn.disabled = false;
-            btn.textContent = 'حفظ';
+            btn.textContent = 'تسديد';
         }
 
         // ================================================================
-        // MODALS
+        // MODALS (نمط موحّد data-modal)
         // ================================================================
         function openModalById(id) {
             var el = document.getElementById(id + 'Overlay');
@@ -1920,11 +2091,13 @@
 
             try {
                 var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
+                systemCurrency = settings.currency || 'EGP';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
             } catch (error) {
                 console.error('❌ خطأ في جلب الإعدادات:', error);
                 var savedCurrency = localStorage.getItem('systemCurrency');
+                // هجرة عملة: النظام مبني على الجنيه المصري مطابقة للإكسل
+                if (savedCurrency === 'SAR') { localStorage.setItem('systemCurrency', 'EGP'); savedCurrency = 'EGP'; }
                 if (savedCurrency) {
                     systemCurrency = savedCurrency;
                     currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
@@ -2098,10 +2271,10 @@
             if (notifBtn) {
                 notifBtn.addEventListener('click', function() {
                     var messages = [
-                        '🧑‍💼 تم تحديث بيانات المناديب',
-                        '💰 راجع المناديب أصحاب المبالغ المتبقية',
-                        '📊 يمكنك تسجيل تحصيل جديد من أي مندوب',
-                        '⚠️ تنبيه: راجع مستحقات المناديب دوريًا'
+                        '👥 تم تحديث بيانات المناديب',
+                        '💰 تم تسجيل تسديد جديد من أحد المناديب',
+                        '📊 عدد المناديب المسجلين: يمكنك مراجعة الجدول',
+                        '⚠️ تنبيه: راجع المناديب أصحاب الكشوف المرتفعة'
                     ];
                     var random = messages[Math.floor(Math.random() * messages.length)];
                     showToast(random, 'info');
@@ -2186,19 +2359,22 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModalById('repModal');
-                closeModalById('collectModal');
+                closeModalById('paymentModal');
             }
         });
 
+        // ================================================================
+        // EXPOSE
+        // ================================================================
         window.openModalById = openModalById;
         window.closeModalById = closeModalById;
-        window.openCollectModal = openCollectModal;
-        window.deleteRep = deleteRep;
+        window.openPaymentModal = openPaymentModal;
+        window.deleteClient = deleteClient;
         window.logout = logout;
         window.showToast = showToast;
         window.loadData = loadData;
 
-        console.log('🧑‍💼 نظام المناديب - حراء للسياحة');
+        console.log('👥 نظام المناديب - حراء للسياحة');
         console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
     </script>
 

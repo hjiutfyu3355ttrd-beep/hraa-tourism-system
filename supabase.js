@@ -463,15 +463,15 @@ async function deleteUser(id) {
 // ================================================================
 
 // متغير عام لتخزين العملة الحالية
-var currentCurrency = 'SAR';
-var currentCurrencySymbol = 'ر.س';
+var currentCurrency = 'EGP';
+var currentCurrencySymbol = 'ج.م';
 var _systemSettings = null;
 
 function getDefaultSettings() {
     return {
         systemName: 'حراء للسياحة',
         language: 'ar',
-        currency: 'SAR',
+        currency: 'EGP',
         dateFormat: 'ar',
         numberFormat: 'ar',
         notifyTransactions: true,
@@ -493,7 +493,7 @@ function getLocalSettings() {
             var settings = JSON.parse(saved);
             console.log('📂 استخدام الإعدادات من localStorage:', settings);
             _systemSettings = settings;
-            currentCurrency = settings.currency || 'SAR';
+            currentCurrency = settings.currency || 'EGP';
             currentCurrencySymbol = getCurrencySymbol(currentCurrency);
             return settings;
         }
@@ -532,7 +532,7 @@ async function getUserSettings() {
                     var result = {
                         systemName: settings.system_name || 'حراء للسياحة',
                         language: settings.language || 'ar',
-                        currency: settings.currency || 'SAR',
+                        currency: settings.currency || 'EGP',
                         dateFormat: settings.date_format || 'ar',
                         numberFormat: settings.number_format || 'ar',
                         notifyTransactions: settings.notify_transactions !== undefined ? settings.notify_transactions : true,
@@ -586,7 +586,7 @@ async function saveUserSettings(settings) {
             user_id: user.id,
             system_name: settings.systemName || 'حراء للسياحة',
             language: settings.language || 'ar',
-            currency: settings.currency || 'SAR',
+            currency: settings.currency || 'EGP',
             date_format: settings.dateFormat || 'ar',
             number_format: settings.numberFormat || 'ar',
             notify_transactions: settings.notifyTransactions !== undefined ? settings.notifyTransactions : true,
@@ -619,7 +619,7 @@ async function saveUserSettings(settings) {
 
         // تحديث المتغيرات العامة
         _systemSettings = settings;
-        currentCurrency = settings.currency || 'SAR';
+        currentCurrency = settings.currency || 'EGP';
         currentCurrencySymbol = getCurrencySymbol(currentCurrency);
 
         // تحديث localStorage
@@ -657,7 +657,7 @@ async function updateSystemSettings(settings) {
         
         // تحديث cache
         _systemSettings = settings;
-        currentCurrency = settings.currency || 'SAR';
+        currentCurrency = settings.currency || 'EGP';
         currentCurrencySymbol = getCurrencySymbol(currentCurrency);
         
         // تحديث الواجهة
@@ -1545,8 +1545,9 @@ async function getTripExpenses(tripId) {
  *         document_no (اختياري - رقم المستند), beneficiary (اختياري - المستفيد), notes (اختياري) }
  */
 async function addTripExpense(exp) {
-    var supplierAccounts = await getAccounts();
-    var payableAccount = supplierAccounts.find(function(a) { return a.code === '2100'; }); // الموردون (دائنون)
+    var accounts = await getAccounts();
+    var payableAccount = accounts.find(function(a) { return a.code === '2100'; }); // الموردون (دائنون)
+    var revenueAccount = accounts.find(function(a) { return a.code === '4100'; }); // إيرادات الرحلات
 
     var lines;
     if (exp.payment_method === 'آجل') {
@@ -1554,6 +1555,13 @@ async function addTripExpense(exp) {
         lines = [
             { account_id: exp.category_account_id, debit: exp.amount, credit: 0 },
             { account_id: payableAccount.id, debit: 0, credit: exp.amount }
+        ];
+    } else if (exp.payment_method === 'مباشر من عميل') {
+        if (!revenueAccount) throw new Error('حساب إيرادات الرحلات (4100) غير موجود في دليل الحسابات');
+        if (!exp.funded_by_booking_id) throw new Error('الرجاء اختيار حجز العميل اللي مول الدفعة');
+        lines = [
+            { account_id: exp.category_account_id, debit: exp.amount, credit: 0 },
+            { account_id: revenueAccount.id, debit: 0, credit: exp.amount }
         ];
     } else {
         if (!exp.cash_account_id) throw new Error('الرجاء اختيار حساب الصندوق/البنك للدفع النقدي');
@@ -1574,7 +1582,8 @@ async function addTripExpense(exp) {
         category_account_id: exp.category_account_id,
         supplier_id: exp.supplier_id || null,
         payment_method: exp.payment_method || 'نقدي',
-        cash_account_id: exp.payment_method === 'آجل' ? null : exp.cash_account_id,
+        cash_account_id: exp.payment_method === 'نقدي' ? exp.cash_account_id : null,
+        funded_by_booking_id: exp.payment_method === 'مباشر من عميل' ? exp.funded_by_booking_id : null,
         amount: exp.amount,
         description: exp.description || null,
         expense_date: exp.expense_date,
@@ -1584,9 +1593,20 @@ async function addTripExpense(exp) {
         notes: exp.notes || null
     });
 
-    // مصروف مدفوع نقدي فورًا (مش آجل لمورد) بيقلل رصيد الصندوق/البنك المختار
-    if (exp.payment_method !== 'آجل' && exp.cash_account_id) {
+    // مصروف مدفوع نقدي فورًا (مش آجل لمورد ولا مباشر من عميل) بيقلل رصيد الصندوق/البنك المختار
+    if (exp.payment_method === 'نقدي' && exp.cash_account_id) {
         await adjustLinkedBankBalance(exp.cash_account_id, -parseFloat(exp.amount));
+    }
+
+    // مباشر من عميل: زي recordBookingPayment بالظبط — بنزود paid_amount في حجز
+    // العميل الممول لأنه فعليًا دفع، حتى لو المبلغ ما لمسش خزينة الشركة
+    if (exp.payment_method === 'مباشر من عميل' && exp.funded_by_booking_id) {
+        var bookingRows = await fetchData('bookings', { filter: { id: exp.funded_by_booking_id } });
+        var booking = bookingRows && bookingRows[0];
+        if (booking) {
+            var newPaid = parseFloat(booking.paid_amount || 0) + parseFloat(exp.amount);
+            await updateData('bookings', booking.id, { paid_amount: newPaid });
+        }
     }
 
     return result[0] || result;
@@ -1610,26 +1630,64 @@ async function deleteTripExpense(expense) {
  *   مدين = الصندوق/البنك المختار  ،  دائن = إيرادات الرحلات (4100)
  * وتزيد paid_amount في الحجز نفسه بنفس القيمة.
  */
-async function recordBookingPayment(booking, amount, cashAccountId, client, trip) {
+async function recordBookingPayment(booking, amount, cashAccountId, client, trip, options) {
+    options = options || {};
     var accounts = await getAccounts();
     var revenueAccount = accounts.find(function(a) { return a.code === '4100'; }); // إيرادات الرحلات
     if (!revenueAccount) throw new Error('حساب إيرادات الرحلات (4100) غير موجود في دليل الحسابات');
 
-    var voucher = await addVoucher({
+    var voucherPayload = {
         voucher_type: 'قبض',
-        voucher_date: new Date().toISOString().split('T')[0],
+        voucher_date: options.date || new Date().toISOString().split('T')[0],
+        cash_account_id: cashAccountId,
+        counter_account_id: revenueAccount.id,
+        party_type: options.partyType || 'client',
+        party_id: options.partyId || booking.client_id,
+        party_name: options.partyName || (client ? client.name : ''),
+        amount: amount,
+        description: (options.notes || ('دفعة حجز ' + (booking.booking_code || ''))) + (trip ? (' — ' + (trip.trip_code || trip.trip_name || '')) : ''),
+        trip_id: booking.trip_id,
+        booking_id: booking.id
+    };
+    if (options.voucherNo) voucherPayload.voucher_no = options.voucherNo;
+
+    var voucher = await addVoucher(voucherPayload);
+
+    var newPaid = parseFloat(booking.paid_amount || 0) + parseFloat(amount);
+    await updateData('bookings', booking.id, { paid_amount: newPaid });
+
+    return voucher;
+}
+
+/**
+ * استرجاع/عكس دفعة على حجز (سند صرف للعميل) — نفس منطق recordBookingPayment
+ * بالعكس: بيقلل paid_amount ويسجل سند صرف حقيقي بدل ما يكتب مباشرة على حقل
+ * ساكن. مطلوبة لدعم عمود "نوع الحركة: صرف" في كشف حساب العميل.
+ */
+async function refundBookingPayment(booking, amount, cashAccountId, client, trip, options) {
+    options = options || {};
+    var accounts = await getAccounts();
+    var revenueAccount = accounts.find(function(a) { return a.code === '4100'; });
+    if (!revenueAccount) throw new Error('حساب إيرادات الرحلات (4100) غير موجود في دليل الحسابات');
+
+    var voucherPayload = {
+        voucher_type: 'صرف',
+        voucher_date: options.date || new Date().toISOString().split('T')[0],
         cash_account_id: cashAccountId,
         counter_account_id: revenueAccount.id,
         party_type: 'client',
         party_id: booking.client_id,
         party_name: client ? client.name : '',
         amount: amount,
-        description: 'دفعة حجز ' + (booking.booking_code || '') + (trip ? (' — ' + (trip.trip_code || trip.trip_name || '')) : ''),
+        description: (options.notes || ('استرجاع دفعة حجز ' + (booking.booking_code || ''))) + (trip ? (' — ' + (trip.trip_code || trip.trip_name || '')) : ''),
         trip_id: booking.trip_id,
         booking_id: booking.id
-    });
+    };
+    if (options.voucherNo) voucherPayload.voucher_no = options.voucherNo;
 
-    var newPaid = parseFloat(booking.paid_amount || 0) + parseFloat(amount);
+    var voucher = await addVoucher(voucherPayload);
+
+    var newPaid = parseFloat(booking.paid_amount || 0) - parseFloat(amount);
     await updateData('bookings', booking.id, { paid_amount: newPaid });
 
     return voucher;
@@ -1809,10 +1867,14 @@ async function getTripFinancials(tripId) {
     var totalCollected = bookings.reduce(function(s, b) { return s + (parseFloat(b.paid_amount) || 0); }, 0);
 
     var byCategory = {};
+    var byCategoryCode = {};
     expenses.forEach(function(e) {
         var acc = accounts.find(function(a) { return a.id === e.category_account_id; });
         var key = acc ? acc.name : 'غير مصنّف';
         byCategory[key] = (byCategory[key] || 0) + (parseFloat(e.amount) || 0);
+        if (acc && acc.code) {
+            byCategoryCode[acc.code] = (byCategoryCode[acc.code] || 0) + (parseFloat(e.amount) || 0);
+        }
     });
 
     var totalExpense = expenses.reduce(function(s, e) { return s + (parseFloat(e.amount) || 0); }, 0);
@@ -1846,7 +1908,8 @@ async function getTripFinancials(tripId) {
         byRepresentative: byRepresentative,
         netProfit: netProfit,
         profitMargin: profitMargin,
-        byCategory: byCategory
+        byCategory: byCategory,
+        byCategoryCode: byCategoryCode
     };
 }
 
@@ -1913,7 +1976,7 @@ function getSystemSettings() {
 }
 
 function getCurrency() {
-    return currentCurrency || 'SAR';
+    return currentCurrency || 'EGP';
 }
 
 function getCurrencySymbol(currencyCode) {
@@ -1929,17 +1992,17 @@ function getCurrencySymbol(currencyCode) {
         'OMR': 'ر.ع',
         'QAR': 'ر.ق'
     };
-    return symbols[currencyCode] || 'ر.س';
+    return symbols[currencyCode] || 'ج.م';
 }
 
 function formatCurrency(amount, currencyCode) {
     if (typeof amount !== 'number') amount = parseFloat(amount) || 0;
     
-    var code = currencyCode || currentCurrency || 'SAR';
+    var code = currencyCode || currentCurrency || 'EGP';
     var settings = _systemSettings || getLocalSettings();
     var numberFormat = settings.numberFormat || 'ar';
     
-    var formatted = amount.toLocaleString(numberFormat === 'ar' ? 'ar-SA' : 'en-US', {
+    var formatted = amount.toLocaleString(numberFormat === 'ar' ? 'ar-EG' : 'en-US', {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
     });
@@ -2227,6 +2290,7 @@ window.Supabase = {
     addTripExpense: addTripExpense,
     deleteTripExpense: deleteTripExpense,
     recordBookingPayment: recordBookingPayment,
+    refundBookingPayment: refundBookingPayment,
     getSupplierVouchers: getSupplierVouchers,
     getClientBalance: getClientBalance,
     getSupplierBalance: getSupplierBalance,
@@ -2256,7 +2320,7 @@ console.log('📡 URL:', SUPABASE_CONFIG.URL);
 console.log('🔑 التوكن:', getToken() ? 'موجود ✅' : 'غير موجود ❌');
 console.log('💰 العملات المتاحة: SAR, AED, EGP, USD, EUR');
 console.log('⚙️ الإعدادات محفوظة في جدول user_settings (بدون RPC)');
-console.log('💰 العملة الحالية:', currentCurrency, currentCurrencySymbol);
+console.log('💰 العملة الحالية (افتراضي ج.م مطابقة للإكسل):', currentCurrency, currentCurrencySymbol);
 console.log('🎨 الوضع المظلم:', isDarkModeEnabled() ? 'مفعل ✅' : 'غير مفعل ❌');
 
 // ================================================================

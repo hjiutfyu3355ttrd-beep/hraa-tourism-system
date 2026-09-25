@@ -1483,6 +1483,7 @@
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
                 <li><a href="expenses.html"><i class="bi bi-cash-coin"></i> المصروفات العمومية <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="allowances.html"><i class="bi bi-car-front-fill"></i> بدلات وانتقالات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
@@ -1568,7 +1569,13 @@
             </div>
 
             <!-- ===== SELECTORS ===== -->
-            <div class="panel" style="margin-bottom:16px;">
+<div style="flex:1;min-width:220px;">
+                    <div style="font-weight:800;font-size:14px;margin-bottom:2px;"></div>
+                    <div style="font-size:12.5px;opacity:0.9;line-height:1.5;">الأعمدة بالترتيب: مسلسل → الاسم → الهاتف → الرحلة → العدد → السعر → الإجمالي → التاريخ → المدفوع → المتبقي → إذن صرف → إذن قبض → ملاحظات. سجّل دفعة تلو الأخرى كما كنت تفعل في الصفوف.</div>
+                </div>
+                <button type="button" onclick="this.parentElement.style.display='none'" style="background:rgba(255,255,255,0.15);border:0;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;">إخفاء</button>
+            </div>
+<div class="panel" style="margin-bottom:16px;">
                 <div class="panel-header">
                     <h5 class="panel-title"><i class="bi bi-funnel-fill"></i> اختيار العميل</h5>
                 </div>
@@ -1698,31 +1705,36 @@
     <!-- ================================================================ -->
     <div class="modal-overlay" id="paymentModalOverlay">
         <div class="modal-box">
-            <h3><i class="bi bi-cash-coin"></i> تسجيل حركة على الحجز</h3>
+            <h3><i class="bi bi-cash-coin"></i> تسجيل دفعة</h3>
             <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="paymentBookingLabel">—</p>
             <form id="paymentForm" onsubmit="handlePaymentSubmit(event)">
                 <input type="hidden" id="paymentBookingId" />
+                <input type="hidden" id="paymentKeepOpen" value="0" />
 
                 <label for="paymentDirection">نوع الحركة <span class="required">*</span></label>
                 <select id="paymentDirection" required>
-                    <option value="قبض">قبض من العميل (دفعة)</option>
-                    <option value="صرف">صرف للعميل (استرداد)</option>
+                    <option value="قبض">قبض (دفعة من العميل) — إذن قبض</option>
+                    <option value="صرف">صرف (استرداد للعميل) — إذن صرف</option>
                 </select>
 
-                <label for="paymentAmount">المبلغ <span class="required">*</span></label>
-                <input type="number" id="paymentAmount" step="0.01" min="0.01" required placeholder="0" />
+                <label for="paymentAmount">المدفوع (المبلغ) <span class="required">*</span></label>
+                <input type="number" id="paymentAmount" step="0.01" min="0.01" required placeholder="0" autofocus />
+
+                <label for="paymentCashAccount">الحساب (نقداً / محفظة / بنك)</label>
+                <select id="paymentCashAccount" required></select>
 
                 <label for="paymentDate">التاريخ <span class="required">*</span></label>
                 <input type="date" id="paymentDate" required />
 
-                <label for="paymentReceipt">رقم الإذن (صرف/قبض)</label>
+                <label for="paymentReceipt">رقم إذن القبض / الصرف</label>
                 <input type="text" id="paymentReceipt" placeholder="مثال: 1024" />
 
                 <label for="paymentNotes">ملاحظات</label>
-                <input type="text" id="paymentNotes" placeholder="مثال: دفعة مقدمة نقدًا" />
+                <input type="text" id="paymentNotes" placeholder="مثال: تم استلام مبلغ ... نقداً بمعرفه أستاذ علاء" />
 
-                <div class="modal-actions">
-                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('paymentModal')">إلغاء</button>
+                <div class="modal-actions" style="flex-wrap:wrap;gap:8px;">
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('paymentModal')">إغلاق</button>
+                    <button type="button" class="btn-action btn-outline" id="savePaymentAndNextBtn" onclick="document.getElementById('paymentKeepOpen').value='1'; document.getElementById('savePaymentBtn').click();" style="border-color:var(--accent);color:var(--accent);">حفظ + صف جديد</button>
                     <button type="submit" class="btn-action btn-primary" id="savePaymentBtn">حفظ</button>
                 </div>
             </form>
@@ -1737,7 +1749,7 @@
                 <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
             </div>
             <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-version">الإصدار 3.2.2</span>
                 <span class="footer-divider">|</span>
                 <a href="support.html" class="footer-link">
                     <i class="bi bi-headset"></i> الدعم الفني
@@ -1758,9 +1770,11 @@
         var trips = [];
         var bookings = [];
         var payments = [];
+        var suppliers = [];
+        var cashAccounts = [];
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var isLoading = false;
 
         // ================================================================
@@ -1775,12 +1789,51 @@
                     Supabase.getClients().catch(function() { return []; }),
                     Supabase.getTrips().catch(function() { return []; }),
                     Supabase.getBookings().catch(function() { return []; }),
-                    Supabase.getBookingPayments().catch(function() { return []; })
+                    Supabase.getVouchers().catch(function() { return []; }),
+                    Supabase.getTripExpenses().catch(function() { return []; }),
+                    Supabase.getAccounts().catch(function() { return []; })
                 ]);
                 clients = results[0] || [];
                 trips = results[1] || [];
                 bookings = results[2] || [];
-                payments = results[3] || [];
+                // كشف الحساب ده بيعرض حركات حقيقية من محرك المحاسبة (سندات + مصروفات
+                // "مباشر من عميل") — مش من جدول booking_payments القديم اللي مفيش حد
+                // بيكتب فيه فعليًا من شاشتي الحجز/الرحلة، وكان بيخلي الكشف ده يفضل
+                // فاضي حتى لو العميل دافع فعلًا.
+                var vouchers = results[3] || [];
+                var tripExpenses = results[4] || [];
+                var accounts = results[5] || [];
+                cashAccounts = accounts.filter(function(a) {
+                    return a.code === '1100' || (a.code && a.code.indexOf('12') === 0 && a.code !== '1200');
+                });
+
+                var fromVouchers = vouchers
+                    .filter(function(v) { return v.booking_id; })
+                    .map(function(v) {
+                        return {
+                            booking_id: v.booking_id,
+                            payment_date: v.voucher_date,
+                            amount: v.amount,
+                            direction: v.voucher_type, // 'قبض' أو 'صرف'
+                            receipt_no: v.voucher_no,
+                            notes: v.description
+                        };
+                    });
+
+                var fromDirectFunding = tripExpenses
+                    .filter(function(e) { return e.funded_by_booking_id && e.payment_method === 'مباشر من عميل'; })
+                    .map(function(e) {
+                        return {
+                            booking_id: e.funded_by_booking_id,
+                            payment_date: e.expense_date,
+                            amount: e.amount,
+                            direction: 'قبض', // من منظور العميل، هو دفع — بس المبلغ راح مباشرة لمورد
+                            receipt_no: '—',
+                            notes: (e.description || 'دفعة موجهة مباشرة لمورد')
+                        };
+                    });
+
+                payments = fromVouchers.concat(fromDirectFunding);
             } catch (error) {
                 console.error('❌ خطأ في جلب كشف حساب العميل:', error);
                 showToast('⚠️ فشل تحميل البيانات', 'warning');
@@ -2009,6 +2062,12 @@
             document.getElementById('paymentBookingId').value = bookingId;
             document.getElementById('paymentBookingLabel').textContent = 'الرحلة: ' + tripLabel;
             document.getElementById('paymentDate').value = new Date().toISOString().slice(0, 10);
+
+            var cashSelect = document.getElementById('paymentCashAccount');
+            cashSelect.innerHTML = cashAccounts.map(function(a) {
+                return '<option value="' + a.id + '">' + (a.code ? a.code + ' — ' : '') + a.name + '</option>';
+            }).join('');
+
             openModalById('paymentModal');
         }
 
@@ -2018,28 +2077,47 @@
             var bookingId = document.getElementById('paymentBookingId').value;
             var direction = document.getElementById('paymentDirection').value;
             var amount = parseFloat(document.getElementById('paymentAmount').value);
+            var cashAccountId = document.getElementById('paymentCashAccount').value;
             var date = document.getElementById('paymentDate').value;
             var receipt = document.getElementById('paymentReceipt').value.trim();
             var notes = document.getElementById('paymentNotes').value.trim();
 
             if (!amount || amount <= 0) { showToast('⚠️ أدخل مبلغًا صحيحًا', 'warning'); return; }
+            if (!cashAccountId) { showToast('⚠️ اختر الحساب', 'warning'); return; }
+
+            var booking = bookings.find(function(b) { return String(b.id) === String(bookingId); });
+            if (!booking) { showToast('⚠️ الحجز غير موجود', 'error'); return; }
 
             var btn = document.getElementById('savePaymentBtn');
             btn.disabled = true;
             btn.textContent = 'جاري الحفظ...';
 
             try {
-                await Supabase.addBookingPayment({
-                    booking_id: bookingId,
-                    amount: amount,
-                    payment_date: date,
-                    direction: direction,
-                    receipt_no: receipt || null,
-                    notes: notes || null
-                });
-                closeModalById('paymentModal');
-                showToast('✅ تم تسجيل الحركة بنجاح', 'success');
-                loadData();
+                var client = clients.find(function(c) { return String(c.id) === String(booking.client_id); });
+                var trip = trips.find(function(t) { return String(t.id) === String(booking.trip_id); });
+                var options = { date: date, voucherNo: receipt || undefined, notes: notes || undefined };
+
+                if (direction === 'صرف') {
+                    await Supabase.refundBookingPayment(booking, amount, cashAccountId, client, trip, options);
+                } else {
+                    await Supabase.recordBookingPayment(booking, amount, cashAccountId, client, trip, options);
+                }
+
+                var keepOpen = document.getElementById('paymentKeepOpen').value === '1';
+                document.getElementById('paymentKeepOpen').value = '0';
+                showToast('✅ تم تسجيل الدفعة بنجاح', 'success');
+                if (keepOpen) {
+                    // الإبقاء على النافذة مفتوحة لإدخال دفعة تالية
+                    document.getElementById('paymentAmount').value = '';
+                    document.getElementById('paymentReceipt').value = '';
+                    document.getElementById('paymentNotes').value = '';
+                    document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
+                    await loadData();
+                    setTimeout(function(){ document.getElementById('paymentAmount').focus(); }, 200);
+                } else {
+                    closeModalById('paymentModal');
+                    loadData();
+                }
             } catch (error) {
                 showToast('❌ فشل تسجيل الحركة: ' + error.message, 'error');
             }
@@ -2075,11 +2153,13 @@
 
             try {
                 var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
+                systemCurrency = settings.currency || 'EGP';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
             } catch (error) {
                 console.error('❌ خطأ في جلب الإعدادات:', error);
                 var savedCurrency = localStorage.getItem('systemCurrency');
+                // هجرة عملة: النظام مبني على الجنيه المصري مطابقة للإكسل
+                if (savedCurrency === 'SAR') { localStorage.setItem('systemCurrency', 'EGP'); savedCurrency = 'EGP'; }
                 if (savedCurrency) {
                     systemCurrency = savedCurrency;
                     currencySymbol = Supabase.getCurrencySymbol(systemCurrency);

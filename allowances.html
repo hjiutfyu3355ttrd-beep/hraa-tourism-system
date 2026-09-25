@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%95%8B%3C/text%3E%3C/svg%3E" />
-    <title id="pageTitle">العملاء - حراء للسياحة</title>
+    <title id="pageTitle">بدلات وانتقالات - حراء للسياحة</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1495,13 +1495,13 @@
             <ul class="nav-list">
                 <li><a href="treasury.html"><i class="bi bi-wallet-fill"></i> الخزينة <span class="sidebar-badge">رئيسي</span></a></li>
                 <li><a href="trips.html"><i class="bi bi-airplane-fill"></i> الرحلات</a></li>
-                <li><a href="clients.html" class="active"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
+                <li><a href="clients.html"><i class="bi bi-people-fill"></i> العملاء <span class="sidebar-badge">مديونيات</span></a></li>
                 <li><a href="suppliers.html"><i class="bi bi-truck"></i> الموردين <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="banks.html"><i class="bi bi-bank"></i> البنوك <span class="sidebar-badge">حسابات</span></a></li>
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
                 <li><a href="expenses.html"><i class="bi bi-cash-coin"></i> المصروفات العمومية <span class="sidebar-badge">جديد</span></a></li>
-                <li><a href="allowances.html"><i class="bi bi-car-front-fill"></i> بدلات وانتقالات <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="allowances.html" class="active"><i class="bi bi-car-front-fill"></i> بدلات وانتقالات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
@@ -1551,8 +1551,8 @@
                 </div>
 
                 <h4 class="page-title" id="pageTitleText">
-                    العملاء
-                    <small>إدارة العملاء والمديونيات والزيارات</small>
+                    بدلات وانتقالات
+                    <small>مصروفات بدل الانتقال والمطار لكل موظف</small>
                 </h4>
             </div>
 
@@ -1578,8 +1578,8 @@
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>إدارة العملاء / المعتمرين</h2>
-                    <p>متابعة بيانات العملاء والمديونيات والزيارات</p>
+                    <h2>بدلات وانتقالات الموظفين</h2>
+                    <p>تسجيل بدلات الانتقال والمطار للموظفين</p>
                 </div>
                 <div class="ph-right">
                     <strong>اليوم</strong>
@@ -1588,59 +1588,65 @@
             </div>
 
             <!-- ===== STATS ===== -->
-            <div class="stats-grid" id="stats-container">
-                <div class="stat-card stat-blue">
-                    <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
-                    <div class="stat-number" id="statTotalClients">0</div>
-                    <div class="stat-label">إجمالي العملاء</div>
+<div style="flex:1;min-width:220px;">
+                    <div style="font-weight:800;font-size:14px;margin-bottom:2px;"></div>
+                    <div style="font-size:12.5px;opacity:0.9;line-height:1.5;">بدل انتقال / بدل مطار · المستفيد · المبلغ · البيان (مشوار العاصمة، المطار، البنك...) — نفس الأعمدة والترتيب.</div>
                 </div>
+                <button type="button" onclick="this.parentElement.style.display='none'" style="background:rgba(255,255,255,0.15);border:0;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;">إخفاء</button>
+            </div>
+<div class="stats-grid" id="stats-container">
                 <div class="stat-card stat-red">
                     <span class="stat-icon"><i class="bi bi-cash-stack"></i></span>
-                    <div class="stat-number" id="statTotalDebts">0</div>
-                    <div class="stat-label">إجمالي المديونيات</div>
+                    <div class="stat-number" id="statTotalAllowances">0</div>
+                    <div class="stat-label">إجمالي البدلات</div>
+                </div>
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-list-ol"></i></span>
+                    <div class="stat-number" id="statCount">0</div>
+                    <div class="stat-label">عدد السندات</div>
                 </div>
                 <div class="stat-card stat-gold">
-                    <span class="stat-icon"><i class="bi bi-arrow-repeat"></i></span>
-                    <div class="stat-number" id="statTotalVisits">0</div>
-                    <div class="stat-label">إجمالي الزيارات</div>
+                    <span class="stat-icon"><i class="bi bi-calendar-month-fill"></i></span>
+                    <div class="stat-number" id="statThisMonth">0</div>
+                    <div class="stat-label">بدلات هذا الشهر</div>
                 </div>
                 <div class="stat-card stat-green">
-                    <span class="stat-icon"><i class="bi bi-check-circle-fill"></i></span>
-                    <div class="stat-number" id="statPaidCount">0</div>
-                    <div class="stat-label">عملاء مسددون</div>
+                    <span class="stat-icon"><i class="bi bi-person-check-fill"></i></span>
+                    <div class="stat-number" id="statBeneficiaryCount">0</div>
+                    <div class="stat-label">عدد الموظفين المستفيدين</div>
                 </div>
             </div>
 
             <!-- ===== TOOLBAR ===== -->
             <div class="d-flex flex-wrap gap-2 mb-3">
-                <button class="btn-action btn-success" onclick="openModalById('clientModal')">
-                    <i class="bi bi-person-plus-fill"></i> عميل جديد
+                <button class="btn-action btn-success" onclick="openAllowanceModal()">
+                    <i class="bi bi-plus-circle-fill"></i> بدل جديد
                 </button>
                 <button class="btn-action btn-primary" onclick="loadData()">
                     <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
                 </button>
             </div>
 
-            <!-- ===== CLIENTS TABLE ===== -->
+            <!-- ===== ALLOWANCES TABLE ===== -->
             <div class="panel">
                 <div class="panel-header">
-                    <h5 class="panel-title"><i class="bi bi-people-fill"></i> سجل العملاء</h5>
+                    <h5 class="panel-title"><i class="bi bi-car-front-fill"></i> سجل بدلات الانتقالات</h5>
                     <span id="recordCount" class="record-count">0 سجل</span>
                 </div>
                 <div class="table-wrap">
                     <table class="table-custom">
                         <thead>
                             <tr>
-                                <th>الكود</th><th>الاسم</th><th>الهاتف</th><th>الرحلة</th>
-                                <th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>ملاحظات</th><th>الحالة</th>
+                                <th>م</th><th>التاريخ</th><th>المستفيد</th><th>نوع البدل</th>
+                                <th>طريقة السداد</th><th>المبلغ</th><th>رقم المستند</th><th>البيان</th>
                                 <th style="text-align:center;">الإجراءات</th>
                             </tr>
                         </thead>
-                        <tbody id="clientsBody">
+                        <tbody id="allowancesBody">
                             <tr>
-                                <td colspan="10" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                <td colspan="9" style="text-align:center;padding:30px;color:var(--text-tertiary);">
                                     <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
-                                    جاري تحميل العملاء...
+                                    جاري التحميل...
                                 </td>
                             </tr>
                         </tbody>
@@ -1653,54 +1659,53 @@
     </main>
 
     <!-- ================================================================ -->
-    <!-- MODAL - إضافة عميل جديد -->
+    <!-- MODAL - بدل انتقال / مطار جديد -->
     <!-- ================================================================ -->
-    <div class="modal-overlay" id="clientModalOverlay">
+    <div class="modal-overlay" id="allowanceModalOverlay">
         <div class="modal-box">
-            <h3><i class="bi bi-person-plus-fill"></i> إضافة عميل جديد</h3>
-            <form id="clientForm" onsubmit="handleClientSubmit(event)">
-                <label for="clientName">اسم العميل <span class="required">*</span></label>
-                <input type="text" id="clientName" placeholder="الاسم الكامل" required />
+            <h3><i class="bi bi-car-front-fill"></i> بدل انتقال / مطار جديد</h3>
+            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;">يُسجَّل تلقائيًا بقيد محاسبي مزدوج</p>
+            <form id="allowanceForm" onsubmit="handleAllowanceSubmit(event)">
+                <label for="allowanceDate">التاريخ <span class="required">*</span></label>
+                <input type="date" id="allowanceDate" required />
 
-                <label for="clientPhone">رقم الهاتف</label>
-                <input type="text" id="clientPhone" placeholder="0100xxxxxxx" />
+                <label for="allowanceBeneficiary">المستفيد (الموظف) <span class="required">*</span></label>
+                <input type="text" id="allowanceBeneficiary" placeholder="اسم الموظف" required />
 
-                <label for="clientEmail">البريد الإلكتروني (اختياري)</label>
-                <input type="email" id="clientEmail" placeholder="example@mail.com" />
+                <label for="allowanceType">نوع البدل <span class="required">*</span></label>
+                <select id="allowanceType" required>
+                    <option value="بدل انتقال">بدل انتقال</option>
+                    <option value="بدل مطار">بدل مطار</option>
+                    <option value="بدل آخر">بدل آخر</option>
+                </select>
 
-                <label for="clientAddress">العنوان (اختياري)</label>
-                <input type="text" id="clientAddress" placeholder="العنوان" />
+                <label for="allowanceAmount">المبلغ <span class="required">*</span></label>
+                <input type="number" id="allowanceAmount" min="0.01" step="0.01" required />
 
-                <label for="clientDebt">مديونية مبدئية</label>
-                <input type="number" id="clientDebt" min="0" step="0.01" value="0" />
+                <label for="allowancePaymentMethod">طريقة السداد <span class="required">*</span></label>
+                <select id="allowancePaymentMethod" onchange="toggleAllowanceCashAccount()" required>
+                    <option value="نقدا">نقدا</option>
+                    <option value="تحويل بنكي">تحويل بنكي</option>
+                </select>
 
-                <div class="modal-actions">
-                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('clientModal')">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="saveClientBtn">حفظ</button>
+                <div id="allowanceCashAccountWrap">
+                    <label for="allowanceCashAccount">تُصرف من <span class="required">*</span></label>
+                    <select id="allowanceCashAccount"></select>
                 </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- ================================================================ -->
-    <!-- MODAL - تسجيل تسديد -->
-    <!-- ================================================================ -->
-    <div class="modal-overlay" id="paymentModalOverlay">
-        <div class="modal-box">
-            <h3><i class="bi bi-cash-coin"></i> تسجيل تسديد</h3>
-            <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;" id="paymentClientLabel">—</p>
-            <form id="paymentForm" onsubmit="handlePaymentSubmit(event)">
-                <input type="hidden" id="paymentClientId" />
-                <label for="paymentAmount">المبلغ المسدد <span class="required">*</span></label>
-                <input type="number" id="paymentAmount" min="0.01" step="0.01" required />
+                <label for="allowanceDocumentNo">رقم المستند (اختياري)</label>
+                <input type="text" id="allowanceDocumentNo" placeholder="رقم الإيصال إن وجد" />
 
-                <label for="paymentCashAccount">الاستلام في <span class="required">*</span></label>
-                <select id="paymentCashAccount" required></select>
-                <p style="font-size:11.5px;color:var(--text-tertiary);margin:-8px 0 14px;">سيتم إنشاء سند قبض تلقائيًا ويترحّل مباشرة لميزان المراجعة والقوائم المالية</p>
+                <label for="allowanceDescription">البيان <span class="required">*</span></label>
+                <input type="text" id="allowanceDescription" placeholder="بيان تفصيلي للمشوار" required />
 
+                <label for="allowanceNotes">ملاحظات (اختياري)</label>
+                <input type="text" id="allowanceNotes" placeholder="ملاحظات إضافية" />
+
+                <p style="font-size:11.5px;color:var(--text-tertiary);margin:0 0 10px;">بعد الحفظ يمكنك إضافة سجل جديد مباشرة.</p>
                 <div class="modal-actions">
-                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('paymentModal')">إلغاء</button>
-                    <button type="submit" class="btn-action btn-primary" id="paymentBtn">تسديد</button>
+                    <button type="button" class="btn-action btn-outline" onclick="closeModalById('allowanceModal')">إلغاء</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveAllowanceBtn">حفظ</button>
                 </div>
             </form>
         </div>
@@ -1731,12 +1736,9 @@
         // ================================================================
         // STATE
         // ================================================================
-        var clients = [];
-        var clientBookings = [];
-        var clientServices = [];
-        var clientVouchers = [];
-        var clientTrips = [];
+        var allowances = [];
         var cashAccounts = [];
+        var allowanceCategoryAccount = null; // حساب "بدلات وانتقالات الموظفين" في دليل الحسابات
         var currentUser = null;
         var systemCurrency = 'EGP';
         var currencySymbol = 'ج.م';
@@ -1750,46 +1752,27 @@
             isLoading = true;
 
             try {
-                clients = await Supabase.getClients() || [];
+                await ensureAllowanceAccount();
             } catch (error) {
-                console.error('❌ خطأ في جلب العملاء:', error);
-                showToast('⚠️ فشل تحميل العملاء', 'warning');
-                clients = [];
+                console.error('❌ خطأ في تجهيز حساب البدلات:', error);
             }
 
-            // المديونية الحقيقية بتتحسب لحظيًا من الحجوزات + الخدمات + السندات
-            // (مش من حقل clients.debt الساكن) — عشان الأرقام تتحدث فورًا مع أي
-            // عملية جديدة، بدون أي تأخير.
             try {
-                clientBookings = await Supabase.getBookings() || [];
+                // مصروفات الرحلات بدون trip_id هي المصروفات الإدارية العامة،
+                // ونعرض هنا فقط اللي مسجّلة على حساب "بدلات وانتقالات الموظفين"
+                var allExpenses = await Supabase.getTripExpenses();
+                allowances = (allExpenses || []).filter(function(e) {
+                    return !e.trip_id && allowanceCategoryAccount && e.category_account_id === allowanceCategoryAccount.id;
+                });
+                allowances.sort(function(a, b) { return new Date(b.expense_date) - new Date(a.expense_date); });
             } catch (error) {
-                console.error('❌ خطأ في جلب الحجوزات:', error);
-                clientBookings = [];
-            }
-            try {
-                clientServices = await Supabase.getServices() || [];
-            } catch (error) {
-                console.error('❌ خطأ في جلب الخدمات:', error);
-                clientServices = [];
-            }
-            try {
-                clientVouchers = await Supabase.getVouchers() || [];
-            } catch (error) {
-                console.error('❌ خطأ في جلب السندات:', error);
-                clientVouchers = [];
-            }
-            try {
-                clientTrips = await Supabase.getTrips() || [];
-            } catch (error) {
-                console.error('❌ خطأ في جلب الرحلات:', error);
-                clientTrips = [];
+                console.error('❌ خطأ في جلب البدلات:', error);
+                showToast('⚠️ فشل تحميل البدلات', 'warning');
+                allowances = [];
             }
 
             try {
                 var allAccounts = await Supabase.getAccounts();
-                // الصندوق (1100) + كل بنك فرعي حقيقي مرتبط ببنك فعلي (كوده يبدأ بـ12 وليس 1200 نفسه،
-                // لأن 1200 حساب أب تجميعي مالوش linked_bank_id فمفيش بنك حقيقي يتحدّث رصيده لو
-                // اخترناه، والمستخدم لازم يقدر يحدد فعليًا أي بنك دخلت عليه الفلوس)
                 cashAccounts = allAccounts.filter(function(a) {
                     return a.code === '1100' || (a.code && a.code.indexOf('12') === 0 && a.code !== '1200');
                 });
@@ -1804,76 +1787,79 @@
             isLoading = false;
         }
 
-        function clientDebt(clientId) {
-            return Supabase.getClientBalance(clientId, clientBookings, clientServices, clientVouchers);
-        }
+        /**
+         * يتأكد من وجود حساب "بدلات وانتقالات الموظفين" في دليل الحسابات
+         * (تحت مجموعة 5600 مصروفات إدارية وعمومية) — لو مش موجود بينشئه
+         * تلقائيًا بكود 5700، بنفس فكرة ensureBankAccount في supabase.js
+         */
+        async function ensureAllowanceAccount() {
+            var accounts = await Supabase.getAccounts();
+            var existing = accounts.find(function(a) { return a.code === '5710'; });
+            if (existing) { allowanceCategoryAccount = existing; return existing; }
 
-        /** آخر حجز للعميل (بالأحدث تاريخًا) — بيمثل نفس فكرة عمود "الرحلة" في شيت دليل العملاء */
-        function clientLatestBooking(clientId) {
-            var mine = clientBookings.filter(function(b) { return String(b['client_id']) === String(clientId); });
-            if (!mine.length) return null;
-            mine.sort(function(a, b) {
-                return new Date(b['booking_date'] || b['created_at'] || 0) - new Date(a['booking_date'] || a['created_at'] || 0);
+            var created = await Supabase.addAccount({
+                code: '5710',
+                name: 'بدلات وانتقالات الموظفين',
+                account_type: 'expense',
+                parent_code: '5600',
+                is_default: false
             });
-            return mine[0];
+            allowanceCategoryAccount = created;
+            return created;
         }
 
         function renderStats() {
-            var totalDebts = 0, totalVisits = 0, paidCount = 0;
-            clients.forEach(function(c) {
-                var debt = clientDebt(c['id']);
-                totalDebts += debt;
-                totalVisits += parseInt(c['visits'] || 0);
-                if (debt <= 0) paidCount++;
+            var total = 0, thisMonthTotal = 0, beneficiaries = {};
+            var now = new Date();
+
+            allowances.forEach(function(a) {
+                var amount = parseFloat(a.amount || 0);
+                total += amount;
+
+                var d = new Date(a.expense_date);
+                if (!isNaN(d) && d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) {
+                    thisMonthTotal += amount;
+                }
+                if (a.beneficiary) beneficiaries[a.beneficiary] = true;
             });
 
-            document.getElementById('statTotalClients').textContent = clients.length;
-            document.getElementById('statTotalDebts').textContent = Supabase.formatCurrency(totalDebts);
-            document.getElementById('statTotalVisits').textContent = totalVisits;
-            document.getElementById('statPaidCount').textContent = paidCount;
+            document.getElementById('statTotalAllowances').textContent = Supabase.formatCurrency(total);
+            document.getElementById('statCount').textContent = allowances.length;
+            document.getElementById('statThisMonth').textContent = Supabase.formatCurrency(thisMonthTotal);
+            document.getElementById('statBeneficiaryCount').textContent = Object.keys(beneficiaries).length;
         }
 
         function renderTable() {
-            var tbody = document.getElementById('clientsBody');
+            var tbody = document.getElementById('allowancesBody');
             var count = document.getElementById('recordCount');
 
-            if (!clients.length) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-person-x" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا يوجد عملاء مسجلين</td></tr>';
+            if (!allowances.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-tertiary);"><i class="bi bi-car-front" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>لا توجد بدلات مسجلة</td></tr>';
                 count.textContent = '0 سجل';
                 return;
             }
 
-            count.textContent = clients.length + ' سجل';
+            count.textContent = allowances.length + ' سجل';
 
             var html = '';
-            for (var i = 0; i < clients.length; i++) {
-                var c = clients[i];
-                var debt = clientDebt(c['id']);
-                var statusClass = debt > 0 ? 'status-pending' : 'status-active';
-                var statusText = debt > 0 ? 'عليه مديونية' : 'مسدد';
-
-                var latestBooking = clientLatestBooking(c['id']);
-                var trip = latestBooking ? clientTrips.find(function(t) { return String(t['id']) === String(latestBooking['trip_id']); }) : null;
-                var tripLabel = trip ? (trip['trip_code'] || trip['trip_name'] || '—') : '—';
-                var bookingValue = latestBooking ? parseFloat(latestBooking['booking_value'] || 0) : 0;
-                var bookingPaid = latestBooking ? parseFloat(latestBooking['paid_amount'] || 0) : 0;
-                var bookingRemaining = bookingValue - bookingPaid;
-                var bookingNotes = latestBooking ? (latestBooking['notes'] || '—') : '—';
+            for (var i = 0; i < allowances.length; i++) {
+                var a = allowances[i];
+                var dateObj = new Date(a.expense_date);
+                var formattedDate = (!isNaN(dateObj)) ? dateObj.toLocaleDateString('ar-EG') : (a.expense_date || '—');
+                var allowanceType = (a.notes && a.notes.indexOf('نوع:') === 0) ? a.notes.replace('نوع:', '').split('|')[0] : '—';
+                var realNotes = (a.notes && a.notes.indexOf('|') > -1) ? a.notes.split('|').slice(1).join('|').trim() : (a.notes || '—');
 
                 html += '<tr>' +
                     '<td>' + (i + 1) + '</td>' +
-                    '<td><strong>' + (c['name'] || '—') + '</strong></td>' +
-                    '<td>' + (c['phone'] || '—') + '</td>' +
-                    '<td>' + tripLabel + '</td>' +
-                    '<td>' + (latestBooking ? Supabase.formatCurrency(bookingValue) : '—') + '</td>' +
-                    '<td style="color:var(--success);">' + (latestBooking ? Supabase.formatCurrency(bookingPaid) : '—') + '</td>' +
-                    '<td style="' + (bookingRemaining > 0 ? 'color:var(--danger);' : '') + '">' + (latestBooking ? Supabase.formatCurrency(bookingRemaining) : '—') + '</td>' +
-                    '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + bookingNotes.replace(/"/g, '') + '">' + bookingNotes + '</td>' +
-                    '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>' +
+                    '<td>' + formattedDate + '</td>' +
+                    '<td><strong>' + (a.beneficiary || '—') + '</strong></td>' +
+                    '<td>' + allowanceType + '</td>' +
+                    '<td>' + (a.payment_method || '—') + '</td>' +
+                    '<td style="color:var(--danger);font-weight:700;">' + Supabase.formatCurrency(a.amount) + '</td>' +
+                    '<td>' + (a.document_no || '—') + '</td>' +
+                    '<td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (a.description || '').replace(/"/g, '') + '">' + (a.description || '—') + '</td>' +
                     '<td style="text-align:center;white-space:nowrap;">' +
-                        '<a class="btn-icon btn-icon-edit" href="client_statement.html?id=' + c['id'] + '" title="كشف الحساب (العدد/السعر/الدفعات)" style="text-decoration:none;display:inline-flex;"><i class="bi bi-receipt"></i></a> ' +
-                        '<button class="btn-icon btn-icon-edit" onclick="openPaymentModal(\'' + c['id'] + '\')" title="تسديد"><i class="bi bi-cash-coin"></i></button> ' +
-                        '<button class="btn-icon btn-icon-delete" onclick="deleteClient(\'' + c['id'] + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
+                        '<button class="btn-icon btn-icon-delete" onclick="deleteAllowance(\'' + a.id + '\')" title="حذف"><i class="bi bi-trash-fill"></i></button>' +
                     '</td>' +
                     '</tr>';
             }
@@ -1881,172 +1867,97 @@
         }
 
         // ================================================================
-        // إضافة عميل
+        // إضافة بدل جديد
         // ================================================================
-        async function handleClientSubmit(event) {
+        function openAllowanceModal() {
+            document.getElementById('allowanceForm').reset();
+            document.getElementById('allowanceDate').value = new Date().toISOString().slice(0, 10);
+
+            var cashSelect = document.getElementById('allowanceCashAccount');
+            if (!cashAccounts.length) {
+                cashSelect.innerHTML = '<option value="">-- لا توجد حسابات صندوق/بنك --</option>';
+            } else {
+                cashSelect.innerHTML = cashAccounts.map(function(a) {
+                    return '<option value="' + a.id + '">' + (a.code ? a.code + ' — ' : '') + a.name + '</option>';
+                }).join('');
+            }
+            toggleAllowanceCashAccount();
+            openModalById('allowanceModal');
+        }
+
+        function toggleAllowanceCashAccount() {
+            var method = document.getElementById('allowancePaymentMethod').value;
+            var wrap = document.getElementById('allowanceCashAccountWrap');
+            wrap.style.display = (method === 'نقدا' || method === 'تحويل بنكي') ? 'block' : 'none';
+        }
+
+        async function handleAllowanceSubmit(event) {
             event.preventDefault();
 
-            var name = document.getElementById('clientName').value.trim();
-            var phone = document.getElementById('clientPhone').value.trim();
-            var email = document.getElementById('clientEmail').value.trim();
-            var address = document.getElementById('clientAddress').value.trim();
-            var debt = document.getElementById('clientDebt').value;
+            var date = document.getElementById('allowanceDate').value;
+            var beneficiary = document.getElementById('allowanceBeneficiary').value.trim();
+            var type = document.getElementById('allowanceType').value;
+            var amount = parseFloat(document.getElementById('allowanceAmount').value);
+            var paymentMethod = document.getElementById('allowancePaymentMethod').value;
+            var cashAccountId = document.getElementById('allowanceCashAccount').value;
+            var documentNo = document.getElementById('allowanceDocumentNo').value.trim();
+            var description = document.getElementById('allowanceDescription').value.trim();
+            var notes = document.getElementById('allowanceNotes').value.trim();
 
-            if (!name) { showToast('⚠️ الرجاء إدخال اسم العميل', 'warning'); return; }
+            if (!date) { showToast('⚠️ الرجاء إدخال التاريخ', 'warning'); return; }
+            if (!beneficiary) { showToast('⚠️ الرجاء إدخال اسم المستفيد', 'warning'); return; }
+            if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
+            if (!description) { showToast('⚠️ الرجاء إدخال البيان', 'warning'); return; }
+            if (!cashAccountId) { showToast('⚠️ الرجاء اختيار الحساب الذي يُصرف منه البدل', 'warning'); return; }
 
-            var btn = document.getElementById('saveClientBtn');
+            var btn = document.getElementById('saveAllowanceBtn');
             btn.disabled = true;
             btn.textContent = 'جاري الحفظ...';
 
             try {
-                var debtAmount = parseFloat(debt) || 0;
+                if (!allowanceCategoryAccount) await ensureAllowanceAccount();
 
-                var newClientResult = await Supabase.addData('clients', {
-                    name: name, phone: phone, email: email, address: address,
-                    debt: debtAmount, visits: 0,
-                    last_visit: new Date().toISOString().split('T')[0]
+                // النوع (بدل انتقال/بدل مطار/بدل آخر) بيتسجل في أول سطر الملاحظات
+                // عشان يقدر يترجع في العرض من غير ما نحتاج عمود جديد في trip_expenses
+                var combinedNotes = 'نوع:' + type + (notes ? ' | ' + notes : ' | ');
+
+                await Supabase.addTripExpense({
+                    trip_id: null,
+                    category_account_id: allowanceCategoryAccount.id,
+                    amount: amount,
+                    description: description,
+                    expense_date: date,
+                    payment_method: 'نقدي',
+                    cash_account_id: cashAccountId,
+                    document_no: documentNo || null,
+                    beneficiary: beneficiary,
+                    notes: combinedNotes
                 });
-                var newClient = (newClientResult && newClientResult[0]) || newClientResult;
 
-                // مديونية مبدئية = العميل مدين للشركة من الأول — قيد افتتاحي
-                // حقيقي: مدين حساب العملاء (1300)، دائن الأرباح المرحلة (3200)،
-                // بنفس منطق الرصيد الافتتاحي في treasury.html وbanks.html بالظبط،
-                // عشان ميزان المراجعة يعكس المديونية دي من يوم إضافتها
-                if (debtAmount > 0 && newClient && newClient.id) {
-                    try {
-                        var accounts = await Supabase.getAccounts();
-                        var receivableAccount = accounts.find(function(a) { return a.code === '1300'; });
-                        var openingAccount = accounts.find(function(a) { return a.code === '3200'; });
-                        if (receivableAccount && openingAccount) {
-                            await Supabase.addVoucher({
-                                voucher_type: 'صرف',
-                                voucher_date: new Date().toISOString().split('T')[0],
-                                cash_account_id: openingAccount.id,
-                                counter_account_id: receivableAccount.id,
-                                party_type: 'client',
-                                party_id: newClient.id,
-                                party_name: name,
-                                amount: debtAmount,
-                                description: 'مديونية افتتاحية للعميل ' + name
-                            });
-                        } else {
-                            console.warn('⚠️ حساب العملاء (1300) أو الرصيد الافتتاحي (3200) غير موجود — لم تُسجَّل المديونية الافتتاحية محاسبيًا');
-                        }
-                    } catch (openingError) {
-                        console.warn('⚠️ تمت إضافة العميل لكن فشل تسجيل المديونية الافتتاحية محاسبيًا:', openingError);
-                    }
-                }
-
-                closeModalById('clientModal');
-                document.getElementById('clientForm').reset();
-                showToast('✅ تمت إضافة العميل بنجاح', 'success');
+                closeModalById('allowanceModal');
+                showToast('✅ تم تسجيل البدل بنجاح وترحيله محاسبيًا', 'success');
                 loadData();
             } catch (error) {
-                showToast('❌ فشل إضافة العميل: ' + error.message, 'error');
+                showToast('❌ فشل تسجيل البدل: ' + error.message, 'error');
             }
 
             btn.disabled = false;
             btn.textContent = 'حفظ';
         }
 
-        function deleteClient(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا العميل؟')) return;
-            Supabase.deleteData('clients', id)
+        function deleteAllowance(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا البدل؟')) return;
+            var allowance = allowances.find(function(a) { return String(a.id) === String(id); });
+            if (!allowance) return;
+
+            Supabase.deleteTripExpense(allowance)
                 .then(function() {
-                    showToast('✅ تم حذف العميل بنجاح', 'success');
+                    showToast('✅ تم حذف البدل بنجاح', 'success');
                     loadData();
                 })
                 .catch(function(error) {
-                    showToast('❌ فشل حذف العميل: ' + error.message, 'error');
+                    showToast('❌ فشل حذف البدل: ' + error.message, 'error');
                 });
-        }
-
-        // ================================================================
-        // تسديد
-        // ================================================================
-        function openPaymentModal(clientId) {
-            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
-            if (!client) { showToast('⚠️ العميل غير موجود، حاول تحديث الصفحة', 'error'); return; }
-
-            var currentDebt = clientDebt(clientId);
-            document.getElementById('paymentClientId').value = clientId;
-            document.getElementById('paymentClientLabel').textContent = 'العميل: ' + client['name'] + ' — المديونية الحالية: ' + Supabase.formatCurrency(currentDebt);
-            document.getElementById('paymentAmount').value = currentDebt > 0 ? currentDebt : '';
-            document.getElementById('paymentAmount').max = currentDebt;
-
-            var cashSelect = document.getElementById('paymentCashAccount');
-            if (!cashAccounts.length) {
-                cashSelect.innerHTML = '<option value="">-- لا توجد حسابات صندوق/بنك، راجع الإعدادات --</option>';
-            } else {
-                cashSelect.innerHTML = cashAccounts.map(function(a) {
-                    return '<option value="' + a.id + '">' + (a.code ? a.code + ' — ' : '') + a.name + '</option>';
-                }).join('');
-            }
-
-            openModalById('paymentModal');
-        }
-
-        async function handlePaymentSubmit(event) {
-            event.preventDefault();
-
-            var clientId = document.getElementById('paymentClientId').value;
-            var amount = parseFloat(document.getElementById('paymentAmount').value);
-            var cashAccountId = document.getElementById('paymentCashAccount').value;
-            var client = clients.find(function(c) { return String(c['id']) === String(clientId); });
-
-            if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
-            if (!client) { showToast('⚠️ العميل غير موجود', 'error'); return; }
-            if (!cashAccountId) { showToast('⚠️ الرجاء اختيار حساب الاستلام', 'warning'); return; }
-
-            var currentDebt = clientDebt(clientId);
-            if (amount > currentDebt) {
-                showToast('⚠️ المبلغ أكبر من المديونية الحالية (' + Supabase.formatCurrency(currentDebt) + ')', 'warning');
-                return;
-            }
-
-            var btn = document.getElementById('paymentBtn');
-            btn.disabled = true;
-            btn.textContent = 'جاري التسديد...';
-
-            try {
-                var accounts = await Supabase.getAccounts();
-                var receivableAccount = accounts.find(function(a) { return a.code === '1300'; }); // العملاء (مدينون)
-
-                // سند قبض تلقائي: مدين = الصندوق/البنك المُختار (الفلوس دخلت فعليًا)،
-                // دائن = حساب العملاء 1300 (تخفيض المديونية) — بيترحّل لميزان
-                // المراجعة والقوائم المالية زي أي سند عادي
-                await Supabase.addVoucher({
-                    voucher_type: 'قبض',
-                    voucher_date: new Date().toISOString().split('T')[0],
-                    cash_account_id: cashAccountId,
-                    counter_account_id: receivableAccount.id,
-                    party_type: 'client',
-                    party_id: clientId,
-                    party_name: client['name'],
-                    amount: amount,
-                    description: 'تسديد من العميل ' + client['name']
-                });
-
-                // ملحوظة: مبقيناش بنكتب على clients.debt هنا خالص — السند اللي
-                // اتسجل فوق فوق هو مصدر الحقيقة الوحيد دلوقتي، وأي عرض للمديونية
-                // بيتحسب لحظيًا من Supabase.getClientBalance() في loadData()،
-                // فمفيش أي احتمال إنه "يتأخر" عن آخر عملية زي ما كان بيحصل قبل كده.
-                var newVisits = parseInt(client['visits'] || 0) + 1;
-
-                await Supabase.updateData('clients', clientId, {
-                    visits: newVisits,
-                    last_visit: new Date().toISOString().split('T')[0]
-                });
-
-                closeModalById('paymentModal');
-                showToast('✅ تم تسجيل تسديد ' + Supabase.formatCurrency(amount) + ' من ' + client['name'], 'success');
-                loadData();
-            } catch (error) {
-                showToast('❌ فشل التسديد: ' + error.message, 'error');
-            }
-
-            btn.disabled = false;
-            btn.textContent = 'تسديد';
         }
 
         // ================================================================
@@ -2108,7 +2019,7 @@
         async function applySystemName() {
             try {
                 var systemName = await Supabase.getSystemName();
-                document.title = 'العملاء' + ' - ' + systemName;
+                document.title = 'بدلات وانتقالات' + ' - ' + systemName;
 
                 var brandText = document.getElementById('sidebarBrandText');
                 if (brandText) {
@@ -2249,10 +2160,10 @@
             if (notifBtn) {
                 notifBtn.addEventListener('click', function() {
                     var messages = [
-                        '👥 تم تحديث بيانات العملاء',
-                        '💰 تم تسجيل تسديد جديد من أحد العملاء',
-                        '📊 عدد العملاء المسجلين: يمكنك مراجعة الجدول',
-                        '⚠️ تنبيه: راجع العملاء أصحاب المديونيات المرتفعة'
+                        '🚗 تم تحديث بيانات البدلات',
+                        '💰 تم تسجيل بدل انتقال جديد',
+                        '📊 راجع إجمالي البدلات هذا الشهر',
+                        '⚠️ تنبيه: راجع بدلات الموظفين المتكررة'
                     ];
                     var random = messages[Math.floor(Math.random() * messages.length)];
                     showToast(random, 'info');
@@ -2336,8 +2247,7 @@
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeModalById('clientModal');
-                closeModalById('paymentModal');
+                closeModalById('allowanceModal');
             }
         });
 
@@ -2346,13 +2256,14 @@
         // ================================================================
         window.openModalById = openModalById;
         window.closeModalById = closeModalById;
-        window.openPaymentModal = openPaymentModal;
-        window.deleteClient = deleteClient;
+        window.openAllowanceModal = openAllowanceModal;
+        window.toggleAllowanceCashAccount = toggleAllowanceCashAccount;
+        window.deleteAllowance = deleteAllowance;
         window.logout = logout;
         window.showToast = showToast;
         window.loadData = loadData;
 
-        console.log('👥 نظام العملاء - حراء للسياحة');
+        console.log('🚗 نظام بدلات وانتقالات الموظفين - حراء للسياحة');
         console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
     </script>
 

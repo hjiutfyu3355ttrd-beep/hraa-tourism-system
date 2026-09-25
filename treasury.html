@@ -1543,6 +1543,7 @@
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
                 <li><a href="expenses.html"><i class="bi bi-cash-coin"></i> المصروفات العمومية <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="allowances.html"><i class="bi bi-car-front-fill"></i> بدلات وانتقالات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
@@ -1641,7 +1642,13 @@
             </div>
 
             <!-- ===== STATS ===== -->
-            <div class="stats-grid">
+<div style="flex:1;min-width:220px;">
+                    <div style="font-weight:800;font-size:14px;margin-bottom:2px;"></div>
+                    <div style="font-size:12.5px;opacity:0.9;line-height:1.5;">تسجيل حركات القبض والصرف مع رقم المستند والفئة والمسؤول.</div>
+                </div>
+                <button type="button" onclick="this.parentElement.style.display='none'" style="background:rgba(255,255,255,0.15);border:0;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;">إخفاء</button>
+            </div>
+<div class="stats-grid">
                 <div class="stat-card stat-gold">
                     <span class="stat-icon"><i class="bi bi-wallet-fill"></i></span>
                     <div class="stat-number" id="treasuryBalance">0</div>
@@ -1661,6 +1668,40 @@
                     <span class="stat-icon"><i class="bi bi-arrow-left-right"></i></span>
                     <div class="stat-number" id="netProfit">0</div>
                     <div class="stat-label">صافي الربح</div>
+                </div>
+            </div>
+
+            <!-- ===== مؤشرات إضافية (مطابقة لملخص "الخزنة" الأصلي) ===== -->
+            <div class="stats-grid" style="margin-top:12px;">
+                <div class="stat-card stat-gold" style="opacity:0.92;">
+                    <span class="stat-icon"><i class="bi bi-flag-fill"></i></span>
+                    <div class="stat-number" id="openingBalanceStat" style="font-size:1.05rem;">0</div>
+                    <div class="stat-label">رصيد أول المدة</div>
+                </div>
+                <div class="stat-card stat-blue" style="opacity:0.92;">
+                    <span class="stat-icon"><i class="bi bi-list-ol"></i></span>
+                    <div class="stat-number" id="transactionCountStat" style="font-size:1.05rem;">0</div>
+                    <div class="stat-label">عدد الحركات</div>
+                </div>
+                <div class="stat-card stat-blue" style="opacity:0.92;">
+                    <span class="stat-icon"><i class="bi bi-calendar-check-fill"></i></span>
+                    <div class="stat-number" id="lastMovementDateStat" style="font-size:1.05rem;">—</div>
+                    <div class="stat-label">آخر تاريخ حركة</div>
+                </div>
+                <div class="stat-card stat-red" style="opacity:0.92;">
+                    <span class="stat-icon"><i class="bi bi-arrow-up-circle"></i></span>
+                    <div class="stat-number" id="maxExpenseStat" style="font-size:1.05rem;">0</div>
+                    <div class="stat-label">أكبر مصروف</div>
+                </div>
+                <div class="stat-card stat-green" style="opacity:0.92;">
+                    <span class="stat-icon"><i class="bi bi-arrow-down-circle"></i></span>
+                    <div class="stat-number" id="maxIncomeStat" style="font-size:1.05rem;">0</div>
+                    <div class="stat-label">أكبر إيراد</div>
+                </div>
+                <div class="stat-card" id="treasuryStatusCard" style="opacity:0.92;">
+                    <span class="stat-icon"><i class="bi bi-shield-check"></i></span>
+                    <div class="stat-number" id="treasuryStatusStat" style="font-size:1.05rem;">—</div>
+                    <div class="stat-label">حالة الخزنة</div>
                 </div>
             </div>
 
@@ -1695,17 +1736,20 @@
                             <tr>
                                 <th>#</th>
                                 <th>التاريخ</th>
+                                <th>رقم المستند</th>
                                 <th>البيان</th>
                                 <th>النوع</th>
                                 <th>الفئة</th>
+                                <th>المسؤول</th>
                                 <th>العميل</th>
                                 <th>المبلغ</th>
+                                <th>الرصيد بعد الحركة</th>
                                 <th style="text-align:center;">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="transactionsBody">
                             <tr>
-                                <td colspan="8" style="text-align:center;padding:30px;color:var(--text-tertiary);">
+                                <td colspan="11" style="text-align:center;padding:30px;color:var(--text-tertiary);">
                                     <i class="bi bi-hourglass-split" style="font-size:1.2rem;display:block;margin-bottom:6px;opacity:0.35;"></i>
                                     جاري تحميل المعاملات...
                                 </td>
@@ -1735,10 +1779,17 @@
 
                 <label for="modalCategory">الفئة</label>
                 <select id="modalCategory" onchange="toggleClientField()">
-                    <option value="سيارة">سيارة</option>
-                    <option value="شركة">شركة</option>
+                    <option value="تحصيلات عملاء">تحصيلات عملاء</option>
+                    <option value="إيرادات أخرى">إيرادات أخرى</option>
+                    <option value="إيراد مؤجل">إيراد مؤجل</option>
+                    <option value="مصروفات تشغيل">مصروفات تشغيل</option>
+                    <option value="مواصلات">مواصلات</option>
+                    <option value="سلف موظفين">سلف موظفين</option>
+                    <option value="مشتريات">مشتريات</option>
+                    <option value="مصروفات متنوعة">مصروفات متنوعة</option>
                     <option value="عميل">عميل</option>
                     <option value="بنك">بنك</option>
+                    <option value="شركة">شركة</option>
                 </select>
 
                 <div class="client-group" id="clientGroup">
@@ -1748,11 +1799,26 @@
                     </select>
                 </div>
 
+                <label for="modalResponsible">المسؤول <span style="color:var(--text-tertiary);font-weight:400;"></span></label>
+                <select id="modalResponsible">
+                    <option value="">-- اختر المسؤول --</option>
+                    <option value="محمد عبدالرشيد">محمد عبدالرشيد</option>
+                    <option value="نصرالله الفايدى">نصرالله الفايدى</option>
+                    <option value="منى فكرى">منى فكرى</option>
+                    <option value="رمضان يحيى">رمضان يحيى</option>
+                    <option value="ا / علاء عاطف">ا / علاء عاطف</option>
+                    <option value="ا / اسلام رشاد">ا / اسلام رشاد</option>
+                    <option value="ا / حاتم حسين">ا / حاتم حسين</option>
+                    <option value="الحاج رمضان خليفه">الحاج رمضان خليفه</option>
+                    <option value="محمد فؤاد">محمد فؤاد</option>
+                    <option value="محمد منتصر">محمد منتصر</option>
+                </select>
+
                 <label for="modalDescription">البيان</label>
                 <input type="text" id="modalDescription" placeholder="وصف المعاملة" />
 
-                <label for="modalReference">المرجع</label>
-                <input type="text" id="modalReference" placeholder="رقم السيارة / رقم العملية" />
+                <label for="modalReference">رقم المستند</label>
+                <input type="text" id="modalReference" placeholder="مثال: REC-0000001 أو PAY-0000001" />
 
                 <div class="modal-actions">
                     <button type="button" class="btn-action btn-outline" onclick="closeModal()">إلغاء</button>
@@ -1824,7 +1890,7 @@
                 <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
             </div>
             <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-version">الإصدار 3.2.2</span>
                 <span class="footer-divider">|</span>
                 <a href="support.html" class="footer-link">
                     <i class="bi bi-headset"></i> الدعم الفني
@@ -1842,6 +1908,7 @@
         // ================================================================
         var transactions = [];
         var mergedTransactions = []; // transactions اليدوية + السندات المرتبطة بحساب الصندوق (للعرض فقط)
+        var currentTreasuryBalance = 0; // بيتحدّث من renderStats، بنستخدمه لحساب "الرصيد بعد الحركة" لكل صف
         var banks = [];
         var clients = [];
         var clientBookings = [];
@@ -1850,8 +1917,8 @@
         var isLoading = false;
         var currentModalType = 'income';
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var hasOpeningBalance = false;
 
         // ================================================================
@@ -1861,7 +1928,7 @@
             if (!Supabase.initSystem()) return;
 
             var settings = Supabase.getSystemSettings();
-            systemCurrency = settings.currency || 'SAR';
+            systemCurrency = settings.currency || 'EGP';
             currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
             currentUser = Supabase.getCurrentUser();
@@ -1962,7 +2029,7 @@
             if (tbody) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" style="text-align:center;padding:20px;color:var(--text-tertiary);">
+                        <td colspan="11" style="text-align:center;padding:20px;color:var(--text-tertiary);">
                             <div class="shimmer" style="height:28px;max-width:160px;margin:0 auto;"></div>
                             <span style="display:block;margin-top:6px;font-size:12px;">جاري التحميل...</span>
                         </td>
@@ -2005,8 +2072,8 @@
 
                 await buildMergedTransactions();
 
-                renderTable();
                 await renderStats();
+                renderTable();
                 populateBankSelect();
                 populateClientSelect();
 
@@ -2015,8 +2082,8 @@
                 showToast('⚠️ فشل تحميل المعاملات', 'warning');
                 transactions = [];
                 mergedTransactions = [];
-                renderTable();
                 await renderStats();
+                renderTable();
             }
 
             isLoading = false;
@@ -2053,6 +2120,7 @@
                             category: category,
                             amount: v.amount,
                             description: 'سند ' + v.voucher_type + ' ' + v.voucher_no + (v.party_name ? ' — ' + v.party_name : (v.description ? ' — ' + v.description : '')),
+                            reference: v.voucher_no,
                             client_id: (v.party_type === 'client') ? v.party_id : null,
                             opening_balance: false,
                             source: 'voucher',
@@ -2127,7 +2195,7 @@
             if (!mergedTransactions || mergedTransactions.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" style="text-align:center;padding:20px;color:var(--text-tertiary);">
+                        <td colspan="11" style="text-align:center;padding:20px;color:var(--text-tertiary);">
                             <i class="bi bi-inbox" style="font-size:1.2rem;display:block;margin-bottom:4px;opacity:0.35;"></i>
                             لا توجد معاملات مسجلة
                         </td>
@@ -2140,6 +2208,20 @@
             if (count) count.textContent = mergedTransactions.length + ' سجل';
 
             var displayData = mergedTransactions.slice(0, 20);
+
+            // "الرصيد بعد الحركة" زي عمود "الرصيد بعد الحركة" في شيت الخزنة —
+            // بما إن الجدول هنا معروض بالأحدث أولًا، بنرجع للخلف من الرصيد
+            // الحالي المعروف (currentTreasuryBalance) ونفك أثر كل حركة أحدث
+            // عشان نعرف الرصيد اللي كان قائم فعلًا بعد كل حركة وقت حصولها
+            var runningBalances = [];
+            var runningBalance = currentTreasuryBalance;
+            for (var b = 0; b < displayData.length; b++) {
+                runningBalances.push(runningBalance);
+                var rowIsIncome = (displayData[b]['type'] === 'وارد');
+                var rowAmount = parseFloat(displayData[b]['amount'] || 0);
+                runningBalance -= rowIsIncome ? rowAmount : -rowAmount;
+            }
+
             var html = '';
 
             for (var i = 0; i < displayData.length; i++) {
@@ -2153,6 +2235,7 @@
                 var description = t['description'] || '—';
                 var clientId = t['client_id'] || '';
                 var isOpening = t['opening_balance'] || false;
+                var documentNo = t['reference'] || t['voucher_no'] || '—';
 
                 var isIncome = (type === 'وارد');
                 var badgeClass = isIncome ? 'badge-income' : 'badge-expense';
@@ -2206,15 +2289,19 @@
                         '</button>';
                 }
 
+                var responsible = t['responsible'] || '—';
                 html += `
                     <tr>
                         <td>${i + 1}</td>
                         <td>${formattedDate}</td>
+                        <td style="font-family:monospace;font-size:11.5px;">${documentNo}</td>
                         <td>${description} ${openingBadge}${sourceBadge}</td>
                         <td><span class="badge-custom ${badgeClass}">${type}</span></td>
                         <td>${category}</td>
+                        <td>${responsible}</td>
                         <td>${clientName}</td>
                         <td class="${amountClass}">${sign} ${Supabase.formatCurrency(amount)}</td>
+                        <td style="font-weight:600;">${Supabase.formatCurrency(runningBalances[i])}</td>
                         <td style="text-align:center;white-space:nowrap;">
                             ${actionsHtml}
                         </td>
@@ -2248,6 +2335,7 @@
             // نفس الأسلوب المستخدم فعلاً لحساب رصيد أي بنك (getBankAccountBalance).
             try {
                 var treasuryBalance = await Supabase.getAccountBalanceByCode('1100');
+                currentTreasuryBalance = treasuryBalance;
                 document.getElementById('treasuryBalance').textContent = Supabase.formatCurrency(treasuryBalance);
             } catch (error) {
                 console.error('❌ خطأ في حساب رصيد الصندوق:', error);
@@ -2265,6 +2353,71 @@
                 document.getElementById('totalExpense').textContent = '—';
                 document.getElementById('netProfit').textContent = '—';
             }
+
+            renderExtraStats();
+        }
+
+        // ================================================================
+        // مؤشرات إضافية مطابقة لملخص "الخزنة" الأصلي (شيت الخزينه.xlsx):
+        // رصيد أول المدة / عدد الحركات / آخر تاريخ حركة / أكبر مصروف /
+        // أكبر إيراد / حالة الخزنة (جيد / منخفض / عجز)
+        // ================================================================
+        function renderExtraStats() {
+            var list = mergedTransactions || [];
+
+            // رصيد أول المدة: صف الرصيد الافتتاحي المُعلَّم بـ opening_balance،
+            // أو صفر لو لسه مفيش رصيد افتتاحي مُدخل
+            var openingRow = list.find(function(t) {
+                return t['opening_balance'] === true || t['opening_balance'] === 'true';
+            });
+            var openingAmount = openingRow ? parseFloat(openingRow['amount'] || 0) : 0;
+            document.getElementById('openingBalanceStat').textContent = Supabase.formatCurrency(openingAmount);
+
+            // عدد الحركات (بدون الرصيد الافتتاحي نفسه، لأنه ليس حركة تشغيلية)
+            var movementRows = list.filter(function(t) {
+                return !(t['opening_balance'] === true || t['opening_balance'] === 'true');
+            });
+            document.getElementById('transactionCountStat').textContent = movementRows.length;
+
+            // آخر تاريخ حركة
+            var lastDate = null;
+            movementRows.forEach(function(t) {
+                var d = new Date(t['date']);
+                if (!isNaN(d) && (!lastDate || d > lastDate)) lastDate = d;
+            });
+            document.getElementById('lastMovementDateStat').textContent = lastDate ? lastDate.toLocaleDateString('ar-EG') : '—';
+
+            // أكبر مصروف / أكبر إيراد
+            var maxExpense = 0, maxIncome = 0;
+            movementRows.forEach(function(t) {
+                var amount = parseFloat(t['amount'] || 0);
+                if (t['type'] === 'صادر' && amount > maxExpense) maxExpense = amount;
+                if (t['type'] === 'وارد' && amount > maxIncome) maxIncome = amount;
+            });
+            document.getElementById('maxExpenseStat').textContent = Supabase.formatCurrency(maxExpense);
+            document.getElementById('maxIncomeStat').textContent = Supabase.formatCurrency(maxIncome);
+
+            // حالة الخزنة: تقييم بسيط بناءً على الرصيد الحالي مقارنة بمتوسط
+            // المصروفات — جيد لو الرصيد يكفي أكتر من شهر من المعدل الحالي،
+            // منخفض لو أقل من شهر، عجز لو الرصيد بالسالب
+            var statusEl = document.getElementById('treasuryStatusStat');
+            var cardEl = document.getElementById('treasuryStatusCard');
+            var balance = currentTreasuryBalance || 0;
+            var totalExpenseAmount = movementRows
+                .filter(function(t) { return t['type'] === 'صادر'; })
+                .reduce(function(s, t) { return s + parseFloat(t['amount'] || 0); }, 0);
+
+            var statusText, statusColor;
+            if (balance < 0) {
+                statusText = 'عجز'; statusColor = 'var(--danger)';
+            } else if (totalExpenseAmount > 0 && balance < totalExpenseAmount * 0.25) {
+                statusText = 'منخفض'; statusColor = 'var(--warning)';
+            } else {
+                statusText = 'جيد'; statusColor = 'var(--success)';
+            }
+            statusEl.textContent = statusText;
+            statusEl.style.color = statusColor;
+            if (cardEl) cardEl.style.borderColor = statusColor;
         }
 
         // ================================================================
@@ -2360,7 +2513,7 @@
         // ================================================================
         // ADD TRANSACTION
         // ================================================================
-        async function addTransactionToSupabase(date, type, category, amount, description, reference, clientId, isOpening) {
+        async function addTransactionToSupabase(date, type, category, amount, description, reference, clientId, isOpening, responsible) {
             try {
                 var voucher = await createLinkedVoucher(type, category, amount, description, reference, clientId, isOpening);
 
@@ -2371,6 +2524,7 @@
                     amount: amount,
                     description: description || '',
                     reference: reference || '',
+                    responsible: responsible || '',
                     opening_balance: isOpening || false,
                     linked_voucher_id: voucher.id
                 };
@@ -2411,7 +2565,7 @@
         // ================================================================
         // UPDATE TRANSACTION
         // ================================================================
-        async function updateTransactionInSupabase(id, date, type, category, amount, description, reference, clientId, isOpening) {
+        async function updateTransactionInSupabase(id, date, type, category, amount, description, reference, clientId, isOpening, responsible) {
             try {
                 var oldTransaction = transactions.find(function(t) { return t['id'] === id; });
                 if (oldTransaction && oldTransaction['linked_journal_entry_id']) {
@@ -2428,6 +2582,7 @@
                     amount: amount,
                     description: description || '',
                     reference: reference || '',
+                    responsible: responsible || '',
                     opening_balance: isOpening || false,
                     linked_voucher_id: voucher.id
                 };
@@ -2515,8 +2670,9 @@
                 }
 
                 document.getElementById('modalAmount').value = transaction['amount'] || '';
-                document.getElementById('modalCategory').value = transaction['category'] || 'سيارة';
+                document.getElementById('modalCategory').value = transaction['category'] || 'إيرادات أخرى';
                 document.getElementById('modalDescription').value = transaction['description'] || '';
+                if (document.getElementById('modalResponsible')) document.getElementById('modalResponsible').value = transaction['responsible'] || '';
                 document.getElementById('modalReference').value = transaction['reference'] || '';
                 document.getElementById('modalClient').value = transaction['client_id'] || '';
                 currentModalType = (transaction['type'] === 'وارد') ? 'income' : 'expense';
@@ -2545,6 +2701,7 @@
             var description = document.getElementById('modalDescription').value;
             var reference = document.getElementById('modalReference').value;
             var clientId = document.getElementById('modalClient').value;
+            var responsible = (document.getElementById('modalResponsible') || {}).value || '';
             var isOpening = document.getElementById('modalIsOpening').value === 'true';
 
             if (!amount || parseFloat(amount) <= 0) {
@@ -2561,10 +2718,10 @@
 
             try {
                 if (mode === 'add') {
-                    await addTransactionToSupabase(today, type, category, parseFloat(amount), description, reference, clientId, isOpening);
+                    await addTransactionToSupabase(today, type, category, parseFloat(amount), description, reference, clientId, isOpening, responsible);
                     showToast('✅ تمت إضافة ' + type + ' بنجاح', 'success');
                 } else if (mode === 'edit') {
-                    await updateTransactionInSupabase(id, today, type, category, parseFloat(amount), description, reference, clientId, isOpening);
+                    await updateTransactionInSupabase(id, today, type, category, parseFloat(amount), description, reference, clientId, isOpening, responsible);
                     showToast('✅ تم تحديث المعاملة بنجاح', 'success');
                 }
                 closeModal();

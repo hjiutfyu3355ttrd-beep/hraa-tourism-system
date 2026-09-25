@@ -1501,6 +1501,7 @@
                 <li><a href="bookings.html"><i class="bi bi-journal-check"></i> الحجوزات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="representatives.html"><i class="bi bi-person-badge-fill"></i> المناديب</a></li>
                 <li><a href="expenses.html"><i class="bi bi-cash-coin"></i> المصروفات العمومية <span class="sidebar-badge">جديد</span></a></li>
+                <li><a href="allowances.html"><i class="bi bi-car-front-fill"></i> بدلات وانتقالات <span class="sidebar-badge">جديد</span></a></li>
                 <li><a href="vouchers.html"><i class="bi bi-receipt-cutoff"></i> السندات <span class="sidebar-badge">جديد</span></a></li>
             </ul>
 
@@ -1587,7 +1588,13 @@
             </div>
 
             <!-- ===== STATS ===== -->
-            <div class="stats-grid" id="stats-container">
+<div style="flex:1;min-width:220px;">
+                    <div style="font-weight:800;font-size:14px;margin-bottom:2px;">قائمة الرحلات</div>
+                    <div style="font-size:12.5px;opacity:0.9;line-height:1.5;">اختر رحلة لعرض تفاصيلها وتسجيل التكاليف والحجوزات.</div>
+                </div>
+                <button type="button" onclick="this.parentElement.style.display='none'" style="background:rgba(255,255,255,0.15);border:0;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;">إخفاء</button>
+            </div>
+<div class="stats-grid" id="stats-container">
                 <div class="stat-card stat-blue">
                     <span class="stat-icon"><i class="bi bi-airplane-fill"></i></span>
                     <div class="stat-number" id="statTotalTrips">0</div>
@@ -1709,7 +1716,7 @@
                 <span class="footer-copy">© 2026 جميع الحقوق محفوظة لـ <strong>QuickData ProSoft</strong></span>
             </div>
             <div class="footer-left">
-                <span class="footer-version">الإصدار 3.0.1</span>
+                <span class="footer-version">الإصدار 3.2.2</span>
                 <span class="footer-divider">|</span>
                 <a href="support.html" class="footer-link">
                     <i class="bi bi-headset"></i> الدعم الفني
@@ -1731,8 +1738,8 @@
         var allBookings = [];
         var allTripExpenses = [];
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var isLoading = false;
 
         var TRIP_STATUS_CLASS = { 'مخطط': 'status-info', 'جاري': 'status-active', 'منتهي': 'status-completed', 'ملغي': 'status-cancelled' };
@@ -1773,18 +1780,15 @@
 
         /**
          * إيراد ومصروف الرحلة الفعليان:
-         * الإيراد = المحصّل من حجوزات هذه الرحلة (paid_amount) + أي معاملات قديمة يدوية (وارد) مرتبطة بكود الرحلة
-         * المصروف = تكاليف الرحلة المُصنّفة (trip_expenses) + أي معاملات قديمة يدوية (صادر) مرتبطة بكود الرحلة
+         * الإيراد = المحصّل من حجوزات هذه الرحلة (paid_amount)
+         * المصروف = تكاليف الرحلة المُصنّفة (trip_expenses)
+         * المعاملات اليدوية القديمة (جدول transactions القديم المربوط بكود الرحلة كنص حر)
+         * بتتحسب بس لو الرحلة دي لسه معملهاش ولا حجز ولا مصروف عبر النظام الجديد —
+         * يعني رحلة قديمة قبل محرك المحاسبة، مش رحلة شغالة عليها دلوقتي. من غير الشرط
+         * ده، أي حد يسجل سند يدوي بكود الرحلة زيادة على حجز/مصروف حقيقي كان هيتضاعف
+         * الرقم (يتحسب مرتين: مرة من الجدول القديم ومرة من النظام الجديد).
          */
         function tripFinancials(tr) {
-            var legacyTxns = tripTxns(tr['trip_code']);
-            var legacyIncome = 0, legacyExpense = 0;
-            legacyTxns.forEach(function(t) {
-                var amount = parseFloat(t['amount'] || 0);
-                if (t['type'] === 'وارد') legacyIncome += amount;
-                else if (t['type'] === 'صادر') legacyExpense += amount;
-            });
-
             var bookingIncome = allBookings
                 .filter(function(b) { return String(b['trip_id']) === String(tr['id']); })
                 .reduce(function(s, b) { return s + (parseFloat(b['paid_amount']) || 0); }, 0);
@@ -1792,6 +1796,18 @@
             var categorizedExpense = allTripExpenses
                 .filter(function(e) { return String(e['trip_id']) === String(tr['id']); })
                 .reduce(function(s, e) { return s + (parseFloat(e['amount']) || 0); }, 0);
+
+            var hasNewEngineData = allBookings.some(function(b) { return String(b['trip_id']) === String(tr['id']); }) ||
+                                    allTripExpenses.some(function(e) { return String(e['trip_id']) === String(tr['id']); });
+
+            var legacyIncome = 0, legacyExpense = 0;
+            if (!hasNewEngineData) {
+                tripTxns(tr['trip_code']).forEach(function(t) {
+                    var amount = parseFloat(t['amount'] || 0);
+                    if (t['type'] === 'وارد') legacyIncome += amount;
+                    else if (t['type'] === 'صادر') legacyExpense += amount;
+                });
+            }
 
             return {
                 income: legacyIncome + bookingIncome,
@@ -1939,11 +1955,13 @@
 
             try {
                 var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
+                systemCurrency = settings.currency || 'EGP';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
             } catch (error) {
                 console.error('❌ خطأ في جلب الإعدادات:', error);
                 var savedCurrency = localStorage.getItem('systemCurrency');
+                // هجرة عملة: النظام مبني على الجنيه المصري مطابقة للإكسل
+                if (savedCurrency === 'SAR') { localStorage.setItem('systemCurrency', 'EGP'); savedCurrency = 'EGP'; }
                 if (savedCurrency) {
                     systemCurrency = savedCurrency;
                     currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
