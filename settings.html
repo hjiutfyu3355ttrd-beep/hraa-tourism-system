@@ -1757,7 +1757,7 @@
                             <select id="systemCurrency">
                                 <option value="SAR">ريال سعودي (SAR) ر.س</option>
                                 <option value="AED">درهم إماراتي (AED) د.إ</option>
-                                <option value="EGP">جنيه مصري (EGP) ج.م</option>
+                                <option value="EGP" selected>جنيه مصري (EGP) ج.م</option>
                                 <option value="USD">دولار أمريكي (USD) $</option>
                                 <option value="EUR">يورو (EUR) €</option>
                                 <option value="KWD">دينار كويتي (KWD) د.ك</option>
@@ -1932,8 +1932,8 @@
         // STATE
         // ================================================================
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var settings = {};
         var selectedTheme = 'dark';
 
@@ -1944,7 +1944,7 @@
             if (!Supabase.initSystem()) return;
 
             settings = Supabase.getSystemSettings();
-            systemCurrency = settings.currency || 'SAR';
+            systemCurrency = settings.currency || 'EGP';
             currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
             currentUser = Supabase.getCurrentUser();
@@ -2043,7 +2043,7 @@
             settings = Supabase.getSystemSettings();
 
             document.getElementById('systemName').value = settings.systemName || 'حراء للسياحة';
-            document.getElementById('systemCurrency').value = settings.currency || 'SAR';
+            document.getElementById('systemCurrency').value = settings.currency || 'EGP';
             document.getElementById('systemLanguage').value = settings.language || 'ar';
             document.getElementById('hideCurrencySymbol').checked = !!settings.hideCurrencySymbol;
 

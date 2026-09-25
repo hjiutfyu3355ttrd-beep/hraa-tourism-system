@@ -1738,8 +1738,8 @@
         var supplierTripExpenses = [];
         var supplierVouchers = [];
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var isLoading = false;
 
         // ================================================================
@@ -2017,7 +2017,7 @@
 
             try {
                 var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
+                systemCurrency = settings.currency || 'EGP';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
             } catch (error) {
                 console.error('❌ خطأ في جلب الإعدادات:', error);

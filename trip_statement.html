@@ -2160,8 +2160,8 @@
         var currentTripId = null;
         var isLoading = false;
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var statementData = [];
         var currentFinancials = null;
         var currentTrip = null;
@@ -2174,7 +2174,7 @@
 
             try {
                 var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
+                systemCurrency = settings.currency || 'EGP';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
                 console.log('💰 العملة المستخدمة:', systemCurrency, currencySymbol);
             } catch (error) {

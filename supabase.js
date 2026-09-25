@@ -2320,7 +2320,7 @@ console.log('📡 URL:', SUPABASE_CONFIG.URL);
 console.log('🔑 التوكن:', getToken() ? 'موجود ✅' : 'غير موجود ❌');
 console.log('💰 العملات المتاحة: SAR, AED, EGP, USD, EUR');
 console.log('⚙️ الإعدادات محفوظة في جدول user_settings (بدون RPC)');
-console.log('💰 العملة الحالية (افتراضي ج.م مطابقة للإكسل):', currentCurrency, currentCurrencySymbol);
+console.log('💰 العملة الحالية (من الإعدادات):', currentCurrency, currentCurrencySymbol);
 console.log('🎨 الوضع المظلم:', isDarkModeEnabled() ? 'مفعل ✅' : 'غير مفعل ❌');
 
 // ================================================================

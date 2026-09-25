@@ -1888,8 +1888,8 @@
         var isLoading = false;
         var currentVoucherType = 'قبض';
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
 
         // ================================================================
         // DOM READY
@@ -1898,7 +1898,7 @@
             if (!Supabase.initSystem()) return;
 
             var settings = Supabase.getSystemSettings();
-            systemCurrency = settings.currency || 'SAR';
+            systemCurrency = settings.currency || 'EGP';
             currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
             currentUser = Supabase.getCurrentUser();

@@ -2107,8 +2107,8 @@
         var currentSupplierId = null;
         var isLoading = false;
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var statementData = [];
 
         // ================================================================
@@ -2119,7 +2119,7 @@
 
             try {
                 var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
+                systemCurrency = settings.currency || 'EGP';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
                 console.log('💰 العملة المستخدمة:', systemCurrency, currencySymbol);
             } catch (error) {

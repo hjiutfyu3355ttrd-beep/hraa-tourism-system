@@ -1990,9 +1990,7 @@
             } catch (error) {
                 console.error('❌ خطأ في جلب الإعدادات:', error);
                 var savedCurrency = localStorage.getItem('systemCurrency');
-                // هجرة عملة: النظام مبني على الجنيه المصري مطابقة للإكسل
-                if (savedCurrency === 'SAR') { localStorage.setItem('systemCurrency', 'EGP'); savedCurrency = 'EGP'; }
-                if (savedCurrency) {
+if (savedCurrency) {
                     systemCurrency = savedCurrency;
                     currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
                 }

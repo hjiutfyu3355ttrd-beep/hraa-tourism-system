@@ -1964,8 +1964,8 @@
         var transactions = [];
         var filteredTransactions = [];
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var mainChart = null;
         var pieChart = null;
         var isLoading = false;
@@ -1977,7 +1977,7 @@
             if (!Supabase.initSystem()) return;
 
             var settings = Supabase.getSystemSettings();
-            systemCurrency = settings.currency || 'SAR';
+            systemCurrency = settings.currency || 'EGP';
             currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
 
             currentUser = Supabase.getCurrentUser();

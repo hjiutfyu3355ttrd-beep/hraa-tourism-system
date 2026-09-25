@@ -27,7 +27,7 @@ create table if not exists public.user_settings (
     user_id uuid unique references auth.users(id) on delete cascade,
     system_name text default 'حراء للسياحة',
     language text default 'ar',
-    currency text default 'SAR',
+    currency text default 'EGP',
     date_format text default 'ar',
     number_format text default 'ar',
     notify_transactions boolean default true,

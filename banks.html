@@ -2059,8 +2059,8 @@
         var allTransactions = [];
         var isLoading = false;
         var currentUser = null;
-        var systemCurrency = 'SAR';
-        var currencySymbol = 'ر.س';
+        var systemCurrency = 'EGP';
+        var currencySymbol = 'ج.م';
         var currentBankTransactions = [];
         var currentBankId = null;
         var accountsCache = null; // كاش بسيط لدليل الحسابات، يتحمّل مرة واحدة عند فتح بيان حركة أول بنك
@@ -2116,7 +2116,7 @@
 
             try {
                 var settings = await Supabase.getSystemSettings();
-                systemCurrency = settings.currency || 'SAR';
+                systemCurrency = settings.currency || 'EGP';
                 currencySymbol = Supabase.getCurrencySymbol(systemCurrency);
                 console.log('💰 العملة المستخدمة:', systemCurrency, currencySymbol);
                 console.log('📋 الإعدادات:', settings);
