@@ -1552,7 +1552,7 @@
 
                 <h4 class="page-title" id="pageTitleText">
                     المصروفات العمومية
-                    <small>مصروفات بدل الانتقال والمطار لكل موظف</small>
+                    <small>تسجيل الرواتب والمصاريف العمومية</small>
                 </h4>
             </div>
 
@@ -1578,7 +1578,7 @@
             <!-- ===== PAGE HEADER ===== -->
             <div class="page-header">
                 <div class="ph-left">
-                    <h2>المصروفات العمومية الموظفين</h2>
+                    <h2>المصروفات العمومية</h2>
                     <p>تسجيل الرواتب والمصاريف العمومية</p>
                 </div>
                 <div class="ph-right">
@@ -1614,7 +1614,7 @@
             <!-- ===== TOOLBAR ===== -->
             <div class="d-flex flex-wrap gap-2 mb-3">
                 <button class="btn-action btn-success" onclick="openExpenseModal()">
-                    <i class="bi bi-plus-circle-fill"></i> بدل جديد
+                    <i class="bi bi-plus-circle-fill"></i> مصروف جديد
                 </button>
                 <button class="btn-action btn-primary" onclick="loadData()">
                     <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
@@ -1631,7 +1631,7 @@
                     <table class="table-custom">
                         <thead>
                             <tr>
-                                <th>م</th><th>التاريخ</th><th>المستفيد</th><th>نوع البدل</th>
+                                <th>م</th><th>التاريخ</th><th>المستفيد</th><th>نوع المصروف</th>
                                 <th>طريقة السداد</th><th>المبلغ</th><th>رقم المستند</th><th>البيان</th>
                                 <th style="text-align:center;">الإجراءات</th>
                             </tr>
@@ -1653,11 +1653,11 @@
     </main>
 
     <!-- ================================================================ -->
-    <!-- MODAL - رواتب / مطار جديد -->
+    <!-- MODAL - مصروف جديد -->
     <!-- ================================================================ -->
     <div class="modal-overlay" id="expenseModalOverlay">
         <div class="modal-box">
-            <h3><i class="bi bi-car-front-fill"></i> رواتب / مطار جديد</h3>
+            <h3><i class="bi bi-cash-coin"></i> مصروف جديد</h3>
             <p style="font-size:12.5px;color:var(--text-tertiary);margin-bottom:16px;">يُسجَّل تلقائيًا بقيد محاسبي مزدوج</p>
             <form id="expenseForm" onsubmit="handleExpenseSubmit(event)">
                 <label for="expenseDate">التاريخ <span class="required">*</span></label>
@@ -1666,7 +1666,7 @@
                 <label for="expenseBeneficiary">المستفيد (الموظف) <span class="required">*</span></label>
                 <input type="text" id="expenseBeneficiary" placeholder="اسم الموظف" required />
 
-                <label for="expenseType">نوع البدل <span class="required">*</span></label>
+                <label for="expenseType">نوع المصروف <span class="required">*</span></label>
                 <select id="expenseType" required>
                     <option value="رواتب">رواتب</option>
                     <option value="مصاريف">مصاريف</option>
@@ -1737,7 +1737,7 @@
         // ================================================================
         var allowances = [];
         var cashAccounts = [];
-        var allowanceCategoryAccount = null; // حساب "المصروفات العمومية الموظفين" في دليل الحسابات
+        var allowanceCategoryAccount = null; // حساب "المصروفات العمومية" في دليل الحسابات
         var currentUser = null;
         var systemCurrency = 'EGP';
         var currencySymbol = 'ج.م';
@@ -1758,7 +1758,7 @@
 
             try {
                 // مصروفات الرحلات بدون trip_id هي المصروفات الإدارية العامة،
-                // ونعرض هنا فقط اللي مسجّلة على حساب "المصروفات العمومية الموظفين"
+                // ونعرض هنا فقط اللي مسجّلة على حساب "المصروفات العمومية"
                 var allExpenses = await Supabase.getTripExpenses();
                 allowances = (allExpenses || []).filter(function(e) {
                     return !e.trip_id && allowanceCategoryAccount && e.category_account_id === allowanceCategoryAccount.id;
@@ -1787,7 +1787,7 @@
         }
 
         /**
-         * يتأكد من وجود حساب "المصروفات العمومية الموظفين" في دليل الحسابات
+         * يتأكد من وجود حساب "المصروفات العمومية" في دليل الحسابات
          * (تحت مجموعة 5600 مصروفات إدارية وعمومية) — لو مش موجود بينشئه
          * تلقائيًا بكود 5700، بنفس فكرة ensureBankAccount في supabase.js
          */
@@ -1866,7 +1866,7 @@
         }
 
         // ================================================================
-        // إضافة بدل جديد
+        // إضافة مصروف جديد
         // ================================================================
         function openExpenseModal() {
             document.getElementById('expenseForm').reset();
@@ -1907,7 +1907,7 @@
             if (!beneficiary) { showToast('⚠️ الرجاء إدخال اسم المستفيد', 'warning'); return; }
             if (!amount || amount <= 0) { showToast('⚠️ الرجاء إدخال مبلغ صحيح', 'warning'); return; }
             if (!description) { showToast('⚠️ الرجاء إدخال البيان', 'warning'); return; }
-            if (!cashAccountId) { showToast('⚠️ الرجاء اختيار الحساب الذي يُصرف منه البدل', 'warning'); return; }
+            if (!cashAccountId) { showToast('⚠️ الرجاء اختيار الحساب الذي يُصرف منه المصروف', 'warning'); return; }
 
             var btn = document.getElementById('saveExpenseBtn');
             btn.disabled = true;
@@ -1934,10 +1934,10 @@
                 });
 
                 closeModalById('expenseModal');
-                showToast('✅ تم تسجيل البدل بنجاح وترحيله محاسبيًا', 'success');
+                showToast('✅ تم تسجيل المصروف بنجاح وترحيله محاسبيًا', 'success');
                 loadData();
             } catch (error) {
-                showToast('❌ فشل تسجيل البدل: ' + error.message, 'error');
+                showToast('❌ فشل تسجيل المصروف: ' + error.message, 'error');
             }
 
             btn.disabled = false;
@@ -1945,17 +1945,17 @@
         }
 
         function deleteAllowance(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا البدل؟')) return;
+            if (!confirm('هل أنت متأكد من حذف هذا المصروف؟')) return;
             var allowance = allowances.find(function(a) { return String(a.id) === String(id); });
             if (!allowance) return;
 
             Supabase.deleteTripExpense(allowance)
                 .then(function() {
-                    showToast('✅ تم حذف البدل بنجاح', 'success');
+                    showToast('✅ تم حذف المصروف بنجاح', 'success');
                     loadData();
                 })
                 .catch(function(error) {
-                    showToast('❌ فشل حذف البدل: ' + error.message, 'error');
+                    showToast('❌ فشل حذف المصروف: ' + error.message, 'error');
                 });
         }
 
@@ -2260,7 +2260,7 @@ if (savedCurrency) {
         window.showToast = showToast;
         window.loadData = loadData;
 
-        console.log('🚗 نظام المصروفات العمومية الموظفين - حراء للسياحة');
+        console.log('🚗 نظام المصروفات العمومية - حراء للسياحة');
         console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي)');
     </script>
 
