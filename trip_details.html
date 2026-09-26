@@ -1670,6 +1670,7 @@
                         <span class="stat-icon"><i class="bi bi-cash-stack"></i></span>
                         <div class="stat-number" id="statNetProfit">0</div>
                         <div class="stat-label">صافي ربح الرحلة</div>
+                        <div id="netProfitHint" style="display:none;font-size:9.5px;color:var(--text-tertiary);margin-top:4px;line-height:1.5;"></div>
                     </div>
                 </div>
 
@@ -2235,6 +2236,17 @@ var COST_CATEGORY_CODES = ['5100', '5200', '5300', '5400', '5500', '5510', '5520
                 var profitEl = document.getElementById('statNetProfit');
                 profitEl.textContent = Supabase.formatCurrency(financials.netProfit);
                 profitEl.style.color = financials.netProfit >= 0 ? 'var(--success)' : 'var(--danger)';
+
+                var hintEl = document.getElementById('netProfitHint');
+                var remaining = (financials.totalBookingValue || 0) - (financials.totalCollected || 0);
+                if (remaining > 0) {
+                    var expectedProfit = financials.netProfit + remaining;
+                    hintEl.style.display = 'block';
+                    hintEl.textContent = '⚠️ متبقي ' + Supabase.formatCurrency(remaining) + ' لسه معلق على العملاء — الربح المتوقع بعد اكتمال التحصيل: ' + Supabase.formatCurrency(expectedProfit);
+                } else {
+                    hintEl.style.display = 'none';
+                    hintEl.textContent = '';
+                }
 
                 renderCategoryBreakdown(financials.byCategoryCode, financials.netProfit, financials.totalExpense);
                 renderExpensesTable();
