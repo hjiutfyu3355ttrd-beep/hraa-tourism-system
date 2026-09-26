@@ -65,6 +65,7 @@
             --t-base: 0.2s ease;
             --sidebar-width: 260px;
             --header-height: 60px;
+            --footer-h: 60px;
             --font-display: 'Inter', 'Cairo', sans-serif;
             --font-body: 'Cairo', 'Inter', sans-serif;
         }
@@ -513,6 +514,7 @@
         .dashboard-content {
             padding: 20px 24px 30px;
             flex: 1;
+            padding-bottom: var(--footer-h, 60px);
         }
 
         /* ================================================================
@@ -1001,12 +1003,22 @@
            FOOTER - تذييل الصفحة
            ================================================================ */
         .footer-custom {
+            position: fixed !important;
+            bottom: 0 !important;
+            right: var(--sidebar-width, 260px) !important;
+            left: 0 !important;
             background: var(--surface);
             border-top: 2px solid var(--border);
             padding: 12px 24px;
             flex-shrink: 0;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
-            margin-top: auto;
+            z-index: 1030;
+            transition: right 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .main-content.expanded ~ .footer-custom {
+            right: 0 !important;
         }
 
         .footer-custom .footer-content {
@@ -1094,6 +1106,9 @@
             }
             .main-content {
                 margin-right: 0;
+            }
+            .footer-custom {
+                right: 0 !important;
             }
             .sidebar-overlay.active {
                 display: block;
@@ -3002,6 +3017,20 @@
         console.log('💰 العملة:', systemCurrency, currencySymbol);
         console.log('🔑 اختصارات: Ctrl+B (قائمة) | Ctrl+R (تحديث) | Ctrl+D (وضع ليلي) | Ctrl+P (طباعة)');
         console.log('✅ النظام جاهز للعمل');
+    </script>
+
+    <script>
+        (function () {
+            function syncFooterHeight() {
+                var footer = document.querySelector('.footer-custom');
+                if (footer) {
+                    document.documentElement.style.setProperty('--footer-h', (footer.offsetHeight + 4) + 'px');
+                }
+            }
+            window.addEventListener('load', syncFooterHeight);
+            window.addEventListener('resize', syncFooterHeight);
+            syncFooterHeight();
+        })();
     </script>
 
 </body>
