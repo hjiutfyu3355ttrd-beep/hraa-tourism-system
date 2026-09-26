@@ -1658,11 +1658,6 @@
                     <div class="stat-number" id="totalExpense">0</div>
                     <div class="stat-label">إجمالي المصروفات</div>
                 </div>
-                <div class="stat-card stat-blue">
-                    <span class="stat-icon"><i class="bi bi-arrow-left-right"></i></span>
-                    <div class="stat-number" id="netProfit">0</div>
-                    <div class="stat-label">صافي الربح</div>
-                </div>
             </div>
 
             <!-- ===== مؤشرات إضافية (مطابقة لملخص "الخزنة" الأصلي) ===== -->
@@ -1681,16 +1676,6 @@
                     <span class="stat-icon"><i class="bi bi-calendar-check-fill"></i></span>
                     <div class="stat-number" id="lastMovementDateStat" style="font-size:1.05rem;">—</div>
                     <div class="stat-label">آخر تاريخ حركة</div>
-                </div>
-                <div class="stat-card stat-red" style="opacity:0.92;">
-                    <span class="stat-icon"><i class="bi bi-arrow-up-circle"></i></span>
-                    <div class="stat-number" id="maxExpenseStat" style="font-size:1.05rem;">0</div>
-                    <div class="stat-label">أكبر مصروف</div>
-                </div>
-                <div class="stat-card stat-green" style="opacity:0.92;">
-                    <span class="stat-icon"><i class="bi bi-arrow-down-circle"></i></span>
-                    <div class="stat-number" id="maxIncomeStat" style="font-size:1.05rem;">0</div>
-                    <div class="stat-label">أكبر إيراد</div>
                 </div>
                 <div class="stat-card" id="treasuryStatusCard" style="opacity:0.92;">
                     <span class="stat-icon"><i class="bi bi-shield-check"></i></span>
@@ -2339,12 +2324,10 @@
                 var stmt = await Supabase.getIncomeStatement();
                 document.getElementById('totalIncome').textContent = Supabase.formatCurrency(stmt.totalRevenue);
                 document.getElementById('totalExpense').textContent = Supabase.formatCurrency(stmt.totalExpense);
-                document.getElementById('netProfit').textContent = Supabase.formatCurrency(stmt.netProfit);
             } catch (error) {
                 console.error('❌ خطأ في جلب قائمة الأرباح والخسائر:', error);
                 document.getElementById('totalIncome').textContent = '—';
                 document.getElementById('totalExpense').textContent = '—';
-                document.getElementById('netProfit').textContent = '—';
             }
 
             renderExtraStats();
@@ -2379,16 +2362,6 @@
                 if (!isNaN(d) && (!lastDate || d > lastDate)) lastDate = d;
             });
             document.getElementById('lastMovementDateStat').textContent = lastDate ? lastDate.toLocaleDateString('ar-EG') : '—';
-
-            // أكبر مصروف / أكبر إيراد
-            var maxExpense = 0, maxIncome = 0;
-            movementRows.forEach(function(t) {
-                var amount = parseFloat(t['amount'] || 0);
-                if (t['type'] === 'صادر' && amount > maxExpense) maxExpense = amount;
-                if (t['type'] === 'وارد' && amount > maxIncome) maxIncome = amount;
-            });
-            document.getElementById('maxExpenseStat').textContent = Supabase.formatCurrency(maxExpense);
-            document.getElementById('maxIncomeStat').textContent = Supabase.formatCurrency(maxIncome);
 
             // حالة الخزنة: تقييم بسيط بناءً على الرصيد الحالي مقارنة بمتوسط
             // المصروفات — جيد لو الرصيد يكفي أكتر من شهر من المعدل الحالي،
