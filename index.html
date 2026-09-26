@@ -1982,6 +1982,13 @@
             initKeyboardShortcuts();
             updateDate();
 
+            function greetingByTime() {
+                var h = new Date().getHours();
+                if (h < 12) return 'صباح الخير';
+                if (h < 17) return 'مساء الخير';
+                return 'مساء الخير';
+            }
+
             var welcomeTitle = document.getElementById('welcomeTitle');
             if (welcomeTitle) {
                 welcomeTitle.textContent = greetingByTime() + '، مرحباً بك 👋';
