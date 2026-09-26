@@ -102,7 +102,7 @@
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             border-radius: var(--radius-md);
             display: flex; align-items: center; justify-content: center;
-            font-size: 26px; color: var(--accent-light);
+            font-size: 22px; color: var(--accent-light);
             margin: 0 auto 14px;
             border: 1px solid var(--accent);
             box-shadow: 0 8px 24px rgba(14,28,46,0.25);
@@ -110,25 +110,25 @@
 
         .login-card .brand h1 {
             font-family: var(--font-display);
-            font-size: 24px; font-weight: 800; color: var(--text);
+            font-size: 20.5px; font-weight: 800; color: var(--text);
         }
 
         .login-card .brand h1 span { color: var(--accent-dark); }
 
         .login-card .brand p {
             color: var(--text-tertiary);
-            font-size: 13px; margin-top: 4px; font-weight: 500;
+            font-size: 11px; margin-top: 4px; font-weight: 500;
         }
 
         .login-card .form-label {
-            font-weight: 600; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 4px;
+            font-weight: 600; font-size: 10.5px; color: var(--text-secondary); margin-bottom: 4px;
         }
 
         .login-card .form-control {
             border-radius: var(--radius-sm);
             padding: 10px 14px;
             font-family: var(--font-body);
-            font-size: 14px;
+            font-size: 12px;
             border: 1px solid var(--border);
             transition: var(--t-base);
             background: var(--surface);
@@ -149,7 +149,7 @@
             color: var(--text-tertiary);
             border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
             padding: 0 14px;
-            font-size: 14px;
+            font-size: 12px;
             height: 44px;
         }
 
@@ -158,17 +158,17 @@
             border-radius: var(--radius-sm) 0 0 var(--radius-sm);
         }
 
-        .login-card .form-check-label { font-size: 12.5px; color: var(--text-tertiary); font-weight: 500; }
+        .login-card .form-check-label { font-size: 10.5px; color: var(--text-tertiary); font-weight: 500; }
         .login-card .form-check-input { border-color: var(--border); cursor: pointer; }
         .login-card .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
 
-        .login-card .forgot-link { font-size: 12.5px; color: var(--accent-dark); font-weight: 600; transition: var(--t-base); }
+        .login-card .forgot-link { font-size: 10.5px; color: var(--accent-dark); font-weight: 600; transition: var(--t-base); }
         .login-card .forgot-link:hover { color: var(--accent); text-decoration: underline; }
 
         .login-card .btn-login {
             width: 100%; padding: 12px; border: none; border-radius: var(--radius-sm);
             background: var(--primary); color: var(--text-inverse);
-            font-weight: 700; font-size: 15px; font-family: var(--font-display);
+            font-weight: 700; font-size: 13px; font-family: var(--font-display);
             transition: var(--t-base); cursor: pointer; height: 48px;
             display: flex; align-items: center; justify-content: center; gap: 8px;
             margin-top: 4px;
@@ -179,7 +179,7 @@
         .login-card .btn-login .spinner-border { width: 18px; height: 18px; border-width: 2px; }
 
         .login-card .error-message, .login-card .success-message {
-            padding: 10px 14px; border-radius: var(--radius-sm); font-size: 12.5px;
+            padding: 10px 14px; border-radius: var(--radius-sm); font-size: 10.5px;
             display: none; margin-top: 12px;
         }
         .login-card .error-message.show, .login-card .success-message.show { display: block; }
@@ -188,7 +188,7 @@
         .login-card .error-message i, .login-card .success-message i { margin-left: 6px; }
 
         .login-card .register-link {
-            text-align: center; margin-top: 18px; font-size: 13px; color: var(--text-tertiary);
+            text-align: center; margin-top: 18px; font-size: 11px; color: var(--text-tertiary);
             padding-top: 16px; border-top: 1px solid var(--border-light);
         }
         .login-card .register-link a { color: var(--accent-dark); font-weight: 700; transition: var(--t-base); }
@@ -196,10 +196,10 @@
 
         @media (max-width: 480px) {
             .login-card { padding: 28px 20px 24px; }
-            .login-card .brand h1 { font-size: 20px; }
-            .login-card .brand .brand-icon { width: 52px; height: 52px; font-size: 22px; }
+            .login-card .brand h1 { font-size: 17px; }
+            .login-card .brand .brand-icon { width: 52px; height: 52px; font-size: 18.5px; }
             .login-card .form-control, .login-card .input-group-text, .login-card .btn-login { height: 42px; }
-            .login-card .btn-login { font-size: 14px; }
+            .login-card .btn-login { font-size: 12px; }
         }
     </style>
 </head>
